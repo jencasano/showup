@@ -9,7 +9,7 @@
 <body>
 
   <!-- LOGIN SCREEN -->
-  <div id="login-screen" style="display:none;">
+  <div id="login-screen">
     <h1>showup.</h1>
     <p>Track your workouts. Keep each other accountable.</p>
     <button id="google-signin-btn">Sign in with Google</button>
@@ -19,6 +19,11 @@
   <div id="app-screen" style="display:none;">
     <header>
       <h1>showup.</h1>
+      <div id="month-nav">
+        <button id="prev-month-btn">←</button>
+        <span id="current-month-label">March 2026</span>
+        <button id="next-month-btn">→</button>
+      </div>
       <div id="user-info">
         <span id="user-name"></span>
         <button id="signout-btn">Sign out</button>

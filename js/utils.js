@@ -25,3 +25,19 @@ export function getDayLabel(yearMonth, day) {
   const date = new Date(year, month - 1, day);
   return ["S","M","T","W","T","F","S"][date.getDay()];
 }
+
+// Add these to the bottom of utils.js
+
+// "2026-03" → "2026-02"
+export function getPrevYearMonth(yearMonth) {
+  const [year, month] = yearMonth.split("-").map(Number);
+  const date = new Date(year, month - 2, 1);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+// "2026-03" → "2026-04"
+export function getNextYearMonth(yearMonth) {
+  const [year, month] = yearMonth.split("-").map(Number);
+  const date = new Date(year, month, 1);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}

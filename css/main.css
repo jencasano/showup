@@ -200,3 +200,40 @@ header {
   color: #aaa;
   padding: 60px 24px;
 }
+
+/* ─── MONTH NAV ─────────────────────────────────────── */
+#month-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#current-month-label {
+  font-size: 1rem;
+  font-weight: 700;
+  min-width: 120px;
+  text-align: center;
+}
+
+#month-nav button {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+#month-nav button:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+#month-nav button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
