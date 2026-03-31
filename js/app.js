@@ -2,7 +2,7 @@ import { auth } from "./firebase-config.js";
 import { signIn, signOutUser, onAuthReady, hasCompletedSetup } from "./auth.js";
 import { loadTracker } from "./tracker.js";
 import { getCurrentYearMonth } from "./utils.js";
-import { showToast } from "./ui.js";
+import { showToast, showLoader, hideLoader } from "./ui.js";
 
 const loginScreen = document.getElementById("login-screen");
 const appScreen = document.getElementById("app-screen");
@@ -15,6 +15,9 @@ document.getElementById("signout-btn").addEventListener("click", async () => {
   showToast("Signed out!", "info");
 });
 
+// Show loader immediately while auth resolves
+showLoader();
+
 onAuthReady(async (user) => {
   if (user) {
     const setupDone = await hasCompletedSetup(user.uid);
@@ -25,9 +28,11 @@ onAuthReady(async (user) => {
     loginScreen.style.display = "none";
     appScreen.style.display = "block";
     userName.textContent = user.displayName;
+    hideLoader();
     await loadTracker(getCurrentYearMonth(), trackerContainer);
   } else {
-    loginScreen.style.display = "block";
+    loginScreen.style.display = "flex";
     appScreen.style.display = "none";
+    hideLoader();
   }
 });
