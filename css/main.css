@@ -110,3 +110,93 @@ header {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* ─── TRACKER ───────────────────────────────────────── */
+.month-heading {
+  font-size: 1.5rem;
+  font-weight: 800;
+  padding: 24px 24px 8px;
+  color: #333;
+}
+
+.tracker-section {
+  margin: 16px;
+  border: 2px solid #eee;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.tracker-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  border-radius: 0 0 12px 0;
+}
+
+.tracker-header-row,
+.tracker-row {
+  display: flex;
+  align-items: center;
+  padding: 4px 12px;
+  overflow-x: auto;
+}
+
+.activity-label {
+  min-width: 90px;
+  font-size: 0.75rem;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.day-header {
+  min-width: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.65rem;
+  color: #bbb;
+  flex-shrink: 0;
+}
+
+.day-num { font-weight: 600; color: #999; }
+.day-label { color: #ccc; }
+
+.day-cell {
+  min-width: 28px;
+  height: 28px;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  margin: 3px 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.day-cell.clickable {
+  cursor: pointer;
+}
+
+.day-cell.clickable:hover {
+  transform: scale(1.15);
+  border-color: #aaa;
+}
+
+.day-cell.marked {
+  font-size: 0.8rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: #aaa;
+  padding: 60px 24px;
+}
