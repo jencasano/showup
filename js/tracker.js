@@ -15,14 +15,28 @@ const MARKER_SYMBOLS = {
   scribble: "〰"
 };
 
-let unsubscribe = null; // holds the onSnapshot listener
+// ─── Activity colors — auto-assigned by index ─────────
+// Free tier: 5 activities, 5 colors
+// Pro tier (future): user picks per activity
+export const ACTIVITY_COLORS = [
+  "#D8584E",  // coral   — activity 1
+  "#80B9B9",  // teal    — activity 2
+  "#F8C08A",  // amber   — activity 3
+  "#A29BFE",  // lavender — activity 4
+  "#1DD1A1",  // mint    — activity 5
+];
+
+export function getActivityColor(index) {
+  return ACTIVITY_COLORS[index % ACTIVITY_COLORS.length];
+}
+
+let unsubscribe = null;
 
 // ─── LOAD TRACKER WITH REAL-TIME LISTENER ────────────
 export function loadMyLog(yearMonth, container, currentUser) {
   showLoader();
   container.innerHTML = "";
 
-  // Unsubscribe from previous listener if switching months
   if (unsubscribe) {
     unsubscribe();
     unsubscribe = null;
@@ -31,7 +45,6 @@ export function loadMyLog(yearMonth, container, currentUser) {
   const entriesRef = collection(db, "logs", yearMonth, "entries");
 
   unsubscribe = onSnapshot(entriesRef, async (snapshot) => {
-    // Fetch all user profiles once
     const currentUser = auth.currentUser;
     const entries = [];
 
@@ -39,7 +52,6 @@ export function loadMyLog(yearMonth, container, currentUser) {
       const entry = { id: docSnap.id, ...docSnap.data() };
       if (!entry.activities || entry.activities.length === 0) continue;
 
-      // Fetch display name from users collection
       const userSnap = await getDoc(doc(db, "users", entry.id));
       if (!userSnap.exists()) continue;
 
@@ -55,14 +67,13 @@ export function loadMyLog(yearMonth, container, currentUser) {
       return;
     }
 
-    // Sort — current user's section always first
+    // Current user's section always first
     entries.sort((a, b) => {
       if (a.id === currentUser?.uid) return -1;
       if (b.id === currentUser?.uid) return 1;
       return 0;
     });
 
-    // Re-render everything
     container.innerHTML = "";
     for (const entry of entries) {
       const section = renderUserSection(entry, yearMonth, currentUser);
@@ -83,12 +94,11 @@ function renderUserSection(entry, yearMonth, currentUser) {
   const daysInMonth = getDaysInMonth(yearMonth);
   const { color, fontColor, font, sticker, marker, avatarUrl } = entry.decoration;
 
-  // Wrapper
   const section = document.createElement("div");
   section.className = "tracker-section";
-  section.style.borderColor = color;
+  section.style.borderColor = color; // border uses badge color
 
-  // Name badge
+  // Name badge — uses user's chosen color
   const badge = document.createElement("div");
   badge.className = "tracker-badge";
   badge.style.background = color;
@@ -121,29 +131,35 @@ function renderUserSection(entry, yearMonth, currentUser) {
   }
   section.appendChild(headerRow);
 
-  // One row per activity
+  // One row per activity — each gets its own color by index
   const marks = entry.marks || {};
-  for (const activity of entry.activities) {
+  entry.activities.forEach((activity, index) => {
     const markedDays = marks[activity] || [];
+    const activityColor = getActivityColor(index); // ← activity color, not badge color
     const row = renderActivityRow(
       activity, daysInMonth, markedDays,
-      color, marker, isOwner,
+      activityColor, marker, isOwner,
       yearMonth, entry.id
     );
     section.appendChild(row);
-  }
+  });
 
   return section;
 }
 
 // ─── RENDER ONE ACTIVITY ROW ─────────────────────────
-function renderActivityRow(activity, daysInMonth, markedDays, color, marker, isOwner, yearMonth, userId) {
+function renderActivityRow(activity, daysInMonth, markedDays, activityColor, marker, isOwner, yearMonth, userId) {
   const row = document.createElement("div");
   row.className = "tracker-row";
 
   const label = document.createElement("div");
   label.className = "activity-label";
-  label.textContent = activity;
+
+  // Small color dot next to activity name
+  label.innerHTML = `
+    <span class="activity-dot" style="background:${activityColor}"></span>
+    <span>${activity}</span>
+  `;
   row.appendChild(label);
 
   for (let d = 1; d <= daysInMonth; d++) {
@@ -153,8 +169,8 @@ function renderActivityRow(activity, daysInMonth, markedDays, color, marker, isO
     const isMarked = markedDays.includes(d);
     if (isMarked) {
       cell.classList.add("marked");
-      cell.style.background = color;
-      cell.style.borderColor = color;
+      cell.style.background = activityColor;
+      cell.style.borderColor = activityColor;
       cell.textContent = MARKER_SYMBOLS[marker] || "●";
       cell.style.color = "white";
     }
@@ -162,7 +178,7 @@ function renderActivityRow(activity, daysInMonth, markedDays, color, marker, isO
     if (isOwner) {
       cell.classList.add("clickable");
       cell.addEventListener("click", () =>
-        toggleDay(cell, d, activity, markedDays, color, marker, yearMonth, userId)
+        toggleDay(cell, d, activity, markedDays, activityColor, marker, yearMonth, userId)
       );
     }
 
@@ -173,10 +189,9 @@ function renderActivityRow(activity, daysInMonth, markedDays, color, marker, isO
 }
 
 // ─── TOGGLE A DAY ────────────────────────────────────
-async function toggleDay(cell, day, activity, markedDays, color, marker, yearMonth, userId) {
+async function toggleDay(cell, day, activity, markedDays, activityColor, marker, yearMonth, userId) {
   const isMarked = markedDays.includes(day);
 
-  // Optimistic UI update
   if (isMarked) {
     markedDays.splice(markedDays.indexOf(day), 1);
     cell.classList.remove("marked");
@@ -187,13 +202,12 @@ async function toggleDay(cell, day, activity, markedDays, color, marker, yearMon
   } else {
     markedDays.push(day);
     cell.classList.add("marked");
-    cell.style.background = color;
-    cell.style.borderColor = color;
+    cell.style.background = activityColor;
+    cell.style.borderColor = activityColor;
     cell.textContent = MARKER_SYMBOLS[marker] || "●";
     cell.style.color = "white";
   }
 
-  // Persist to Firestore
   try {
     const logRef = doc(db, "logs", yearMonth, "entries", userId);
     const logSnap = await getDoc(logRef);
