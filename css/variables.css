@@ -15,25 +15,26 @@
   --bg-surface:   #FFFFFF;
   --bg-subtle:    #F5EFE8;
   --border:       #EDE5DA;
+  --border-faint: #F5EFE8;
   --text:         #2A2E45;
   --text-muted:   #596088;
   --text-faint:   #B3A1B4;
 
-/* ── Typography ──────────────────────────────── */
---font-logo:        'Sora', sans-serif;
---font-heading:     'Fraunces', serif;
---font-base:        'Inter', sans-serif;
+  /* ── Typography ──────────────────────────────── */
+  --font-logo:        'Sora', sans-serif;
+  --font-heading:     'Fraunces', serif;
+  --font-base:        'Inter', sans-serif;
 
-/* User badge fonts */
---font-handwritten: 'Caveat', cursive;
---font-chunky:      'Fredoka One', cursive;
---font-elegant:     'Playfair Display', serif;
+  /* User badge fonts */
+  --font-handwritten: 'Caveat', cursive;
+  --font-chunky:      'Fredoka One', cursive;
+  --font-elegant:     'Playfair Display', serif;
 
   /* ── Spacing ─────────────────────────────────── */
-  --radius-sm:  6px;
-  --radius-md:  10px;
-  --radius-lg:  16px;
-  --radius-xl:  24px;
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
   --radius-full: 99px;
 
   /* ── Shadows ─────────────────────────────────── */
@@ -49,13 +50,14 @@
    Applied when <html> has data-theme="dark"
    ─────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg:          #1D2142;
-  --bg-surface:  #2A2E45;
-  --bg-subtle:   #353B5C;
-  --border:      #596088;
-  --text:        #FBDFCB;
-  --text-muted:  #B3A1B4;
-  --text-faint:  #596088;
+  --bg:           #1D2142;
+  --bg-surface:   #2A2E45;
+  --bg-subtle:    #353B5C;
+  --border:       #3D4468;
+  --border-faint: #2F3456;
+  --text:         #FBDFCB;
+  --text-muted:   #B3A1B4;
+  --text-faint:   #596088;
 
   --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);

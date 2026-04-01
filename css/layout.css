@@ -1,3 +1,14 @@
+/* ═══════════════════════════════════════════════
+   LAYOUT — Header, tabs, month bar, content
+   ═══════════════════════════════════════════════ */
+
+/* ── App Screen ──────────────────────────────── */
+#app-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ── Header ──────────────────────────────────── */
 header {
   display: flex;
@@ -6,7 +17,7 @@ header {
   padding: 0 28px;
   height: 52px;
   background: var(--bg-surface);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-faint);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -98,7 +109,7 @@ header h1 span { color: var(--color-primary); }
   height: 28px;
   border-radius: 50%;
   background: var(--bg-subtle);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-faint);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -114,7 +125,7 @@ header h1 span { color: var(--color-primary); }
   align-items: center;
   padding: 8px 28px;
   background: var(--bg);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-faint);
   gap: 6px;
   position: sticky;
   top: 92px;
@@ -162,10 +173,7 @@ header h1 span { color: var(--color-primary); }
   cursor: not-allowed;
 }
 
-#cal-picker-btn {
-  font-size: 0.85rem;
-  margin-left: 2px;
-}
+#cal-picker-btn { font-size: 0.85rem; margin-left: 2px; }
 
 /* ── Main Content ────────────────────────────── */
 #app-content {
