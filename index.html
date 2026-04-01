@@ -36,25 +36,59 @@
 
   <!-- MAIN APP -->
   <div id="app-screen" style="display:none;">
+
+    <!-- HEADER -->
     <header>
       <h1>show<span>up</span>.</h1>
-      <div id="month-nav">
-        <button id="prev-month-btn">←</button>
-        <span id="current-month-label">April 2026</span>
-        <button id="next-month-btn">→</button>
-      </div>
       <div id="user-info">
         <span id="user-name"></span>
         <button id="theme-toggle" title="Toggle dark mode">🌙</button>
         <button id="signout-btn">Sign out</button>
       </div>
     </header>
-    <div class="app-body">
-      <aside id="sidebar">
-        <!-- Mini calendar coming soon -->
-      </aside>
-      <main id="tracker-container"></main>
+
+    <!-- TAB ROW -->
+    <div id="tab-row">
+      <nav id="main-tabs">
+        <button class="tab-btn active" data-tab="mylog">My Log</button>
+        <button class="tab-btn" data-tab="following">Following</button>
+        <button class="tab-btn" data-tab="all">All</button>
+      </nav>
     </div>
+
+    <!-- MONTH BAR -->
+    <div id="month-bar">
+      <button id="prev-month-btn">←</button>
+      <span id="current-month-label">April 2026</span>
+      <button id="next-month-btn">→</button>
+      <button id="cal-picker-btn">📅</button>
+      <div id="month-bar-spacer"></div>
+      <div id="month-bar-stat"></div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main id="app-content">
+      <div id="tab-mylog" class="tab-panel"></div>
+      <div id="tab-following" class="tab-panel" style="display:none;"></div>
+      <div id="tab-all" class="tab-panel" style="display:none;"></div>
+    </main>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <nav id="bottom-nav">
+      <button class="bottom-tab active" data-tab="mylog">
+        <span class="bottom-tab-icon">👤</span>
+        <span>My Log</span>
+      </button>
+      <button class="bottom-tab" data-tab="following">
+        <span class="bottom-tab-icon">❤️</span>
+        <span>Following</span>
+      </button>
+      <button class="bottom-tab" data-tab="all">
+        <span class="bottom-tab-icon">🌍</span>
+        <span>All</span>
+      </button>
+    </nav>
+
   </div>
 
   <script type="module" src="js/app.js"></script>

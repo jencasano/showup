@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════
-   LAYOUT — Header, nav, main container
+   LAYOUT — Header, tabs, month bar, content
    ═══════════════════════════════════════════════ */
 
 /* ── App Screen ──────────────────────────────── */
@@ -15,13 +15,14 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  height: 60px;
+  height: 56px;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 100;
   box-shadow: var(--shadow-sm);
+  gap: 16px;
 }
 
 header h1 {
@@ -30,73 +31,72 @@ header h1 {
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--text);
+  flex-shrink: 0;
 }
 
-header h1 span {
-  color: var(--color-primary);
-}
+header h1 span { color: var(--color-primary); }
 
-/* ── Month Nav ───────────────────────────────── */
-#month-nav {
+/* ── Main Tabs (desktop) ─────────────────────── */
+#tab-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  position: sticky;
+  top: 56px;
+  z-index: 99;
 }
 
-#current-month-label {
-  font-family: var(--font-heading);
-  font-size: 0.95rem;
-  font-weight: 700;
-  min-width: 130px;
-  text-align: center;
-  color: var(--text);
+#main-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
 }
 
-#month-nav button {
+.tab-btn {
+  padding: 10px 24px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-faint);
   background: none;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  color: var(--text-muted);
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
   transition: all var(--transition);
+  font-family: var(--font-base);
+  height: 44px;
 }
 
-#month-nav button:hover:not(:disabled) {
-  background: var(--bg-subtle);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
+.tab-btn:hover { color: var(--text-muted); }
 
-#month-nav button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+.tab-btn.active {
+  color: var(--text);
+  border-bottom: 2px solid var(--color-primary);
 }
 
 /* ── User Info ───────────────────────────────── */
 #user-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 #user-name {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-muted);
 }
 
 #signout-btn {
-  padding: 6px 14px;
+  padding: 5px 14px;
   background: transparent;
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
+  transition: all var(--transition);
 }
 
 #signout-btn:hover {
@@ -104,61 +104,135 @@ header h1 span {
   color: var(--color-primary);
 }
 
-/* ── Dark Mode Toggle ────────────────────────── */
 #theme-toggle {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: var(--bg-subtle);
   border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
-  color: var(--text-muted);
+  font-size: 0.9rem;
+  transition: all var(--transition);
 }
 
 #theme-toggle:hover {
-  background: var(--bg-surface);
   border-color: var(--color-primary);
 }
 
-/* ── App Body ────────────────────────────────── */
-.app-body {
+/* ── Month Bar ───────────────────────────────── */
+#month-bar {
   display: flex;
-  flex: 1;
+  align-items: center;
+  padding: 8px 24px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  position: sticky;
+  top: 100px;
+  z-index: 98;
 }
 
-/* ── Sidebar ─────────────────────────────────── */
-#sidebar {
-  width: 240px;
-  min-width: 240px;
-  background: var(--bg-surface);
-  border-right: 1px solid var(--border);
-  padding: 24px;
-  position: sticky;
-  top: 60px;
-  height: calc(100vh - 60px);
-  overflow-y: auto;
+#current-month-label {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
 }
+
+#month-bar-spacer { flex: 1; }
+
+#month-bar-stat {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+#month-bar button {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+
+#month-bar button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+#month-bar button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+#cal-picker-btn { font-size: 0.8rem; }
 
 /* ── Main Content ────────────────────────────── */
-#tracker-container {
+#app-content {
   flex: 1;
   padding: 24px;
-  overflow-x: auto;
+  background: var(--bg);
 }
+
+.tab-panel { width: 100%; }
+
+/* ── Mobile Bottom Nav ───────────────────────── */
+#bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+}
+
+.bottom-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  background: none;
+  border: none;
+  gap: 3px;
+  cursor: pointer;
+  transition: color var(--transition);
+  font-family: var(--font-base);
+}
+
+.bottom-tab.active { color: var(--color-primary); }
+.bottom-tab-icon { font-size: 1.1rem; }
 
 /* ── Month Heading ───────────────────────────── */
 .month-heading {
   font-family: var(--font-heading);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 20px;
   letter-spacing: -0.02em;
 }
 
-.month-heading span {
-  color: var(--color-primary);
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 768px) {
+  #tab-row { display: none; }
+  #bottom-nav { display: flex; }
+  #app-content { padding: 16px 16px 80px; }
+  #user-name { display: none; }
+  header { padding: 0 16px; }
+  #month-bar { padding: 8px 16px; top: 56px; }
 }

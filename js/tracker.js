@@ -18,7 +18,7 @@ const MARKER_SYMBOLS = {
 let unsubscribe = null; // holds the onSnapshot listener
 
 // ─── LOAD TRACKER WITH REAL-TIME LISTENER ────────────
-export function loadTracker(yearMonth, container) {
+export function loadMyLog(yearMonth, container, currentUser) {
   showLoader();
   container.innerHTML = "";
 
