@@ -87,4 +87,4 @@ showup/
 
 ---
 
-*Built by Jen & Claude — 2026* 🪨
+*Built by Jen & Cii — 2026* 🪨

@@ -1,33 +1,21 @@
-/* ═══════════════════════════════════════════════
-   LAYOUT — Header, tabs, month bar, content
-   ═══════════════════════════════════════════════ */
-
-/* ── App Screen ──────────────────────────────── */
-#app-screen {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
 /* ── Header ──────────────────────────────────── */
 header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  height: 56px;
+  padding: 0 28px;
+  height: 52px;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: var(--shadow-sm);
   gap: 16px;
 }
 
 header h1 {
   font-family: var(--font-logo);
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--text);
@@ -36,27 +24,28 @@ header h1 {
 
 header h1 span { color: var(--color-primary); }
 
-/* ── Main Tabs (desktop) ─────────────────────── */
+/* ── Tab Row ─────────────────────────────────── */
 #tab-row {
   display: flex;
   align-items: center;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
-  padding: 0 24px;
+  padding: 0 28px;
   position: sticky;
-  top: 56px;
+  top: 52px;
   z-index: 99;
 }
 
 #main-tabs {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 4px;
 }
 
 .tab-btn {
-  padding: 10px 24px;
-  font-size: 0.85rem;
+  padding: 0 16px;
+  height: 40px;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-faint);
   background: none;
@@ -65,7 +54,7 @@ header h1 span { color: var(--color-primary); }
   cursor: pointer;
   transition: all var(--transition);
   font-family: var(--font-base);
-  height: 44px;
+  letter-spacing: 0.01em;
 }
 
 .tab-btn:hover { color: var(--text-muted); }
@@ -79,22 +68,22 @@ header h1 span { color: var(--color-primary); }
 #user-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 #user-name {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-muted);
 }
 
 #signout-btn {
-  padding: 5px 14px;
+  padding: 5px 12px;
   background: transparent;
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   transition: all var(--transition);
 }
@@ -105,55 +94,55 @@ header h1 span { color: var(--color-primary); }
 }
 
 #theme-toggle {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: var(--bg-subtle);
   border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   transition: all var(--transition);
 }
 
-#theme-toggle:hover {
-  border-color: var(--color-primary);
-}
+#theme-toggle:hover { border-color: var(--color-primary); }
 
 /* ── Month Bar ───────────────────────────────── */
 #month-bar {
   display: flex;
   align-items: center;
-  padding: 8px 24px;
+  padding: 8px 28px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
-  gap: 8px;
+  gap: 6px;
   position: sticky;
-  top: 100px;
+  top: 92px;
   z-index: 98;
 }
 
 #current-month-label {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--text);
+  min-width: 110px;
 }
 
 #month-bar-spacer { flex: 1; }
 
 #month-bar-stat {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-faint);
 }
 
+/* ── Month Bar Buttons ───────────────────────── */
 #month-bar button {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
   width: 28px;
   height: 28px;
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,21 +153,24 @@ header h1 span { color: var(--color-primary); }
 }
 
 #month-bar button:hover:not(:disabled) {
-  border-color: var(--color-primary);
+  background: var(--bg-subtle);
   color: var(--color-primary);
 }
 
 #month-bar button:disabled {
-  opacity: 0.3;
+  opacity: 0.25;
   cursor: not-allowed;
 }
 
-#cal-picker-btn { font-size: 0.8rem; }
+#cal-picker-btn {
+  font-size: 0.85rem;
+  margin-left: 2px;
+}
 
 /* ── Main Content ────────────────────────────── */
 #app-content {
   flex: 1;
-  padding: 24px;
+  padding: 24px 28px;
   background: var(--bg);
 }
 
@@ -203,12 +195,12 @@ header h1 span { color: var(--color-primary); }
   flex-direction: column;
   align-items: center;
   padding: 8px 4px;
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 600;
   color: var(--text-faint);
   background: none;
   border: none;
-  gap: 3px;
+  gap: 2px;
   cursor: pointer;
   transition: color var(--transition);
   font-family: var(--font-base);
@@ -220,7 +212,7 @@ header h1 span { color: var(--color-primary); }
 /* ── Month Heading ───────────────────────────── */
 .month-heading {
   font-family: var(--font-heading);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 20px;
@@ -233,6 +225,6 @@ header h1 span { color: var(--color-primary); }
   #bottom-nav { display: flex; }
   #app-content { padding: 16px 16px 80px; }
   #user-name { display: none; }
-  header { padding: 0 16px; }
-  #month-bar { padding: 8px 16px; top: 56px; }
+  header { padding: 0 16px; height: 48px; }
+  #month-bar { padding: 6px 16px; top: 48px; }
 }
