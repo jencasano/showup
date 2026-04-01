@@ -14,11 +14,11 @@ const FONTS = [
 const COLORS = ["#FF6B6B","#FF9F43","#FECA57","#48DBFB","#1DD1A1","#A29BFE","#FD79A8","#636E72"];
 const STICKERS = ["🌻","💪","🔥","⭐","🎯","🌈","🦋","🌸","⚡","🍀"];
 const MARKERS = [
-  { value: "circle", symbol: "●" },
-  { value: "star",   symbol: "★" },
-  { value: "heart",  symbol: "♥" },
-  { value: "check",  symbol: "✓" },
-  { value: "x",      symbol: "✗" },
+  { value: "circle",   symbol: "●" },
+  { value: "star",     symbol: "★" },
+  { value: "heart",    symbol: "♥" },
+  { value: "check",    symbol: "✓" },
+  { value: "x",        symbol: "✗" },
   { value: "scribble", symbol: "〰" }
 ];
 
@@ -28,22 +28,49 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
 
     // State — preload from previous month or use defaults
     const state = {
-      color:     prevData?.decoration?.color     || "#FF6B6B",
-      fontColor: prevData?.decoration?.fontColor || "#FFFFFF",
-      font:      prevData?.decoration?.font      || "Inter",
-      sticker:   prevData?.decoration?.sticker   || "🌻",
-      marker:    prevData?.decoration?.marker    || "circle",
-      activities: prevData?.activities           || []
+      color:      prevData?.decoration?.color     || "#FF6B6B",
+      fontColor:  prevData?.decoration?.fontColor || "#FFFFFF",
+      font:       prevData?.decoration?.font      || "Inter",
+      sticker:    prevData?.decoration?.sticker   || "🌻",
+      marker:     prevData?.decoration?.marker    || "circle",
+      activities: prevData?.activities            || []
     };
+
+    let currentStep = 1;
 
     const overlay = document.createElement("div");
     overlay.id = "month-setup-overlay";
     overlay.innerHTML = buildModalHTML(yearMonth, state);
     document.body.appendChild(overlay);
 
-    // Init font color swatches based on default color
+    // Init
     renderFontColorSwatches(state.color, state.fontColor);
     updatePreview(state);
+    showStep(1);
+
+    // ── Step navigation ─────────────────────────────────
+   function showStep(step) {
+  currentStep = step;
+  document.getElementById("ms-step-1").style.display = step === 1 ? "block" : "none";
+  document.getElementById("ms-step-2").style.display = step === 2 ? "block" : "none";
+  document.getElementById("ms-back-btn").style.display = step === 1 ? "none" : "inline-block";
+  document.getElementById("ms-next-btn").style.display = step === 1 ? "inline-block" : "none";
+  document.getElementById("ms-save-btn").style.display = step === 2 ? "inline-block" : "none";
+  document.getElementById("ms-step-label").textContent = `Step ${step} of 2`;
+  document.getElementById("ms-progress-fill").style.width = `${step / 2 * 100}%`;
+}
+
+    document.getElementById("ms-next-btn").addEventListener("click", () => {
+      if (currentStep === 1) {
+        showStep(2);
+      }
+    });
+
+    document.getElementById("ms-back-btn").addEventListener("click", () => {
+      if (currentStep === 2) {
+        showStep(1);
+      }
+    });
 
     // ── Color swatches ──────────────────────────────────
     overlay.querySelectorAll(".ms-color-swatch").forEach(el => {
@@ -152,15 +179,14 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
     // ── Font color swatch renderer ───────────────────────
     function renderFontColorSwatches(badgeColor, currentFontColor) {
       const suggestions = getFontColorSuggestions(badgeColor);
-      // Auto-select first suggestion if current font color not in new suggestions
       if (!suggestions.includes(currentFontColor)) {
         state.fontColor = suggestions[0];
       }
       const container = document.getElementById("ms-font-color-options");
       container.innerHTML = suggestions.map(c => `
-        <div class="ms-font-color-swatch ${state.fontColor === c ? 'selected' : ''}"
+        <div class="ms-font-color-swatch ${state.fontColor === c ? "selected" : ""}"
           data-color="${c}"
-          style="background:${c}; border: 2px solid ${c === '#FFFFFF' ? '#ddd' : c};">
+          style="background:${c}; border: 2px solid ${c === "#FFFFFF" ? "#ddd" : c};">
         </div>
       `).join("");
 
@@ -183,76 +209,95 @@ function updatePreview(state) {
   badge.style.background = state.color;
   badge.style.fontFamily = `'${state.font}', sans-serif`;
   badge.style.color = state.fontColor;
+  badge.innerHTML = `<span>${state.sticker}</span><span>Your Name</span>`;
 }
 
 // ── Modal HTML builder ───────────────────────────────────
 function buildModalHTML(yearMonth, state) {
   return `
   <div id="month-setup-modal">
-    <h2>Set up your tracker</h2>
-    <p>Customize your section for <strong>${formatYearMonth(yearMonth)}</strong>.</p>
 
-    <div class="ms-section-label">Badge Color</div>
-    <div id="ms-color-options">
-      ${COLORS.map(c => `
-        <div class="ms-color-swatch ${state.color === c ? 'selected' : ''}"
-          data-color="${c}" style="background:${c};"></div>
-      `).join("")}
+    <div id="ms-progress-bar"><div id="ms-progress-fill"></div></div>
+    <div id="ms-step-label">Step 1 of 2</div>
+
+    <!-- STEP 1: Decoration -->
+    <div id="ms-step-1">
+      <h2>Make it yours.</h2>
+      <p>Customize your section for <strong>${formatYearMonth(yearMonth)}</strong>.</p>
+
+      <div class="ms-section-label">Badge Color</div>
+      <div id="ms-color-options">
+        ${COLORS.map(c => `
+          <div class="ms-color-swatch ${state.color === c ? "selected" : ""}"
+            data-color="${c}" style="background:${c};"></div>
+        `).join("")}
+      </div>
+
+      <div class="ms-section-label">Font Color</div>
+      <div id="ms-font-color-options"></div>
+
+      <div class="ms-section-label">Font</div>
+      <div id="ms-font-options">
+        ${FONTS.map(f => `
+          <div class="ms-font-option ${state.font === f.value ? "selected" : ""}"
+            data-font="${f.value}">
+            <span style="font-family:'${f.value}';">${f.label}</span>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="ms-section-label">Sticker</div>
+      <div id="ms-sticker-options">
+        ${STICKERS.map(s => `
+          <div class="ms-sticker-option ${state.sticker === s ? "selected" : ""}"
+            data-sticker="${s}">${s}</div>
+        `).join("")}
+      </div>
+
+      <div class="ms-section-label">Marker</div>
+      <div id="ms-marker-options">
+        ${MARKERS.map(m => `
+          <div class="ms-marker-option ${state.marker === m.value ? "selected" : ""}"
+            data-marker="${m.value}">${m.symbol}</div>
+        `).join("")}
+      </div>
+
+      <div class="ms-section-label">Preview</div>
+      <div id="ms-badge-preview"
+        style="background:${state.color}; font-family:'${state.font}'; color:${state.fontColor};">
+        <span>🌻</span>
+        <span>Your Name</span>
+      </div>
     </div>
 
-    <div class="ms-section-label">Font Color</div>
-    <div id="ms-font-color-options"></div>
+    <!-- STEP 2: Activities -->
+    <div id="ms-step-2">
+      <h2>What are you tracking?</h2>
+      <p>Add up to 5 activities for <strong>${formatYearMonth(yearMonth)}</strong>.</p>
 
-    <div class="ms-section-label">Font</div>
-    <div id="ms-font-options">
-      ${FONTS.map(f => `
-        <div class="ms-font-option ${state.font === f.value ? 'selected' : ''}"
-          data-font="${f.value}">
-          <span style="font-family:'${f.value}';">${f.label}</span>
-        </div>
-      `).join("")}
+      <div id="ms-activities-list">
+        ${state.activities.length > 0
+          ? state.activities.map((a, i) => `
+              <input type="text" class="activity-input ms-activity-input"
+                placeholder="Activity ${i + 1}" maxlength="12" value="${a}" />
+            `).join("")
+          : `<input type="text" class="activity-input ms-activity-input"
+              placeholder="Activity 1 (e.g. workout)" maxlength="12" />`
+        }
+      </div>
+      <button id="ms-add-activity-btn"
+        ${state.activities.length >= 5 ? 'style="display:none;"' : ""}>
+        + Add another
+      </button>
     </div>
 
-    <div class="ms-section-label">Sticker</div>
-    <div id="ms-sticker-options">
-      ${STICKERS.map(s => `
-        <div class="ms-sticker-option ${state.sticker === s ? 'selected' : ''}"
-          data-sticker="${s}">${s}</div>
-      `).join("")}
+    <!-- NAVIGATION -->
+    <div id="ms-nav">
+      <button id="ms-back-btn" style="display:none;">← Back</button>
+      <button id="ms-next-btn">Next →</button>
+      <button id="ms-save-btn" style="display:none;">Save & Start Tracking →</button>
     </div>
 
-    <div class="ms-section-label">Marker</div>
-    <div id="ms-marker-options">
-      ${MARKERS.map(m => `
-        <div class="ms-marker-option ${state.marker === m.value ? 'selected' : ''}"
-          data-marker="${m.value}">${m.symbol}</div>
-      `).join("")}
-    </div>
-
-    <div class="ms-section-label">Preview</div>
-    <div id="ms-badge-preview"
-      style="background:${state.color}; font-family:'${state.font}'; color:${state.fontColor};">
-      <span>🌻</span>
-      <span>Your Name</span>
-    </div>
-
-    <div class="ms-section-label">Activities for ${formatYearMonth(yearMonth)}</div>
-    <div id="ms-activities-list">
-      ${state.activities.length > 0
-        ? state.activities.map((a, i) => `
-            <input type="text" class="activity-input ms-activity-input"
-              placeholder="Activity ${i+1}" maxlength="20" value="${a}" />
-          `).join("")
-        : `<input type="text" class="activity-input ms-activity-input"
-            placeholder="Activity 1 (e.g. workout)" maxlength="20" />`
-      }
-    </div>
-    <button id="ms-add-activity-btn"
-      ${state.activities.length >= 5 ? 'style="display:none;"' : ''}>
-      + Add another
-    </button>
-
-    <button id="ms-save-btn">Save & Start Tracking →</button>
   </div>`;
 }
 

@@ -1,0 +1,242 @@
+/* ═══════════════════════════════════════════════
+   MODALS — Month setup modal
+   ═══════════════════════════════════════════════ */
+
+#month-setup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(29, 33, 66, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9997;
+  overflow-y: auto;
+  padding: 24px;
+  backdrop-filter: blur(4px);
+}
+
+#month-setup-modal {
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow-lg);
+}
+
+#month-setup-modal h2 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+
+#month-setup-modal p {
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+/* ── Progress ────────────────────────────────── */
+#ms-progress-bar {
+  height: 5px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-full);
+  margin-bottom: 8px;
+}
+
+#ms-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  width: 50%;
+  transition: width 0.3s ease;
+}
+
+#ms-step-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 24px;
+}
+
+/* ── Section Labels ──────────────────────────── */
+.ms-section-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin: 18px 0 8px;
+}
+
+/* ── Color Swatches ──────────────────────────── */
+#ms-color-options,
+#ms-font-color-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ms-color-swatch,
+.ms-font-color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: transform var(--transition);
+}
+
+.ms-color-swatch:hover,
+.ms-font-color-swatch:hover { transform: scale(1.15); }
+
+.ms-color-swatch.selected,
+.ms-font-color-swatch.selected {
+  border-color: var(--text);
+  transform: scale(1.15);
+}
+
+/* ── Font Options ────────────────────────────── */
+#ms-font-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ms-font-option {
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+  color: var(--text);
+  background: var(--bg-surface);
+}
+
+.ms-font-option:hover { border-color: var(--color-primary); }
+.ms-font-option.selected {
+  border-color: var(--color-primary);
+  background: var(--bg-subtle);
+}
+
+/* ── Sticker Options ─────────────────────────── */
+#ms-sticker-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ms-sticker-option {
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  transition: all var(--transition);
+}
+
+.ms-sticker-option:hover { transform: scale(1.2); }
+.ms-sticker-option.selected {
+  border-color: var(--color-primary);
+  background: var(--bg-subtle);
+}
+
+/* ── Marker Options ──────────────────────────── */
+#ms-marker-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.ms-marker-option {
+  width: 46px;
+  height: 46px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: var(--text);
+  background: var(--bg-surface);
+  transition: all var(--transition);
+}
+
+.ms-marker-option:hover { border-color: var(--color-primary); }
+.ms-marker-option.selected {
+  border-color: var(--color-primary);
+  background: var(--bg-subtle);
+}
+
+/* ── Badge Preview ───────────────────────────── */
+#ms-badge-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  transition: all var(--transition);
+}
+
+/* ── Activities ──────────────────────────────── */
+#ms-activities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+#ms-add-activity-btn {
+  background: none;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  width: 100%;
+  color: var(--text-faint);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+  transition: all var(--transition);
+}
+
+#ms-add-activity-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ── Nav Buttons ─────────────────────────────── */
+#ms-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+#ms-back-btn {
+  padding: 12px 20px;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+#ms-back-btn:hover { background: var(--border); }
+
+#ms-next-btn, #ms-save-btn {
+  padding: 12px 24px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+#ms-next-btn:hover, #ms-save-btn:hover {
+  background: var(--color-primary-hover);
+}

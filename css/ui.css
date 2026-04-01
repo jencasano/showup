@@ -1,0 +1,56 @@
+/* ═══════════════════════════════════════════════
+   UI — Toasts, loader, utilities
+   ═══════════════════════════════════════════════ */
+
+/* ── Toast ───────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 9999;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+}
+
+.toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast-success { background: var(--color-teal);    color: var(--text); }
+.toast-error   { background: var(--color-primary); color: white; }
+.toast-info    { background: var(--bg-surface);    color: var(--text); border: 1px solid var(--border); }
+
+/* ── Loader ──────────────────────────────────── */
+#global-loader {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 250, 245, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  backdrop-filter: blur(2px);
+}
+
+[data-theme="dark"] #global-loader {
+  background: rgba(29, 33, 66, 0.8);
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
