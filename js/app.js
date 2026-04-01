@@ -1,6 +1,6 @@
 import { auth } from "./firebase-config.js";
 import { signIn, signOutUser, onAuthReady, hasCompletedSetup } from "./auth.js";
-import { loadMyLog } from "./tracker.js";
+import { loadMyLog, loadAllLogs } from "./tracker.js";
 import { getCurrentYearMonth, formatYearMonth, getPrevYearMonth, getNextYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { checkMonthlySetup } from "./month-setup.js";
@@ -21,6 +21,7 @@ const tabAll       = document.getElementById("tab-all");
 let activeYearMonth = getCurrentYearMonth();
 let activeTab       = "mylog";
 let currentUser     = null;
+let allLogsUnsub    = null;
 
 // ── Month nav ─────────────────────────────────
 function updateMonthNav() {
@@ -31,7 +32,7 @@ function updateMonthNav() {
 async function changeMonth(yearMonth) {
   activeYearMonth = yearMonth;
   updateMonthNav();
-  monthBarStat.textContent = ""; // clear stat while loading
+  monthBarStat.textContent = "";
   await loadActiveTab();
   await updateStat();
 }
@@ -70,6 +71,12 @@ function switchTab(tab) {
   tabFollowing.style.display = tab === "following" ? "block" : "none";
   tabAll.style.display       = tab === "all"       ? "block" : "none";
 
+  // Clean up All tab listener when leaving
+  if (tab !== "all" && allLogsUnsub) {
+    allLogsUnsub();
+    allLogsUnsub = null;
+  }
+
   loadActiveTab();
   updateStat();
 }
@@ -80,7 +87,11 @@ async function loadActiveTab() {
   } else if (activeTab === "following") {
     tabFollowing.innerHTML = `<p class="empty-state">Following tab — coming soon! 👀</p>`;
   } else if (activeTab === "all") {
-    tabAll.innerHTML = `<p class="empty-state">All tab — coming soon! 👀</p>`;
+    if (allLogsUnsub) {
+      allLogsUnsub();
+      allLogsUnsub = null;
+    }
+    allLogsUnsub = loadAllLogs(activeYearMonth, tabAll, currentUser);
   }
 }
 
