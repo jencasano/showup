@@ -102,6 +102,17 @@
   color: var(--text-faint);
 }
 
+/* ── Today highlight in header ───────────────── */
+.day-header-today {
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.day-num.today {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
 /* ── Day Cell ────────────────────────────────── */
 .day-cell {
   width: 26px;
@@ -120,10 +131,20 @@
   background: var(--bg-surface);
 }
 
+/* ── Today's cell highlight ──────────────────── */
+.day-cell-today {
+  border-color: var(--color-primary);
+  border-width: 2px;
+}
+
 .day-cell.clickable:hover {
   transform: scale(1.2);
   border-color: var(--text-muted);
   cursor: pointer;
+}
+
+.day-cell.clickable.day-cell-today:hover {
+  border-color: var(--color-primary);
 }
 
 .day-cell.marked { font-size: 0.8rem; }
