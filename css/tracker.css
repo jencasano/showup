@@ -119,6 +119,12 @@
   opacity: 0.55;
 }
 
+/* Light mode needs higher opacity to stay readable */
+[data-theme="light"] .day-header-future .day-num,
+[data-theme="light"] .day-header-future .day-label {
+  opacity: 0.4;
+}
+
 /* ── Day Cell ────────────────────────────────── */
 .day-cell {
   width: 26px;
@@ -148,6 +154,11 @@
   opacity: 0.55;
   cursor: not-allowed;
   border-style: dashed;
+}
+
+/* Light mode — future cells slightly more visible */
+[data-theme="light"] .day-cell.future {
+  opacity: 0.4;
 }
 
 .day-cell.clickable:hover {
