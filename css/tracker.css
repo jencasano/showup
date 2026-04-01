@@ -116,7 +116,7 @@
 /* ── Future days in header ───────────────────── */
 .day-header-future .day-num,
 .day-header-future .day-label {
-  opacity: 0.35;
+  opacity: 0.55;
 }
 
 /* ── Day Cell ────────────────────────────────── */
@@ -145,7 +145,7 @@
 
 /* ── Future days ─────────────────────────────── */
 .day-cell.future {
-  opacity: 0.3;
+  opacity: 0.55;
   cursor: not-allowed;
   border-style: dashed;
 }
