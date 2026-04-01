@@ -36,7 +36,7 @@ function isMobile() {
 
 let unsubscribe = null;
 
-// ─── LOAD TRACKER WITH REAL-TIME LISTENER ────────────
+// ─── LOAD MY LOG — current user only ─────────────────
 export function loadMyLog(yearMonth, container, currentUser) {
   showLoader();
   container.innerHTML = "";
@@ -46,12 +46,66 @@ export function loadMyLog(yearMonth, container, currentUser) {
     unsubscribe = null;
   }
 
+  const isCurrentMonth = yearMonth === getCurrentYearMonth();
+  const todayDate = new Date().getDate();
+  const uid = currentUser?.uid || auth.currentUser?.uid;
+
+  if (!uid) {
+    hideLoader();
+    container.innerHTML = `<p class="empty-state">Not logged in.</p>`;
+    return;
+  }
+
+  // Listen only to the current user's entry — not all entries
+  const entryRef = doc(db, "logs", yearMonth, "entries", uid);
+
+  unsubscribe = onSnapshot(entryRef, async (docSnap) => {
+    container.innerHTML = "";
+
+    if (!docSnap.exists() || !docSnap.data().activities?.length) {
+      hideLoader();
+      container.innerHTML = `<p class="empty-state">No tracker set up for this month yet.</p>`;
+      return;
+    }
+
+    const entry = { id: uid, ...docSnap.data() };
+
+    // Fetch display name
+    const userSnap = await getDoc(doc(db, "users", uid));
+    if (!userSnap.exists()) {
+      hideLoader();
+      return;
+    }
+    entry.displayName = userSnap.data().displayName;
+
+    const user = auth.currentUser;
+
+    if (isMobile()) {
+      const card = renderMobileCard(entry, yearMonth, user);
+      container.appendChild(card);
+    } else {
+      const section = renderUserSection(entry, yearMonth, user, isCurrentMonth, todayDate);
+      container.appendChild(section);
+    }
+
+    hideLoader();
+  }, (error) => {
+    console.error("Snapshot error:", error);
+    showToast("Failed to load tracker.", "error");
+    hideLoader();
+  });
+}
+
+// ─── LOAD ALL LOGS — all users ────────────────────────
+export function loadAllLogs(yearMonth, container, currentUser) {
+  showLoader();
+  container.innerHTML = "";
+
   const entriesRef = collection(db, "logs", yearMonth, "entries");
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
   const todayDate = new Date().getDate();
 
-  unsubscribe = onSnapshot(entriesRef, async (snapshot) => {
-    const currentUser = auth.currentUser;
+  return onSnapshot(entriesRef, async (snapshot) => {
     const entries = [];
 
     for (const docSnap of snapshot.docs) {
@@ -61,10 +115,7 @@ export function loadMyLog(yearMonth, container, currentUser) {
       const userSnap = await getDoc(doc(db, "users", entry.id));
       if (!userSnap.exists()) continue;
 
-      entries.push({
-        ...entry,
-        displayName: userSnap.data().displayName
-      });
+      entries.push({ ...entry, displayName: userSnap.data().displayName });
     }
 
     if (entries.length === 0) {
@@ -73,6 +124,7 @@ export function loadMyLog(yearMonth, container, currentUser) {
       return;
     }
 
+    // Current user's card first
     entries.sort((a, b) => {
       if (a.id === currentUser?.uid) return -1;
       if (b.id === currentUser?.uid) return 1;
@@ -80,22 +132,15 @@ export function loadMyLog(yearMonth, container, currentUser) {
     });
 
     container.innerHTML = "";
-
-    // ── Render desktop OR mobile view
     for (const entry of entries) {
-      if (isMobile()) {
-        const card = renderMobileCard(entry, yearMonth, currentUser);
-        container.appendChild(card);
-      } else {
-        const section = renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayDate);
-        container.appendChild(section);
-      }
+      const card = renderMobileCard(entry, yearMonth, currentUser);
+      container.appendChild(card);
     }
 
     hideLoader();
   }, (error) => {
     console.error("Snapshot error:", error);
-    showToast("Failed to load tracker.", "error");
+    showToast("Failed to load trackers.", "error");
     hideLoader();
   });
 }
