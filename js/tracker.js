@@ -5,6 +5,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getDaysInMonth, getDayLabel, getCurrentYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
+import { renderMobileCard } from "./mobile-tracker.js";
 
 const MARKER_SYMBOLS = {
   circle:   "●",
@@ -26,6 +27,11 @@ export const ACTIVITY_COLORS = [
 
 export function getActivityColor(index) {
   return ACTIVITY_COLORS[index % ACTIVITY_COLORS.length];
+}
+
+// Detect mobile
+function isMobile() {
+  return window.innerWidth <= 768;
 }
 
 let unsubscribe = null;
@@ -74,9 +80,16 @@ export function loadMyLog(yearMonth, container, currentUser) {
     });
 
     container.innerHTML = "";
+
+    // ── Render desktop OR mobile view
     for (const entry of entries) {
-      const section = renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayDate);
-      container.appendChild(section);
+      if (isMobile()) {
+        const card = renderMobileCard(entry, yearMonth, currentUser);
+        container.appendChild(card);
+      } else {
+        const section = renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayDate);
+        container.appendChild(section);
+      }
     }
 
     hideLoader();
@@ -87,7 +100,7 @@ export function loadMyLog(yearMonth, container, currentUser) {
   });
 }
 
-// ─── RENDER ONE USER SECTION ─────────────────────────
+// ─── RENDER ONE USER SECTION (desktop) ────────────────
 function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayDate) {
   const isOwner = currentUser && currentUser.uid === entry.id;
   const daysInMonth = getDaysInMonth(yearMonth);
@@ -97,7 +110,6 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   section.className = "tracker-section";
   section.style.borderColor = color;
 
-  // Name badge — uses user's chosen color
   const badge = document.createElement("div");
   badge.className = "tracker-badge";
   badge.style.background = color;
@@ -115,7 +127,6 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   `;
   section.appendChild(badge);
 
-  // Day headers row — highlight today
   const headerRow = document.createElement("div");
   headerRow.className = "tracker-header-row";
   headerRow.innerHTML = `<div class="activity-label"></div>`;
@@ -134,7 +145,6 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   }
   section.appendChild(headerRow);
 
-  // One row per activity — each gets its own color
   const marks = entry.marks || {};
   entry.activities.forEach((activity, index) => {
     const markedDays = marks[activity] || [];
@@ -151,7 +161,7 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   return section;
 }
 
-// ─── RENDER ONE ACTIVITY ROW ─────────────────────────
+// ─── RENDER ONE ACTIVITY ROW (desktop) ────────────────
 function renderActivityRow(activity, daysInMonth, markedDays, activityColor, marker, isOwner, yearMonth, userId, isCurrentMonth, todayDate) {
   const row = document.createElement("div");
   row.className = "tracker-row";
@@ -183,7 +193,6 @@ function renderActivityRow(activity, daysInMonth, markedDays, activityColor, mar
       cell.style.color = "white";
     }
 
-    // Only allow logging past/present days, never future
     if (isOwner && !isFuture) {
       cell.classList.add("clickable");
       cell.addEventListener("click", () =>
@@ -197,7 +206,7 @@ function renderActivityRow(activity, daysInMonth, markedDays, activityColor, mar
   return row;
 }
 
-// ─── TOGGLE A DAY ────────────────────────────────────
+// ─── TOGGLE A DAY (desktop) ─────────────────────────
 async function toggleDay(cell, day, activity, markedDays, activityColor, marker, yearMonth, userId) {
   const isMarked = markedDays.includes(day);
 
