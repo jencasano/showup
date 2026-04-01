@@ -3,7 +3,7 @@ import {
   collection, doc, getDoc, setDoc,
   updateDoc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDaysInMonth, getDayLabel } from "./utils.js";
+import { getDaysInMonth, getDayLabel, getCurrentYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 
 const MARKER_SYMBOLS = {
@@ -16,14 +16,12 @@ const MARKER_SYMBOLS = {
 };
 
 // ─── Activity colors — auto-assigned by index ─────────
-// Free tier: 5 activities, 5 colors
-// Pro tier (future): user picks per activity
 export const ACTIVITY_COLORS = [
-  "#D8584E",  // coral   — activity 1
-  "#80B9B9",  // teal    — activity 2
-  "#F8C08A",  // amber   — activity 3
+  "#D8584E",  // coral    — activity 1
+  "#80B9B9",  // teal     — activity 2
+  "#F8C08A",  // amber    — activity 3
   "#A29BFE",  // lavender — activity 4
-  "#1DD1A1",  // mint    — activity 5
+  "#1DD1A1",  // mint     — activity 5
 ];
 
 export function getActivityColor(index) {
@@ -43,6 +41,8 @@ export function loadMyLog(yearMonth, container, currentUser) {
   }
 
   const entriesRef = collection(db, "logs", yearMonth, "entries");
+  const isCurrentMonth = yearMonth === getCurrentYearMonth();
+  const todayDate = new Date().getDate();
 
   unsubscribe = onSnapshot(entriesRef, async (snapshot) => {
     const currentUser = auth.currentUser;
@@ -67,7 +67,6 @@ export function loadMyLog(yearMonth, container, currentUser) {
       return;
     }
 
-    // Current user's section always first
     entries.sort((a, b) => {
       if (a.id === currentUser?.uid) return -1;
       if (b.id === currentUser?.uid) return 1;
@@ -76,7 +75,7 @@ export function loadMyLog(yearMonth, container, currentUser) {
 
     container.innerHTML = "";
     for (const entry of entries) {
-      const section = renderUserSection(entry, yearMonth, currentUser);
+      const section = renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayDate);
       container.appendChild(section);
     }
 
@@ -89,14 +88,14 @@ export function loadMyLog(yearMonth, container, currentUser) {
 }
 
 // ─── RENDER ONE USER SECTION ─────────────────────────
-function renderUserSection(entry, yearMonth, currentUser) {
+function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayDate) {
   const isOwner = currentUser && currentUser.uid === entry.id;
   const daysInMonth = getDaysInMonth(yearMonth);
   const { color, fontColor, font, sticker, marker, avatarUrl } = entry.decoration;
 
   const section = document.createElement("div");
   section.className = "tracker-section";
-  section.style.borderColor = color; // border uses badge color
+  section.style.borderColor = color;
 
   // Name badge — uses user's chosen color
   const badge = document.createElement("div");
@@ -116,30 +115,33 @@ function renderUserSection(entry, yearMonth, currentUser) {
   `;
   section.appendChild(badge);
 
-  // Day headers row
+  // Day headers row — highlight today
   const headerRow = document.createElement("div");
   headerRow.className = "tracker-header-row";
   headerRow.innerHTML = `<div class="activity-label"></div>`;
   for (let d = 1; d <= daysInMonth; d++) {
     const cell = document.createElement("div");
     cell.className = "day-header";
+    const isToday = isCurrentMonth && d === todayDate;
+    if (isToday) cell.classList.add("day-header-today");
     cell.innerHTML = `
-      <span class="day-num">${d}</span>
+      <span class="day-num${isToday ? ' today' : ''}">${d}</span>
       <span class="day-label">${getDayLabel(yearMonth, d)}</span>
     `;
     headerRow.appendChild(cell);
   }
   section.appendChild(headerRow);
 
-  // One row per activity — each gets its own color by index
+  // One row per activity — each gets its own color
   const marks = entry.marks || {};
   entry.activities.forEach((activity, index) => {
     const markedDays = marks[activity] || [];
-    const activityColor = getActivityColor(index); // ← activity color, not badge color
+    const activityColor = getActivityColor(index);
     const row = renderActivityRow(
       activity, daysInMonth, markedDays,
       activityColor, marker, isOwner,
-      yearMonth, entry.id
+      yearMonth, entry.id,
+      isCurrentMonth, todayDate
     );
     section.appendChild(row);
   });
@@ -148,14 +150,12 @@ function renderUserSection(entry, yearMonth, currentUser) {
 }
 
 // ─── RENDER ONE ACTIVITY ROW ─────────────────────────
-function renderActivityRow(activity, daysInMonth, markedDays, activityColor, marker, isOwner, yearMonth, userId) {
+function renderActivityRow(activity, daysInMonth, markedDays, activityColor, marker, isOwner, yearMonth, userId, isCurrentMonth, todayDate) {
   const row = document.createElement("div");
   row.className = "tracker-row";
 
   const label = document.createElement("div");
   label.className = "activity-label";
-
-  // Small color dot next to activity name
   label.innerHTML = `
     <span class="activity-dot" style="background:${activityColor}"></span>
     <span>${activity}</span>
@@ -165,6 +165,9 @@ function renderActivityRow(activity, daysInMonth, markedDays, activityColor, mar
   for (let d = 1; d <= daysInMonth; d++) {
     const cell = document.createElement("div");
     cell.className = "day-cell";
+
+    const isToday = isCurrentMonth && d === todayDate;
+    if (isToday) cell.classList.add("day-cell-today");
 
     const isMarked = markedDays.includes(d);
     if (isMarked) {

@@ -4,22 +4,23 @@ import { loadMyLog } from "./tracker.js";
 import { getCurrentYearMonth, formatYearMonth, getPrevYearMonth, getNextYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { checkMonthlySetup } from "./month-setup.js";
+import { getUserStats } from "./stats.js";
 
 // ── Elements ──────────────────────────────────
-const loginScreen    = document.getElementById("login-screen");
-const appScreen      = document.getElementById("app-screen");
-const userName       = document.getElementById("user-name");
-const monthLabel     = document.getElementById("current-month-label");
-const prevBtn        = document.getElementById("prev-month-btn");
-const nextBtn        = document.getElementById("next-month-btn");
-const monthBarStat   = document.getElementById("month-bar-stat");
-const tabMyLog       = document.getElementById("tab-mylog");
-const tabFollowing   = document.getElementById("tab-following");
-const tabAll         = document.getElementById("tab-all");
+const loginScreen  = document.getElementById("login-screen");
+const appScreen    = document.getElementById("app-screen");
+const userName     = document.getElementById("user-name");
+const monthLabel   = document.getElementById("current-month-label");
+const prevBtn      = document.getElementById("prev-month-btn");
+const nextBtn      = document.getElementById("next-month-btn");
+const monthBarStat = document.getElementById("month-bar-stat");
+const tabMyLog     = document.getElementById("tab-mylog");
+const tabFollowing = document.getElementById("tab-following");
+const tabAll       = document.getElementById("tab-all");
 
-let activeYearMonth  = getCurrentYearMonth();
-let activeTab        = "mylog";
-let currentUser      = null;
+let activeYearMonth = getCurrentYearMonth();
+let activeTab       = "mylog";
+let currentUser     = null;
 
 // ── Month nav ─────────────────────────────────
 function updateMonthNav() {
@@ -30,7 +31,9 @@ function updateMonthNav() {
 async function changeMonth(yearMonth) {
   activeYearMonth = yearMonth;
   updateMonthNav();
+  monthBarStat.textContent = ""; // clear stat while loading
   await loadActiveTab();
+  await updateStat();
 }
 
 prevBtn.addEventListener("click", () => changeMonth(getPrevYearMonth(activeYearMonth)));
@@ -38,26 +41,37 @@ nextBtn.addEventListener("click", () => {
   if (activeYearMonth < getCurrentYearMonth()) changeMonth(getNextYearMonth(activeYearMonth));
 });
 
+// ── Streak stat ───────────────────────────────
+async function updateStat() {
+  if (!currentUser || activeTab !== "mylog") {
+    monthBarStat.textContent = "";
+    return;
+  }
+  const { streak, doneThisMonth, totalThisMonth } = await getUserStats(currentUser.uid, activeYearMonth);
+  const parts = [];
+  if (streak > 0) parts.push(`🔥 ${streak} day streak`);
+  parts.push(`${doneThisMonth}/${totalThisMonth} days done`);
+  monthBarStat.textContent = parts.join(" · ");
+}
+
 // ── Tab switching ─────────────────────────────
 function switchTab(tab) {
   activeTab = tab;
 
-  // Update desktop tabs
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.tab === tab);
   });
 
-  // Update mobile tabs
   document.querySelectorAll(".bottom-tab").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.tab === tab);
   });
 
-  // Show/hide panels
-  tabMyLog.style.display      = tab === "mylog"     ? "block" : "none";
-  tabFollowing.style.display  = tab === "following"  ? "block" : "none";
-  tabAll.style.display        = tab === "all"        ? "block" : "none";
+  tabMyLog.style.display     = tab === "mylog"     ? "block" : "none";
+  tabFollowing.style.display = tab === "following" ? "block" : "none";
+  tabAll.style.display       = tab === "all"       ? "block" : "none";
 
   loadActiveTab();
+  updateStat();
 }
 
 async function loadActiveTab() {
@@ -121,6 +135,7 @@ onAuthReady(async (user) => {
 
     await checkMonthlySetup(user.uid, user.photoURL);
     await loadActiveTab();
+    await updateStat();
   } else {
     loginScreen.style.display = "flex";
     appScreen.style.display   = "none";
