@@ -113,6 +113,12 @@
   font-weight: 700;
 }
 
+/* ── Future days in header ───────────────────── */
+.day-header-future .day-num,
+.day-header-future .day-label {
+  opacity: 0.35;
+}
+
 /* ── Day Cell ────────────────────────────────── */
 .day-cell {
   width: 26px;
@@ -135,6 +141,13 @@
 .day-cell-today {
   border-color: var(--color-primary);
   border-width: 2px;
+}
+
+/* ── Future days ─────────────────────────────── */
+.day-cell.future {
+  opacity: 0.3;
+  cursor: not-allowed;
+  border-style: dashed;
 }
 
 .day-cell.clickable:hover {

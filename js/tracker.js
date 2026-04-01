@@ -123,7 +123,9 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
     const cell = document.createElement("div");
     cell.className = "day-header";
     const isToday = isCurrentMonth && d === todayDate;
+    const isFutureHeader = isCurrentMonth && d > todayDate;
     if (isToday) cell.classList.add("day-header-today");
+    if (isFutureHeader) cell.classList.add("day-header-future");
     cell.innerHTML = `
       <span class="day-num${isToday ? ' today' : ''}">${d}</span>
       <span class="day-label">${getDayLabel(yearMonth, d)}</span>
@@ -167,7 +169,10 @@ function renderActivityRow(activity, daysInMonth, markedDays, activityColor, mar
     cell.className = "day-cell";
 
     const isToday = isCurrentMonth && d === todayDate;
+    const isFuture = isCurrentMonth && d > todayDate;
+
     if (isToday) cell.classList.add("day-cell-today");
+    if (isFuture) cell.classList.add("future");
 
     const isMarked = markedDays.includes(d);
     if (isMarked) {
@@ -178,7 +183,8 @@ function renderActivityRow(activity, daysInMonth, markedDays, activityColor, mar
       cell.style.color = "white";
     }
 
-    if (isOwner) {
+    // Only allow logging past/present days, never future
+    if (isOwner && !isFuture) {
       cell.classList.add("clickable");
       cell.addEventListener("click", () =>
         toggleDay(cell, d, activity, markedDays, activityColor, marker, yearMonth, userId)
