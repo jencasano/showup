@@ -237,3 +237,199 @@ header {
   opacity: 0.3;
   cursor: not-allowed;
 }
+
+/* ─── BADGE AVATAR ───────────────────────────────────── */
+.badge-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.4);
+  flex-shrink: 0;
+}
+
+.badge-name {
+  font-weight: 700;
+}
+
+.badge-sticker {
+  font-style: normal;
+}
+
+/* ─── MONTH SETUP MODAL ──────────────────────────────── */
+#month-setup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9997;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+#month-setup-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+#month-setup-modal h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+#month-setup-modal p {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+.ms-section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #999;
+  margin: 16px 0 8px;
+}
+
+#ms-color-options,
+#ms-font-color-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ms-color-swatch,
+.ms-font-color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: transform 0.2s;
+}
+
+.ms-color-swatch:hover,
+.ms-font-color-swatch:hover { transform: scale(1.15); }
+
+.ms-color-swatch.selected,
+.ms-font-color-swatch.selected {
+  border-color: #333;
+  transform: scale(1.15);
+}
+
+#ms-font-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ms-font-option {
+  padding: 10px 14px;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.ms-font-option:hover { border-color: #FF6B6B; }
+.ms-font-option.selected { border-color: #FF6B6B; background: #fff5f5; }
+
+#ms-sticker-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ms-sticker-option {
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.ms-sticker-option:hover { transform: scale(1.2); }
+.ms-sticker-option.selected { border-color: #FF6B6B; background: #fff5f5; }
+
+#ms-marker-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.ms-marker-option {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.ms-marker-option:hover { border-color: #FF6B6B; }
+.ms-marker-option.selected { border-color: #FF6B6B; background: #fff5f5; }
+
+#ms-badge-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+#ms-activities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+#ms-add-activity-btn {
+  background: none;
+  border: 2px dashed #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  width: 100%;
+  cursor: pointer;
+  color: #999;
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+  transition: border-color 0.2s, color 0.2s;
+  font-family: inherit;
+}
+
+#ms-add-activity-btn:hover { border-color: #FF6B6B; color: #FF6B6B; }
+
+#ms-save-btn {
+  width: 100%;
+  padding: 14px;
+  background: #FF6B6B;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+#ms-save-btn:hover { background: #e05555; }

@@ -1,76 +1,87 @@
 import { db, auth } from "./firebase-config.js";
 import {
-  collection, getDocs, doc, getDoc,
-  setDoc, updateDoc
+  collection, doc, getDoc, setDoc,
+  updateDoc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDaysInMonth, getDayLabel, formatYearMonth } from "./utils.js";
+import { getDaysInMonth, getDayLabel } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 
 const MARKER_SYMBOLS = {
-  circle: "●",
-  star: "★",
-  heart: "♥",
-  check: "✓",
-  x: "✗",
+  circle:   "●",
+  star:     "★",
+  heart:    "♥",
+  check:    "✓",
+  x:        "✗",
   scribble: "〰"
 };
 
-// ─── LOAD AND RENDER TRACKER ─────────────────────────
-export async function loadTracker(yearMonth, container) {
+let unsubscribe = null; // holds the onSnapshot listener
+
+// ─── LOAD TRACKER WITH REAL-TIME LISTENER ────────────
+export function loadTracker(yearMonth, container) {
   showLoader();
   container.innerHTML = "";
 
-  try {
-    // Fetch all users
-    const usersSnap = await getDocs(collection(db, "users"));
-    const users = [];
-    usersSnap.forEach(d => users.push({ id: d.id, ...d.data() }));
+  // Unsubscribe from previous listener if switching months
+  if (unsubscribe) {
+    unsubscribe();
+    unsubscribe = null;
+  }
 
-    if (users.length === 0) {
-      container.innerHTML = `<p class="empty-state">No trackers yet. Be the first to sign up!</p>`;
+  const entriesRef = collection(db, "logs", yearMonth, "entries");
+
+  unsubscribe = onSnapshot(entriesRef, async (snapshot) => {
+    // Fetch all user profiles once
+    const currentUser = auth.currentUser;
+    const entries = [];
+
+    for (const docSnap of snapshot.docs) {
+      const entry = { id: docSnap.id, ...docSnap.data() };
+      if (!entry.activities || entry.activities.length === 0) continue;
+
+      // Fetch display name from users collection
+      const userSnap = await getDoc(doc(db, "users", entry.id));
+      if (!userSnap.exists()) continue;
+
+      entries.push({
+        ...entry,
+        displayName: userSnap.data().displayName
+      });
+    }
+
+    if (entries.length === 0) {
       hideLoader();
+      container.innerHTML = `<p class="empty-state">No trackers yet for this month.</p>`;
       return;
     }
 
-    // Render month heading
-    const heading = document.createElement("h2");
-    heading.className = "month-heading";
-    heading.textContent = formatYearMonth(yearMonth);
-    container.appendChild(heading);
+    // Sort — current user's section always first
+    entries.sort((a, b) => {
+      if (a.id === currentUser?.uid) return -1;
+      if (b.id === currentUser?.uid) return 1;
+      return 0;
+    });
 
-    // Render each user's section
-    for (const user of users) {
-      const logs = await getUserLogs(yearMonth, user.id);
-      const section = renderUserSection(user, yearMonth, logs);
+    // Re-render everything
+    container.innerHTML = "";
+    for (const entry of entries) {
+      const section = renderUserSection(entry, yearMonth, currentUser);
       container.appendChild(section);
     }
 
-  } catch (error) {
-    console.error("Error loading tracker:", error);
+    hideLoader();
+  }, (error) => {
+    console.error("Snapshot error:", error);
     showToast("Failed to load tracker.", "error");
-  }
-
-  hideLoader();
-}
-
-// ─── FETCH A USER'S LOGS FOR A MONTH ─────────────────
-async function getUserLogs(yearMonth, userId) {
-  try {
-    const logDoc = await getDoc(
-      doc(db, "logs", yearMonth, "entries", userId)
-    );
-    return logDoc.exists() ? logDoc.data().marks || {} : {};
-  } catch {
-    return {};
-  }
+    hideLoader();
+  });
 }
 
 // ─── RENDER ONE USER SECTION ─────────────────────────
-function renderUserSection(user, yearMonth, logs) {
-  const currentUser = auth.currentUser;
-  const isOwner = currentUser && currentUser.uid === user.id;
+function renderUserSection(entry, yearMonth, currentUser) {
+  const isOwner = currentUser && currentUser.uid === entry.id;
   const daysInMonth = getDaysInMonth(yearMonth);
-  const { color, font, sticker, marker } = user.decoration;
+  const { color, fontColor, font, sticker, marker, avatarUrl } = entry.decoration;
 
   // Wrapper
   const section = document.createElement("div");
@@ -82,7 +93,17 @@ function renderUserSection(user, yearMonth, logs) {
   badge.className = "tracker-badge";
   badge.style.background = color;
   badge.style.fontFamily = `'${font}', sans-serif`;
-  badge.innerHTML = `<span>${sticker}</span> <span>${user.displayName}</span>`;
+  badge.style.color = fontColor;
+
+  const avatarHTML = avatarUrl
+    ? `<img src="${avatarUrl}" class="badge-avatar" alt="avatar" />`
+    : "";
+
+  badge.innerHTML = `
+    ${avatarHTML}
+    <span class="badge-name">${entry.displayName}</span>
+    <span class="badge-sticker">${sticker}</span>
+  `;
   section.appendChild(badge);
 
   // Day headers row
@@ -92,17 +113,22 @@ function renderUserSection(user, yearMonth, logs) {
   for (let d = 1; d <= daysInMonth; d++) {
     const cell = document.createElement("div");
     cell.className = "day-header";
-    cell.innerHTML = `<span class="day-num">${d}</span><span class="day-label">${getDayLabel(yearMonth, d)}</span>`;
+    cell.innerHTML = `
+      <span class="day-num">${d}</span>
+      <span class="day-label">${getDayLabel(yearMonth, d)}</span>
+    `;
     headerRow.appendChild(cell);
   }
   section.appendChild(headerRow);
 
   // One row per activity
-  for (const activity of user.activities) {
+  const marks = entry.marks || {};
+  for (const activity of entry.activities) {
+    const markedDays = marks[activity] || [];
     const row = renderActivityRow(
-      activity, daysInMonth, logs[activity] || [],
+      activity, daysInMonth, markedDays,
       color, marker, isOwner,
-      yearMonth, user.id
+      yearMonth, entry.id
     );
     section.appendChild(row);
   }
@@ -115,13 +141,11 @@ function renderActivityRow(activity, daysInMonth, markedDays, color, marker, isO
   const row = document.createElement("div");
   row.className = "tracker-row";
 
-  // Activity label
   const label = document.createElement("div");
   label.className = "activity-label";
   label.textContent = activity;
   row.appendChild(label);
 
-  // Day circles
   for (let d = 1; d <= daysInMonth; d++) {
     const cell = document.createElement("div");
     cell.className = "day-cell";
@@ -135,7 +159,6 @@ function renderActivityRow(activity, daysInMonth, markedDays, color, marker, isO
       cell.style.color = "white";
     }
 
-    // Only owner can toggle
     if (isOwner) {
       cell.classList.add("clickable");
       cell.addEventListener("click", () =>
@@ -160,6 +183,7 @@ async function toggleDay(cell, day, activity, markedDays, color, marker, yearMon
     cell.style.background = "";
     cell.style.borderColor = "";
     cell.textContent = "";
+    cell.style.color = "";
   } else {
     markedDays.push(day);
     cell.classList.add("marked");

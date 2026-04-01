@@ -6,14 +6,15 @@
   <title>showup — setup</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Fredoka+One&family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Fredoka+One&family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" /> 
+  <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/setup.css" />
 </head>
 <body>
 
   <div id="setup-container">
     <div id="progress-bar"><div id="progress-fill"></div></div>
-    <div id="step-label">Step 1 of 4</div>
+    <div id="step-label">Step 1 of 1</div>
 
     <!-- STEP 1: Display Name -->
     <div class="step" id="step-1">
@@ -22,98 +23,8 @@
       <input type="text" id="display-name-input" placeholder="e.g. Jen" maxlength="20" />
     </div>
 
-    <!-- STEP 2: Activities -->
-    <div class="step" id="step-2" style="display:none;">
-      <h2>What will you be tracking?</h2>
-      <p>Add up to 5 activities. These can't be changed later!</p>
-      <div id="activities-list">
-        <input type="text" class="activity-input" placeholder="Activity 1 (e.g. workout)" maxlength="20" />
-        <input type="text" class="activity-input" placeholder="Activity 2 (e.g. 555)" maxlength="20" />
-      </div>
-      <button id="add-activity-btn">+ Add another</button>
-    </div>
-
-    <!-- STEP 3: Decoration -->
-    <div class="step" id="step-3" style="display:none;">
-      <h2>Make it yours.</h2>
-      <p>Pick a color, font, and sticker for your section.</p>
-
-      <div class="decoration-group">
-        <label>Color</label>
-        <div id="color-options">
-          <div class="color-swatch selected" data-color="#FF6B6B" style="background:#FF6B6B;"></div>
-          <div class="color-swatch" data-color="#FF9F43" style="background:#FF9F43;"></div>
-          <div class="color-swatch" data-color="#FECA57" style="background:#FECA57;"></div>
-          <div class="color-swatch" data-color="#48DBFB" style="background:#48DBFB;"></div>
-          <div class="color-swatch" data-color="#1DD1A1" style="background:#1DD1A1;"></div>
-          <div class="color-swatch" data-color="#A29BFE" style="background:#A29BFE;"></div>
-          <div class="color-swatch" data-color="#FD79A8" style="background:#FD79A8;"></div>
-          <div class="color-swatch" data-color="#636E72" style="background:#636E72;"></div>
-        </div>
-      </div>
-
-      <div class="decoration-group">
-        <label>Font</label>
-        <div id="font-options">
-          <div class="font-option selected" data-font="Inter">
-            <span style="font-family:'Inter';">Aa — Clean</span>
-          </div>
-          <div class="font-option" data-font="Caveat">
-            <span style="font-family:'Caveat';">Aa — Handwritten</span>
-          </div>
-          <div class="font-option" data-font="Fredoka One">
-            <span style="font-family:'Fredoka One';">Aa — Chunky</span>
-          </div>
-          <div class="font-option" data-font="Playfair Display">
-            <span style="font-family:'Playfair Display';">Aa — Elegant</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="decoration-group">
-        <label>Sticker</label>
-        <div id="sticker-options">
-          <div class="sticker-option selected" data-sticker="🌻">🌻</div>
-          <div class="sticker-option" data-sticker="💪">💪</div>
-          <div class="sticker-option" data-sticker="🔥">🔥</div>
-          <div class="sticker-option" data-sticker="⭐">⭐</div>
-          <div class="sticker-option" data-sticker="🎯">🎯</div>
-          <div class="sticker-option" data-sticker="🌈">🌈</div>
-          <div class="sticker-option" data-sticker="🦋">🦋</div>
-          <div class="sticker-option" data-sticker="🌸">🌸</div>
-          <div class="sticker-option" data-sticker="⚡">⚡</div>
-          <div class="sticker-option" data-sticker="🍀">🍀</div>
-        </div>
-      </div>
-
-      <!-- PREVIEW -->
-      <div id="badge-preview">
-        <span id="preview-sticker">🌻</span>
-        <span id="preview-name">Jen</span>
-      </div>
-
-    </div>
-
-    <!-- STEP 4: Marker -->
-    <div class="step" id="step-4" style="display:none;">
-      <h2>Pick your marker.</h2>
-      <p>This is what fills your circles when you log an activity.</p>
-      <div id="marker-options">
-        <div class="marker-option selected" data-marker="circle">●</div>
-        <div class="marker-option" data-marker="star">★</div>
-        <div class="marker-option" data-marker="heart">♥</div>
-        <div class="marker-option" data-marker="check">✓</div>
-        <div class="marker-option" data-marker="x">✗</div>
-        <div class="marker-option" data-marker="scribble">〰</div>
-      </div>
-      <div id="marker-preview">
-        Your circles will look like this: <span id="marker-preview-symbol">●</span>
-      </div>
-    </div>
-
     <!-- NAVIGATION -->
     <div id="step-nav">
-      <button id="back-btn" style="display:none;">← Back</button>
       <button id="next-btn">Next →</button>
     </div>
   </div>

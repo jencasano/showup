@@ -3,6 +3,7 @@ import { signIn, signOutUser, onAuthReady, hasCompletedSetup } from "./auth.js";
 import { loadTracker } from "./tracker.js";
 import { getCurrentYearMonth, formatYearMonth, getPrevYearMonth, getNextYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
+import { checkMonthlySetup } from "./month-setup.js";
 
 const loginScreen = document.getElementById("login-screen");
 const appScreen = document.getElementById("app-screen");
@@ -22,17 +23,12 @@ function updateMonthNav() {
 async function changeMonth(yearMonth) {
   activeYearMonth = yearMonth;
   updateMonthNav();
-  await loadTracker(activeYearMonth, trackerContainer);
+  loadTracker(activeYearMonth, trackerContainer);
 }
 
-prevBtn.addEventListener("click", () => {
-  changeMonth(getPrevYearMonth(activeYearMonth));
-});
-
+prevBtn.addEventListener("click", () => changeMonth(getPrevYearMonth(activeYearMonth)));
 nextBtn.addEventListener("click", () => {
-  if (activeYearMonth < getCurrentYearMonth()) {
-    changeMonth(getNextYearMonth(activeYearMonth));
-  }
+  if (activeYearMonth < getCurrentYearMonth()) changeMonth(getNextYearMonth(activeYearMonth));
 });
 
 document.getElementById("google-signin-btn").addEventListener("click", signIn);
@@ -50,12 +46,18 @@ onAuthReady(async (user) => {
       window.location.href = "setup.html";
       return;
     }
+
     loginScreen.style.display = "none";
     appScreen.style.display = "block";
     userName.textContent = user.displayName;
     updateMonthNav();
     hideLoader();
-    await loadTracker(activeYearMonth, trackerContainer);
+
+    // Check if monthly setup needed — pass avatarUrl
+    await checkMonthlySetup(user.uid, user.photoURL);
+
+    // Load tracker with real-time listener
+    loadTracker(activeYearMonth, trackerContainer);
   } else {
     loginScreen.style.display = "flex";
     appScreen.style.display = "none";
