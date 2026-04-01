@@ -1,7 +1,7 @@
 import { db } from "./firebase-config.js";
 import { doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDaysInMonth, getDayLabel, getCurrentYearMonth } from "./utils.js";
-import { getActivityColor, ACTIVITY_COLORS } from "./tracker.js";
+import { getDaysInMonth, getCurrentYearMonth } from "./utils.js";
+import { getActivityColor } from "./tracker.js";
 import { showToast } from "./ui.js";
 
 const MARKER_SYMBOLS = {
@@ -20,15 +20,13 @@ export function renderMobileCard(entry, yearMonth, currentUser) {
   const todayDate = new Date().getDate();
   const { color, fontColor, font, sticker, marker, avatarUrl } = entry.decoration;
 
-  // State for activity filter
   let activeFilter = null;
 
-  // ── Card wrapper
   const card = document.createElement("div");
   card.className = "cal-card";
   card.style.borderColor = color;
 
-  // ── Badge
+  // Badge
   const badge = document.createElement("div");
   badge.className = "cal-card-badge";
   badge.style.background = color;
@@ -44,41 +42,37 @@ export function renderMobileCard(entry, yearMonth, currentUser) {
   `;
   card.appendChild(badge);
 
-  // ── Filter pill (hidden by default)
+  // Filter bar
   const filterBar = document.createElement("div");
   filterBar.className = "cal-filter-bar";
   filterBar.style.display = "none";
   card.appendChild(filterBar);
 
-  // ── Calendar body
+  // Calendar body
   const calBody = document.createElement("div");
   calBody.className = "cal-card-body";
   card.appendChild(calBody);
 
-  // ── Footer stats
+  // Footer
   const footer = document.createElement("div");
   footer.className = "cal-card-footer";
   card.appendChild(footer);
 
-  // ── Render/re-render calendar
   function render() {
     calBody.innerHTML = "";
-    renderCalGrid(calBody, entry, yearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap, onFilterClear);
-    renderFilterBar(filterBar, activeFilter, entry.activities, color);
-    renderFooter(footer, entry, yearMonth, todayDate, isCurrentMonth, activeFilter, color);
+    renderCalGrid(calBody, entry, yearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap);
+    renderFilterBar(filterBar, activeFilter, entry.activities, onFilterClear);
+    renderFooter(footer, entry, yearMonth, todayDate, isCurrentMonth, color);
   }
 
-  // ── Day tap handler
   function onDayTap(day) {
     const isFuture = isCurrentMonth && day > todayDate;
     if (isFuture) return;
-    showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate, marker, color,
+    showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate, marker,
       async (activity, newMarkedDays) => {
-        // Update entry marks optimistically
         if (!entry.marks) entry.marks = {};
         entry.marks[activity] = newMarkedDays;
         render();
-        // Persist
         try {
           const logRef = doc(db, "logs", yearMonth, "entries", entry.id);
           const logSnap = await getDoc(logRef);
@@ -93,16 +87,13 @@ export function renderMobileCard(entry, yearMonth, currentUser) {
         }
       },
       (activityName) => {
-        // Filter to this activity
         activeFilter = activityName;
         render();
-        // Close sheet
         document.querySelector(".day-sheet-overlay")?.remove();
       }
     );
   }
 
-  // ── Clear filter
   function onFilterClear() {
     activeFilter = null;
     render();
@@ -113,12 +104,11 @@ export function renderMobileCard(entry, yearMonth, currentUser) {
 }
 
 // ─── RENDER CALENDAR GRID ───────────────────────────
-function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap, onFilterClear) {
+function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap) {
   const daysInMonth = getDaysInMonth(yearMonth);
   const marks = entry.marks || {};
   const activities = entry.activities || [];
 
-  // Day of week headers
   const headers = document.createElement("div");
   headers.className = "cal-grid-headers";
   ["S","M","T","W","T","F","S"].forEach(d => {
@@ -129,26 +119,21 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
   });
   container.appendChild(headers);
 
-  // Days grid
   const grid = document.createElement("div");
   grid.className = "cal-grid-days";
 
-  // Find which day of week month starts on
   const [year, month] = yearMonth.split("-").map(Number);
   const firstDayOfWeek = new Date(year, month - 1, 1).getDay();
 
-  // Empty cells before month starts
   for (let i = 0; i < firstDayOfWeek; i++) {
-    const empty = document.createElement("div");
-    grid.appendChild(empty);
+    grid.appendChild(document.createElement("div"));
   }
 
-  // Day cells
   for (let d = 1; d <= daysInMonth; d++) {
     const cell = document.createElement("div");
     cell.className = "cal-grid-day";
 
-    const isToday = isCurrentMonth && d === todayDate;
+    const isToday  = isCurrentMonth && d === todayDate;
     const isFuture = isCurrentMonth && d > todayDate;
 
     if (isToday)  cell.classList.add("cal-day-today");
@@ -160,12 +145,10 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
     cell.appendChild(dayNum);
 
     if (activeFilter) {
-      // Filtered view — show single activity
       const actIndex = activities.indexOf(activeFilter);
       const actColor = getActivityColor(actIndex);
       const markedDays = marks[activeFilter] || [];
-      const isDone = markedDays.includes(d);
-      if (isDone && !isFuture) {
+      if (markedDays.includes(d) && !isFuture) {
         cell.classList.add("cal-day-done");
         cell.style.background = actColor;
         dayNum.style.color = "white";
@@ -175,11 +158,9 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
         cell.appendChild(dot);
       }
     } else {
-      // Default view — show all/partial/full
       let doneCount = 0;
       activities.forEach(act => {
-        const markedDays = marks[act] || [];
-        if (markedDays.includes(d)) doneCount++;
+        if ((marks[act] || []).includes(d)) doneCount++;
       });
 
       if (!isFuture && doneCount > 0) {
@@ -213,9 +194,10 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
 }
 
 // ─── RENDER FILTER BAR ──────────────────────────────
-function renderFilterBar(filterBar, activeFilter, activities, color) {
+function renderFilterBar(filterBar, activeFilter, activities, onFilterClear) {
   if (!activeFilter) {
     filterBar.style.display = "none";
+    filterBar.innerHTML = "";
     return;
   }
   filterBar.style.display = "flex";
@@ -228,22 +210,19 @@ function renderFilterBar(filterBar, activeFilter, activities, color) {
     </span>
     <span class="filter-hint">tap pill to clear</span>
   `;
-  filterBar.querySelector(".filter-pill").addEventListener("click", () => {
-    filterBar.dispatchEvent(new CustomEvent("clear-filter"));
-  });
+  // Wire directly to onFilterClear — no custom events
+  filterBar.querySelector(".filter-pill").addEventListener("click", onFilterClear);
 }
 
-// ─── RENDER FOOTER STATS ───────────────────────────
-function renderFooter(footer, entry, yearMonth, todayDate, isCurrentMonth, activeFilter, color) {
+// ─── RENDER FOOTER STATS ────────────────────────────
+function renderFooter(footer, entry, yearMonth, todayDate, isCurrentMonth, color) {
   const marks = entry.marks || {};
   const activities = entry.activities || [];
   const lastDay = isCurrentMonth ? todayDate : getDaysInMonth(yearMonth);
 
-  // Count days where at least one activity done
   let doneDays = 0;
   for (let d = 1; d <= lastDay; d++) {
-    const anyDone = activities.some(act => (marks[act] || []).includes(d));
-    if (anyDone) doneDays++;
+    if (activities.some(act => (marks[act] || []).includes(d))) doneDays++;
   }
 
   const rate = lastDay > 0 ? Math.round(doneDays / lastDay * 100) : 0;
@@ -260,9 +239,8 @@ function renderFooter(footer, entry, yearMonth, todayDate, isCurrentMonth, activ
   `;
 }
 
-// ─── SHOW DAY SHEET ───────────────────────────────
-function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate, marker, badgeColor, onToggle, onFilter) {
-  // Remove existing sheet
+// ─── SHOW DAY SHEET ─────────────────────────────────
+function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate, marker, onToggle, onFilter) {
   document.querySelector(".day-sheet-overlay")?.remove();
 
   const activities = entry.activities || [];
@@ -278,16 +256,13 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
   const sheet = document.createElement("div");
   sheet.className = "day-sheet";
 
-  const handle = document.createElement("div");
-  handle.className = "day-sheet-handle";
-  sheet.appendChild(handle);
+  sheet.innerHTML = `<div class="day-sheet-handle"></div>`;
 
   const dateEl = document.createElement("div");
   dateEl.className = "day-sheet-date";
   dateEl.textContent = isToday ? `${dateLabel} — today ✨` : dateLabel;
   sheet.appendChild(dateEl);
 
-  // Activity rows
   activities.forEach((activity, index) => {
     const actColor = getActivityColor(index);
     const markedDays = [...(marks[activity] || [])];
@@ -296,20 +271,16 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
     const row = document.createElement("div");
     row.className = "day-sheet-row";
 
-    // Marker circle
     const circle = document.createElement("div");
     circle.className = "day-sheet-circle";
+    circle.style.borderColor = actColor;
     if (isMarked) {
       circle.classList.add("done");
       circle.style.background = actColor;
-      circle.style.borderColor = actColor;
       circle.textContent = MARKER_SYMBOLS[marker] || "●";
       circle.style.color = "white";
-    } else {
-      circle.style.borderColor = actColor;
     }
 
-    // Activity name (tap to filter)
     const name = document.createElement("div");
     name.className = "day-sheet-name";
     name.textContent = activity;
@@ -323,7 +294,6 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
     row.appendChild(arrow);
     sheet.appendChild(row);
 
-    // Toggle on circle tap (owner only)
     if (isOwner) {
       circle.style.cursor = "pointer";
       circle.addEventListener("click", (e) => {
@@ -335,12 +305,10 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
           circle.style.background = "";
           circle.textContent = "";
           circle.style.color = "";
-          circle.style.borderColor = actColor;
         } else {
           markedDays.push(day);
           circle.classList.add("done");
           circle.style.background = actColor;
-          circle.style.borderColor = actColor;
           circle.textContent = MARKER_SYMBOLS[marker] || "●";
           circle.style.color = "white";
         }
@@ -348,14 +316,13 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
       });
     }
 
-    // Filter on name tap
     name.style.cursor = "pointer";
-    name.addEventListener("click", () => onFilter(activity));
     arrow.style.cursor = "pointer";
-    arrow.addEventListener("click", () => onFilter(activity));
+    const filterHandler = () => onFilter(activity);
+    name.addEventListener("click", filterHandler);
+    arrow.addEventListener("click", filterHandler);
   });
 
-  // Hint
   const hint = document.createElement("div");
   hint.className = "day-sheet-hint";
   hint.textContent = isOwner
@@ -366,13 +333,12 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
   overlay.appendChild(sheet);
   document.body.appendChild(overlay);
 
-  // Close on overlay tap
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay) overlay.remove();
   });
 }
 
-// ─── HELPERS ──────────────────────────────────────
+// ─── HELPERS ────────────────────────────────────────
 function hexWithOpacity(hex, opacity) {
   const r = parseInt(hex.slice(1,3), 16);
   const g = parseInt(hex.slice(3,5), 16);
