@@ -114,15 +114,16 @@
 }
 
 /* ── Future days in header ───────────────────── */
+/* Dark mode: more faded since dark bg makes them stand out less */
 .day-header-future .day-num,
 .day-header-future .day-label {
-  opacity: 0.55;
+  opacity: 0.45;
 }
 
-/* Light mode needs higher opacity to stay readable */
+/* Light mode: less faded so they're still clearly visible */
 [data-theme="light"] .day-header-future .day-num,
 [data-theme="light"] .day-header-future .day-label {
-  opacity: 0.4;
+  opacity: 0.7;
 }
 
 /* ── Day Cell ────────────────────────────────── */
@@ -150,15 +151,16 @@
 }
 
 /* ── Future days ─────────────────────────────── */
+/* Dark mode: more faded */
 .day-cell.future {
-  opacity: 0.55;
+  opacity: 0.45;
   cursor: not-allowed;
   border-style: dashed;
 }
 
-/* Light mode — future cells slightly more visible */
+/* Light mode: less faded */
 [data-theme="light"] .day-cell.future {
-  opacity: 0.4;
+  opacity: 0.7;
 }
 
 .day-cell.clickable:hover {
