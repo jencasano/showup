@@ -66,6 +66,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
   padding-right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── Activity Color Dot ──────────────────────── */
+.activity-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
 }
 
 /* ── Day Header ──────────────────────────────── */
@@ -114,9 +126,7 @@
   cursor: pointer;
 }
 
-.day-cell.marked {
-  font-size: 0.8rem;
-}
+.day-cell.marked { font-size: 0.8rem; }
 
 /* ── Empty State ─────────────────────────────── */
 .empty-state {
