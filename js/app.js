@@ -15,6 +15,7 @@ const monthLabel   = document.getElementById("current-month-label");
 const prevBtn      = document.getElementById("prev-month-btn");
 const nextBtn      = document.getElementById("next-month-btn");
 const calPickerBtn = document.getElementById("cal-picker-btn");
+const todayBtn     = document.getElementById("today-btn");
 const monthBarStat = document.getElementById("month-bar-stat");
 const tabMyLog     = document.getElementById("tab-mylog");
 const tabFollowing = document.getElementById("tab-following");
@@ -28,11 +29,18 @@ let followingUnsub    = null;
 
 // ── Month nav ─────────────────────────────────
 function updateMonthNav() {
-  monthLabel.textContent = formatYearMonth(activeYearMonth);
-  nextBtn.disabled = activeYearMonth >= getCurrentYearMonth();
+  const currentYM = getCurrentYearMonth();
+  const isPast    = activeYearMonth !== currentYM;
 
-  // Keep picker icon highlighted when viewing a non-current month
-  calPickerBtn.classList.toggle("mp-btn-active", activeYearMonth !== getCurrentYearMonth());
+  monthLabel.textContent = formatYearMonth(activeYearMonth);
+  nextBtn.disabled = activeYearMonth >= currentYM;
+
+  // 📅 picker: highlight when viewing a past month
+  calPickerBtn.classList.toggle("mp-btn-active", isPast);
+
+  // 🎯 today button: only visible when not on current month
+  todayBtn.hidden = !isPast;
+  todayBtn.title  = isPast ? `Back to ${formatYearMonth(currentYM)}` : "";
 }
 
 async function changeMonth(yearMonth) {
@@ -54,6 +62,11 @@ calPickerBtn.addEventListener("click", (e) => {
   toggleMonthPicker(calPickerBtn, activeYearMonth, (ym) => {
     if (ym !== activeYearMonth) changeMonth(ym);
   });
+});
+
+// ── Today / current-month button ─────────────
+todayBtn.addEventListener("click", () => {
+  changeMonth(getCurrentYearMonth());
 });
 
 // ── Streak stat ───────────────────────────────
