@@ -82,8 +82,8 @@
   font-weight: 700;
   padding: 1px 5px;
   border-radius: 4px;
-  background: var(--bg-subtle);
-  color: var(--text-muted);
+  background: rgba(148, 163, 184, 0.16);
+  color: var(--text-primary);
   flex-shrink: 0;
   white-space: nowrap;
   text-transform: none;
