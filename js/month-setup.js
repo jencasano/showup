@@ -22,18 +22,28 @@ const MARKERS = [
   { value: "scribble", symbol: "〰" }
 ];
 
+const CADENCE_OPTIONS = [
+  { value: 1, label: "1×" },
+  { value: 2, label: "2×" },
+  { value: 3, label: "3×" },
+  { value: 4, label: "4×" },
+  { value: 5, label: "5×" },
+  { value: 6, label: "6×" },
+  { value: 7, label: "Daily" }
+];
+
 export function showMonthSetup(userId, avatarUrl, prevData = null) {
   return new Promise((resolve) => {
     const yearMonth = getCurrentYearMonth();
 
-    // State — preload from previous month or use defaults
     const state = {
       color:      prevData?.decoration?.color     || "#FF6B6B",
       fontColor:  prevData?.decoration?.fontColor || "#FFFFFF",
       font:       prevData?.decoration?.font      || "Inter",
       sticker:    prevData?.decoration?.sticker   || "🌻",
       marker:     prevData?.decoration?.marker    || "circle",
-      activities: prevData?.activities            || []
+      activities: prevData?.activities            || [],
+      cadences:   prevData?.cadences              || []
     };
 
     let currentStep = 1;
@@ -43,36 +53,26 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
     overlay.innerHTML = buildModalHTML(yearMonth, state);
     document.body.appendChild(overlay);
 
-    // Init
     renderFontColorSwatches(state.color, state.fontColor);
     updatePreview(state);
     showStep(1);
 
-    // ── Step navigation ─────────────────────────────────
-   function showStep(step) {
-  currentStep = step;
-  document.getElementById("ms-step-1").style.display = step === 1 ? "block" : "none";
-  document.getElementById("ms-step-2").style.display = step === 2 ? "block" : "none";
-  document.getElementById("ms-back-btn").style.display = step === 1 ? "none" : "inline-block";
-  document.getElementById("ms-next-btn").style.display = step === 1 ? "inline-block" : "none";
-  document.getElementById("ms-save-btn").style.display = step === 2 ? "inline-block" : "none";
-  document.getElementById("ms-step-label").textContent = `Step ${step} of 2`;
-  document.getElementById("ms-progress-fill").style.width = `${step / 2 * 100}%`;
-}
+    // ── Step navigation ──────────────────────────────────
+    function showStep(step) {
+      currentStep = step;
+      document.getElementById("ms-step-1").style.display = step === 1 ? "block" : "none";
+      document.getElementById("ms-step-2").style.display = step === 2 ? "block" : "none";
+      document.getElementById("ms-back-btn").style.display = step === 1 ? "none" : "inline-block";
+      document.getElementById("ms-next-btn").style.display = step === 1 ? "inline-block" : "none";
+      document.getElementById("ms-save-btn").style.display = step === 2 ? "inline-block" : "none";
+      document.getElementById("ms-step-label").textContent = `Step ${step} of 2`;
+      document.getElementById("ms-progress-fill").style.width = `${step / 2 * 100}%`;
+    }
 
-    document.getElementById("ms-next-btn").addEventListener("click", () => {
-      if (currentStep === 1) {
-        showStep(2);
-      }
-    });
+    document.getElementById("ms-next-btn").addEventListener("click", () => showStep(2));
+    document.getElementById("ms-back-btn").addEventListener("click", () => showStep(1));
 
-    document.getElementById("ms-back-btn").addEventListener("click", () => {
-      if (currentStep === 2) {
-        showStep(1);
-      }
-    });
-
-    // ── Color swatches ──────────────────────────────────
+    // ── Color swatches ───────────────────────────────────
     overlay.querySelectorAll(".ms-color-swatch").forEach(el => {
       el.addEventListener("click", () => {
         overlay.querySelectorAll(".ms-color-swatch").forEach(x => x.classList.remove("selected"));
@@ -83,7 +83,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
       });
     });
 
-    // ── Font options ────────────────────────────────────
+    // ── Font options ─────────────────────────────────────
     overlay.querySelectorAll(".ms-font-option").forEach(el => {
       el.addEventListener("click", () => {
         overlay.querySelectorAll(".ms-font-option").forEach(x => x.classList.remove("selected"));
@@ -93,7 +93,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
       });
     });
 
-    // ── Sticker options ─────────────────────────────────
+    // ── Sticker options ──────────────────────────────────
     overlay.querySelectorAll(".ms-sticker-option").forEach(el => {
       el.addEventListener("click", () => {
         overlay.querySelectorAll(".ms-sticker-option").forEach(x => x.classList.remove("selected"));
@@ -103,7 +103,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
       });
     });
 
-    // ── Marker options ──────────────────────────────────
+    // ── Marker options ───────────────────────────────────
     overlay.querySelectorAll(".ms-marker-option").forEach(el => {
       el.addEventListener("click", () => {
         overlay.querySelectorAll(".ms-marker-option").forEach(x => x.classList.remove("selected"));
@@ -112,28 +112,84 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
       });
     });
 
-    // ── Add activity ────────────────────────────────────
+    // ── Add activity ─────────────────────────────────────
     let activityCount = state.activities.length || 1;
+
+    function renderActivityRows() {
+      const list = document.getElementById("ms-activities-list");
+      list.innerHTML = "";
+
+      const count = Math.max(activityCount, 1);
+      for (let i = 0; i < count; i++) {
+        const existingName = state.activities[i] || "";
+        const existingCad  = state.cadences[i]  || 7;
+        list.appendChild(buildActivityRow(i + 1, existingName, existingCad));
+      }
+
+      document.getElementById("ms-add-activity-btn").style.display =
+        activityCount >= 5 ? "none" : "";
+    }
+
+    function buildActivityRow(num, nameVal, cadVal) {
+      const wrap = document.createElement("div");
+      wrap.className = "ms-activity-row";
+
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.className = "activity-input ms-activity-input";
+      nameInput.placeholder = `Activity ${num}${num === 1 ? " (e.g. workout)" : " (optional)"}`;
+      nameInput.maxLength = 20;
+      nameInput.value = nameVal;
+
+      const cadLabel = document.createElement("div");
+      cadLabel.className = "ms-cadence-label";
+      cadLabel.textContent = "How many times a week?";
+
+      const cadPicker = document.createElement("div");
+      cadPicker.className = "ms-cadence-picker";
+
+      CADENCE_OPTIONS.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ms-cadence-btn" + (opt.value === cadVal ? " selected" : "");
+        btn.dataset.value = opt.value;
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => {
+          cadPicker.querySelectorAll(".ms-cadence-btn").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+        });
+        cadPicker.appendChild(btn);
+      });
+
+      wrap.appendChild(nameInput);
+      wrap.appendChild(cadLabel);
+      wrap.appendChild(cadPicker);
+      return wrap;
+    }
+
+    renderActivityRows();
+
     document.getElementById("ms-add-activity-btn").addEventListener("click", () => {
       if (activityCount >= 5) return;
       activityCount++;
-      const input = document.createElement("input");
-      input.type = "text";
-      input.className = "activity-input ms-activity-input";
-      input.placeholder = `Activity ${activityCount} (optional)`;
-      input.maxLength = 20;
-      document.getElementById("ms-activities-list").appendChild(input);
-      if (activityCount === 5) {
-        document.getElementById("ms-add-activity-btn").style.display = "none";
-      }
+      renderActivityRows();
     });
 
-    // ── Save ────────────────────────────────────────────
+    // ── Save ─────────────────────────────────────────────
     document.getElementById("ms-save-btn").addEventListener("click", async () => {
-      const inputs = document.querySelectorAll(".ms-activity-input");
-      const activities = Array.from(inputs)
-        .map(i => i.value.trim())
-        .filter(v => v !== "");
+      const rows = document.querySelectorAll(".ms-activity-row");
+      const activities = [];
+      const cadences   = [];
+
+      rows.forEach(row => {
+        const name = row.querySelector(".ms-activity-input")?.value.trim();
+        const cadBtn = row.querySelector(".ms-cadence-btn.selected");
+        const cad  = cadBtn ? parseInt(cadBtn.dataset.value) : 7;
+        if (name) {
+          activities.push(name);
+          cadences.push(cad);
+        }
+      });
 
       if (activities.length === 0) {
         alert("Please add at least one activity!");
@@ -149,6 +205,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
           userId,
           yearMonth,
           activities,
+          cadences,
           marks: {},
           decoration: {
             color:     state.color,
@@ -176,7 +233,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
       }
     });
 
-    // ── Font color swatch renderer ───────────────────────
+    // ── Font color swatch renderer ────────────────────────
     function renderFontColorSwatches(badgeColor, currentFontColor) {
       const suggestions = getFontColorSuggestions(badgeColor);
       if (!suggestions.includes(currentFontColor)) {
@@ -202,7 +259,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
   });
 }
 
-// ── Preview updater ──────────────────────────────────────
+// ── Preview updater ───────────────────────────────────────
 function updatePreview(state) {
   const badge = document.getElementById("ms-badge-preview");
   if (!badge) return;
@@ -212,7 +269,7 @@ function updatePreview(state) {
   badge.innerHTML = `<span>${state.sticker}</span><span>Your Name</span>`;
 }
 
-// ── Modal HTML builder ───────────────────────────────────
+// ── Modal HTML builder ────────────────────────────────────
 function buildModalHTML(yearMonth, state) {
   return `
   <div id="month-setup-modal">
@@ -270,21 +327,14 @@ function buildModalHTML(yearMonth, state) {
       </div>
     </div>
 
-    <!-- STEP 2: Activities -->
+    <!-- STEP 2: Activities + Cadence -->
     <div id="ms-step-2">
       <h2>What are you tracking?</h2>
-      <p>Add up to 5 activities for <strong>${formatYearMonth(yearMonth)}</strong>.</p>
+      <p>Add up to 5 activities for <strong>${formatYearMonth(yearMonth)}</strong>.<br>
+         Set how often per week you plan to do each one.</p>
 
-      <div id="ms-activities-list">
-        ${state.activities.length > 0
-          ? state.activities.map((a, i) => `
-              <input type="text" class="activity-input ms-activity-input"
-                placeholder="Activity ${i + 1}" maxlength="12" value="${a}" />
-            `).join("")
-          : `<input type="text" class="activity-input ms-activity-input"
-              placeholder="Activity 1 (e.g. workout)" maxlength="12" />`
-        }
-      </div>
+      <div id="ms-activities-list"></div>
+
       <button id="ms-add-activity-btn"
         ${state.activities.length >= 5 ? 'style="display:none;"' : ""}>
         + Add another
@@ -301,7 +351,7 @@ function buildModalHTML(yearMonth, state) {
   </div>`;
 }
 
-// ── Check if monthly setup needed ───────────────────────
+// ── Check if monthly setup needed ────────────────────────
 export async function checkMonthlySetup(userId, avatarUrl) {
   const yearMonth = getCurrentYearMonth();
   const logRef = doc(db, "logs", yearMonth, "entries", userId);
