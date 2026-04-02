@@ -1,0 +1,130 @@
+/* ═══════════════════════════════════════════════
+   MONTH PICKER — Phase 6
+   Popover overlay with year sections + month grid
+   ═══════════════════════════════════════════════ */
+
+/* ── Backdrop / overlay ─────────────────────── */
+#month-picker-popover {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  /* subtle scrim so content below dims */
+  background: rgba(0, 0, 0, 0.25);
+  align-items: flex-start;  /* desktop: inner floats by JS */
+  justify-content: flex-start;
+}
+
+#month-picker-popover.open {
+  display: flex;
+}
+
+/* ── Inner panel ────────────────────────────── */
+#month-picker-inner {
+  position: absolute;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 260px;
+  max-height: 380px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: mp-drop-in 0.18s ease;
+}
+
+@keyframes mp-drop-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+/* ── Scrollable body ────────────────────────── */
+#month-picker-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Custom scrollbar for desktop */
+#month-picker-scroll::-webkit-scrollbar { width: 4px; }
+#month-picker-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+/* ── Year label ─────────────────────────────── */
+.mp-year-label {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+/* ── Month grid ─────────────────────────────── */
+.mp-month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+/* ── Month button ───────────────────────────── */
+.mp-month-btn {
+  padding: 8px 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: var(--bg-subtle);
+  color: var(--text);
+  font-family: var(--font-base);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition),
+              border-color var(--transition), transform 0.1s ease;
+  text-align: center;
+  line-height: 1;
+}
+
+.mp-month-btn:hover:not(:disabled):not(.mp-active) {
+  background: var(--border);
+  color: var(--text);
+  transform: scale(1.04);
+}
+
+/* Active (currently selected) month */
+.mp-month-btn.mp-active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+/* Future / unavailable months */
+.mp-month-btn.mp-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+/* ── Mobile: center the panel ───────────────── */
+@media (max-width: 480px) {
+  #month-picker-popover {
+    align-items: center;
+    justify-content: center;
+  }
+
+  #month-picker-inner {
+    position: relative;   /* override absolute so flexbox centers it */
+    top: auto !important;
+    left: auto !important;
+    width: calc(100vw - 40px);
+    max-width: 320px;
+    max-height: 70vh;
+    animation: mp-drop-in 0.2s ease;
+  }
+}
