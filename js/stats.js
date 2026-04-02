@@ -18,6 +18,12 @@ function toDate(yearMonth, day) {
   return new Date(y, m - 1, day);
 }
 
+function getReferenceDate(yearMonth, isCurrentMonth, lastDay) {
+  if (isCurrentMonth) return new Date();
+  const [y, m] = yearMonth.split("-").map(Number);
+  return new Date(y, m - 1, lastDay);
+}
+
 function logsInWeek(markedDays, yearMonth, referenceDate) {
   const weekStart = getWeekStart(referenceDate);
   const weekEnd   = new Date(weekStart);
@@ -55,8 +61,8 @@ function hitWeeklyTarget(markedDays, cadence, yearMonth, date) {
 }
 
 // ─── Per-habit streak: consecutive weeks this habit hit its target ───
-async function calculateHabitStreak(userId, activity, cadence, yearMonth, markedDays) {
-  const today = new Date();
+async function calculateHabitStreak(userId, activity, cadence, yearMonth, markedDays, referenceDate = new Date()) {
+  const today = new Date(referenceDate);
   let streak = 0;
   let checkDate = new Date(today);
 
@@ -97,8 +103,8 @@ async function calculateHabitStreak(userId, activity, cadence, yearMonth, marked
   return streak;
 }
 
-async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, marks) {
-  const today = new Date();
+async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, marks, referenceDate = new Date()) {
+  const today = new Date(referenceDate);
   let streak = 0;
   let checkDate = new Date(today);
 
@@ -179,8 +185,8 @@ export function computeStatsFromEntry(entry, yearMonth) {
 
   const daysInMonth    = getDaysInMonth(yearMonth);
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
-  const today          = new Date();
-  const lastDay        = isCurrentMonth ? today.getDate() : daysInMonth;
+  const lastDay        = isCurrentMonth ? new Date().getDate() : daysInMonth;
+  const today          = getReferenceDate(yearMonth, isCurrentMonth, lastDay);
 
   const doneDays = new Set();
   activities.forEach(activity => {
@@ -219,8 +225,8 @@ export async function getUserStats(userId, yearMonth) {
 
     const daysInMonth    = getDaysInMonth(yearMonth);
     const isCurrentMonth = yearMonth === getCurrentYearMonth();
-    const today          = new Date();
-    const lastDay        = isCurrentMonth ? today.getDate() : daysInMonth;
+    const lastDay        = isCurrentMonth ? new Date().getDate() : daysInMonth;
+    const today          = getReferenceDate(yearMonth, isCurrentMonth, lastDay);
 
     const doneDays = new Set();
     activities.forEach(activity => {
@@ -229,7 +235,7 @@ export async function getUserStats(userId, yearMonth) {
 
     const habitStreaks = await Promise.all(
       activities.map((activity, i) =>
-        calculateHabitStreak(userId, activity, cadences[i] ?? 7, yearMonth, marks[activity] || [])
+        calculateHabitStreak(userId, activity, cadences[i] ?? 7, yearMonth, marks[activity] || [], today)
       )
     );
 
@@ -242,7 +248,7 @@ export async function getUserStats(userId, yearMonth) {
     );
 
     const streak = await calculateWeeklyStreak(
-      userId, yearMonth, activities, cadences, marks
+      userId, yearMonth, activities, cadences, marks, today
     );
 
     return {

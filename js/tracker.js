@@ -195,8 +195,11 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
   const [year, month] = yearMonth.split("-").map(Number);
   const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
 
-  const daysLeft = getDaysLeftInWeek();
-  const { topInsight, habitInsights } = generateInsights(habitStats, daysLeft, isCurrentMonth);
+  const referenceDate = isCurrentMonth
+    ? new Date()
+    : new Date(year, month - 1, getDaysInMonth(yearMonth));
+  const daysLeft = getDaysLeftInWeek(referenceDate);
+  const { topInsight, habitInsights } = generateInsights(habitStats, daysLeft);
 
   const card = document.createElement("div");
   card.className = "summary-card";
