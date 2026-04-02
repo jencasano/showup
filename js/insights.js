@@ -7,10 +7,9 @@
 /**
  * @param {object[]} habitStats  — from getUserStats / computeStatsFromEntry
  * @param {number}   daysLeftInWeek  — 0 (Sunday) … 6 (Monday)
- * @param {boolean}  isCurrentMonth
  */
-export function generateInsights(habitStats, daysLeftInWeek, isCurrentMonth) {
-  if (!isCurrentMonth || !habitStats.length) return { topInsight: null, habitInsights: {} };
+export function generateInsights(habitStats, daysLeftInWeek) {
+  if (!habitStats.length) return { topInsight: null, habitInsights: {} };
 
   const habitInsights = {};
   const flags = {   // used to pick the single top-level insight
@@ -122,11 +121,11 @@ export function generateInsights(habitStats, daysLeftInWeek, isCurrentMonth) {
 }
 
 /**
- * How many days are left in the current week (Mon–Sun)?
- * Returns 0 if today is Sunday (last day), 6 if today is Monday.
+ * How many days are left in the week (Mon–Sun) for the given date?
+ * Returns 0 if the date is a Sunday (last day), 6 if it is a Monday.
  */
-export function getDaysLeftInWeek() {
-  const day = new Date().getDay(); // 0=Sun, 1=Mon … 6=Sat
+export function getDaysLeftInWeek(referenceDate = new Date()) {
+  const day = referenceDate.getDay(); // 0=Sun, 1=Mon … 6=Sat
   // Week ends on Sunday. Days left = days until Sunday.
   if (day === 0) return 0;         // today IS Sunday
   return 7 - day;                  // Mon=6, Tue=5, … Sat=1
