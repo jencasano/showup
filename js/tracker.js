@@ -53,19 +53,22 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
   }
 
   const entryRef = doc(db, "logs", yearMonth, "entries", uid);
-
-  // Track whether we have already done the initial full render.
-  // After that, snapshot updates patch in-place instead of rebuilding.
   let hasRendered = false;
   let hasUsedInitialStats = false;
 
+  // ── Callback passed into renderMobileCard so it can trigger
+  //    in-place summary + banner refresh without any events or
+  //    full page rebuild. Called immediately on every tap.
+  function onMarkToggled(entry) {
+    const stats = computeStatsFromEntry(entry, yearMonth);
+    if (isCurrentMonth) refreshBannerInPlace(container, entry, todayDate);
+    refreshSummaryInPlace(container, entry, stats, yearMonth);
+  }
+
   unsubscribe = onSnapshot(entryRef, async (docSnap) => {
 
-    // ── Skip re-render for our own optimistic (pending) writes ──────
-    // When the user taps a habit the card already updates locally via
-    // render() inside onDayTap / toggleDay.  The subsequent Firestore
-    // write triggers this snapshot with hasPendingWrites = true — we
-    // don't need to rebuild anything, the DOM is already correct.
+    // Skip the snapshot fired by our own pending write — the DOM
+    // is already up to date from the optimistic local update.
     if (hasRendered && docSnap.metadata.hasPendingWrites) return;
 
     if (!docSnap.exists() || !docSnap.data().activities?.length) {
@@ -75,10 +78,8 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
       return;
     }
 
-    const entryData = docSnap.data();
-    const entry = { id: uid, ...entryData };
+    const entry = { id: uid, ...docSnap.data() };
 
-    // Use denormalized displayName when available; fall back to users/ lookup.
     if (!entry.displayName) {
       const userSnap = await getDoc(doc(db, "users", uid));
       if (!userSnap.exists()) { hideLoader(); return; }
@@ -87,7 +88,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
     const user = auth.currentUser;
 
-    // ── First load: full render ──────────────────────────────────────
+    // ── First load: full render ──────────────────────────────
     if (!hasRendered) {
       container.innerHTML = "";
 
@@ -95,8 +96,10 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
         if (isCurrentMonth) {
           container.appendChild(renderStatusBanner(entry, todayDate, true));
         }
-        container.appendChild(renderMobileCard(entry, yearMonth, user));
-
+        // Pass onMarkToggled so the card can refresh banner+summary on tap.
+        container.appendChild(
+          renderMobileCard(entry, yearMonth, user, { onMarkToggled })
+        );
         const stats = (!hasUsedInitialStats && initialStatsPromise)
           ? await initialStatsPromise
           : await getUserStats(uid, yearMonth);
@@ -105,18 +108,17 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
       } else {
         const centeredStack = document.createElement("div");
         centeredStack.className = "mylog-centered-stack";
-
         if (isCurrentMonth) {
           centeredStack.appendChild(renderStatusBanner(entry, todayDate, false));
         }
-        centeredStack.appendChild(renderUserSection(entry, yearMonth, user, isCurrentMonth, todayDate));
-
+        centeredStack.appendChild(
+          renderUserSection(entry, yearMonth, user, isCurrentMonth, todayDate, onMarkToggled)
+        );
         const stats = (!hasUsedInitialStats && initialStatsPromise)
           ? await initialStatsPromise
           : await getUserStats(uid, yearMonth);
         hasUsedInitialStats = true;
         centeredStack.appendChild(renderMonthlySummary(entry, stats, yearMonth));
-
         container.appendChild(centeredStack);
       }
 
@@ -125,15 +127,10 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
       return;
     }
 
-    // ── Subsequent server-confirmed updates: patch in-place ──────────
-    // Only the summary card and status banner need to change — the
-    // tracker grid / mobile card already reflects the correct state
-    // from the local optimistic update.
+    // ── Server-confirmed update from another device/session:
+    //    patch banner and summary in-place, leave grid untouched.
     const stats = computeStatsFromEntry(entry, yearMonth);
-
-    if (isCurrentMonth) {
-      refreshBannerInPlace(container, entry, todayDate);
-    }
+    if (isCurrentMonth) refreshBannerInPlace(container, entry, todayDate);
     refreshSummaryInPlace(container, entry, stats, yearMonth);
 
   }, (error) => {
@@ -145,21 +142,16 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
 // ─── PATCH: replace status banner node in-place ───────────
 function refreshBannerInPlace(container, entry, todayDate) {
-  const isMob = isMobile();
   const existing = container.querySelector(".status-banner");
-  const fresh = renderStatusBanner(entry, todayDate, isMob);
-  if (existing) {
-    existing.replaceWith(fresh);
-  }
+  if (!existing) return;
+  existing.replaceWith(renderStatusBanner(entry, todayDate, isMobile()));
 }
 
 // ─── PATCH: replace summary card node in-place ────────────
 function refreshSummaryInPlace(container, entry, stats, yearMonth) {
   const existing = container.querySelector(".summary-card");
-  const fresh = renderMonthlySummary(entry, stats, yearMonth);
-  if (existing) {
-    existing.replaceWith(fresh);
-  }
+  if (!existing) return;
+  existing.replaceWith(renderMonthlySummary(entry, stats, yearMonth));
 }
 
 // ─── TODAY'S STATUS BANNER ────────────────────────────────
@@ -190,7 +182,6 @@ function renderStatusBanner(entry, todayDate, isMob) {
     </div>
     <span class="status-banner__pill">${pill}</span>
   `;
-
   return banner;
 }
 
@@ -234,7 +225,6 @@ function renderMonthlySummary(entry, stats, yearMonth) {
       </div>
       <button class="summary-share-btn" title="Share your stats">↗ Share</button>
     </div>
-
     <div class="summary-stats">
       <div class="summary-stat">
         <span class="summary-stat__icon">✅</span>
@@ -252,12 +242,10 @@ function renderMonthlySummary(entry, stats, yearMonth) {
         <div class="summary-stat__label">Days Logged</div>
       </div>
     </div>
-
     <div class="summary-note">
       <strong>How is this calculated?</strong>
       Each habit's fulfillment is averaged equally — so a daily habit doesn't outweigh a 2×/week habit.
     </div>
-
     <div class="summary-habits">
       <div class="summary-habits__label">Per Habit</div>
       ${barsHTML}
@@ -284,7 +272,6 @@ export function loadAllLogs(yearMonth, container, currentUser) {
   const entriesRef = collection(db, "logs", yearMonth, "entries");
 
   return onSnapshot(entriesRef, async (snapshot) => {
-    // 1. Filter docs synchronously — no async work yet.
     const validDocs = snapshot.docs.filter(docSnap => {
       if (docSnap.id === currentUser?.uid) return false;
       const data = docSnap.data();
@@ -297,9 +284,7 @@ export function loadAllLogs(yearMonth, container, currentUser) {
       return;
     }
 
-    // 2. Identify entries missing denormalized fields; fire all lookups in parallel.
     const needsUserFetch = validDocs.map(d => !d.data().displayName);
-
     const [userSnaps, myUserSnap] = await Promise.all([
       Promise.all(
         validDocs.map((docSnap, i) =>
@@ -317,13 +302,11 @@ export function loadAllLogs(yearMonth, container, currentUser) {
       myUserSnap?.exists() ? (myUserSnap.data().following || []) : []
     );
 
-    // 3. Build entries array.
     const entries = validDocs
       .map((docSnap, i) => {
         const data = docSnap.data();
         let displayName = data.displayName;
         let username    = data.username;
-
         if (needsUserFetch[i]) {
           const userSnap = userSnaps[i];
           if (!userSnap?.exists()) return null;
@@ -331,12 +314,10 @@ export function loadAllLogs(yearMonth, container, currentUser) {
           displayName = userData.displayName;
           username    = userData.username || userData.displayName;
         }
-
         return { id: docSnap.id, ...data, displayName, username: username || displayName };
       })
       .filter(Boolean);
 
-    // 4. Sort: followed users first, then alphabetical.
     entries.sort((a, b) => {
       const aF = myFollows.has(a.id), bF = myFollows.has(b.id);
       if (aF && !bF) return -1;
@@ -344,7 +325,6 @@ export function loadAllLogs(yearMonth, container, currentUser) {
       return (a.displayName || "").localeCompare(b.displayName || "");
     });
 
-    // 5. Render.
     container.innerHTML = "";
     for (const entry of entries) {
       const isFollowing = myFollows.has(entry.id);
@@ -501,7 +481,7 @@ function renderPlaceholderCard(userData) {
 }
 
 // ─── RENDER ONE USER SECTION (desktop My Log) ─────────────
-function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayDate) {
+function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayDate, onMarkToggled) {
   const isOwner = currentUser && currentUser.uid === entry.id;
   const daysInMonth = getDaysInMonth(yearMonth);
   const { color, fontColor, font, sticker, marker, avatarUrl } = entry.decoration;
@@ -552,7 +532,8 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
       activity, daysInMonth, markedDays,
       activityColor, marker, isOwner,
       yearMonth, entry.id,
-      isCurrentMonth, todayDate, cad
+      isCurrentMonth, todayDate, cad,
+      entry, onMarkToggled
     );
     section.appendChild(row);
   });
@@ -562,7 +543,11 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
 }
 
 // ─── RENDER ONE ACTIVITY ROW (desktop) ────────────────────
-function renderActivityRow(activity, daysInMonth, markedDays, activityColor, marker, isOwner, yearMonth, userId, isCurrentMonth, todayDate, cadence) {
+function renderActivityRow(
+  activity, daysInMonth, markedDays, activityColor, marker,
+  isOwner, yearMonth, userId, isCurrentMonth, todayDate, cadence,
+  entry, onMarkToggled
+) {
   const row = document.createElement("div");
   row.className = "tracker-row";
 
@@ -595,7 +580,7 @@ function renderActivityRow(activity, daysInMonth, markedDays, activityColor, mar
     if (isOwner && !isFuture) {
       cell.classList.add("clickable");
       cell.addEventListener("click", () =>
-        toggleDay(cell, d, activity, markedDays, activityColor, marker, yearMonth, userId)
+        toggleDay(cell, d, activity, markedDays, activityColor, marker, yearMonth, userId, entry, onMarkToggled)
       );
     }
     row.appendChild(cell);
@@ -604,7 +589,10 @@ function renderActivityRow(activity, daysInMonth, markedDays, activityColor, mar
 }
 
 // ─── TOGGLE A DAY (desktop) ───────────────────────────────
-async function toggleDay(cell, day, activity, markedDays, activityColor, marker, yearMonth, userId) {
+async function toggleDay(
+  cell, day, activity, markedDays, activityColor, marker,
+  yearMonth, userId, entry, onMarkToggled
+) {
   const isMarked = markedDays.includes(day);
   if (isMarked) {
     markedDays.splice(markedDays.indexOf(day), 1);
@@ -618,6 +606,13 @@ async function toggleDay(cell, day, activity, markedDays, activityColor, marker,
     cell.style.borderColor = activityColor;
     cell.textContent       = MARKER_SYMBOLS[marker] || "●";
     cell.style.color       = "white";
+  }
+
+  // Update entry.marks in-place so onMarkToggled sees the new state.
+  if (entry) {
+    if (!entry.marks) entry.marks = {};
+    entry.marks[activity] = markedDays;
+    if (onMarkToggled) onMarkToggled(entry);
   }
 
   try {

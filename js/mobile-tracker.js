@@ -18,8 +18,11 @@ const MARKER_SYMBOLS = {
 };
 
 // ─── RENDER MOBILE CALENDAR CARD ────────────────────
+// opts.onMarkToggled — optional callback(entry) fired immediately
+// after a habit is toggled. loadMyLog passes this to refresh the
+// summary card and status banner in-place without any page reload.
 export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
-  const { isFollowing = false, showFollowBtn = false } = opts;
+  const { isFollowing = false, showFollowBtn = false, onMarkToggled = null } = opts;
   const isOwner = currentUser && currentUser.uid === entry.id;
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
   const todayDate = new Date().getDate();
@@ -73,7 +76,6 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
       followLoading = true;
       followBtn.disabled = true;
       followBtn.classList.add("loading");
-
       try {
         const myRef = doc(db, "users", currentUser.uid);
         if (following) {
@@ -96,7 +98,6 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
         followBtn.classList.remove("loading");
       }
     });
-
     badge.appendChild(followBtn);
   }
 
@@ -137,31 +138,16 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
     if (isFuture) return;
     showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate, marker,
       async (activity, newMarkedDays) => {
-        // 1. Update local state immediately — no flash, no round-trip wait.
+        // 1. Update local entry state immediately.
         if (!entry.marks) entry.marks = {};
         entry.marks[activity] = newMarkedDays;
 
-        // 2. Re-render the card grid and footer in-place.
+        // 2. Re-render card grid + footer in-place (no flash).
         render();
 
-        // 3. If this is the owner's own card in My Log, also refresh the
-        //    summary card and status banner without a full page rebuild.
-        //    We use computeStatsFromEntry (sync) so it's instant.
-        if (isOwner) {
-          const stats = computeStatsFromEntry(entry, yearMonth);
-          const summaryEl = document.querySelector(".summary-card");
-          if (summaryEl) {
-            // Import renderMonthlySummary via a CustomEvent so mobile-tracker
-            // doesn't create a circular dep with tracker.js.
-            document.dispatchEvent(new CustomEvent("showup:refreshSummary", {
-              detail: { entry, stats, yearMonth }
-            }));
-          }
-          // Also refresh the status banner
-          document.dispatchEvent(new CustomEvent("showup:refreshBanner", {
-            detail: { entry, todayDate }
-          }));
-        }
+        // 3. If loadMyLog passed a callback, call it now so the
+        //    summary card and status banner update instantly too.
+        if (onMarkToggled) onMarkToggled(entry);
 
         // 4. Persist to Firestore in the background.
         try {
@@ -253,7 +239,6 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
       activities.forEach(act => {
         if ((marks[act] || []).includes(d)) doneCount++;
       });
-
       if (!isFuture && doneCount > 0) {
         const count = document.createElement("span");
         count.className = "cal-day-count";
