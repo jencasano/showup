@@ -35,7 +35,9 @@ function logsInWeek(markedDays, yearMonth, referenceDate) {
 
 // Cadence label helper (exported so tracker.js can use it too)
 export function cadenceLabel(n) {
-  return n === 7 ? "Daily" : `${n}×/wk`;
+  const cadence = Number(n);
+  if (n == null || !Number.isFinite(cadence) || cadence >= 7) return "Daily";
+  return `${cadence}×/wk`;
 }
 
 // ─── Per-habit fulfillment rate for the month so far ─────

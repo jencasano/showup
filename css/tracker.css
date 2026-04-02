@@ -7,7 +7,7 @@
   background: var(--bg-surface);
   border: 2px solid var(--border);
   border-radius: var(--radius-lg);
-  margin-bottom: 16px;
+  margin: 0 auto 16px;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   padding-bottom: 12px;
@@ -52,14 +52,13 @@
 
 /* ── Activity Label ──────────────────────────── */
 .activity-label {
-  width: 130px;
-  min-width: 130px;
-  max-width: 130px;
+  width: 185px;
+  min-width: 185px;
+  max-width: 185px;
   font-size: 0.7rem;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-faint);
+  color: var(--text-muted);
   flex-shrink: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -71,6 +70,7 @@
 }
 
 .activity-name-text {
+  color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -79,14 +79,15 @@
 
 /* ── Cadence tag (inline with activity name) ─── */
 .activity-cad-tag {
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   font-weight: 700;
   padding: 1px 5px;
   border-radius: 4px;
-  background: var(--bg-subtle);
-  color: var(--text-muted);
+  background: rgba(99, 102, 241, 0.18);
+  color: #e8edff;
   flex-shrink: 0;
   white-space: nowrap;
+  text-transform: none;
 }
 
 /* ── Activity Color Dot ──────────────────────── */
@@ -114,6 +115,23 @@
 
 .day-header-today { background: var(--bg-subtle); border-radius: var(--radius-sm); }
 .day-num.today    { color: var(--color-primary); font-weight: 700; }
+
+.day-header-sunday {
+  background: rgba(249, 115, 22, 0.10);
+  border-radius: var(--radius-sm);
+}
+
+.day-header-sunday .day-num {
+  color: #ffb08a;
+}
+
+.day-header-sunday .day-label {
+  color: rgba(255, 176, 138, 0.85);
+}
+
+.day-header-sunday .day-num.today {
+  color: var(--color-primary);
+}
 
 .day-header-future .day-num,
 .day-header-future .day-label { opacity: 0.45; }
