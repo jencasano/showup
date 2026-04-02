@@ -155,8 +155,11 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
         btn.dataset.value = opt.value;
         btn.textContent = opt.label;
         btn.addEventListener("click", () => {
+          const isAlreadySelected = btn.classList.contains("selected");
           cadPicker.querySelectorAll(".ms-cadence-btn").forEach(b => b.classList.remove("selected"));
-          btn.classList.add("selected");
+          if (!isAlreadySelected) {
+            btn.classList.add("selected");
+          }
         });
         cadPicker.appendChild(btn);
       });
