@@ -2,14 +2,14 @@
    LAYOUT — Header, tabs, month bar, content
    ═══════════════════════════════════════════════ */
 
-/* ── App Screen ──────────────────────────────── */
+/* ── App Screen ────────────────────────────────── */
 #app-screen {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* ── Header ──────────────────────────────────── */
+/* ── Header ────────────────────────────────────── */
 header {
   display: flex;
   align-items: center;
@@ -35,7 +35,7 @@ header h1 {
 
 header h1 span { color: var(--color-primary); }
 
-/* ── Tab Row ─────────────────────────────────── */
+/* ── Tab Row ───────────────────────────────────── */
 #tab-row {
   display: flex;
   align-items: center;
@@ -75,7 +75,7 @@ header h1 span { color: var(--color-primary); }
   border-bottom: 2px solid var(--color-primary);
 }
 
-/* ── User Info ───────────────────────────────── */
+/* ── User Info ─────────────────────────────────── */
 #user-info {
   display: flex;
   align-items: center;
@@ -119,7 +119,7 @@ header h1 span { color: var(--color-primary); }
 
 #theme-toggle:hover { border-color: var(--color-primary); }
 
-/* ── Month Bar ───────────────────────────────── */
+/* ── Month Bar ─────────────────────────────────── */
 #month-bar {
   display: flex;
   align-items: center;
@@ -147,7 +147,7 @@ header h1 span { color: var(--color-primary); }
   color: var(--text-faint);
 }
 
-/* ── Month Bar Buttons ───────────────────────── */
+/* ── Month Bar Buttons ─────────────────────────── */
 #month-bar button {
   background: none;
   border: none;
@@ -163,6 +163,11 @@ header h1 span { color: var(--color-primary); }
   flex-shrink: 0;
 }
 
+/* Ensure [hidden] always wins over the display:flex rule above */
+#month-bar button[hidden] {
+  display: none !important;
+}
+
 #month-bar button:hover:not(:disabled) {
   background: var(--bg-subtle);
   color: var(--color-primary);
@@ -174,8 +179,9 @@ header h1 span { color: var(--color-primary); }
 }
 
 #cal-picker-btn { font-size: 0.85rem; margin-left: 2px; }
+#today-btn      { font-size: 0.85rem; margin-left: 0; }
 
-/* ── Main Content ────────────────────────────── */
+/* ── Main Content ───────────────────────────────── */
 #app-content {
   flex: 1;
   padding: 24px 28px;
@@ -184,7 +190,7 @@ header h1 span { color: var(--color-primary); }
 
 .tab-panel { width: 100%; }
 
-/* ── Mobile Bottom Nav ───────────────────────── */
+/* ── Mobile Bottom Nav ─────────────────────────── */
 #bottom-nav {
   display: none;
   position: fixed;
@@ -217,7 +223,7 @@ header h1 span { color: var(--color-primary); }
 .bottom-tab.active { color: var(--color-primary); }
 .bottom-tab-icon { font-size: 1.1rem; }
 
-/* ── Month Heading ───────────────────────────── */
+/* ── Month Heading ─────────────────────────────── */
 .month-heading {
   font-family: var(--font-heading);
   font-size: 1.4rem;
@@ -227,7 +233,7 @@ header h1 span { color: var(--color-primary); }
   letter-spacing: -0.02em;
 }
 
-/* ── Responsive ──────────────────────────────── */
+/* ── Responsive ──────────────────────────────────── */
 @media (max-width: 768px) {
   #tab-row { display: none; }
   #bottom-nav { display: flex; }
