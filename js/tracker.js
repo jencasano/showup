@@ -36,9 +36,10 @@ function isMobile() {
 let unsubscribe = null;
 
 // ─── LOAD MY LOG ──────────────────────────────────────────
-export function loadMyLog(yearMonth, container, currentUser) {
+export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise = null) {
   showLoader();
   container.innerHTML = "";
+  let hasUsedInitialStats = false;
 
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
 
@@ -80,7 +81,10 @@ export function loadMyLog(yearMonth, container, currentUser) {
       const card = renderMobileCard(entry, yearMonth, user);
       container.appendChild(card);
 
-      const stats = await getUserStats(uid, yearMonth);
+      const stats = (!hasUsedInitialStats && initialStatsPromise)
+        ? await initialStatsPromise
+        : await getUserStats(uid, yearMonth);
+      hasUsedInitialStats = true;
       const summary = renderMonthlySummary(entry, stats, yearMonth);
       container.appendChild(summary);
     } else {
@@ -96,7 +100,10 @@ export function loadMyLog(yearMonth, container, currentUser) {
       const section = renderUserSection(entry, yearMonth, user, isCurrentMonth, todayDate);
       centeredStack.appendChild(section);
 
-      const stats = await getUserStats(uid, yearMonth);
+      const stats = (!hasUsedInitialStats && initialStatsPromise)
+        ? await initialStatsPromise
+        : await getUserStats(uid, yearMonth);
+      hasUsedInitialStats = true;
       const summary = renderMonthlySummary(entry, stats, yearMonth);
       centeredStack.appendChild(summary);
 
