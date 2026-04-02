@@ -7,7 +7,6 @@ import { getDaysInMonth, getDayLabel, getCurrentYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard } from "./mobile-tracker.js";
 import { getUserStats, computeStatsFromEntry, cadenceLabel } from "./stats.js";
-import { generateInsights, getDaysLeftInWeek } from "./insights.js";
 
 const MARKER_SYMBOLS = {
   circle:   "●",
@@ -190,33 +189,25 @@ function renderStatusBanner(entry, todayDate, isMob) {
 
 // ─── PROGRESS SUMMARY CARD ────────────────────────────────
 function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
-  const { overallRate, streak, doneThisMonth, habitStats } = stats;
+  const { doneThisMonth, totalThisMonth, habitStats, monthlyTargetHitRate, fullWeeksCount } = stats;
   const activities = entry.activities || [];
   const [year, month] = yearMonth.split("-").map(Number);
   const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
-
-  const daysLeft = getDaysLeftInWeek();
-  const { topInsight, habitInsights } = generateInsights(habitStats, daysLeft, isCurrentMonth);
 
   const card = document.createElement("div");
   card.className = "summary-card";
 
   const barsHTML = habitStats.map((h, i) => {
     const color = getActivityColor(i);
-    const displayRate = h.weeklyRate;
-    const barColor = displayRate >= 80 ? "var(--color-success, #22C55E)"
-                   : displayRate >= 50 ? "var(--color-warning, #F59E0B)"
-                   : "var(--color-danger, #EF4444)";
-    const weekLabel = h.thisWeekLogged >= h.thisWeekTarget
-      ? `Done for the week ✓`
-      : `${h.thisWeekLogged} of ${h.thisWeekTarget} this week`;
-    const streakHTML = h.habitStreak > 0
-      ? `<span class="summary-habit-streak" data-habit="${h.name}" data-streak="${h.habitStreak}">🔥 ${h.habitStreak}wk</span>`
-      : `<span class="summary-habit-streak summary-habit-streak--empty" data-habit="${h.name}" data-streak="0"></span>`;
-    const insight = habitInsights[h.name];
-    const insightHTML = insight
-      ? `<div class="habit-insight">${insight.emoji} ${insight.message}</div>`
-      : "";
+    const displayRate = h.monthRate;
+    const barColor = displayRate >= 100 ? "var(--color-success, #22C55E)"
+      : displayRate >= 70 ? "var(--color-warning, #F59E0B)"
+      : "var(--color-danger, #EF4444)";
+    const statusPill = h.extra > 0
+      ? `<span class="summary-habit-streak">✅ Target met (+${h.extra} extra)</span>`
+      : h.monthLogged >= h.monthTarget
+        ? `<span class="summary-habit-streak">✅ Target met</span>`
+        : `<span class="summary-habit-streak">${h.monthTarget - h.monthLogged} to go</span>`;
     return `
       <div class="summary-habit-row">
         <div class="summary-habit-top">
@@ -225,22 +216,19 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
             ${h.name}
           </span>
           <div class="summary-habit-meta">
-            ${streakHTML}
+            ${statusPill}
             <span class="summary-habit-cad">${h.cadenceLabel}</span>
-            <span class="summary-habit-pct" style="color:${barColor}">${displayRate}%</span>
+            <span class="summary-habit-pct" style="color:${barColor}">${h.displayLogged}/${h.monthTarget}</span>
           </div>
         </div>
         <div class="summary-habit-track">
           <div class="summary-habit-fill" style="width:${displayRate}%;background:${barColor}"></div>
         </div>
-        <div class="summary-habit-sub">${weekLabel}</div>
-        ${insightHTML}
+        <div class="summary-habit-sub">${h.paceStatus}</div>
       </div>`;
   }).join("");
 
-  const topInsightHTML = topInsight
-    ? `<div class="top-insight"><span class="top-insight__emoji">${topInsight.emoji}</span><span class="top-insight__msg">${topInsight.message}</span></div>`
-    : "";
+  const calendarHTML = renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount);
 
   card.innerHTML = `
     <div class="summary-card__header">
@@ -253,33 +241,38 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
     <div class="summary-stats">
       <div class="summary-stat">
         <span class="summary-stat__icon">✅</span>
-        <div class="summary-stat__val">${overallRate}<span class="summary-stat__unit">%</span></div>
-        <div class="summary-stat__label">Weekly Rate</div>
-      </div>
-      <div class="summary-stat">
-        <span class="summary-stat__icon">🔥</span>
-        <div class="summary-stat__val">${streak}<span class="summary-stat__unit">wk</span></div>
-        <div class="summary-stat__label">Streak</div>
+        <div class="summary-stat__val">${monthlyTargetHitRate}<span class="summary-stat__unit">%</span></div>
+        <div class="summary-stat__label">Monthly Target Hit Rate</div>
       </div>
       <div class="summary-stat">
         <span class="summary-stat__icon">📅</span>
-        <div class="summary-stat__val">${doneThisMonth}</div>
+        <div class="summary-stat__val">${doneThisMonth}/${totalThisMonth}</div>
         <div class="summary-stat__label">Days Logged</div>
+      </div>
+      <div class="summary-stat">
+        <span class="summary-stat__icon">🗓️</span>
+        <div class="summary-stat__val">${fullWeeksCount}</div>
+        <div class="summary-stat__label">Full Weeks In Month</div>
       </div>
     </div>
     <div class="summary-note">
-      <strong>How is this calculated?</strong>
-      Each habit's fulfillment is averaged equally — so a daily habit doesn't outweigh a 2×/week habit.
+      “Cadence-based monthly goal” = ceil(cadence × daysInMonth / 7).
     </div>
-    ${topInsightHTML}
     <div class="summary-habits">
-      <div class="summary-habits__label">This Week's Progress</div>
-      ${barsHTML}
+      <div class="summary-habits__label">This Month's Progress</div>
+      <div class="summary-habits-grid">
+        <div class="summary-habits-grid__left">
+          ${barsHTML}
+        </div>
+        <div class="summary-habits-grid__right">
+          ${calendarHTML}
+        </div>
+      </div>
     </div>
   `;
 
   card.querySelector(".summary-share-btn").addEventListener("click", () => {
-    const text = `My showup. stats for ${monthName} ${year}:\n✅ ${overallRate}% weekly rate\n🔥 ${streak} week streak\n${habitStats.map(h => `• ${h.name}: ${h.weeklyRate}% this week${h.habitStreak > 0 ? ` (🔥 ${h.habitStreak}wk streak)` : ""}`).join("\n")}`;
+    const text = `My showup. stats for ${monthName} ${year}:\n✅ ${monthlyTargetHitRate}% monthly target hit rate\n📅 ${doneThisMonth}/${totalThisMonth} days logged\n${habitStats.map(h => `• ${h.name}: ${h.displayLogged}/${h.monthTarget} this month${h.extra > 0 ? ` (+${h.extra} extra)` : ""}`).join("\n")}`;
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
     } else {
@@ -288,6 +281,75 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
   });
 
   return card;
+}
+
+function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
+  const [year, month] = yearMonth.split("-").map(Number);
+  const first = new Date(year, month - 1, 1);
+  const daysInMonth = getDaysInMonth(yearMonth);
+  const mondayOffset = (first.getDay() + 6) % 7; // Mon=0
+  const gridStart = new Date(year, month - 1, 1 - mondayOffset);
+  const weekRows = [];
+
+  for (let week = 0; week < 6; week++) {
+    const row = [];
+    for (let d = 0; d < 7; d++) {
+      const date = new Date(gridStart);
+      date.setDate(gridStart.getDate() + week * 7 + d);
+      row.push(date);
+    }
+    weekRows.push(row);
+  }
+
+  const marks = entry.marks || {};
+  const fullWeekByStart = new Map();
+  habitStats.forEach(h => {
+    (h.fullWeeksBreakdown || []).forEach((w, idx) => {
+      if (!fullWeekByStart.has(w.label)) fullWeekByStart.set(w.label, []);
+      fullWeekByStart.get(w.label).push({ name: h.name, logged: w.logged, target: w.target, hit: w.hit });
+    });
+  });
+
+  let fullWeekOrdinal = 0;
+  const weekBlocks = weekRows.map((row) => {
+    const inMonth = row.filter(d => d.getMonth() === (month - 1));
+    const isFullInMonthWeek = inMonth.length === 7;
+    const weekLabel = isFullInMonthWeek ? `Wk${++fullWeekOrdinal}` : null;
+    const badgeRows = (fullWeekByStart.get(weekLabel) || []).map(w => {
+      const state = w.hit ? "hit" : (w.logged >= Math.max(1, w.target - 1) ? "close" : "miss");
+      return `<span class="fw-badge fw-badge--${state}">${w.name} ${w.logged}/${w.target}</span>`;
+    }).join("");
+
+    const dayCells = row.map(date => {
+      const inCurrent = date.getMonth() === (month - 1);
+      const dayNum = date.getDate();
+      const hasAnyMark = inCurrent && habitStats.some(h => (marks[h.name] || []).includes(dayNum));
+      return `<div class="fw-day ${inCurrent ? "" : "fw-day--muted"}">${dayNum}${hasAnyMark ? `<span class="fw-check">✓</span>` : ""}</div>`;
+    }).join("");
+
+    if (isFullInMonthWeek) {
+      return `<div class="fw-week fw-week--full"><div class="fw-week-grid">${dayCells}</div><div class="fw-badges">${badgeRows}</div></div>`;
+    }
+    return `<div class="fw-week"><div class="fw-week-grid">${dayCells}</div></div>`;
+  }).join("");
+
+  return `
+    <div class="fullweek-calendar">
+      <div class="fullweek-calendar__title">${monthName(yearMonth)}</div>
+      <div class="fullweek-calendar__sub">Full-week cadence view (Monday–Sunday only)</div>
+      <div class="fw-dow"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      ${weekBlocks}
+      <div class="fw-legend">
+        <span><i class="fw-dot fw-dot--hit"></i>Target hit</span>
+        <span><i class="fw-dot fw-dot--close"></i>Close</span>
+        <span><i class="fw-dot fw-dot--miss"></i>Missed</span>
+      </div>
+    </div>`;
+}
+
+function monthName(yearMonth) {
+  const [y, m] = yearMonth.split("-").map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
 // ─── LOAD ALL LOGS ────────────────────────────────────────
