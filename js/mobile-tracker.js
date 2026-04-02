@@ -1,5 +1,5 @@
 import { db } from "./firebase-config.js";
-import { doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getDaysInMonth, getCurrentYearMonth } from "./utils.js";
 import { getActivityColor } from "./tracker.js";
 import { showToast } from "./ui.js";
@@ -14,46 +14,107 @@ const MARKER_SYMBOLS = {
 };
 
 // ─── RENDER MOBILE CALENDAR CARD ────────────────────
-export function renderMobileCard(entry, yearMonth, currentUser) {
+export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
+  const { isFollowing = false, showFollowBtn = false } = opts;
   const isOwner = currentUser && currentUser.uid === entry.id;
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
   const todayDate = new Date().getDate();
   const { color, fontColor, font, sticker, marker, avatarUrl } = entry.decoration;
 
   let activeFilter = null;
+  let following = isFollowing;
+  let followLoading = false;
 
   const card = document.createElement("div");
   card.className = "cal-card";
   card.style.borderColor = color;
 
-  // Badge
+  // ── Badge / Header ──────────────────────────────────
   const badge = document.createElement("div");
   badge.className = "cal-card-badge";
   badge.style.background = color;
   badge.style.color = fontColor;
   badge.style.fontFamily = `'${font}', sans-serif`;
-  const avatarHTML = avatarUrl
-    ? `<img src="${avatarUrl}" class="cal-card-avatar" alt="avatar" />`
-    : "";
-  badge.innerHTML = `
-    ${avatarHTML}
+
+  const avatarEl = document.createElement("div");
+  avatarEl.className = "cal-card-avatar-wrap";
+  if (avatarUrl) {
+    avatarEl.innerHTML = `<img src="${avatarUrl}" class="cal-card-avatar" alt="avatar" />`;
+  } else {
+    // Initials fallback
+    const initials = (entry.displayName || "?").charAt(0).toUpperCase();
+    avatarEl.innerHTML = `<div class="cal-card-avatar-initials">${initials}</div>`;
+  }
+
+  const nameWrap = document.createElement("div");
+  nameWrap.className = "cal-card-name-wrap";
+  nameWrap.innerHTML = `
     <span class="cal-card-name">${entry.displayName}</span>
     <span class="cal-card-sticker">${sticker}</span>
   `;
+
+  badge.appendChild(avatarEl);
+  badge.appendChild(nameWrap);
+
+  // Follow / Unfollow button (only on All tab, not for self)
+  if (showFollowBtn && !isOwner && currentUser) {
+    const followBtn = document.createElement("button");
+    followBtn.className = `cal-follow-btn ${following ? "following" : ""}`;
+    followBtn.textContent = following ? "Following ✓" : "+ Follow";
+
+    followBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      if (followLoading) return;
+      followLoading = true;
+      followBtn.disabled = true;
+
+      try {
+        const myRef = doc(db, "users", currentUser.uid);
+        if (following) {
+          await updateDoc(myRef, { following: arrayRemove(entry.id) });
+          following = false;
+          followBtn.textContent = "+ Follow";
+          followBtn.classList.remove("following");
+        } else {
+          await updateDoc(myRef, { following: arrayUnion(entry.id) });
+          following = true;
+          followBtn.textContent = "Following ✓";
+          followBtn.classList.add("following");
+        }
+      } catch (err) {
+        console.error("Follow error:", err);
+        showToast("Couldn't update follow. Try again.", "error");
+      } finally {
+        followLoading = false;
+        followBtn.disabled = false;
+      }
+    });
+
+    badge.appendChild(followBtn);
+  }
+
+  // "you" pill for own card
+  if (isOwner) {
+    const youPill = document.createElement("span");
+    youPill.className = "cal-you-pill";
+    youPill.textContent = "you";
+    badge.appendChild(youPill);
+  }
+
   card.appendChild(badge);
 
-  // Filter bar
+  // ── Filter Bar ──────────────────────────────────────
   const filterBar = document.createElement("div");
   filterBar.className = "cal-filter-bar";
   filterBar.style.display = "none";
   card.appendChild(filterBar);
 
-  // Calendar body
+  // ── Calendar Body ───────────────────────────────────
   const calBody = document.createElement("div");
   calBody.className = "cal-card-body";
   card.appendChild(calBody);
 
-  // Footer
+  // ── Footer Stats ────────────────────────────────────
   const footer = document.createElement("div");
   footer.className = "cal-card-footer";
   card.appendChild(footer);
@@ -210,7 +271,6 @@ function renderFilterBar(filterBar, activeFilter, activities, onFilterClear) {
     </span>
     <span class="filter-hint">tap pill to clear</span>
   `;
-  // Wire directly to onFilterClear — no custom events
   filterBar.querySelector(".filter-pill").addEventListener("click", onFilterClear);
 }
 
@@ -218,11 +278,20 @@ function renderFilterBar(filterBar, activeFilter, activities, onFilterClear) {
 function renderFooter(footer, entry, yearMonth, todayDate, isCurrentMonth, color) {
   const marks = entry.marks || {};
   const activities = entry.activities || [];
-  const lastDay = isCurrentMonth ? todayDate : getDaysInMonth(yearMonth);
+  const daysInMonth = getDaysInMonth(yearMonth);
+  const lastDay = isCurrentMonth ? todayDate : daysInMonth;
 
   let doneDays = 0;
+  let streak = 0;
   for (let d = 1; d <= lastDay; d++) {
     if (activities.some(act => (marks[act] || []).includes(d))) doneDays++;
+  }
+
+  // Simple streak — count backwards from lastDay
+  let s = lastDay;
+  while (s >= 1 && activities.some(act => (marks[act] || []).includes(s))) {
+    streak++;
+    s--;
   }
 
   const rate = lastDay > 0 ? Math.round(doneDays / lastDay * 100) : 0;
@@ -230,7 +299,11 @@ function renderFooter(footer, entry, yearMonth, todayDate, isCurrentMonth, color
   footer.innerHTML = `
     <div class="cal-stat">
       <div class="cal-stat-val" style="color:${color}">${doneDays}</div>
-      <div class="cal-stat-label">Days done</div>
+      <div class="cal-stat-label">Days Done</div>
+    </div>
+    <div class="cal-stat">
+      <div class="cal-stat-val">🔥 ${streak}</div>
+      <div class="cal-stat-label">Streak</div>
     </div>
     <div class="cal-stat">
       <div class="cal-stat-val">${rate}%</div>

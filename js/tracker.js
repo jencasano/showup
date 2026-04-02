@@ -56,7 +56,6 @@ export function loadMyLog(yearMonth, container, currentUser) {
     return;
   }
 
-  // Listen only to the current user's entry — not all entries
   const entryRef = doc(db, "logs", yearMonth, "entries", uid);
 
   unsubscribe = onSnapshot(entryRef, async (docSnap) => {
@@ -70,7 +69,6 @@ export function loadMyLog(yearMonth, container, currentUser) {
 
     const entry = { id: uid, ...docSnap.data() };
 
-    // Fetch display name
     const userSnap = await getDoc(doc(db, "users", uid));
     if (!userSnap.exists()) {
       hideLoader();
@@ -96,7 +94,7 @@ export function loadMyLog(yearMonth, container, currentUser) {
   });
 }
 
-// ─── LOAD ALL LOGS — all users ────────────────────────
+// ─── LOAD ALL LOGS — all users except self ────────────
 export function loadAllLogs(yearMonth, container, currentUser) {
   showLoader();
   container.innerHTML = "";
@@ -109,31 +107,57 @@ export function loadAllLogs(yearMonth, container, currentUser) {
     const entries = [];
 
     for (const docSnap of snapshot.docs) {
+      // Skip the current user — they have their own Mine tab
+      if (docSnap.id === currentUser?.uid) continue;
+
       const entry = { id: docSnap.id, ...docSnap.data() };
       if (!entry.activities || entry.activities.length === 0) continue;
 
       const userSnap = await getDoc(doc(db, "users", entry.id));
       if (!userSnap.exists()) continue;
 
-      entries.push({ ...entry, displayName: userSnap.data().displayName });
+      const userData = userSnap.data();
+      entries.push({
+        ...entry,
+        displayName: userData.displayName,
+        username: userData.username || userData.displayName,
+      });
     }
 
     if (entries.length === 0) {
       hideLoader();
-      container.innerHTML = `<p class="empty-state">No trackers yet for this month.</p>`;
+      container.innerHTML = `<p class="empty-state">No other trackers yet for this month.</p>`;
       return;
     }
 
-    // Current user's card first
-    entries.sort((a, b) => {
-      if (a.id === currentUser?.uid) return -1;
-      if (b.id === currentUser?.uid) return 1;
-      return 0;
-    });
+    // Load current user's follows to decide button state
+    let myFollows = new Set();
+    if (currentUser?.uid) {
+      try {
+        const myUserSnap = await getDoc(doc(db, "users", currentUser.uid));
+        if (myUserSnap.exists()) {
+          const following = myUserSnap.data().following || [];
+          myFollows = new Set(following);
+        }
+      } catch (e) {
+        console.warn("Could not load follows:", e);
+      }
+    }
 
     container.innerHTML = "";
+
+    // Followed users first, then alphabetical
+    entries.sort((a, b) => {
+      const aFollowed = myFollows.has(a.id);
+      const bFollowed = myFollows.has(b.id);
+      if (aFollowed && !bFollowed) return -1;
+      if (!aFollowed && bFollowed) return 1;
+      return (a.displayName || "").localeCompare(b.displayName || "");
+    });
+
     for (const entry of entries) {
-      const card = renderMobileCard(entry, yearMonth, currentUser);
+      const isFollowing = myFollows.has(entry.id);
+      const card = renderMobileCard(entry, yearMonth, currentUser, { isFollowing, showFollowBtn: true });
       container.appendChild(card);
     }
 
