@@ -494,9 +494,7 @@ function renderActivityRow(activity, daysInMonth, markedDays, activityColor, mar
   label.className = "activity-label";
 
   // Cadence tag inline with label
-  const cadTag = cadence < 7
-    ? `<span class="activity-cad-tag">${cadenceLabel(cadence)}</span>`
-    : "";
+  const cadTag = `<span class="activity-cad-tag">${cadenceLabel(cadence)}</span>`;
 
   label.innerHTML = `
     <span class="activity-dot" style="background:${activityColor}"></span>
