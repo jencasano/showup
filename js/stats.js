@@ -18,6 +18,12 @@ function toDate(yearMonth, day) {
   return new Date(y, m - 1, day);
 }
 
+function getReferenceDate(yearMonth, isCurrentMonth, lastDay) {
+  if (isCurrentMonth) return new Date();
+  const [y, m] = yearMonth.split("-").map(Number);
+  return new Date(y, m - 1, lastDay);
+}
+
 function logsInWeek(markedDays, yearMonth, referenceDate) {
   const weekStart = getWeekStart(referenceDate);
   const weekEnd   = new Date(weekStart);
@@ -26,6 +32,26 @@ function logsInWeek(markedDays, yearMonth, referenceDate) {
     const date = toDate(yearMonth, d);
     return date >= weekStart && date <= weekEnd;
   }).length;
+}
+
+function getFullWeeksInMonth(yearMonth) {
+  const [y, m] = yearMonth.split("-").map(Number);
+  const totalDays = getDaysInMonth(yearMonth);
+  const weeks = [];
+  for (let day = 1; day <= totalDays; day++) {
+    const date = new Date(y, m - 1, day);
+    const isMonday = date.getDay() === 1;
+    if (!isMonday) continue;
+    const endDay = day + 6;
+    if (endDay <= totalDays) {
+      weeks.push({ startDay: day, endDay });
+    }
+  }
+  return weeks;
+}
+
+function countInRange(markedDays, startDay, endDay) {
+  return markedDays.filter(d => d >= startDay && d <= endDay).length;
 }
 
 /**
@@ -55,8 +81,8 @@ function hitWeeklyTarget(markedDays, cadence, yearMonth, date) {
 }
 
 // ─── Per-habit streak: consecutive weeks this habit hit its target ───
-async function calculateHabitStreak(userId, activity, cadence, yearMonth, markedDays) {
-  const today = new Date();
+async function calculateHabitStreak(userId, activity, cadence, yearMonth, markedDays, referenceDate = new Date()) {
+  const today = new Date(referenceDate);
   let streak = 0;
   let checkDate = new Date(today);
 
@@ -97,8 +123,8 @@ async function calculateHabitStreak(userId, activity, cadence, yearMonth, marked
   return streak;
 }
 
-async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, marks) {
-  const today = new Date();
+async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, marks, referenceDate = new Date()) {
+  const today = new Date(referenceDate);
   let streak = 0;
   let checkDate = new Date(today);
 
@@ -145,8 +171,9 @@ async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, ma
 }
 
 // ─── Shared habit stat builder ────────────────────────────
-function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, habitStreak = 0) {
+function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks = [], habitStreak = 0) {
   const cad    = cadences[i] ?? 7;
+  const monthTarget = Math.max(1, Math.ceil(cad * (getDaysInMonth(yearMonth) / 7)));
   const logged = (marks[activity] || []).filter(d => d <= lastDay).length;
   const target = Math.max(1, Math.ceil(cad * (lastDay / 7)));
   const rate   = Math.min(100, Math.round(Math.min(1, logged / target) * 100));
@@ -154,6 +181,21 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
   const thisWeekTarget   = cad;
   const weeklyRate       = Math.min(100, Math.round((thisWeekLogged / thisWeekTarget) * 100));
   const consecutiveDays  = countConsecutiveDays(marks[activity] || [], yearMonth, today);
+  const displayLogged = Math.min(logged, monthTarget);
+  const extra = Math.max(0, logged - monthTarget);
+  const expectedByNow = Number((cad * (lastDay / 7)).toFixed(2));
+  const paceDelta = logged - expectedByNow;
+  const paceStatus = paceDelta <= -1 ? "Behind pace" : "On track";
+  const fullWeeksBreakdown = fullWeeks.map((w, idx) => {
+    const weekLogged = countInRange(marks[activity] || [], w.startDay, w.endDay);
+    return {
+      label: `Wk${idx + 1}`,
+      logged: weekLogged,
+      target: cad,
+      hit: weekLogged >= cad
+    };
+  });
+
   return {
     name: activity,
     cadence: cad,
@@ -165,7 +207,14 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
     thisWeekTarget,
     weeklyRate,
     consecutiveDays,
-    habitStreak
+    habitStreak,
+    monthTarget,
+    monthLogged: logged,
+    monthRate: Math.min(100, Math.round((logged / monthTarget) * 100)),
+    displayLogged,
+    extra,
+    paceStatus,
+    fullWeeksBreakdown
   };
 }
 
@@ -179,8 +228,9 @@ export function computeStatsFromEntry(entry, yearMonth) {
 
   const daysInMonth    = getDaysInMonth(yearMonth);
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
-  const today          = new Date();
-  const lastDay        = isCurrentMonth ? today.getDate() : daysInMonth;
+  const lastDay        = isCurrentMonth ? new Date().getDate() : daysInMonth;
+  const today          = getReferenceDate(yearMonth, isCurrentMonth, lastDay);
+  const fullWeeks = getFullWeeksInMonth(yearMonth);
 
   const doneDays = new Set();
   activities.forEach(activity => {
@@ -188,8 +238,11 @@ export function computeStatsFromEntry(entry, yearMonth) {
   });
 
   const habitStats = activities.map((activity, i) =>
-    buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, 0)
+    buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks, 0)
   );
+
+  const monthlyHits = habitStats.filter(h => h.monthLogged >= h.monthTarget).length;
+  const monthlyTargetHitRate = Math.round((monthlyHits / habitStats.length) * 100);
 
   const overallRate = Math.round(
     habitStats.reduce((sum, h) => sum + h.weeklyRate, 0) / habitStats.length
@@ -200,7 +253,9 @@ export function computeStatsFromEntry(entry, yearMonth) {
     doneThisMonth:  doneDays.size,
     totalThisMonth: lastDay,
     overallRate,
-    habitStats
+    habitStats,
+    monthlyTargetHitRate,
+    fullWeeksCount: fullWeeks.length
   };
 }
 
@@ -219,8 +274,9 @@ export async function getUserStats(userId, yearMonth) {
 
     const daysInMonth    = getDaysInMonth(yearMonth);
     const isCurrentMonth = yearMonth === getCurrentYearMonth();
-    const today          = new Date();
-    const lastDay        = isCurrentMonth ? today.getDate() : daysInMonth;
+    const lastDay        = isCurrentMonth ? new Date().getDate() : daysInMonth;
+    const today          = getReferenceDate(yearMonth, isCurrentMonth, lastDay);
+    const fullWeeks = getFullWeeksInMonth(yearMonth);
 
     const doneDays = new Set();
     activities.forEach(activity => {
@@ -229,20 +285,23 @@ export async function getUserStats(userId, yearMonth) {
 
     const habitStreaks = await Promise.all(
       activities.map((activity, i) =>
-        calculateHabitStreak(userId, activity, cadences[i] ?? 7, yearMonth, marks[activity] || [])
+        calculateHabitStreak(userId, activity, cadences[i] ?? 7, yearMonth, marks[activity] || [], today)
       )
     );
 
     const habitStats = activities.map((activity, i) =>
-      buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, habitStreaks[i])
+      buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks, habitStreaks[i])
     );
+
+    const monthlyHits = habitStats.filter(h => h.monthLogged >= h.monthTarget).length;
+    const monthlyTargetHitRate = Math.round((monthlyHits / habitStats.length) * 100);
 
     const overallRate = Math.round(
       habitStats.reduce((sum, h) => sum + h.weeklyRate, 0) / habitStats.length
     );
 
     const streak = await calculateWeeklyStreak(
-      userId, yearMonth, activities, cadences, marks
+      userId, yearMonth, activities, cadences, marks, today
     );
 
     return {
@@ -250,7 +309,9 @@ export async function getUserStats(userId, yearMonth) {
       doneThisMonth:  doneDays.size,
       totalThisMonth: lastDay,
       overallRate,
-      habitStats
+      habitStats,
+      monthlyTargetHitRate,
+      fullWeeksCount: fullWeeks.length
     };
   } catch (error) {
     console.error("Stats error:", error);
@@ -264,6 +325,8 @@ function emptyStats() {
     doneThisMonth: 0,
     totalThisMonth: 0,
     overallRate: 0,
-    habitStats: []
+    habitStats: [],
+    monthlyTargetHitRate: 0,
+    fullWeeksCount: 0
   };
 }
