@@ -459,7 +459,7 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
     if (isToday)  cell.classList.add("day-header-today");
     if (isFuture) cell.classList.add("day-header-future");
     cell.innerHTML = `
-      <span class="day-num${isToday ? " today" : "}">${d}</span>
+      <span class="day-num${isToday ? " today" : ""}">${d}</span>
       <span class="day-label">${getDayLabel(yearMonth, d)}</span>`;
     headerRow.appendChild(cell);
   }
