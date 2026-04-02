@@ -451,13 +451,16 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   const headerRow = document.createElement("div");
   headerRow.className = "tracker-header-row";
   headerRow.innerHTML = `<div class="activity-label"></div>`;
+  const [year, month] = yearMonth.split("-").map(Number);
   for (let d = 1; d <= daysInMonth; d++) {
     const cell = document.createElement("div");
     cell.className = "day-header";
     const isToday   = isCurrentMonth && d === todayDate;
     const isFuture  = isCurrentMonth && d > todayDate;
+    const isSunday  = new Date(year, month - 1, d).getDay() === 0;
     if (isToday)  cell.classList.add("day-header-today");
     if (isFuture) cell.classList.add("day-header-future");
+    if (isSunday) cell.classList.add("day-header-sunday");
     cell.innerHTML = `
       <span class="day-num${isToday ? " today" : ""}">${d}</span>
       <span class="day-label">${getDayLabel(yearMonth, d)}</span>`;
