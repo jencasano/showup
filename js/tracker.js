@@ -195,9 +195,16 @@ function renderMonthlySummary(entry, stats, yearMonth) {
 
   const barsHTML = habitStats.map((h, i) => {
     const color = getActivityColor(i);
-    const barColor = h.rate >= 80 ? "var(--color-success, #22C55E)"
-                   : h.rate >= 50 ? "var(--color-warning, #F59E0B)"
+    // Bar and % are now based on this week's progress (weeklyRate),
+    // not the monthly pro-rated rate. This gives users a stable,
+    // actionable view that resets cleanly each week.
+    const displayRate = h.weeklyRate;
+    const barColor = displayRate >= 80 ? "var(--color-success, #22C55E)"
+                   : displayRate >= 50 ? "var(--color-warning, #F59E0B)"
                    : "var(--color-danger, #EF4444)";
+    const weekLabel = h.thisWeekLogged >= h.thisWeekTarget
+      ? `Done for the week ✓`
+      : `${h.thisWeekLogged} of ${h.thisWeekTarget} this week`;
     return `
       <div class="summary-habit-row">
         <div class="summary-habit-top">
@@ -207,13 +214,13 @@ function renderMonthlySummary(entry, stats, yearMonth) {
           </span>
           <div class="summary-habit-meta">
             <span class="summary-habit-cad">${h.cadenceLabel}</span>
-            <span class="summary-habit-pct" style="color:${barColor}">${h.rate}%</span>
+            <span class="summary-habit-pct" style="color:${barColor}">${displayRate}%</span>
           </div>
         </div>
         <div class="summary-habit-track">
-          <div class="summary-habit-fill" style="width:${h.rate}%;background:${barColor}"></div>
+          <div class="summary-habit-fill" style="width:${displayRate}%;background:${barColor}"></div>
         </div>
-        <div class="summary-habit-sub">${h.thisWeekLogged} of ${h.thisWeekTarget} logged this week</div>
+        <div class="summary-habit-sub">${weekLabel}</div>
       </div>`;
   }).join("");
 
@@ -253,7 +260,7 @@ function renderMonthlySummary(entry, stats, yearMonth) {
   `;
 
   card.querySelector(".summary-share-btn").addEventListener("click", () => {
-    const text = `My showup. stats for this month:\n✅ ${overallRate}% overall rate\n🔥 ${streak} week streak\n${habitStats.map(h => `• ${h.name}: ${h.rate}%`).join("\n")}`;
+    const text = `My showup. stats for this month:\n✅ ${overallRate}% overall rate\n🔥 ${streak} week streak\n${habitStats.map(h => `• ${h.name}: ${h.weeklyRate}% this week`).join("\n")}`;
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
     } else {
