@@ -6,6 +6,7 @@ import {
 import { getDaysInMonth, getCurrentYearMonth } from "./utils.js";
 import { getActivityColor } from "./tracker.js";
 import { showToast } from "./ui.js";
+import { computeStatsFromEntry } from "./stats.js";
 
 const MARKER_SYMBOLS = {
   circle:   "●",
@@ -59,9 +60,6 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   badge.appendChild(nameWrap);
 
   // ── Follow / Unfollow button ────────────────────────
-  // Only shown in All tab for other users. Uses fixed palette
-  // colors (#2A2E45 on #FFFAF5) so it's legible across ALL
-  // possible user badge background colors.
   if (showFollowBtn && !isOwner && currentUser) {
     const followBtn = document.createElement("button");
     followBtn.className = `cal-follow-btn ${following ? "following" : ""}`;
@@ -78,9 +76,6 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
 
       try {
         const myRef = doc(db, "users", currentUser.uid);
-
-        // Use setDoc with merge:true so it works even if
-        // the 'following' field doesn't exist yet on the doc
         if (following) {
           await setDoc(myRef, { following: arrayRemove(entry.id) }, { merge: true });
           following = false;
@@ -105,7 +100,6 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
     badge.appendChild(followBtn);
   }
 
-  // "you" pill for own card
   if (isOwner) {
     const youPill = document.createElement("span");
     youPill.className = "cal-you-pill";
@@ -143,9 +137,33 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
     if (isFuture) return;
     showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate, marker,
       async (activity, newMarkedDays) => {
+        // 1. Update local state immediately — no flash, no round-trip wait.
         if (!entry.marks) entry.marks = {};
         entry.marks[activity] = newMarkedDays;
+
+        // 2. Re-render the card grid and footer in-place.
         render();
+
+        // 3. If this is the owner's own card in My Log, also refresh the
+        //    summary card and status banner without a full page rebuild.
+        //    We use computeStatsFromEntry (sync) so it's instant.
+        if (isOwner) {
+          const stats = computeStatsFromEntry(entry, yearMonth);
+          const summaryEl = document.querySelector(".summary-card");
+          if (summaryEl) {
+            // Import renderMonthlySummary via a CustomEvent so mobile-tracker
+            // doesn't create a circular dep with tracker.js.
+            document.dispatchEvent(new CustomEvent("showup:refreshSummary", {
+              detail: { entry, stats, yearMonth }
+            }));
+          }
+          // Also refresh the status banner
+          document.dispatchEvent(new CustomEvent("showup:refreshBanner", {
+            detail: { entry, todayDate }
+          }));
+        }
+
+        // 4. Persist to Firestore in the background.
         try {
           const logRef = doc(db, "logs", yearMonth, "entries", entry.id);
           const logSnap = await getDoc(logRef);
@@ -299,7 +317,6 @@ function renderFooter(footer, entry, yearMonth, todayDate, isCurrentMonth, color
     if (activities.some(act => (marks[act] || []).includes(d))) doneDays++;
   }
 
-  // Streak: count consecutive days backwards from lastDay
   let s = lastDay;
   while (s >= 1 && activities.some(act => (marks[act] || []).includes(s))) {
     streak++;
@@ -340,7 +357,6 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
 
   const sheet = document.createElement("div");
   sheet.className = "day-sheet";
-
   sheet.innerHTML = `<div class="day-sheet-handle"></div>`;
 
   const dateEl = document.createElement("div");

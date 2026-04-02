@@ -6,7 +6,7 @@ import {
 import { getDaysInMonth, getDayLabel, getCurrentYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard } from "./mobile-tracker.js";
-import { getUserStats, cadenceLabel } from "./stats.js";
+import { getUserStats, computeStatsFromEntry, cadenceLabel } from "./stats.js";
 
 const MARKER_SYMBOLS = {
   circle:   "●",
@@ -39,7 +39,6 @@ let unsubscribe = null;
 export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise = null) {
   showLoader();
   container.innerHTML = "";
-  let hasUsedInitialStats = false;
 
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
 
@@ -55,12 +54,24 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
   const entryRef = doc(db, "logs", yearMonth, "entries", uid);
 
+  // Track whether we have already done the initial full render.
+  // After that, snapshot updates patch in-place instead of rebuilding.
+  let hasRendered = false;
+  let hasUsedInitialStats = false;
+
   unsubscribe = onSnapshot(entryRef, async (docSnap) => {
-    container.innerHTML = "";
+
+    // ── Skip re-render for our own optimistic (pending) writes ──────
+    // When the user taps a habit the card already updates locally via
+    // render() inside onDayTap / toggleDay.  The subsequent Firestore
+    // write triggers this snapshot with hasPendingWrites = true — we
+    // don't need to rebuild anything, the DOM is already correct.
+    if (hasRendered && docSnap.metadata.hasPendingWrites) return;
 
     if (!docSnap.exists() || !docSnap.data().activities?.length) {
       hideLoader();
       container.innerHTML = `<p class="empty-state">No tracker set up for this month yet.</p>`;
+      hasRendered = true;
       return;
     }
 
@@ -76,46 +87,55 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
     const user = auth.currentUser;
 
-    if (isMobile()) {
-      // ── Mobile: banner + card + summary ─────────────────
-      if (isCurrentMonth) {
-        const banner = renderStatusBanner(entry, todayDate, true);
-        container.appendChild(banner);
+    // ── First load: full render ──────────────────────────────────────
+    if (!hasRendered) {
+      container.innerHTML = "";
+
+      if (isMobile()) {
+        if (isCurrentMonth) {
+          container.appendChild(renderStatusBanner(entry, todayDate, true));
+        }
+        container.appendChild(renderMobileCard(entry, yearMonth, user));
+
+        const stats = (!hasUsedInitialStats && initialStatsPromise)
+          ? await initialStatsPromise
+          : await getUserStats(uid, yearMonth);
+        hasUsedInitialStats = true;
+        container.appendChild(renderMonthlySummary(entry, stats, yearMonth));
+      } else {
+        const centeredStack = document.createElement("div");
+        centeredStack.className = "mylog-centered-stack";
+
+        if (isCurrentMonth) {
+          centeredStack.appendChild(renderStatusBanner(entry, todayDate, false));
+        }
+        centeredStack.appendChild(renderUserSection(entry, yearMonth, user, isCurrentMonth, todayDate));
+
+        const stats = (!hasUsedInitialStats && initialStatsPromise)
+          ? await initialStatsPromise
+          : await getUserStats(uid, yearMonth);
+        hasUsedInitialStats = true;
+        centeredStack.appendChild(renderMonthlySummary(entry, stats, yearMonth));
+
+        container.appendChild(centeredStack);
       }
 
-      const card = renderMobileCard(entry, yearMonth, user);
-      container.appendChild(card);
-
-      const stats = (!hasUsedInitialStats && initialStatsPromise)
-        ? await initialStatsPromise
-        : await getUserStats(uid, yearMonth);
-      hasUsedInitialStats = true;
-      const summary = renderMonthlySummary(entry, stats, yearMonth);
-      container.appendChild(summary);
-    } else {
-      // ── Desktop: banner + tracker grid + summary ─────────
-      const centeredStack = document.createElement("div");
-      centeredStack.className = "mylog-centered-stack";
-
-      if (isCurrentMonth) {
-        const banner = renderStatusBanner(entry, todayDate, false);
-        centeredStack.appendChild(banner);
-      }
-
-      const section = renderUserSection(entry, yearMonth, user, isCurrentMonth, todayDate);
-      centeredStack.appendChild(section);
-
-      const stats = (!hasUsedInitialStats && initialStatsPromise)
-        ? await initialStatsPromise
-        : await getUserStats(uid, yearMonth);
-      hasUsedInitialStats = true;
-      const summary = renderMonthlySummary(entry, stats, yearMonth);
-      centeredStack.appendChild(summary);
-
-      container.appendChild(centeredStack);
+      hasRendered = true;
+      hideLoader();
+      return;
     }
 
-    hideLoader();
+    // ── Subsequent server-confirmed updates: patch in-place ──────────
+    // Only the summary card and status banner need to change — the
+    // tracker grid / mobile card already reflects the correct state
+    // from the local optimistic update.
+    const stats = computeStatsFromEntry(entry, yearMonth);
+
+    if (isCurrentMonth) {
+      refreshBannerInPlace(container, entry, todayDate);
+    }
+    refreshSummaryInPlace(container, entry, stats, yearMonth);
+
   }, (error) => {
     console.error("Snapshot error:", error);
     showToast("Failed to load tracker.", "error");
@@ -123,13 +143,30 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
   });
 }
 
+// ─── PATCH: replace status banner node in-place ───────────
+function refreshBannerInPlace(container, entry, todayDate) {
+  const isMob = isMobile();
+  const existing = container.querySelector(".status-banner");
+  const fresh = renderStatusBanner(entry, todayDate, isMob);
+  if (existing) {
+    existing.replaceWith(fresh);
+  }
+}
+
+// ─── PATCH: replace summary card node in-place ────────────
+function refreshSummaryInPlace(container, entry, stats, yearMonth) {
+  const existing = container.querySelector(".summary-card");
+  const fresh = renderMonthlySummary(entry, stats, yearMonth);
+  if (existing) {
+    existing.replaceWith(fresh);
+  }
+}
+
 // ─── TODAY'S STATUS BANNER ────────────────────────────────
 function renderStatusBanner(entry, todayDate, isMob) {
   const activities = entry.activities || [];
-  const cadences   = entry.cadences   || activities.map(() => 7);
   const marks      = entry.marks      || {};
 
-  // Which activities have NOT been logged today?
   const pending = activities.filter(a => !(marks[a] || []).includes(todayDate));
   const allDone = pending.length === 0;
 
@@ -161,12 +198,10 @@ function renderStatusBanner(entry, todayDate, isMob) {
 function renderMonthlySummary(entry, stats, yearMonth) {
   const { overallRate, streak, doneThisMonth, habitStats } = stats;
   const activities = entry.activities || [];
-  const cadences   = entry.cadences   || activities.map(() => 7);
 
   const card = document.createElement("div");
   card.className = "summary-card";
 
-  // Per-habit bars HTML
   const barsHTML = habitStats.map((h, i) => {
     const color = getActivityColor(i);
     const barColor = h.rate >= 80 ? "var(--color-success, #22C55E)"
@@ -229,7 +264,6 @@ function renderMonthlySummary(entry, stats, yearMonth) {
     </div>
   `;
 
-  // Share button — basic text share for now
   card.querySelector(".summary-share-btn").addEventListener("click", () => {
     const text = `My showup. stats for this month:\n✅ ${overallRate}% overall rate\n🔥 ${streak} week streak\n${habitStats.map(h => `• ${h.name}: ${h.rate}%`).join("\n")}`;
     if (navigator.share) {
@@ -263,15 +297,10 @@ export function loadAllLogs(yearMonth, container, currentUser) {
       return;
     }
 
-    // 2. Identify which entries are missing denormalized user fields
-    //    and fire ALL fallback lookups + the follows fetch in parallel.
-    const needsUserFetch = validDocs.map(d => {
-      const data = d.data();
-      return !data.displayName; // already denormalized — no lookup needed
-    });
+    // 2. Identify entries missing denormalized fields; fire all lookups in parallel.
+    const needsUserFetch = validDocs.map(d => !d.data().displayName);
 
     const [userSnaps, myUserSnap] = await Promise.all([
-      // Only fetch from users/ for entries that don't have denormalized fields
       Promise.all(
         validDocs.map((docSnap, i) =>
           needsUserFetch[i]
@@ -279,7 +308,6 @@ export function loadAllLogs(yearMonth, container, currentUser) {
             : Promise.resolve(null)
         )
       ),
-      // Fetch current user's follows doc in parallel
       currentUser?.uid
         ? getDoc(doc(db, "users", currentUser.uid))
         : Promise.resolve(null)
@@ -289,7 +317,7 @@ export function loadAllLogs(yearMonth, container, currentUser) {
       myUserSnap?.exists() ? (myUserSnap.data().following || []) : []
     );
 
-    // 3. Build the entries array, merging denormalized or fetched user data.
+    // 3. Build entries array.
     const entries = validDocs
       .map((docSnap, i) => {
         const data = docSnap.data();
@@ -304,12 +332,7 @@ export function loadAllLogs(yearMonth, container, currentUser) {
           username    = userData.username || userData.displayName;
         }
 
-        return {
-          id: docSnap.id,
-          ...data,
-          displayName,
-          username: username || displayName,
-        };
+        return { id: docSnap.id, ...data, displayName, username: username || displayName };
       })
       .filter(Boolean);
 
@@ -545,10 +568,7 @@ function renderActivityRow(activity, daysInMonth, markedDays, activityColor, mar
 
   const label = document.createElement("div");
   label.className = "activity-label";
-
-  // Cadence tag inline with label
   const cadTag = `<span class="activity-cad-tag">${cadenceLabel(cadence)}</span>`;
-
   label.innerHTML = `
     <span class="activity-dot" style="background:${activityColor}"></span>
     <span class="activity-name-text">${activity}</span>
