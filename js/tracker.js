@@ -482,6 +482,7 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   });
 
   return section;
+  //Migoy taba!
 }
 
 // ─── RENDER ONE ACTIVITY ROW (desktop) ────────────────────
