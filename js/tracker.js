@@ -208,13 +208,6 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       : h.monthLogged >= h.monthTarget
         ? `<span class="summary-habit-streak">✅ Target met</span>`
         : `<span class="summary-habit-streak">${h.monthTarget - h.monthLogged} to go</span>`;
-    const weeksLabel = fullWeeksCount
-      ? `Full weeks only (${fullWeeksCount})`
-      : "No full in-month weeks";
-    const weekChips = (h.fullWeeksBreakdown || []).map(w => `
-      <span class="summary-week-chip ${w.hit ? "summary-week-chip--hit" : "summary-week-chip--miss"}">${w.label}: ${w.logged}/${w.target}</span>
-    `).join("");
-
     return `
       <div class="summary-habit-row">
         <div class="summary-habit-top">
@@ -232,10 +225,10 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
           <div class="summary-habit-fill" style="width:${displayRate}%;background:${barColor}"></div>
         </div>
         <div class="summary-habit-sub">${h.paceStatus}</div>
-        <div class="summary-habit-sub">${weeksLabel}</div>
-        <div class="summary-week-chips">${weekChips}</div>
       </div>`;
   }).join("");
+
+  const calendarHTML = renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount);
 
   card.innerHTML = `
     <div class="summary-card__header">
@@ -267,7 +260,14 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
     </div>
     <div class="summary-habits">
       <div class="summary-habits__label">This Month's Progress</div>
-      ${barsHTML}
+      <div class="summary-habits-grid">
+        <div class="summary-habits-grid__left">
+          ${barsHTML}
+        </div>
+        <div class="summary-habits-grid__right">
+          ${calendarHTML}
+        </div>
+      </div>
     </div>
   `;
 
@@ -281,6 +281,75 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
   });
 
   return card;
+}
+
+function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
+  const [year, month] = yearMonth.split("-").map(Number);
+  const first = new Date(year, month - 1, 1);
+  const daysInMonth = getDaysInMonth(yearMonth);
+  const mondayOffset = (first.getDay() + 6) % 7; // Mon=0
+  const gridStart = new Date(year, month - 1, 1 - mondayOffset);
+  const weekRows = [];
+
+  for (let week = 0; week < 6; week++) {
+    const row = [];
+    for (let d = 0; d < 7; d++) {
+      const date = new Date(gridStart);
+      date.setDate(gridStart.getDate() + week * 7 + d);
+      row.push(date);
+    }
+    weekRows.push(row);
+  }
+
+  const marks = entry.marks || {};
+  const fullWeekByStart = new Map();
+  habitStats.forEach(h => {
+    (h.fullWeeksBreakdown || []).forEach((w, idx) => {
+      if (!fullWeekByStart.has(w.label)) fullWeekByStart.set(w.label, []);
+      fullWeekByStart.get(w.label).push({ name: h.name, logged: w.logged, target: w.target, hit: w.hit });
+    });
+  });
+
+  let fullWeekOrdinal = 0;
+  const weekBlocks = weekRows.map((row) => {
+    const inMonth = row.filter(d => d.getMonth() === (month - 1));
+    const isFullInMonthWeek = inMonth.length === 7;
+    const weekLabel = isFullInMonthWeek ? `Wk${++fullWeekOrdinal}` : null;
+    const badgeRows = (fullWeekByStart.get(weekLabel) || []).map(w => {
+      const state = w.hit ? "hit" : (w.logged >= Math.max(1, w.target - 1) ? "close" : "miss");
+      return `<span class="fw-badge fw-badge--${state}">${w.name} ${w.logged}/${w.target}</span>`;
+    }).join("");
+
+    const dayCells = row.map(date => {
+      const inCurrent = date.getMonth() === (month - 1);
+      const dayNum = date.getDate();
+      const hasAnyMark = inCurrent && habitStats.some(h => (marks[h.name] || []).includes(dayNum));
+      return `<div class="fw-day ${inCurrent ? "" : "fw-day--muted"}">${dayNum}${hasAnyMark ? `<span class="fw-check">✓</span>` : ""}</div>`;
+    }).join("");
+
+    if (isFullInMonthWeek) {
+      return `<div class="fw-week fw-week--full"><div class="fw-week-grid">${dayCells}</div><div class="fw-badges">${badgeRows}</div></div>`;
+    }
+    return `<div class="fw-week"><div class="fw-week-grid">${dayCells}</div></div>`;
+  }).join("");
+
+  return `
+    <div class="fullweek-calendar">
+      <div class="fullweek-calendar__title">${monthName(yearMonth)}</div>
+      <div class="fullweek-calendar__sub">Full-week cadence view (Monday–Sunday only)</div>
+      <div class="fw-dow"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      ${weekBlocks}
+      <div class="fw-legend">
+        <span><i class="fw-dot fw-dot--hit"></i>Target hit</span>
+        <span><i class="fw-dot fw-dot--close"></i>Close</span>
+        <span><i class="fw-dot fw-dot--miss"></i>Missed</span>
+      </div>
+    </div>`;
+}
+
+function monthName(yearMonth) {
+  const [y, m] = yearMonth.split("-").map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
 // ─── LOAD ALL LOGS ────────────────────────────────────────
