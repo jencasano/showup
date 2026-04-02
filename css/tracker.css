@@ -3,6 +3,17 @@
    ═══════════════════════════════════════════════ */
 
 /* ── Section ─────────────────────────────────── */
+.mylog-centered-stack {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.mylog-centered-stack .status-banner,
+.mylog-centered-stack .summary-card {
+  width: 100%;
+}
+
 .tracker-section {
   background: var(--bg-surface);
   border: 2px solid var(--border);

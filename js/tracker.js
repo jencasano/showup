@@ -85,17 +85,22 @@ export function loadMyLog(yearMonth, container, currentUser) {
       container.appendChild(summary);
     } else {
       // ── Desktop: banner + tracker grid + summary ─────────
+      const centeredStack = document.createElement("div");
+      centeredStack.className = "mylog-centered-stack";
+
       if (isCurrentMonth) {
         const banner = renderStatusBanner(entry, todayDate, false);
-        container.appendChild(banner);
+        centeredStack.appendChild(banner);
       }
 
       const section = renderUserSection(entry, yearMonth, user, isCurrentMonth, todayDate);
-      container.appendChild(section);
+      centeredStack.appendChild(section);
 
       const stats = await getUserStats(uid, yearMonth);
       const summary = renderMonthlySummary(entry, stats, yearMonth);
-      container.appendChild(summary);
+      centeredStack.appendChild(summary);
+
+      container.appendChild(centeredStack);
     }
 
     hideLoader();
