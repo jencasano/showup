@@ -115,6 +115,17 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
     // ── Add activity ─────────────────────────────────────
     let activityCount = state.activities.length || 1;
 
+    function syncActivitiesFromUI() {
+      const rows = document.querySelectorAll(".ms-activity-row");
+      state.activities = Array.from(rows, row =>
+        row.querySelector(".ms-activity-input")?.value || ""
+      );
+      state.cadences = Array.from(rows, row => {
+        const selectedBtn = row.querySelector(".ms-cadence-btn.selected");
+        return selectedBtn ? parseInt(selectedBtn.dataset.value) : null;
+      });
+    }
+
     function renderActivityRows() {
       const list = document.getElementById("ms-activities-list");
       list.innerHTML = "";
@@ -122,7 +133,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
       const count = Math.max(activityCount, 1);
       for (let i = 0; i < count; i++) {
         const existingName = state.activities[i] || "";
-        const existingCad  = state.cadences[i]  || 7;
+        const existingCad  = i < state.cadences.length ? state.cadences[i] : 7;
         list.appendChild(buildActivityRow(i + 1, existingName, existingCad));
       }
 
@@ -174,6 +185,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
 
     document.getElementById("ms-add-activity-btn").addEventListener("click", () => {
       if (activityCount >= 5) return;
+      syncActivitiesFromUI();
       activityCount++;
       renderActivityRows();
     });
