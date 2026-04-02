@@ -164,10 +164,10 @@ export function loadAllLogs(yearMonth, container, currentUser) {
 
 // ─── LOAD FOLLOWING LOGS — real-time ─────────────────
 // Watches the current user's own doc for changes to their
-// `following` array. When it changes, tears down and rebuilds
-// individual onSnapshot listeners for each followed user's
-// log entry — so card data is also live.
-//
+// `following` array. Diffs old vs new ids on each change:
+//   — removes listeners + DOM slots for unfollowed users
+//   — adds listeners + DOM slots for newly followed users
+// Always appends a “Follow more people” nudge card at the end.
 // Returns an unsubscribe function that cleans everything up.
 export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToAll) {
   showLoader();
@@ -179,22 +179,19 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     return () => {};
   }
 
-  // Per-followed-user log listeners — torn down whenever the
-  // following list changes so we don't accumulate orphan listeners.
   let logUnsubMap = {};
 
-  // ── Watch THIS user's profile doc for following array changes ──
   const myRef = doc(db, "users", currentUser.uid);
   const unsubMe = onSnapshot(myRef, async (mySnap) => {
     if (!mySnap.exists()) {
-      renderEmpty(container, onSwitchToAll);
+      renderFollowingEmpty(container, onSwitchToAll);
       hideLoader();
       return;
     }
 
     const followingIds = mySnap.data().following || [];
 
-    // Update month-bar stat (Following X people)
+    // Update month-bar stat
     const statEl = document.getElementById("month-bar-stat");
     if (statEl) {
       statEl.textContent = followingIds.length > 0
@@ -203,33 +200,34 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     }
 
     if (followingIds.length === 0) {
-      // Tear down any old log listeners and show empty state
+      // Zero follows — tear down all listeners, show full empty state
       Object.values(logUnsubMap).forEach(u => u());
       logUnsubMap = {};
-      renderEmpty(container, onSwitchToAll);
+      renderFollowingEmpty(container, onSwitchToAll);
       hideLoader();
       return;
     }
 
-    // Figure out which uids were added / removed since last snapshot
+    // Diff old vs new ids
     const newIds = new Set(followingIds);
     const oldIds = new Set(Object.keys(logUnsubMap));
 
-    // Remove listeners for unfollowed users
+    // Remove listeners + cards for unfollowed users
     for (const uid of oldIds) {
       if (!newIds.has(uid)) {
         logUnsubMap[uid]();
         delete logUnsubMap[uid];
-        // Remove their card from DOM
         container.querySelector(`[data-uid="${uid}"]`)?.remove();
       }
     }
 
-    // Add listeners for newly followed users
-    for (const uid of newIds) {
-      if (oldIds.has(uid)) continue; // already listening
+    // Remove the nudge card so we can re-append it at the end
+    container.querySelector(".following-nudge-slot")?.remove();
 
-      // Fetch user profile once
+    // Add listeners + card slots for newly followed users
+    for (const uid of newIds) {
+      if (oldIds.has(uid)) continue;
+
       let userData;
       try {
         const userSnap = await getDoc(doc(db, "users", uid));
@@ -240,21 +238,17 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         continue;
       }
 
-      // Create a placeholder slot so cards stay in follow-order
       const slot = document.createElement("div");
       slot.dataset.uid = uid;
       slot.className = "following-card-slot";
       container.appendChild(slot);
 
-      // Watch their log entry live
       const logRef = doc(db, "logs", yearMonth, "entries", uid);
       const unsubLog = onSnapshot(logRef, (logSnap) => {
         slot.innerHTML = "";
 
         if (!logSnap.exists() || !logSnap.data().activities?.length) {
-          // They haven't set up a tracker this month — show a placeholder card
-          const placeholder = renderPlaceholderCard(userData);
-          slot.appendChild(placeholder);
+          slot.appendChild(renderPlaceholderCard(userData));
           hideLoader();
           return;
         }
@@ -265,11 +259,10 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
           displayName: userData.displayName,
         };
 
-        const card = renderMobileCard(entry, yearMonth, currentUser, {
+        slot.appendChild(renderMobileCard(entry, yearMonth, currentUser, {
           isFollowing: true,
           showFollowBtn: true,
-        });
-        slot.appendChild(card);
+        }));
         hideLoader();
       }, (err) => {
         console.error("Log snapshot error:", err);
@@ -279,7 +272,9 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       logUnsubMap[uid] = unsubLog;
     }
 
-    // If container is still empty (all placeholders pending), show loader
+    // Always append the nudge card last so it sits alongside real cards
+    appendNudgeCard(container, onSwitchToAll);
+
     if (container.children.length === 0) showLoader();
     else hideLoader();
 
@@ -289,7 +284,6 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     hideLoader();
   });
 
-  // Return a cleanup function
   return () => {
     unsubMe();
     Object.values(logUnsubMap).forEach(u => u());
@@ -297,8 +291,8 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   };
 }
 
-// ─── RENDER EMPTY STATE ───────────────────────────────
-function renderEmpty(container, onSwitchToAll) {
+// ─── FULL EMPTY STATE (zero follows) ─────────────────────
+function renderFollowingEmpty(container, onSwitchToAll) {
   container.innerHTML = `
     <div class="following-empty">
       <div class="following-empty-icon">👥</div>
@@ -310,7 +304,23 @@ function renderEmpty(container, onSwitchToAll) {
   container.querySelector("#browse-all-btn")?.addEventListener("click", onSwitchToAll);
 }
 
-// ─── RENDER PLACEHOLDER CARD (no tracker this month) ──
+// ─── NUDGE CARD (alongside real cards, always last) ─────
+function appendNudgeCard(container, onSwitchToAll) {
+  const slot = document.createElement("div");
+  slot.className = "following-nudge-slot";
+  slot.innerHTML = `
+    <div class="following-nudge-card">
+      <div class="following-nudge-icon">👥</div>
+      <p class="following-nudge-title">Follow more people</p>
+      <p class="following-nudge-sub">Visit the All tab to discover and follow other trackers</p>
+      <button class="following-browse-btn" id="nudge-browse-btn">Browse All →</button>
+    </div>
+  `;
+  slot.querySelector("#nudge-browse-btn")?.addEventListener("click", onSwitchToAll);
+  container.appendChild(slot);
+}
+
+// ─── PLACEHOLDER CARD (followed user, no tracker this month) ──
 function renderPlaceholderCard(userData) {
   const { color = "#80B9B9", fontColor = "white", font = "Inter", sticker = "✨", avatarUrl } = userData.decoration || {};
   const card = document.createElement("div");
