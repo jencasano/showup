@@ -34,14 +34,52 @@ export function cadenceLabel(n) {
   return `${cadence}×/wk`;
 }
 
-function habitFulfillmentRate(markedDays, cadence, yearMonth, lastDay) {
-  const logged = markedDays.filter(d => d <= lastDay).length;
-  const target = Math.max(1, Math.ceil(cadence * (lastDay / 7)));
-  return Math.min(1, logged / target);
-}
-
 function hitWeeklyTarget(markedDays, cadence, yearMonth, date) {
   return logsInWeek(markedDays, yearMonth, date) >= cadence;
+}
+
+// ─── Per-habit streak: consecutive weeks this habit hit its target ───
+async function calculateHabitStreak(userId, activity, cadence, yearMonth, markedDays) {
+  const today = new Date();
+  let streak = 0;
+  let checkDate = new Date(today);
+
+  for (let w = 0; w < 52; w++) {
+    const weekStart = getWeekStart(checkDate);
+    const ym = `${weekStart.getFullYear()}-${String(weekStart.getMonth() + 1).padStart(2, "0")}`;
+
+    let marks = markedDays;
+
+    if (ym !== yearMonth) {
+      try {
+        const snap = await getDoc(doc(db, "logs", ym, "entries", userId));
+        if (!snap.exists()) break;
+        const d = snap.data();
+        const activities = d.activities || [];
+        const idx = activities.indexOf(activity);
+        const cadences = d.cadences || activities.map(() => 7);
+        cadence = idx >= 0 ? (cadences[idx] ?? 7) : cadence;
+        marks = (d.marks || {})[activity] || [];
+      } catch (e) {
+        break;
+      }
+    }
+
+    const hit = logsInWeek(marks, ym, checkDate) >= cadence;
+
+    // Skip current incomplete week if not yet hit — start counting from last week
+    if (w === 0 && !hit) {
+      checkDate.setDate(checkDate.getDate() - 7);
+      continue;
+    }
+
+    if (!hit) break;
+
+    streak++;
+    checkDate.setDate(checkDate.getDate() - 7);
+  }
+
+  return streak;
 }
 
 async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, marks) {
@@ -92,9 +130,9 @@ async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, ma
 }
 
 // ─── computeStatsFromEntry ────────────────────────────────
-// Synchronous stat calculation from an in-memory entry object.
-// Used by loadMyLog for in-place summary + banner refresh after a toggle.
-// NOTE: streak stays at 0 here — full async getUserStats sets the real streak.
+// Synchronous — used for optimistic UI updates on toggle.
+// habitStreak is not recalculated here (requires async history lookup);
+// it carries over from the last full getUserStats call via the DOM.
 export function computeStatsFromEntry(entry, yearMonth) {
   const activities = entry.activities || [];
   const cadences   = entry.cadences   || activities.map(() => 7);
@@ -117,12 +155,9 @@ export function computeStatsFromEntry(entry, yearMonth) {
     const logged = (marks[activity] || []).filter(d => d <= lastDay).length;
     const target = Math.max(1, Math.ceil(cad * (lastDay / 7)));
     const rate   = Math.min(100, Math.round(Math.min(1, logged / target) * 100));
-
     const thisWeekLogged = logsInWeek(marks[activity] || [], yearMonth, today);
     const thisWeekTarget = cad;
-    // Weekly rate: how far through this week's target are you? Capped at 100%.
     const weeklyRate = Math.min(100, Math.round((thisWeekLogged / thisWeekTarget) * 100));
-
     return {
       name: activity,
       cadence: cad,
@@ -132,12 +167,14 @@ export function computeStatsFromEntry(entry, yearMonth) {
       rate,
       thisWeekLogged,
       thisWeekTarget,
-      weeklyRate
+      weeklyRate,
+      habitStreak: 0  // placeholder; real value set by getUserStats
     };
   });
 
+  // Overall rate = average of weekly rates (consistent with the bars)
   const overallRate = Math.round(
-    habitStats.reduce((sum, h) => sum + h.rate, 0) / habitStats.length
+    habitStats.reduce((sum, h) => sum + h.weeklyRate, 0) / habitStats.length
   );
 
   return {
@@ -150,7 +187,6 @@ export function computeStatsFromEntry(entry, yearMonth) {
 }
 
 // ─── getUserStats ─────────────────────────────────────────
-// Full async version — fetches from Firestore and computes streak.
 export async function getUserStats(userId, yearMonth) {
   try {
     const logSnap = await getDoc(doc(db, "logs", yearMonth, "entries", userId));
@@ -173,17 +209,21 @@ export async function getUserStats(userId, yearMonth) {
       (marks[activity] || []).forEach(d => { if (d <= lastDay) doneDays.add(d); });
     });
 
+    // Calculate per-habit streaks in parallel
+    const habitStreaks = await Promise.all(
+      activities.map((activity, i) =>
+        calculateHabitStreak(userId, activity, cadences[i] ?? 7, yearMonth, marks[activity] || [])
+      )
+    );
+
     const habitStats = activities.map((activity, i) => {
       const cad    = cadences[i] ?? 7;
       const logged = (marks[activity] || []).filter(d => d <= lastDay).length;
       const target = Math.max(1, Math.ceil(cad * (lastDay / 7)));
       const rate   = Math.min(100, Math.round(Math.min(1, logged / target) * 100));
-
       const thisWeekLogged = logsInWeek(marks[activity] || [], yearMonth, today);
       const thisWeekTarget = cad;
-      // Weekly rate: how far through this week's target are you? Capped at 100%.
       const weeklyRate = Math.min(100, Math.round((thisWeekLogged / thisWeekTarget) * 100));
-
       return {
         name: activity,
         cadence: cad,
@@ -193,12 +233,14 @@ export async function getUserStats(userId, yearMonth) {
         rate,
         thisWeekLogged,
         thisWeekTarget,
-        weeklyRate
+        weeklyRate,
+        habitStreak: habitStreaks[i]
       };
     });
 
+    // Overall rate = average of weekly rates (consistent with the bars)
     const overallRate = Math.round(
-      habitStats.reduce((sum, h) => sum + h.rate, 0) / habitStats.length
+      habitStats.reduce((sum, h) => sum + h.weeklyRate, 0) / habitStats.length
     );
 
     const streak = await calculateWeeklyStreak(

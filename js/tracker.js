@@ -56,9 +56,6 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
   let hasRendered = false;
   let hasUsedInitialStats = false;
 
-  // ── Callback passed into renderMobileCard so it can trigger
-  //    in-place summary + banner refresh without any events or
-  //    full page rebuild. Called immediately on every tap.
   function onMarkToggled(entry) {
     const stats = computeStatsFromEntry(entry, yearMonth);
     if (isCurrentMonth) refreshBannerInPlace(container, entry, todayDate);
@@ -67,8 +64,6 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
   unsubscribe = onSnapshot(entryRef, async (docSnap) => {
 
-    // Skip the snapshot fired by our own pending write — the DOM
-    // is already up to date from the optimistic local update.
     if (hasRendered && docSnap.metadata.hasPendingWrites) return;
 
     if (!docSnap.exists() || !docSnap.data().activities?.length) {
@@ -88,7 +83,6 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
     const user = auth.currentUser;
 
-    // ── First load: full render ──────────────────────────────
     if (!hasRendered) {
       container.innerHTML = "";
 
@@ -96,7 +90,6 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
         if (isCurrentMonth) {
           container.appendChild(renderStatusBanner(entry, todayDate, true));
         }
-        // Pass onMarkToggled so the card can refresh banner+summary on tap.
         container.appendChild(
           renderMobileCard(entry, yearMonth, user, { onMarkToggled })
         );
@@ -127,8 +120,6 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
       return;
     }
 
-    // ── Server-confirmed update from another device/session:
-    //    patch banner and summary in-place, leave grid untouched.
     const stats = computeStatsFromEntry(entry, yearMonth);
     if (isCurrentMonth) refreshBannerInPlace(container, entry, todayDate);
     refreshSummaryInPlace(container, entry, stats, yearMonth);
@@ -140,17 +131,28 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
   });
 }
 
-// ─── PATCH: replace status banner node in-place ───────────
 function refreshBannerInPlace(container, entry, todayDate) {
   const existing = container.querySelector(".status-banner");
   if (!existing) return;
   existing.replaceWith(renderStatusBanner(entry, todayDate, isMobile()));
 }
 
-// ─── PATCH: replace summary card node in-place ────────────
 function refreshSummaryInPlace(container, entry, stats, yearMonth) {
   const existing = container.querySelector(".summary-card");
   if (!existing) return;
+  // Preserve per-habit streaks from the existing DOM (they're async and don't
+  // get recalculated on every toggle via computeStatsFromEntry)
+  const existingStreaks = {};
+  existing.querySelectorAll(".summary-habit-streak[data-habit]").forEach(el => {
+    existingStreaks[el.dataset.habit] = parseInt(el.dataset.streak || "0", 10);
+  });
+  if (stats.habitStats) {
+    stats.habitStats.forEach(h => {
+      if (h.habitStreak === 0 && existingStreaks[h.name] != null) {
+        h.habitStreak = existingStreaks[h.name];
+      }
+    });
+  }
   existing.replaceWith(renderMonthlySummary(entry, stats, yearMonth));
 }
 
@@ -185,19 +187,18 @@ function renderStatusBanner(entry, todayDate, isMob) {
   return banner;
 }
 
-// ─── MONTHLY SUMMARY CARD ─────────────────────────────────
+// ─── PROGRESS SUMMARY CARD ────────────────────────────────
 function renderMonthlySummary(entry, stats, yearMonth) {
   const { overallRate, streak, doneThisMonth, habitStats } = stats;
   const activities = entry.activities || [];
+  const [year, month] = yearMonth.split("-").map(Number);
+  const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
 
   const card = document.createElement("div");
   card.className = "summary-card";
 
   const barsHTML = habitStats.map((h, i) => {
     const color = getActivityColor(i);
-    // Bar and % are now based on this week's progress (weeklyRate),
-    // not the monthly pro-rated rate. This gives users a stable,
-    // actionable view that resets cleanly each week.
     const displayRate = h.weeklyRate;
     const barColor = displayRate >= 80 ? "var(--color-success, #22C55E)"
                    : displayRate >= 50 ? "var(--color-warning, #F59E0B)"
@@ -205,6 +206,9 @@ function renderMonthlySummary(entry, stats, yearMonth) {
     const weekLabel = h.thisWeekLogged >= h.thisWeekTarget
       ? `Done for the week ✓`
       : `${h.thisWeekLogged} of ${h.thisWeekTarget} this week`;
+    const streakHTML = h.habitStreak > 0
+      ? `<span class="summary-habit-streak" data-habit="${h.name}" data-streak="${h.habitStreak}">🔥 ${h.habitStreak}wk</span>`
+      : `<span class="summary-habit-streak summary-habit-streak--empty" data-habit="${h.name}" data-streak="0"></span>`;
     return `
       <div class="summary-habit-row">
         <div class="summary-habit-top">
@@ -213,6 +217,7 @@ function renderMonthlySummary(entry, stats, yearMonth) {
             ${h.name}
           </span>
           <div class="summary-habit-meta">
+            ${streakHTML}
             <span class="summary-habit-cad">${h.cadenceLabel}</span>
             <span class="summary-habit-pct" style="color:${barColor}">${displayRate}%</span>
           </div>
@@ -227,8 +232,8 @@ function renderMonthlySummary(entry, stats, yearMonth) {
   card.innerHTML = `
     <div class="summary-card__header">
       <div>
-        <div class="summary-card__title">Monthly Summary</div>
-        <div class="summary-card__sub">Equal-weighted across ${activities.length} habit${activities.length !== 1 ? "s" : ""}</div>
+        <div class="summary-card__title">My Progress</div>
+        <div class="summary-card__sub">${activities.length} habit${activities.length !== 1 ? "s" : ""} · ${monthName} ${year}</div>
       </div>
       <button class="summary-share-btn" title="Share your stats">↗ Share</button>
     </div>
@@ -236,7 +241,7 @@ function renderMonthlySummary(entry, stats, yearMonth) {
       <div class="summary-stat">
         <span class="summary-stat__icon">✅</span>
         <div class="summary-stat__val">${overallRate}<span class="summary-stat__unit">%</span></div>
-        <div class="summary-stat__label">Overall Rate</div>
+        <div class="summary-stat__label">Weekly Rate</div>
       </div>
       <div class="summary-stat">
         <span class="summary-stat__icon">🔥</span>
@@ -254,13 +259,13 @@ function renderMonthlySummary(entry, stats, yearMonth) {
       Each habit's fulfillment is averaged equally — so a daily habit doesn't outweigh a 2×/week habit.
     </div>
     <div class="summary-habits">
-      <div class="summary-habits__label">Per Habit</div>
+      <div class="summary-habits__label">This Week's Progress</div>
       ${barsHTML}
     </div>
   `;
 
   card.querySelector(".summary-share-btn").addEventListener("click", () => {
-    const text = `My showup. stats for this month:\n✅ ${overallRate}% overall rate\n🔥 ${streak} week streak\n${habitStats.map(h => `• ${h.name}: ${h.weeklyRate}% this week`).join("\n")}`;
+    const text = `My showup. stats for ${monthName} ${year}:\n✅ ${overallRate}% weekly rate\n🔥 ${streak} week streak\n${habitStats.map(h => `• ${h.name}: ${h.weeklyRate}% this week${h.habitStreak > 0 ? ` (🔥 ${h.habitStreak}wk streak)` : ""}`).join("\n")}`;
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
     } else {
@@ -615,7 +620,6 @@ async function toggleDay(
     cell.style.color       = "white";
   }
 
-  // Update entry.marks in-place so onMarkToggled sees the new state.
   if (entry) {
     if (!entry.marks) entry.marks = {};
     entry.marks[activity] = markedDays;
