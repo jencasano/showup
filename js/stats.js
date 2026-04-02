@@ -18,6 +18,12 @@ function toDate(yearMonth, day) {
   return new Date(y, m - 1, day);
 }
 
+function getReferenceDate(yearMonth, isCurrentMonth, lastDay) {
+  if (isCurrentMonth) return new Date();
+  const [y, m] = yearMonth.split("-").map(Number);
+  return new Date(y, m - 1, lastDay);
+}
+
 function logsInWeek(markedDays, yearMonth, referenceDate) {
   const weekStart = getWeekStart(referenceDate);
   const weekEnd   = new Date(weekStart);
@@ -179,8 +185,8 @@ export function computeStatsFromEntry(entry, yearMonth) {
 
   const daysInMonth    = getDaysInMonth(yearMonth);
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
-  const today          = new Date();
-  const lastDay        = isCurrentMonth ? today.getDate() : daysInMonth;
+  const lastDay        = isCurrentMonth ? new Date().getDate() : daysInMonth;
+  const today          = getReferenceDate(yearMonth, isCurrentMonth, lastDay);
 
   const doneDays = new Set();
   activities.forEach(activity => {
@@ -219,8 +225,8 @@ export async function getUserStats(userId, yearMonth) {
 
     const daysInMonth    = getDaysInMonth(yearMonth);
     const isCurrentMonth = yearMonth === getCurrentYearMonth();
-    const today          = new Date();
-    const lastDay        = isCurrentMonth ? today.getDate() : daysInMonth;
+    const lastDay        = isCurrentMonth ? new Date().getDate() : daysInMonth;
+    const today          = getReferenceDate(yearMonth, isCurrentMonth, lastDay);
 
     const doneDays = new Set();
     activities.forEach(activity => {
