@@ -1,20 +1,22 @@
 /* ═══════════════════════════════════════════════
-   CAL CARD — Mobile/All-tab calendar card view
+   CAL CARD — Mobile/All/Following tab cards
    ═══════════════════════════════════════════════ */
 
-/* ── All Tab Grid Layout ─────────────────────── */
+/* ── All Tab + Following Tab Grid Layout ─────── */
 /*
-   NOTE: app.js sets tabAll.style.display = "grid" (not "block")
-   when switching to the All tab, so this rule activates correctly.
+   NOTE: app.js sets display="grid" (not "block")
+   when switching to these tabs, so the grid activates.
 */
-#tab-all {
+#tab-all,
+#tab-following {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
   align-items: start;
 }
 
-#tab-all .empty-state {
+#tab-all .empty-state,
+#tab-following .empty-state {
   grid-column: 1 / -1;
 }
 
@@ -32,7 +34,6 @@
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   transition: box-shadow var(--transition), transform var(--transition);
-  /* Ensure card doesn't stretch beyond grid cell */
   width: 100%;
   min-width: 0;
 }
@@ -53,10 +54,7 @@
   min-height: 44px;
 }
 
-/* Avatar */
-.cal-card-avatar-wrap {
-  flex-shrink: 0;
-}
+.cal-card-avatar-wrap { flex-shrink: 0; }
 
 .cal-card-avatar {
   width: 28px;
@@ -81,7 +79,6 @@
   color: white;
 }
 
-/* Name + sticker */
 .cal-card-name-wrap {
   flex: 1;
   display: flex;
@@ -97,10 +94,7 @@
   text-overflow: ellipsis;
 }
 
-.cal-card-sticker {
-  font-size: 0.95rem;
-  flex-shrink: 0;
-}
+.cal-card-sticker { font-size: 0.95rem; flex-shrink: 0; }
 
 /* "you" pill */
 .cal-you-pill {
@@ -114,14 +108,11 @@
   flex-shrink: 0;
 }
 
-/* ── Follow Button ───────────────────────────────────
-   Uses fixed palette colors so it's always legible
-   regardless of the user's chosen badge background:
-   — Unfollow state:  dark navy text on cream bg with coral border
-   — Following state: cream bg with coral border + checkmark
-   This combination passes contrast on every badge color
-   in the app palette (amber, teal, coral, lavender, mint).
-   ─────────────────────────────────────────────────── */
+/* ── Follow Button ───────────────────────────────
+   Fixed palette — always legible on any badge color.
+   Unfollow: cream bg + coral border + navy text
+   Following: coral fill + cream text
+   ─────────────────────────────────────────────── */
 .cal-follow-btn {
   flex-shrink: 0;
   display: inline-flex;
@@ -136,11 +127,9 @@
   white-space: nowrap;
   font-family: var(--font-base);
   letter-spacing: 0.01em;
-
-  /* Fixed palette — always visible on any badge color */
-  background: #FFFAF5;        /* --bg warm cream */
-  color: #2A2E45;             /* --text navy */
-  border: 1.5px solid #D8584E; /* --color-primary coral */
+  background: #FFFAF5;
+  color: #2A2E45;
+  border: 1.5px solid #D8584E;
 }
 
 .cal-follow-btn:hover:not(:disabled) {
@@ -150,8 +139,8 @@
 }
 
 .cal-follow-btn.following {
-  background: #D8584E;        /* coral fill when following */
-  color: #FFFAF5;             /* cream text */
+  background: #D8584E;
+  color: #FFFAF5;
   border-color: #D8584E;
 }
 
@@ -160,21 +149,11 @@
   border-color: #C4473D;
 }
 
-.cal-follow-btn.loading {
-  opacity: 0.65;
-  cursor: wait;
-}
-
-.cal-follow-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
+.cal-follow-btn.loading { opacity: 0.65; cursor: wait; }
+.cal-follow-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
 .follow-btn-plus,
-.follow-btn-check {
-  font-size: 0.75rem;
-  line-height: 1;
-}
+.follow-btn-check { font-size: 0.75rem; line-height: 1; }
 
 /* ── Filter Bar ──────────────────────────────── */
 .cal-filter-bar {
@@ -204,9 +183,7 @@
 }
 
 /* ── Calendar Body ───────────────────────────── */
-.cal-card-body {
-  padding: 8px 10px;
-}
+.cal-card-body { padding: 8px 10px; }
 
 .cal-grid-headers {
   display: grid;
@@ -264,17 +241,9 @@
   display: block;
 }
 
-/* Full — all activities done */
-.cal-day-full {
-  border-radius: var(--radius-md);
-}
+.cal-day-full  { border-radius: var(--radius-md); }
+.cal-day-partial { border-radius: var(--radius-md); }
 
-/* Partial — some activities done */
-.cal-day-partial {
-  border-radius: var(--radius-md);
-}
-
-/* Today */
 .cal-day-today {
   outline: 1.5px solid var(--color-primary);
   outline-offset: 1px;
@@ -286,10 +255,7 @@
   font-weight: 700;
 }
 
-/* Future */
-.cal-day-future .cal-day-num {
-  opacity: 0.35;
-}
+.cal-day-future .cal-day-num { opacity: 0.35; }
 
 /* ── Footer Stats ─────────────────────────────── */
 .cal-card-footer {
@@ -309,9 +275,7 @@
   border-right: 1px solid var(--border-faint);
 }
 
-.cal-stat:last-child {
-  border-right: none;
-}
+.cal-stat:last-child { border-right: none; }
 
 .cal-stat-val {
   font-size: 0.82rem;
@@ -326,6 +290,91 @@
   text-transform: uppercase;
   letter-spacing: 0.07em;
   font-weight: 600;
+}
+
+/* ── Placeholder Card (no tracker this month) ── */
+.cal-card-placeholder {
+  opacity: 0.75;
+}
+
+.cal-card-placeholder-body {
+  padding: 20px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-subtle);
+}
+
+.cal-card-placeholder-text {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  font-style: italic;
+  text-align: center;
+}
+
+/* ── Following tab — slot wrapper ────────────── */
+.following-card-slot {
+  /* slots sit inside the CSS grid naturally */
+  min-width: 0;
+}
+
+/* ── Following Empty State ───────────────────── */
+.following-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--bg-surface);
+  gap: 10px;
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.following-empty-icon {
+  font-size: 2.2rem;
+  margin-bottom: 4px;
+  opacity: 0.85;
+}
+
+.following-empty-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.following-empty-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 260px;
+  line-height: 1.5;
+}
+
+.following-browse-btn {
+  margin-top: 6px;
+  padding: 8px 20px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  border: 1.5px solid var(--color-primary);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-base);
+  transition: all var(--transition);
+}
+
+.following-browse-btn:hover {
+  background: var(--color-primary);
+  color: white;
 }
 
 /* ── Day Sheet (Bottom Sheet) ──────────────────── */
@@ -418,7 +467,8 @@
 
 /* ── Responsive ──────────────────────────────── */
 @media (max-width: 768px) {
-  #tab-all {
+  #tab-all,
+  #tab-following {
     grid-template-columns: 1fr;
     gap: 12px;
   }
@@ -426,10 +476,16 @@
   #tab-mylog .cal-card {
     max-width: 100%;
   }
+
+  .following-empty {
+    padding: 36px 16px;
+    max-width: 100%;
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1100px) {
-  #tab-all {
+  #tab-all,
+  #tab-following {
     grid-template-columns: repeat(2, 1fr);
   }
 }

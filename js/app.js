@@ -1,6 +1,6 @@
 import { auth } from "./firebase-config.js";
 import { signIn, signOutUser, onAuthReady, hasCompletedSetup } from "./auth.js";
-import { loadMyLog, loadAllLogs } from "./tracker.js";
+import { loadMyLog, loadAllLogs, loadFollowingLogs } from "./tracker.js";
 import { getCurrentYearMonth, formatYearMonth, getPrevYearMonth, getNextYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { checkMonthlySetup } from "./month-setup.js";
@@ -18,10 +18,11 @@ const tabMyLog     = document.getElementById("tab-mylog");
 const tabFollowing = document.getElementById("tab-following");
 const tabAll       = document.getElementById("tab-all");
 
-let activeYearMonth = getCurrentYearMonth();
-let activeTab       = "mylog";
-let currentUser     = null;
-let allLogsUnsub    = null;
+let activeYearMonth   = getCurrentYearMonth();
+let activeTab         = "mylog";
+let currentUser       = null;
+let allLogsUnsub      = null;
+let followingUnsub    = null;  // cleans up Following tab listeners
 
 // ── Month nav ─────────────────────────────────
 function updateMonthNav() {
@@ -45,7 +46,8 @@ nextBtn.addEventListener("click", () => {
 // ── Streak stat ───────────────────────────────
 async function updateStat() {
   if (!currentUser || activeTab !== "mylog") {
-    monthBarStat.textContent = "";
+    // Following tab manages its own stat label
+    if (activeTab !== "following") monthBarStat.textContent = "";
     return;
   }
   const { streak, doneThisMonth, totalThisMonth } = await getUserStats(currentUser.uid, activeYearMonth);
@@ -56,27 +58,31 @@ async function updateStat() {
 }
 
 // ── Tab switching ─────────────────────────────
-function switchTab(tab) {
+export function switchTab(tab) {
   activeTab = tab;
 
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.tab === tab);
   });
-
   document.querySelectorAll(".bottom-tab").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.tab === tab);
   });
 
-  // Use correct display values so CSS grid/block rules are respected
   tabMyLog.style.display     = tab === "mylog"     ? "block" : "none";
-  tabFollowing.style.display = tab === "following" ? "block" : "none";
-  // ⚠️ Must be "grid" not "block" so the CSS grid layout on #tab-all works
+  tabFollowing.style.display = tab === "following" ? "grid"  : "none";
   tabAll.style.display       = tab === "all"       ? "grid"  : "none";
 
   // Clean up All tab listener when leaving
   if (tab !== "all" && allLogsUnsub) {
     allLogsUnsub();
     allLogsUnsub = null;
+  }
+
+  // Clean up Following tab listeners when leaving
+  if (tab !== "following" && followingUnsub) {
+    followingUnsub();
+    followingUnsub = null;
+    monthBarStat.textContent = "";
   }
 
   loadActiveTab();
@@ -86,13 +92,19 @@ function switchTab(tab) {
 async function loadActiveTab() {
   if (activeTab === "mylog") {
     await loadMyLog(activeYearMonth, tabMyLog, currentUser);
+
   } else if (activeTab === "following") {
-    tabFollowing.innerHTML = `<p class="empty-state">Following tab — coming soon! 👀</p>`;
+    // Tear down previous listener before starting a new one
+    if (followingUnsub) { followingUnsub(); followingUnsub = null; }
+    followingUnsub = loadFollowingLogs(
+      activeYearMonth,
+      tabFollowing,
+      currentUser,
+      () => switchTab("all")   // "Browse All →" callback
+    );
+
   } else if (activeTab === "all") {
-    if (allLogsUnsub) {
-      allLogsUnsub();
-      allLogsUnsub = null;
-    }
+    if (allLogsUnsub) { allLogsUnsub(); allLogsUnsub = null; }
     allLogsUnsub = loadAllLogs(activeYearMonth, tabAll, currentUser);
   }
 }

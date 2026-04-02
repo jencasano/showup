@@ -29,7 +29,6 @@ export function getActivityColor(index) {
   return ACTIVITY_COLORS[index % ACTIVITY_COLORS.length];
 }
 
-// Detect mobile
 function isMobile() {
   return window.innerWidth <= 768;
 }
@@ -70,10 +69,7 @@ export function loadMyLog(yearMonth, container, currentUser) {
     const entry = { id: uid, ...docSnap.data() };
 
     const userSnap = await getDoc(doc(db, "users", uid));
-    if (!userSnap.exists()) {
-      hideLoader();
-      return;
-    }
+    if (!userSnap.exists()) { hideLoader(); return; }
     entry.displayName = userSnap.data().displayName;
 
     const user = auth.currentUser;
@@ -100,14 +96,11 @@ export function loadAllLogs(yearMonth, container, currentUser) {
   container.innerHTML = "";
 
   const entriesRef = collection(db, "logs", yearMonth, "entries");
-  const isCurrentMonth = yearMonth === getCurrentYearMonth();
-  const todayDate = new Date().getDate();
 
   return onSnapshot(entriesRef, async (snapshot) => {
     const entries = [];
 
     for (const docSnap of snapshot.docs) {
-      // Skip the current user — they have their own Mine tab
       if (docSnap.id === currentUser?.uid) continue;
 
       const entry = { id: docSnap.id, ...docSnap.data() };
@@ -130,7 +123,7 @@ export function loadAllLogs(yearMonth, container, currentUser) {
       return;
     }
 
-    // Load current user's follows to decide button state
+    // Load current user's follows for button state
     let myFollows = new Set();
     if (currentUser?.uid) {
       try {
@@ -148,10 +141,10 @@ export function loadAllLogs(yearMonth, container, currentUser) {
 
     // Followed users first, then alphabetical
     entries.sort((a, b) => {
-      const aFollowed = myFollows.has(a.id);
-      const bFollowed = myFollows.has(b.id);
-      if (aFollowed && !bFollowed) return -1;
-      if (!aFollowed && bFollowed) return 1;
+      const aF = myFollows.has(a.id);
+      const bF = myFollows.has(b.id);
+      if (aF && !bF) return -1;
+      if (!aF && bF) return 1;
       return (a.displayName || "").localeCompare(b.displayName || "");
     });
 
@@ -169,7 +162,181 @@ export function loadAllLogs(yearMonth, container, currentUser) {
   });
 }
 
-// ─── RENDER ONE USER SECTION (desktop) ────────────────
+// ─── LOAD FOLLOWING LOGS — real-time ─────────────────
+// Watches the current user's own doc for changes to their
+// `following` array. When it changes, tears down and rebuilds
+// individual onSnapshot listeners for each followed user's
+// log entry — so card data is also live.
+//
+// Returns an unsubscribe function that cleans everything up.
+export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToAll) {
+  showLoader();
+  container.innerHTML = "";
+
+  if (!currentUser?.uid) {
+    hideLoader();
+    container.innerHTML = `<p class="empty-state">Not logged in.</p>`;
+    return () => {};
+  }
+
+  // Per-followed-user log listeners — torn down whenever the
+  // following list changes so we don't accumulate orphan listeners.
+  let logUnsubMap = {};
+
+  // ── Watch THIS user's profile doc for following array changes ──
+  const myRef = doc(db, "users", currentUser.uid);
+  const unsubMe = onSnapshot(myRef, async (mySnap) => {
+    if (!mySnap.exists()) {
+      renderEmpty(container, onSwitchToAll);
+      hideLoader();
+      return;
+    }
+
+    const followingIds = mySnap.data().following || [];
+
+    // Update month-bar stat (Following X people)
+    const statEl = document.getElementById("month-bar-stat");
+    if (statEl) {
+      statEl.textContent = followingIds.length > 0
+        ? `Following ${followingIds.length} ${followingIds.length === 1 ? "person" : "people"} this month`
+        : "";
+    }
+
+    if (followingIds.length === 0) {
+      // Tear down any old log listeners and show empty state
+      Object.values(logUnsubMap).forEach(u => u());
+      logUnsubMap = {};
+      renderEmpty(container, onSwitchToAll);
+      hideLoader();
+      return;
+    }
+
+    // Figure out which uids were added / removed since last snapshot
+    const newIds = new Set(followingIds);
+    const oldIds = new Set(Object.keys(logUnsubMap));
+
+    // Remove listeners for unfollowed users
+    for (const uid of oldIds) {
+      if (!newIds.has(uid)) {
+        logUnsubMap[uid]();
+        delete logUnsubMap[uid];
+        // Remove their card from DOM
+        container.querySelector(`[data-uid="${uid}"]`)?.remove();
+      }
+    }
+
+    // Add listeners for newly followed users
+    for (const uid of newIds) {
+      if (oldIds.has(uid)) continue; // already listening
+
+      // Fetch user profile once
+      let userData;
+      try {
+        const userSnap = await getDoc(doc(db, "users", uid));
+        if (!userSnap.exists()) continue;
+        userData = userSnap.data();
+      } catch (e) {
+        console.warn("Could not fetch user:", uid, e);
+        continue;
+      }
+
+      // Create a placeholder slot so cards stay in follow-order
+      const slot = document.createElement("div");
+      slot.dataset.uid = uid;
+      slot.className = "following-card-slot";
+      container.appendChild(slot);
+
+      // Watch their log entry live
+      const logRef = doc(db, "logs", yearMonth, "entries", uid);
+      const unsubLog = onSnapshot(logRef, (logSnap) => {
+        slot.innerHTML = "";
+
+        if (!logSnap.exists() || !logSnap.data().activities?.length) {
+          // They haven't set up a tracker this month — show a placeholder card
+          const placeholder = renderPlaceholderCard(userData);
+          slot.appendChild(placeholder);
+          hideLoader();
+          return;
+        }
+
+        const entry = {
+          id: uid,
+          ...logSnap.data(),
+          displayName: userData.displayName,
+        };
+
+        const card = renderMobileCard(entry, yearMonth, currentUser, {
+          isFollowing: true,
+          showFollowBtn: true,
+        });
+        slot.appendChild(card);
+        hideLoader();
+      }, (err) => {
+        console.error("Log snapshot error:", err);
+        hideLoader();
+      });
+
+      logUnsubMap[uid] = unsubLog;
+    }
+
+    // If container is still empty (all placeholders pending), show loader
+    if (container.children.length === 0) showLoader();
+    else hideLoader();
+
+  }, (err) => {
+    console.error("User snapshot error:", err);
+    showToast("Failed to load following.", "error");
+    hideLoader();
+  });
+
+  // Return a cleanup function
+  return () => {
+    unsubMe();
+    Object.values(logUnsubMap).forEach(u => u());
+    logUnsubMap = {};
+  };
+}
+
+// ─── RENDER EMPTY STATE ───────────────────────────────
+function renderEmpty(container, onSwitchToAll) {
+  container.innerHTML = `
+    <div class="following-empty">
+      <div class="following-empty-icon">👥</div>
+      <h3 class="following-empty-title">Follow more people</h3>
+      <p class="following-empty-sub">Visit the All tab to discover and follow other trackers</p>
+      <button class="following-browse-btn" id="browse-all-btn">Browse All →</button>
+    </div>
+  `;
+  container.querySelector("#browse-all-btn")?.addEventListener("click", onSwitchToAll);
+}
+
+// ─── RENDER PLACEHOLDER CARD (no tracker this month) ──
+function renderPlaceholderCard(userData) {
+  const { color = "#80B9B9", fontColor = "white", font = "Inter", sticker = "✨", avatarUrl } = userData.decoration || {};
+  const card = document.createElement("div");
+  card.className = "cal-card cal-card-placeholder";
+  card.style.borderColor = color;
+
+  const avatarHTML = avatarUrl
+    ? `<img src="${avatarUrl}" class="cal-card-avatar" alt="avatar" />`
+    : `<div class="cal-card-avatar-initials">${(userData.displayName || "?").charAt(0).toUpperCase()}</div>`;
+
+  card.innerHTML = `
+    <div class="cal-card-badge" style="background:${color};color:${fontColor};font-family:'${font}',sans-serif;">
+      <div class="cal-card-avatar-wrap">${avatarHTML}</div>
+      <div class="cal-card-name-wrap">
+        <span class="cal-card-name">${userData.displayName}</span>
+        <span class="cal-card-sticker">${sticker}</span>
+      </div>
+    </div>
+    <div class="cal-card-placeholder-body">
+      <span class="cal-card-placeholder-text">No tracker set up this month yet</span>
+    </div>
+  `;
+  return card;
+}
+
+// ─── RENDER ONE USER SECTION (desktop My Log) ─────────
 function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayDate) {
   const isOwner = currentUser && currentUser.uid === entry.id;
   const daysInMonth = getDaysInMonth(yearMonth);
@@ -275,7 +442,7 @@ function renderActivityRow(activity, daysInMonth, markedDays, activityColor, mar
   return row;
 }
 
-// ─── TOGGLE A DAY (desktop) ─────────────────────────
+// ─── TOGGLE A DAY (desktop) ──────────────────────────
 async function toggleDay(cell, day, activity, markedDays, activityColor, marker, yearMonth, userId) {
   const isMarked = markedDays.includes(day);
 
