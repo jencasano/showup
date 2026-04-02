@@ -61,8 +61,8 @@ function hitWeeklyTarget(markedDays, cadence, yearMonth, date) {
 }
 
 // ─── Per-habit streak: consecutive weeks this habit hit its target ───
-async function calculateHabitStreak(userId, activity, cadence, yearMonth, markedDays) {
-  const today = new Date();
+async function calculateHabitStreak(userId, activity, cadence, yearMonth, markedDays, referenceDate = new Date()) {
+  const today = new Date(referenceDate);
   let streak = 0;
   let checkDate = new Date(today);
 
@@ -103,8 +103,8 @@ async function calculateHabitStreak(userId, activity, cadence, yearMonth, marked
   return streak;
 }
 
-async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, marks) {
-  const today = new Date();
+async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, marks, referenceDate = new Date()) {
+  const today = new Date(referenceDate);
   let streak = 0;
   let checkDate = new Date(today);
 
@@ -235,7 +235,7 @@ export async function getUserStats(userId, yearMonth) {
 
     const habitStreaks = await Promise.all(
       activities.map((activity, i) =>
-        calculateHabitStreak(userId, activity, cadences[i] ?? 7, yearMonth, marks[activity] || [])
+        calculateHabitStreak(userId, activity, cadences[i] ?? 7, yearMonth, marks[activity] || [], today)
       )
     );
 
@@ -248,7 +248,7 @@ export async function getUserStats(userId, yearMonth) {
     );
 
     const streak = await calculateWeeklyStreak(
-      userId, yearMonth, activities, cadences, marks
+      userId, yearMonth, activities, cadences, marks, today
     );
 
     return {
