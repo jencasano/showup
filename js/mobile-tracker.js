@@ -1,5 +1,8 @@
 import { db } from "./firebase-config.js";
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  doc, getDoc, setDoc, updateDoc,
+  arrayUnion, arrayRemove
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getDaysInMonth, getCurrentYearMonth } from "./utils.js";
 import { getActivityColor } from "./tracker.js";
 import { showToast } from "./ui.js";
@@ -41,7 +44,6 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   if (avatarUrl) {
     avatarEl.innerHTML = `<img src="${avatarUrl}" class="cal-card-avatar" alt="avatar" />`;
   } else {
-    // Initials fallback
     const initials = (entry.displayName || "?").charAt(0).toUpperCase();
     avatarEl.innerHTML = `<div class="cal-card-avatar-initials">${initials}</div>`;
   }
@@ -56,29 +58,38 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   badge.appendChild(avatarEl);
   badge.appendChild(nameWrap);
 
-  // Follow / Unfollow button (only on All tab, not for self)
+  // ── Follow / Unfollow button ────────────────────────
+  // Only shown in All tab for other users. Uses fixed palette
+  // colors (#2A2E45 on #FFFAF5) so it's legible across ALL
+  // possible user badge background colors.
   if (showFollowBtn && !isOwner && currentUser) {
     const followBtn = document.createElement("button");
     followBtn.className = `cal-follow-btn ${following ? "following" : ""}`;
-    followBtn.textContent = following ? "Following ✓" : "+ Follow";
+    followBtn.innerHTML = following
+      ? `<span class="follow-btn-check">✓</span> Following`
+      : `<span class="follow-btn-plus">+</span> Follow`;
 
     followBtn.addEventListener("click", async (e) => {
       e.stopPropagation();
       if (followLoading) return;
       followLoading = true;
       followBtn.disabled = true;
+      followBtn.classList.add("loading");
 
       try {
         const myRef = doc(db, "users", currentUser.uid);
+
+        // Use setDoc with merge:true so it works even if
+        // the 'following' field doesn't exist yet on the doc
         if (following) {
-          await updateDoc(myRef, { following: arrayRemove(entry.id) });
+          await setDoc(myRef, { following: arrayRemove(entry.id) }, { merge: true });
           following = false;
-          followBtn.textContent = "+ Follow";
+          followBtn.innerHTML = `<span class="follow-btn-plus">+</span> Follow`;
           followBtn.classList.remove("following");
         } else {
-          await updateDoc(myRef, { following: arrayUnion(entry.id) });
+          await setDoc(myRef, { following: arrayUnion(entry.id) }, { merge: true });
           following = true;
-          followBtn.textContent = "Following ✓";
+          followBtn.innerHTML = `<span class="follow-btn-check">✓</span> Following`;
           followBtn.classList.add("following");
         }
       } catch (err) {
@@ -87,6 +98,7 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
       } finally {
         followLoading = false;
         followBtn.disabled = false;
+        followBtn.classList.remove("loading");
       }
     });
 
@@ -287,7 +299,7 @@ function renderFooter(footer, entry, yearMonth, todayDate, isCurrentMonth, color
     if (activities.some(act => (marks[act] || []).includes(d))) doneDays++;
   }
 
-  // Simple streak — count backwards from lastDay
+  // Streak: count consecutive days backwards from lastDay
   let s = lastDay;
   while (s >= 1 && activities.some(act => (marks[act] || []).includes(s))) {
     streak++;

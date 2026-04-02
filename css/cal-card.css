@@ -3,6 +3,10 @@
    ═══════════════════════════════════════════════ */
 
 /* ── All Tab Grid Layout ─────────────────────── */
+/*
+   NOTE: app.js sets tabAll.style.display = "grid" (not "block")
+   when switching to the All tab, so this rule activates correctly.
+*/
 #tab-all {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -14,7 +18,7 @@
   grid-column: 1 / -1;
 }
 
-/* Mine tab — single full-width card */
+/* Mine tab — single centered card */
 #tab-mylog .cal-card {
   max-width: 480px;
   margin: 0 auto;
@@ -28,6 +32,9 @@
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   transition: box-shadow var(--transition), transform var(--transition);
+  /* Ensure card doesn't stretch beyond grid cell */
+  width: 100%;
+  min-width: 0;
 }
 
 .cal-card:hover {
@@ -107,34 +114,66 @@
   flex-shrink: 0;
 }
 
-/* ── Follow Button ───────────────────────────── */
+/* ── Follow Button ───────────────────────────────────
+   Uses fixed palette colors so it's always legible
+   regardless of the user's chosen badge background:
+   — Unfollow state:  dark navy text on cream bg with coral border
+   — Following state: cream bg with coral border + checkmark
+   This combination passes contrast on every badge color
+   in the app palette (amber, teal, coral, lavender, mint).
+   ─────────────────────────────────────────────────── */
 .cal-follow-btn {
   flex-shrink: 0;
-  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 11px;
   border-radius: var(--radius-full);
   font-size: 0.68rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition);
-  border: 1.5px solid rgba(255,255,255,0.6);
-  background: transparent;
-  color: inherit;
-  letter-spacing: 0.01em;
+  transition: all 0.18s ease;
   white-space: nowrap;
+  font-family: var(--font-base);
+  letter-spacing: 0.01em;
+
+  /* Fixed palette — always visible on any badge color */
+  background: #FFFAF5;        /* --bg warm cream */
+  color: #2A2E45;             /* --text navy */
+  border: 1.5px solid #D8584E; /* --color-primary coral */
 }
 
 .cal-follow-btn:hover:not(:disabled) {
-  background: rgba(255,255,255,0.25);
+  background: #FFF0EC;
+  border-color: #C4473D;
+  color: #C4473D;
 }
 
 .cal-follow-btn.following {
-  background: rgba(255,255,255,0.2);
-  border-color: rgba(255,255,255,0.5);
+  background: #D8584E;        /* coral fill when following */
+  color: #FFFAF5;             /* cream text */
+  border-color: #D8584E;
+}
+
+.cal-follow-btn.following:hover:not(:disabled) {
+  background: #C4473D;
+  border-color: #C4473D;
+}
+
+.cal-follow-btn.loading {
+  opacity: 0.65;
+  cursor: wait;
 }
 
 .cal-follow-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
+}
+
+.follow-btn-plus,
+.follow-btn-check {
+  font-size: 0.75rem;
+  line-height: 1;
 }
 
 /* ── Filter Bar ──────────────────────────────── */

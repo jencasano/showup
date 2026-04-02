@@ -67,9 +67,11 @@ function switchTab(tab) {
     btn.classList.toggle("active", btn.dataset.tab === tab);
   });
 
+  // Use correct display values so CSS grid/block rules are respected
   tabMyLog.style.display     = tab === "mylog"     ? "block" : "none";
   tabFollowing.style.display = tab === "following" ? "block" : "none";
-  tabAll.style.display       = tab === "all"       ? "block" : "none";
+  // ⚠️ Must be "grid" not "block" so the CSS grid layout on #tab-all works
+  tabAll.style.display       = tab === "all"       ? "grid"  : "none";
 
   // Clean up All tab listener when leaving
   if (tab !== "all" && allLogsUnsub) {
