@@ -5,6 +5,7 @@ import { getCurrentYearMonth, formatYearMonth, getPrevYearMonth, getNextYearMont
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { checkMonthlySetup } from "./month-setup.js";
 import { getUserStats } from "./stats.js";
+import { toggleMonthPicker, closeMonthPicker } from "./month-picker.js";
 
 // ── Elements ──────────────────────────────────
 const loginScreen  = document.getElementById("login-screen");
@@ -13,6 +14,7 @@ const userName     = document.getElementById("user-name");
 const monthLabel   = document.getElementById("current-month-label");
 const prevBtn      = document.getElementById("prev-month-btn");
 const nextBtn      = document.getElementById("next-month-btn");
+const calPickerBtn = document.getElementById("cal-picker-btn");
 const monthBarStat = document.getElementById("month-bar-stat");
 const tabMyLog     = document.getElementById("tab-mylog");
 const tabFollowing = document.getElementById("tab-following");
@@ -22,12 +24,15 @@ let activeYearMonth   = getCurrentYearMonth();
 let activeTab         = "mylog";
 let currentUser       = null;
 let allLogsUnsub      = null;
-let followingUnsub    = null;  // cleans up Following tab listeners
+let followingUnsub    = null;
 
 // ── Month nav ─────────────────────────────────
 function updateMonthNav() {
   monthLabel.textContent = formatYearMonth(activeYearMonth);
   nextBtn.disabled = activeYearMonth >= getCurrentYearMonth();
+
+  // Keep picker icon highlighted when viewing a non-current month
+  calPickerBtn.classList.toggle("mp-btn-active", activeYearMonth !== getCurrentYearMonth());
 }
 
 async function changeMonth(yearMonth) {
@@ -43,10 +48,17 @@ nextBtn.addEventListener("click", () => {
   if (activeYearMonth < getCurrentYearMonth()) changeMonth(getNextYearMonth(activeYearMonth));
 });
 
+// ── Month Picker button ───────────────────────
+calPickerBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  toggleMonthPicker(calPickerBtn, activeYearMonth, (ym) => {
+    if (ym !== activeYearMonth) changeMonth(ym);
+  });
+});
+
 // ── Streak stat ───────────────────────────────
 async function updateStat() {
   if (!currentUser || activeTab !== "mylog") {
-    // Following tab manages its own stat label
     if (activeTab !== "following") monthBarStat.textContent = "";
     return;
   }
@@ -72,18 +84,19 @@ export function switchTab(tab) {
   tabFollowing.style.display = tab === "following" ? "grid"  : "none";
   tabAll.style.display       = tab === "all"       ? "grid"  : "none";
 
-  // Clean up All tab listener when leaving
   if (tab !== "all" && allLogsUnsub) {
     allLogsUnsub();
     allLogsUnsub = null;
   }
 
-  // Clean up Following tab listeners when leaving
   if (tab !== "following" && followingUnsub) {
     followingUnsub();
     followingUnsub = null;
     monthBarStat.textContent = "";
   }
+
+  // Close picker when switching tabs
+  closeMonthPicker();
 
   loadActiveTab();
   updateStat();
@@ -94,13 +107,12 @@ async function loadActiveTab() {
     await loadMyLog(activeYearMonth, tabMyLog, currentUser);
 
   } else if (activeTab === "following") {
-    // Tear down previous listener before starting a new one
     if (followingUnsub) { followingUnsub(); followingUnsub = null; }
     followingUnsub = loadFollowingLogs(
       activeYearMonth,
       tabFollowing,
       currentUser,
-      () => switchTab("all")   // "Browse All →" callback
+      () => switchTab("all")
     );
 
   } else if (activeTab === "all") {
