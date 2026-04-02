@@ -380,6 +380,41 @@
 
 .summary-note strong { color: var(--text-primary); }
 
+/* ── Top-level insight banner ────────────────── */
+.top-insight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 18px 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.10));
+  border: 1px solid rgba(139,92,246,0.22);
+  animation: insightFadeIn 0.4s ease;
+}
+
+.top-insight__emoji {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.top-insight__msg {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+[data-theme="light"] .top-insight {
+  background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.07));
+  border-color: rgba(139,92,246,0.18);
+}
+
+@keyframes insightFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ── Per-habit breakdown ─────────────────────── */
 .summary-habits {
   padding: 0 18px 16px;
@@ -394,7 +429,7 @@
   margin-bottom: 10px;
 }
 
-.summary-habit-row { margin-bottom: 10px; }
+.summary-habit-row { margin-bottom: 12px; }
 .summary-habit-row:last-child { margin-bottom: 0; }
 
 .summary-habit-top {
@@ -480,6 +515,25 @@
   font-size: 0.65rem;
   color: var(--text-faint);
   margin-top: 3px;
+}
+
+/* ── Per-habit inline insight message ────────── */
+.habit-insight {
+  margin-top: 5px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.4;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  border-left: 2px solid var(--border);
+  animation: insightFadeIn 0.3s ease;
+}
+
+[data-theme="light"] .habit-insight {
+  color: var(--text);
+  background: rgba(0,0,0,0.03);
 }
 
 /* ═══════════════════════════════════════════════

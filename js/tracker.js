@@ -7,6 +7,7 @@ import { getDaysInMonth, getDayLabel, getCurrentYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard } from "./mobile-tracker.js";
 import { getUserStats, computeStatsFromEntry, cadenceLabel } from "./stats.js";
+import { generateInsights, getDaysLeftInWeek } from "./insights.js";
 
 const MARKER_SYMBOLS = {
   circle:   "●",
@@ -59,7 +60,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
   function onMarkToggled(entry) {
     const stats = computeStatsFromEntry(entry, yearMonth);
     if (isCurrentMonth) refreshBannerInPlace(container, entry, todayDate);
-    refreshSummaryInPlace(container, entry, stats, yearMonth);
+    refreshSummaryInPlace(container, entry, stats, yearMonth, isCurrentMonth);
   }
 
   unsubscribe = onSnapshot(entryRef, async (docSnap) => {
@@ -97,7 +98,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
           ? await initialStatsPromise
           : await getUserStats(uid, yearMonth);
         hasUsedInitialStats = true;
-        container.appendChild(renderMonthlySummary(entry, stats, yearMonth));
+        container.appendChild(renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth));
       } else {
         const centeredStack = document.createElement("div");
         centeredStack.className = "mylog-centered-stack";
@@ -111,7 +112,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
           ? await initialStatsPromise
           : await getUserStats(uid, yearMonth);
         hasUsedInitialStats = true;
-        centeredStack.appendChild(renderMonthlySummary(entry, stats, yearMonth));
+        centeredStack.appendChild(renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth));
         container.appendChild(centeredStack);
       }
 
@@ -122,7 +123,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
     const stats = computeStatsFromEntry(entry, yearMonth);
     if (isCurrentMonth) refreshBannerInPlace(container, entry, todayDate);
-    refreshSummaryInPlace(container, entry, stats, yearMonth);
+    refreshSummaryInPlace(container, entry, stats, yearMonth, isCurrentMonth);
 
   }, (error) => {
     console.error("Snapshot error:", error);
@@ -131,17 +132,17 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
   });
 }
 
+// ─── PATCH: replace status banner node in-place ───────────
 function refreshBannerInPlace(container, entry, todayDate) {
   const existing = container.querySelector(".status-banner");
   if (!existing) return;
   existing.replaceWith(renderStatusBanner(entry, todayDate, isMobile()));
 }
 
-function refreshSummaryInPlace(container, entry, stats, yearMonth) {
+// ─── PATCH: replace summary card node in-place ────────────
+function refreshSummaryInPlace(container, entry, stats, yearMonth, isCurrentMonth) {
   const existing = container.querySelector(".summary-card");
   if (!existing) return;
-  // Preserve per-habit streaks from the existing DOM (they're async and don't
-  // get recalculated on every toggle via computeStatsFromEntry)
   const existingStreaks = {};
   existing.querySelectorAll(".summary-habit-streak[data-habit]").forEach(el => {
     existingStreaks[el.dataset.habit] = parseInt(el.dataset.streak || "0", 10);
@@ -153,7 +154,7 @@ function refreshSummaryInPlace(container, entry, stats, yearMonth) {
       }
     });
   }
-  existing.replaceWith(renderMonthlySummary(entry, stats, yearMonth));
+  existing.replaceWith(renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth));
 }
 
 // ─── TODAY'S STATUS BANNER ────────────────────────────────
@@ -188,11 +189,14 @@ function renderStatusBanner(entry, todayDate, isMob) {
 }
 
 // ─── PROGRESS SUMMARY CARD ────────────────────────────────
-function renderMonthlySummary(entry, stats, yearMonth) {
+function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
   const { overallRate, streak, doneThisMonth, habitStats } = stats;
   const activities = entry.activities || [];
   const [year, month] = yearMonth.split("-").map(Number);
   const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
+
+  const daysLeft = getDaysLeftInWeek();
+  const { topInsight, habitInsights } = generateInsights(habitStats, daysLeft, isCurrentMonth);
 
   const card = document.createElement("div");
   card.className = "summary-card";
@@ -209,6 +213,10 @@ function renderMonthlySummary(entry, stats, yearMonth) {
     const streakHTML = h.habitStreak > 0
       ? `<span class="summary-habit-streak" data-habit="${h.name}" data-streak="${h.habitStreak}">🔥 ${h.habitStreak}wk</span>`
       : `<span class="summary-habit-streak summary-habit-streak--empty" data-habit="${h.name}" data-streak="0"></span>`;
+    const insight = habitInsights[h.name];
+    const insightHTML = insight
+      ? `<div class="habit-insight">${insight.emoji} ${insight.message}</div>`
+      : "";
     return `
       <div class="summary-habit-row">
         <div class="summary-habit-top">
@@ -226,8 +234,13 @@ function renderMonthlySummary(entry, stats, yearMonth) {
           <div class="summary-habit-fill" style="width:${displayRate}%;background:${barColor}"></div>
         </div>
         <div class="summary-habit-sub">${weekLabel}</div>
+        ${insightHTML}
       </div>`;
   }).join("");
+
+  const topInsightHTML = topInsight
+    ? `<div class="top-insight"><span class="top-insight__emoji">${topInsight.emoji}</span><span class="top-insight__msg">${topInsight.message}</span></div>`
+    : "";
 
   card.innerHTML = `
     <div class="summary-card__header">
@@ -258,6 +271,7 @@ function renderMonthlySummary(entry, stats, yearMonth) {
       <strong>How is this calculated?</strong>
       Each habit's fulfillment is averaged equally — so a daily habit doesn't outweigh a 2×/week habit.
     </div>
+    ${topInsightHTML}
     <div class="summary-habits">
       <div class="summary-habits__label">This Week's Progress</div>
       ${barsHTML}

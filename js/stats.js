@@ -28,6 +28,22 @@ function logsInWeek(markedDays, yearMonth, referenceDate) {
   }).length;
 }
 
+/**
+ * Count how many consecutive days ending on `today` are in markedDays.
+ */
+function countConsecutiveDays(markedDays, yearMonth, today) {
+  const todayNum = today.getDate();
+  let streak = 0;
+  for (let d = todayNum; d >= 1; d--) {
+    if (markedDays.includes(d)) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
 export function cadenceLabel(n) {
   const cadence = Number(n);
   if (n == null || !Number.isFinite(cadence) || cadence >= 7) return "Daily";
@@ -67,7 +83,6 @@ async function calculateHabitStreak(userId, activity, cadence, yearMonth, marked
 
     const hit = logsInWeek(marks, ym, checkDate) >= cadence;
 
-    // Skip current incomplete week if not yet hit — start counting from last week
     if (w === 0 && !hit) {
       checkDate.setDate(checkDate.getDate() - 7);
       continue;
@@ -91,7 +106,7 @@ async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, ma
     const weekStart = getWeekStart(checkDate);
     const ym = `${weekStart.getFullYear()}-${String(weekStart.getMonth() + 1).padStart(2, "0")}`;
 
-    let habitMarks = marks;
+    let habitMarks      = marks;
     let habitActivities = activities;
     let habitCadences   = cadences;
 
@@ -129,10 +144,32 @@ async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, ma
   return streak;
 }
 
+// ─── Shared habit stat builder ────────────────────────────
+function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, habitStreak = 0) {
+  const cad    = cadences[i] ?? 7;
+  const logged = (marks[activity] || []).filter(d => d <= lastDay).length;
+  const target = Math.max(1, Math.ceil(cad * (lastDay / 7)));
+  const rate   = Math.min(100, Math.round(Math.min(1, logged / target) * 100));
+  const thisWeekLogged   = logsInWeek(marks[activity] || [], yearMonth, today);
+  const thisWeekTarget   = cad;
+  const weeklyRate       = Math.min(100, Math.round((thisWeekLogged / thisWeekTarget) * 100));
+  const consecutiveDays  = countConsecutiveDays(marks[activity] || [], yearMonth, today);
+  return {
+    name: activity,
+    cadence: cad,
+    cadenceLabel: cadenceLabel(cad),
+    logged,
+    target,
+    rate,
+    thisWeekLogged,
+    thisWeekTarget,
+    weeklyRate,
+    consecutiveDays,
+    habitStreak
+  };
+}
+
 // ─── computeStatsFromEntry ────────────────────────────────
-// Synchronous — used for optimistic UI updates on toggle.
-// habitStreak is not recalculated here (requires async history lookup);
-// it carries over from the last full getUserStats call via the DOM.
 export function computeStatsFromEntry(entry, yearMonth) {
   const activities = entry.activities || [];
   const cadences   = entry.cadences   || activities.map(() => 7);
@@ -150,29 +187,10 @@ export function computeStatsFromEntry(entry, yearMonth) {
     (marks[activity] || []).forEach(d => { if (d <= lastDay) doneDays.add(d); });
   });
 
-  const habitStats = activities.map((activity, i) => {
-    const cad    = cadences[i] ?? 7;
-    const logged = (marks[activity] || []).filter(d => d <= lastDay).length;
-    const target = Math.max(1, Math.ceil(cad * (lastDay / 7)));
-    const rate   = Math.min(100, Math.round(Math.min(1, logged / target) * 100));
-    const thisWeekLogged = logsInWeek(marks[activity] || [], yearMonth, today);
-    const thisWeekTarget = cad;
-    const weeklyRate = Math.min(100, Math.round((thisWeekLogged / thisWeekTarget) * 100));
-    return {
-      name: activity,
-      cadence: cad,
-      cadenceLabel: cadenceLabel(cad),
-      logged,
-      target,
-      rate,
-      thisWeekLogged,
-      thisWeekTarget,
-      weeklyRate,
-      habitStreak: 0  // placeholder; real value set by getUserStats
-    };
-  });
+  const habitStats = activities.map((activity, i) =>
+    buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, 0)
+  );
 
-  // Overall rate = average of weekly rates (consistent with the bars)
   const overallRate = Math.round(
     habitStats.reduce((sum, h) => sum + h.weeklyRate, 0) / habitStats.length
   );
@@ -209,36 +227,16 @@ export async function getUserStats(userId, yearMonth) {
       (marks[activity] || []).forEach(d => { if (d <= lastDay) doneDays.add(d); });
     });
 
-    // Calculate per-habit streaks in parallel
     const habitStreaks = await Promise.all(
       activities.map((activity, i) =>
         calculateHabitStreak(userId, activity, cadences[i] ?? 7, yearMonth, marks[activity] || [])
       )
     );
 
-    const habitStats = activities.map((activity, i) => {
-      const cad    = cadences[i] ?? 7;
-      const logged = (marks[activity] || []).filter(d => d <= lastDay).length;
-      const target = Math.max(1, Math.ceil(cad * (lastDay / 7)));
-      const rate   = Math.min(100, Math.round(Math.min(1, logged / target) * 100));
-      const thisWeekLogged = logsInWeek(marks[activity] || [], yearMonth, today);
-      const thisWeekTarget = cad;
-      const weeklyRate = Math.min(100, Math.round((thisWeekLogged / thisWeekTarget) * 100));
-      return {
-        name: activity,
-        cadence: cad,
-        cadenceLabel: cadenceLabel(cad),
-        logged,
-        target,
-        rate,
-        thisWeekLogged,
-        thisWeekTarget,
-        weeklyRate,
-        habitStreak: habitStreaks[i]
-      };
-    });
+    const habitStats = activities.map((activity, i) =>
+      buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, habitStreaks[i])
+    );
 
-    // Overall rate = average of weekly rates (consistent with the bars)
     const overallRate = Math.round(
       habitStats.reduce((sum, h) => sum + h.weeklyRate, 0) / habitStats.length
     );
