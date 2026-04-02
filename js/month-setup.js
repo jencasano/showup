@@ -216,9 +216,21 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
       btn.disabled = true;
 
       try {
+        // Fetch the user's profile to embed denormalized identity fields
+        // into the log entry. This removes the need for a users/ lookup
+        // when other users load the All tab.
+        const userSnap = await getDoc(doc(db, "users", userId));
+        const userData = userSnap.exists() ? userSnap.data() : {};
+
         const entryData = {
           userId,
           yearMonth,
+          // ── Denormalized identity fields ──────────────────
+          // Stored here so the All tab can render cards without
+          // an extra round-trip to the users/ collection.
+          displayName: userData.displayName || "",
+          username:    userData.username    || userData.displayName || "",
+          // ─────────────────────────────────────────────────
           activities,
           cadences,
           marks: {},

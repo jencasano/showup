@@ -64,10 +64,15 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
       return;
     }
 
-    const entry = { id: uid, ...docSnap.data() };
-    const userSnap = await getDoc(doc(db, "users", uid));
-    if (!userSnap.exists()) { hideLoader(); return; }
-    entry.displayName = userSnap.data().displayName;
+    const entryData = docSnap.data();
+    const entry = { id: uid, ...entryData };
+
+    // Use denormalized displayName when available; fall back to users/ lookup.
+    if (!entry.displayName) {
+      const userSnap = await getDoc(doc(db, "users", uid));
+      if (!userSnap.exists()) { hideLoader(); return; }
+      entry.displayName = userSnap.data().displayName;
+    }
 
     const user = auth.currentUser;
 
@@ -245,39 +250,70 @@ export function loadAllLogs(yearMonth, container, currentUser) {
   const entriesRef = collection(db, "logs", yearMonth, "entries");
 
   return onSnapshot(entriesRef, async (snapshot) => {
-    const entries = [];
+    // 1. Filter docs synchronously — no async work yet.
+    const validDocs = snapshot.docs.filter(docSnap => {
+      if (docSnap.id === currentUser?.uid) return false;
+      const data = docSnap.data();
+      return data.activities && data.activities.length > 0;
+    });
 
-    for (const docSnap of snapshot.docs) {
-      if (docSnap.id === currentUser?.uid) continue;
-      const entry = { id: docSnap.id, ...docSnap.data() };
-      if (!entry.activities || entry.activities.length === 0) continue;
-      const userSnap = await getDoc(doc(db, "users", entry.id));
-      if (!userSnap.exists()) continue;
-      const userData = userSnap.data();
-      entries.push({
-        ...entry,
-        displayName: userData.displayName,
-        username: userData.username || userData.displayName,
-      });
-    }
-
-    if (entries.length === 0) {
+    if (validDocs.length === 0) {
       hideLoader();
       container.innerHTML = `<p class="empty-state">No other trackers yet for this month.</p>`;
       return;
     }
 
-    let myFollows = new Set();
-    if (currentUser?.uid) {
-      try {
-        const myUserSnap = await getDoc(doc(db, "users", currentUser.uid));
-        if (myUserSnap.exists()) {
-          myFollows = new Set(myUserSnap.data().following || []);
-        }
-      } catch (e) { console.warn("Could not load follows:", e); }
-    }
+    // 2. Identify which entries are missing denormalized user fields
+    //    and fire ALL fallback lookups + the follows fetch in parallel.
+    const needsUserFetch = validDocs.map(d => {
+      const data = d.data();
+      return !data.displayName; // already denormalized — no lookup needed
+    });
 
-    container.innerHTML = "";
+    const [userSnaps, myUserSnap] = await Promise.all([
+      // Only fetch from users/ for entries that don't have denormalized fields
+      Promise.all(
+        validDocs.map((docSnap, i) =>
+          needsUserFetch[i]
+            ? getDoc(doc(db, "users", docSnap.id))
+            : Promise.resolve(null)
+        )
+      ),
+      // Fetch current user's follows doc in parallel
+      currentUser?.uid
+        ? getDoc(doc(db, "users", currentUser.uid))
+        : Promise.resolve(null)
+    ]);
+
+    const myFollows = new Set(
+      myUserSnap?.exists() ? (myUserSnap.data().following || []) : []
+    );
+
+    // 3. Build the entries array, merging denormalized or fetched user data.
+    const entries = validDocs
+      .map((docSnap, i) => {
+        const data = docSnap.data();
+        let displayName = data.displayName;
+        let username    = data.username;
+
+        if (needsUserFetch[i]) {
+          const userSnap = userSnaps[i];
+          if (!userSnap?.exists()) return null;
+          const userData = userSnap.data();
+          displayName = userData.displayName;
+          username    = userData.username || userData.displayName;
+        }
+
+        return {
+          id: docSnap.id,
+          ...data,
+          displayName,
+          username: username || displayName,
+        };
+      })
+      .filter(Boolean);
+
+    // 4. Sort: followed users first, then alphabetical.
     entries.sort((a, b) => {
       const aF = myFollows.has(a.id), bF = myFollows.has(b.id);
       if (aF && !bF) return -1;
@@ -285,6 +321,8 @@ export function loadAllLogs(yearMonth, container, currentUser) {
       return (a.displayName || "").localeCompare(b.displayName || "");
     });
 
+    // 5. Render.
+    container.innerHTML = "";
     for (const entry of entries) {
       const isFollowing = myFollows.has(entry.id);
       const card = renderMobileCard(entry, yearMonth, currentUser, { isFollowing, showFollowBtn: true });
