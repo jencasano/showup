@@ -39,6 +39,7 @@ header h1 span { color: var(--color-primary); }
 #tab-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
   padding: 0 28px;
@@ -123,6 +124,7 @@ header h1 span { color: var(--color-primary); }
 #month-bar {
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 8px 28px;
   background: var(--bg);
   border-bottom: 1px solid var(--border-faint);
@@ -134,15 +136,18 @@ header h1 span { color: var(--color-primary); }
 
 #current-month-label {
   font-family: var(--font-heading);
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text);
-  min-width: 110px;
+  min-width: 140px;
+  text-align: center;
 }
 
-#month-bar-spacer { flex: 1; }
+#month-bar-spacer { display: none; }
 
 #month-bar-stat {
+  position: absolute;
+  right: 28px;
   font-size: 0.72rem;
   color: var(--text-faint);
 }
