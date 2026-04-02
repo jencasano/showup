@@ -36,9 +36,10 @@ function isMobile() {
 let unsubscribe = null;
 
 // ─── LOAD MY LOG ──────────────────────────────────────────
-export function loadMyLog(yearMonth, container, currentUser) {
+export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise = null) {
   showLoader();
   container.innerHTML = "";
+  let hasUsedInitialStats = false;
 
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
 
@@ -80,22 +81,33 @@ export function loadMyLog(yearMonth, container, currentUser) {
       const card = renderMobileCard(entry, yearMonth, user);
       container.appendChild(card);
 
-      const stats = await getUserStats(uid, yearMonth);
+      const stats = (!hasUsedInitialStats && initialStatsPromise)
+        ? await initialStatsPromise
+        : await getUserStats(uid, yearMonth);
+      hasUsedInitialStats = true;
       const summary = renderMonthlySummary(entry, stats, yearMonth);
       container.appendChild(summary);
     } else {
       // ── Desktop: banner + tracker grid + summary ─────────
+      const centeredStack = document.createElement("div");
+      centeredStack.className = "mylog-centered-stack";
+
       if (isCurrentMonth) {
         const banner = renderStatusBanner(entry, todayDate, false);
-        container.appendChild(banner);
+        centeredStack.appendChild(banner);
       }
 
       const section = renderUserSection(entry, yearMonth, user, isCurrentMonth, todayDate);
-      container.appendChild(section);
+      centeredStack.appendChild(section);
 
-      const stats = await getUserStats(uid, yearMonth);
+      const stats = (!hasUsedInitialStats && initialStatsPromise)
+        ? await initialStatsPromise
+        : await getUserStats(uid, yearMonth);
+      hasUsedInitialStats = true;
       const summary = renderMonthlySummary(entry, stats, yearMonth);
-      container.appendChild(summary);
+      centeredStack.appendChild(summary);
+
+      container.appendChild(centeredStack);
     }
 
     hideLoader();
@@ -451,13 +463,16 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   const headerRow = document.createElement("div");
   headerRow.className = "tracker-header-row";
   headerRow.innerHTML = `<div class="activity-label"></div>`;
+  const [year, month] = yearMonth.split("-").map(Number);
   for (let d = 1; d <= daysInMonth; d++) {
     const cell = document.createElement("div");
     cell.className = "day-header";
     const isToday   = isCurrentMonth && d === todayDate;
     const isFuture  = isCurrentMonth && d > todayDate;
+    const isSunday  = new Date(year, month - 1, d).getDay() === 0;
     if (isToday)  cell.classList.add("day-header-today");
     if (isFuture) cell.classList.add("day-header-future");
+    if (isSunday) cell.classList.add("day-header-sunday");
     cell.innerHTML = `
       <span class="day-num${isToday ? " today" : ""}">${d}</span>
       <span class="day-label">${getDayLabel(yearMonth, d)}</span>`;
@@ -494,9 +509,7 @@ function renderActivityRow(activity, daysInMonth, markedDays, activityColor, mar
   label.className = "activity-label";
 
   // Cadence tag inline with label
-  const cadTag = cadence < 7
-    ? `<span class="activity-cad-tag">${cadenceLabel(cadence)}</span>`
-    : "";
+  const cadTag = `<span class="activity-cad-tag">${cadenceLabel(cadence)}</span>`;
 
   label.innerHTML = `
     <span class="activity-dot" style="background:${activityColor}"></span>

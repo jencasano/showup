@@ -26,6 +26,23 @@ let activeTab         = "mylog";
 let currentUser       = null;
 let allLogsUnsub      = null;
 let followingUnsub    = null;
+let myLogStatsCacheKey = "";
+let myLogStatsPromise = null;
+
+function getMyLogStatsPromise() {
+  if (!currentUser) return Promise.resolve(null);
+  const key = `${currentUser.uid}:${activeYearMonth}`;
+  if (myLogStatsCacheKey !== key || !myLogStatsPromise) {
+    myLogStatsCacheKey = key;
+    myLogStatsPromise = getUserStats(currentUser.uid, activeYearMonth);
+  }
+  return myLogStatsPromise;
+}
+
+function resetMyLogStatsCache() {
+  myLogStatsCacheKey = "";
+  myLogStatsPromise = null;
+}
 
 // ── Month nav ─────────────────────────────────
 function updateMonthNav() {
@@ -45,6 +62,7 @@ function updateMonthNav() {
 
 async function changeMonth(yearMonth) {
   activeYearMonth = yearMonth;
+  resetMyLogStatsCache();
   updateMonthNav();
   monthBarStat.textContent = "";
   await loadActiveTab();
@@ -75,7 +93,9 @@ async function updateStat() {
     if (activeTab !== "following") monthBarStat.textContent = "";
     return;
   }
-  const { streak, doneThisMonth, totalThisMonth } = await getUserStats(currentUser.uid, activeYearMonth);
+  const stats = await getMyLogStatsPromise();
+  if (!stats) return;
+  const { streak, doneThisMonth, totalThisMonth } = stats;
   const parts = [];
   if (streak > 0) parts.push(`🔥 ${streak} day streak`);
   parts.push(`${doneThisMonth}/${totalThisMonth} days done`);
@@ -85,6 +105,9 @@ async function updateStat() {
 // ── Tab switching ─────────────────────────────
 export function switchTab(tab) {
   activeTab = tab;
+  if (tab === "mylog") {
+    resetMyLogStatsCache();
+  }
 
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.tab === tab);
@@ -117,7 +140,7 @@ export function switchTab(tab) {
 
 async function loadActiveTab() {
   if (activeTab === "mylog") {
-    await loadMyLog(activeYearMonth, tabMyLog, currentUser);
+    await loadMyLog(activeYearMonth, tabMyLog, currentUser, getMyLogStatsPromise());
 
   } else if (activeTab === "following") {
     if (followingUnsub) { followingUnsub(); followingUnsub = null; }
@@ -171,6 +194,7 @@ showLoader();
 onAuthReady(async (user) => {
   if (user) {
     currentUser = user;
+    resetMyLogStatsCache();
     const setupDone = await hasCompletedSetup(user.uid);
     if (!setupDone) {
       window.location.href = "setup.html";
