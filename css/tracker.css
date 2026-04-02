@@ -52,12 +52,11 @@
 
 /* ── Activity Label ──────────────────────────── */
 .activity-label {
-  width: 130px;
-  min-width: 130px;
-  max-width: 130px;
+  width: 185px;
+  min-width: 185px;
+  max-width: 185px;
   font-size: 0.7rem;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-faint);
   flex-shrink: 0;
@@ -79,14 +78,15 @@
 
 /* ── Cadence tag (inline with activity name) ─── */
 .activity-cad-tag {
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   font-weight: 700;
   padding: 1px 5px;
   border-radius: 4px;
-  background: var(--bg-subtle);
-  color: var(--text-muted);
+  background: rgba(148, 163, 184, 0.16);
+  color: var(--text-primary);
   flex-shrink: 0;
   white-space: nowrap;
+  text-transform: none;
 }
 
 /* ── Activity Color Dot ──────────────────────── */

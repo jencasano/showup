@@ -209,6 +209,53 @@
   color: var(--color-primary);
 }
 
+.ms-activity-row {
+  margin-bottom: 16px;
+}
+
+.ms-activity-input {
+  margin-bottom: 8px;
+}
+
+.ms-cadence-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.ms-cadence-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ms-cadence-btn {
+  min-width: 44px;
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition);
+}
+
+.ms-cadence-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.ms-cadence-btn.selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
 /* ── Nav Buttons ─────────────────────────────── */
 #ms-nav {
   display: flex;

@@ -18,6 +18,7 @@ document.getElementById("next-btn").addEventListener("click", async () => {
   if (!name) { alert("Please enter a display name!"); return; }
 
   const btn = document.getElementById("next-btn");
+  const setupContainer = document.getElementById("setup-container");
   btn.textContent = "Saving...";
   btn.disabled = true;
 
@@ -30,6 +31,10 @@ document.getElementById("next-btn").addEventListener("click", async () => {
       createdAt: serverTimestamp()
     });
 
+    // Hide base setup card while month-setup modal is active so it
+    // doesn't flash briefly when the modal closes before redirect.
+    setupContainer.style.visibility = "hidden";
+
     // Now trigger monthly setup (decoration + activities)
     await showMonthSetup(currentUser.uid, currentUser.photoURL, null);
 
@@ -37,6 +42,7 @@ document.getElementById("next-btn").addEventListener("click", async () => {
   } catch (error) {
     console.error("Error saving profile:", error);
     alert("Something went wrong. Please try again.");
+    setupContainer.style.visibility = "";
     btn.textContent = "Next →";
     btn.disabled = false;
   }
