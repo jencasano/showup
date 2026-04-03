@@ -120,6 +120,9 @@ function pickProfile(idx) {
 }
 
 const REALISTIC_NAMES = [
+  "Alice in Wonderland",
+  "Little Lulu",
+  "Witch Doctor",
   "Maria Santos",
   "Joshua Dela Cruz",
   "Angela Reyes",
@@ -139,7 +142,7 @@ const REALISTIC_NAMES = [
   "Alyssa Flores",
   "Jericho Valdez",
   "Danica Soriano",
-  "Vince Tolentino"
+  "Vince Tolentino",  
 ];
 
 function toUsername(fullName, suffixNumber) {
