@@ -777,9 +777,9 @@
 }
 
 .pace-badge--on-track {
-  color: #92400e;
-  background: rgba(245, 158, 11, 0.14);
-  border-color: rgba(245, 158, 11, 0.40);
+  color: #0e7490;
+  background: rgba(6, 182, 212, 0.14);
+  border-color: rgba(6, 182, 212, 0.38);
 }
 
 .pace-badge--behind {
@@ -802,7 +802,7 @@
 
 /* Dark mode overrides for badge text */
 [data-theme="dark"] .pace-badge--ahead    { color: #4ade80; }
-[data-theme="dark"] .pace-badge--on-track { color: #fcd34d; }
+[data-theme="dark"] .pace-badge--on-track { color: #67e8f9; }
 [data-theme="dark"] .pace-badge--behind   { color: #f87171; }
 [data-theme="dark"] .pace-badge--early    { color: #a5b4fc; }
 [data-theme="dark"] .pace-badge--started  { color: #5eead4; }
