@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Follow Feed Mockup (Desktop + Mobile)</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #111830;
+      --panel-2: #1a2445;
+      --text: #e8edff;
+      --muted: #97a5d6;
+      --accent: #6ea8ff;
+      --green: #43d48f;
+      --orange: #f7b15f;
+      --border: #2a3767;
+      --chip: #24325f;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1000px 500px at 5% 0%, #1c2950, var(--bg));
+      color: var(--text);
+      padding: 28px;
+      line-height: 1.35;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    .page-title {
+      margin-bottom: 18px;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 6px;
+      margin-bottom: 24px;
+      max-width: 90ch;
+      font-size: 0.95rem;
+    }
+
+    .boards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .board {
+      background: rgba(13, 20, 40, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      backdrop-filter: blur(6px);
+    }
+
+    .board h2 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+      color: #c9d5ff;
+    }
+
+    .desktop-shell {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      max-width: 1200px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #172347, #101834);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .title-wrap h3 { font-size: 1rem; }
+
+    .title-wrap p {
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-top: 4px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: #dce4ff;
+      font-size: 0.8rem;
+    }
+
+    .pill.active { border-color: var(--accent); color: #fff; }
+
+    .desktop-content {
+      display: grid;
+      grid-template-columns: 2fr 1.15fr;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .section {
+      background: #101735;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .section-header h4 { font-size: 0.9rem; }
+
+    .count { color: var(--muted); font-size: 0.78rem; }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .calendar-card {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .user-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .avatar-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4869cc, #6da0ff);
+      border: 1px solid #88a2f2;
+      flex: none;
+    }
+
+    .name-block { min-width: 0; }
+
+    .name {
+      font-size: 0.84rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 160px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.74rem;
+      margin-top: 2px;
+    }
+
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .chip {
+      font-size: 0.72rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--chip);
+      border: 1px solid #334783;
+      color: #d5e0ff;
+      white-space: nowrap;
+    }
+
+    .chip.green { color: #dbffe9; border-color: #2c8d5f; background: #163f2d; }
+    .chip.orange { color: #fff3dd; border-color: #9f6c2f; background: #4b361d; }
+
+    .month-dots {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 4px;
+      background: #2b3a6d;
+    }
+
+    .dot.done { background: #4edb93; }
+
+    .list .user-row:last-child { margin-bottom: 0; }
+
+    .muted-block {
+      color: var(--muted);
+      font-size: 0.75rem;
+      background: #151f40;
+      border: 1px dashed #3b4f8e;
+      padding: 8px;
+      border-radius: 10px;
+      margin-top: 8px;
+    }
+
+    .mobile-shell {
+      width: 360px;
+      max-width: 100%;
+      margin: 0 auto;
+      background: #0e1632;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .mobile-header {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #172347, #101834);
+    }
+
+    .mobile-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .mobile-sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .mobile-controls {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .mobile-body {
+      padding: 10px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .mobile-card {
+      background: #121d3f;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .mobile-card h5 {
+      font-size: 0.82rem;
+      margin-bottom: 8px;
+      color: #ccdaff;
+    }
+
+    @media (max-width: 1040px) {
+      .desktop-content { grid-template-columns: 1fr; }
+      .calendar-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="page-title">Follow System Mockup</h1>
+  <p class="subtitle">Concept: only show full mini-calendars for <strong>pinned users with active monthly trackers</strong>. Everyone else remains visible in compact form with status + last activity.</p>
+
+  <div class="boards">
+    <section class="board">
+      <h2>Desktop / Tablet</h2>
+      <div class="desktop-shell">
+        <div class="topbar">
+          <div class="title-wrap">
+            <h3>Following · March 2026</h3>
+            <p>Focused mode: rich cards for pinned users, compact rows for everyone else</p>
+          </div>
+          <div class="controls">
+            <span class="pill active">Focused</span>
+            <span class="pill">Expanded</span>
+            <span class="pill">Sort: Recent activity</span>
+          </div>
+        </div>
+
+        <div class="desktop-content">
+          <div class="section">
+            <div class="section-header">
+              <h4>Pinned + Active This Month</h4>
+              <span class="count">3 users</span>
+            </div>
+            <div class="calendar-grid">
+              <article class="calendar-card">
+                <div class="user-row">
+                  <div class="avatar-name">
+                    <div class="avatar"></div>
+                    <div class="name-block">
+                      <div class="name">Riley K.</div>
+                      <div class="meta">Last active 2h ago</div>
+                    </div>
+                  </div>
+                  <div class="chips"><span class="chip green">19-day streak</span></div>
+                </div>
+                <div class="month-dots">
+                  <div class="dot done"></div><div class="dot done"></div><div class="dot"></div><div class="dot done"></div><div class="dot done"></div><div class="dot"></div><div class="dot done"></div>
+                  <div class="dot done"></div><div class="dot"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot"></div><div class="dot done"></div>
+                </div>
+              </article>
+              <article class="calendar-card">
+                <div class="user-row">
+                  <div class="avatar-name">
+                    <div class="avatar"></div>
+                    <div class="name-block">
+                      <div class="name">Samir A.</div>
+                      <div class="meta">Last active yesterday</div>
+                    </div>
+                  </div>
+                  <div class="chips"><span class="chip">Pinned</span></div>
+                </div>
+                <div class="month-dots">
+                  <div class="dot"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot"></div><div class="dot"></div><div class="dot done"></div>
+                  <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot"></div><div class="dot done"></div><div class="dot"></div><div class="dot done"></div>
+                </div>
+              </article>
+              <article class="calendar-card">
+                <div class="user-row">
+                  <div class="avatar-name">
+                    <div class="avatar"></div>
+                    <div class="name-block">
+                      <div class="name">June P.</div>
+                      <div class="meta">Last active 4d ago</div>
+                    </div>
+                  </div>
+                  <div class="chips"><span class="chip orange">At risk</span></div>
+                </div>
+                <div class="month-dots">
+                  <div class="dot done"></div><div class="dot"></div><div class="dot"></div><div class="dot done"></div><div class="dot"></div><div class="dot"></div><div class="dot done"></div>
+                  <div class="dot done"></div><div class="dot"></div><div class="dot"></div><div class="dot done"></div><div class="dot"></div><div class="dot"></div><div class="dot done"></div>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div style="display:grid; gap: 14px;">
+            <div class="section list">
+              <div class="section-header">
+                <h4>Following + Active (Not Pinned)</h4>
+                <span class="count">7 users</span>
+              </div>
+              <div class="user-row">
+                <div class="avatar-name"><div class="avatar"></div><div class="name-block"><div class="name">Mina S.</div><div class="meta">Last active 5h ago</div></div></div>
+                <div class="chips"><span class="chip green">Has tracker</span></div>
+              </div>
+              <div class="user-row">
+                <div class="avatar-name"><div class="avatar"></div><div class="name-block"><div class="name">Alex R.</div><div class="meta">Last active 1d ago</div></div></div>
+                <div class="chips"><span class="chip">12 check-ins</span></div>
+              </div>
+              <div class="user-row">
+                <div class="avatar-name"><div class="avatar"></div><div class="name-block"><div class="name">Nora T.</div><div class="meta">Last active 3d ago</div></div></div>
+                <div class="chips"><span class="chip">View tracker</span></div>
+              </div>
+            </div>
+
+            <div class="section list">
+              <div class="section-header">
+                <h4>Following + No Tracker This Month</h4>
+                <span class="count">11 users</span>
+              </div>
+              <div class="user-row">
+                <div class="avatar-name"><div class="avatar"></div><div class="name-block"><div class="name">Haruto Y.</div><div class="meta">Last active 8d ago</div></div></div>
+                <div class="chips"><span class="chip orange">No tracker</span></div>
+              </div>
+              <div class="user-row">
+                <div class="avatar-name"><div class="avatar"></div><div class="name-block"><div class="name">Cami L.</div><div class="meta">Last active 21d ago</div></div></div>
+                <div class="chips"><span class="chip orange">Inactive</span></div>
+              </div>
+              <div class="muted-block">Show 9 more inactive users (45+ days)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="board">
+      <h2>Mobile</h2>
+      <div class="mobile-shell">
+        <div class="mobile-header">
+          <div class="mobile-title">Following · Mar 2026</div>
+          <div class="mobile-sub">Focused mode</div>
+          <div class="mobile-controls">
+            <span class="pill active">Focused</span>
+            <span class="pill">Expanded</span>
+            <span class="pill">Recent</span>
+          </div>
+        </div>
+
+        <div class="mobile-body">
+          <section class="mobile-card">
+            <h5>Pinned + Active (2)</h5>
+            <div class="calendar-card" style="margin-bottom:8px;">
+              <div class="user-row" style="margin-bottom:6px;">
+                <div class="avatar-name"><div class="avatar"></div><div class="name-block"><div class="name">Riley K.</div><div class="meta">2h ago</div></div></div>
+                <div class="chips"><span class="chip green">19d</span></div>
+              </div>
+              <div class="month-dots">
+                <div class="dot done"></div><div class="dot done"></div><div class="dot"></div><div class="dot done"></div><div class="dot done"></div><div class="dot"></div><div class="dot done"></div>
+              </div>
+            </div>
+            <div class="calendar-card">
+              <div class="user-row" style="margin-bottom:6px;">
+                <div class="avatar-name"><div class="avatar"></div><div class="name-block"><div class="name">Samir A.</div><div class="meta">1d ago</div></div></div>
+                <div class="chips"><span class="chip">Pinned</span></div>
+              </div>
+              <div class="month-dots">
+                <div class="dot"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot"></div><div class="dot"></div><div class="dot done"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="mobile-card list">
+            <h5>Active, Not Pinned</h5>
+            <div class="user-row">
+              <div class="avatar-name"><div class="avatar"></div><div class="name-block"><div class="name">Mina S.</div><div class="meta">5h ago</div></div></div>
+              <div class="chips"><span class="chip green">Tracker</span></div>
+            </div>
+            <div class="user-row" style="margin-bottom:0;">
+              <div class="avatar-name"><div class="avatar"></div><div class="name-block"><div class="name">Alex R.</div><div class="meta">1d ago</div></div></div>
+              <div class="chips"><span class="chip">12 check-ins</span></div>
+            </div>
+          </section>
+
+          <section class="mobile-card list">
+            <h5>No Tracker This Month</h5>
+            <div class="user-row">
+              <div class="avatar-name"><div class="avatar"></div><div class="name-block"><div class="name">Haruto Y.</div><div class="meta">8d ago</div></div></div>
+              <div class="chips"><span class="chip orange">No tracker</span></div>
+            </div>
+            <div class="muted-block">9 inactive users hidden</div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
