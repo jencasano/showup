@@ -1,7 +1,7 @@
 import { db, auth } from "./firebase-config.js";
 import {
   collection, doc, getDoc, setDoc,
-  updateDoc, onSnapshot
+  updateDoc, onSnapshot, arrayUnion, arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getDaysInMonth, getDayLabel, getCurrentYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
@@ -584,12 +584,17 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   }
 
   let logUnsubMap = {};
+  let userCache = {};
+  let logsCache = {};
+  let pinnedFollowingIds = [];
   const myRef = doc(db, "users", currentUser.uid);
 
   const unsubMe = onSnapshot(myRef, async (mySnap) => {
     if (!mySnap.exists()) { renderFollowingEmpty(container, onSwitchToAll); hideLoader(); return; }
 
     const followingIds = mySnap.data().following || [];
+    const pinnedIds = mySnap.data().pinnedFollowing || [];
+    pinnedFollowingIds = pinnedIds.filter(uid => followingIds.includes(uid));
     const statEl = document.getElementById("month-bar-stat");
     if (statEl) {
       statEl.textContent = followingIds.length > 0
@@ -612,11 +617,10 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       if (!newIds.has(uid)) {
         logUnsubMap[uid]();
         delete logUnsubMap[uid];
-        container.querySelector(`[data-uid="${uid}"]`)?.remove();
+        delete logsCache[uid];
+        delete userCache[uid];
       }
     }
-
-    container.querySelector(".following-nudge-slot")?.remove();
 
     for (const uid of newIds) {
       if (oldIds.has(uid)) continue;
@@ -625,32 +629,38 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         const userSnap = await getDoc(doc(db, "users", uid));
         if (!userSnap.exists()) continue;
         userData = userSnap.data();
+        userCache[uid] = userData;
       } catch (e) { continue; }
-
-      const slot = document.createElement("div");
-      slot.dataset.uid = uid;
-      slot.className = "following-card-slot";
-      container.appendChild(slot);
 
       const logRef = doc(db, "logs", yearMonth, "entries", uid);
       const unsubLog = onSnapshot(logRef, (logSnap) => {
-        slot.innerHTML = "";
-        if (!logSnap.exists() || !logSnap.data().activities?.length) {
-          slot.appendChild(renderPlaceholderCard(userData));
-          hideLoader();
-          return;
-        }
-        const entry = { id: uid, ...logSnap.data(), displayName: userData.displayName };
-        slot.appendChild(renderMobileCard(entry, yearMonth, currentUser, { isFollowing: true, showFollowBtn: true }));
+        if (!logSnap.exists() || !logSnap.data().activities?.length) logsCache[uid] = null;
+        else logsCache[uid] = { id: uid, ...logSnap.data(), displayName: userData.displayName };
+        renderFollowingBoard(container, {
+          currentUser,
+          yearMonth,
+          followingIds,
+          pinnedFollowingIds,
+          logsCache,
+          userCache,
+          onSwitchToAll
+        });
         hideLoader();
       }, (err) => { console.error("Log snapshot error:", err); hideLoader(); });
 
       logUnsubMap[uid] = unsubLog;
     }
 
-    appendNudgeCard(container, onSwitchToAll);
-    if (container.children.length === 0) showLoader();
-    else hideLoader();
+    renderFollowingBoard(container, {
+      currentUser,
+      yearMonth,
+      followingIds,
+      pinnedFollowingIds,
+      logsCache,
+      userCache,
+      onSwitchToAll
+    });
+    hideLoader();
 
   }, (err) => {
     console.error("User snapshot error:", err);
@@ -676,7 +686,152 @@ function renderFollowingEmpty(container, onSwitchToAll) {
   container.querySelector("#browse-all-btn")?.addEventListener("click", onSwitchToAll);
 }
 
-function appendNudgeCard(container, onSwitchToAll) {
+function renderFollowingBoard(container, model) {
+  const {
+    currentUser, yearMonth, followingIds, pinnedFollowingIds,
+    logsCache, userCache, onSwitchToAll
+  } = model;
+  container.innerHTML = "";
+
+  const pinnedSet = new Set(pinnedFollowingIds);
+  const items = followingIds.map(uid => ({
+    uid,
+    user: userCache[uid] || null,
+    log: Object.prototype.hasOwnProperty.call(logsCache, uid) ? logsCache[uid] : undefined,
+    isPinned: pinnedSet.has(uid)
+  }));
+
+  const pinnedActive = items.filter(i => i.log && i.isPinned);
+  const activeUnpinned = items.filter(i => i.log && !i.isPinned);
+  const noTracker = items.filter(i => i.log === null);
+
+  const board = document.createElement("div");
+  board.className = "following-board";
+
+  if (pinnedActive.length > 0) {
+    board.appendChild(renderFollowingSection(
+      `Pinned + active this month (${pinnedActive.length})`,
+      "calendar",
+      pinnedActive,
+      { currentUser, yearMonth }
+    ));
+  }
+
+  board.appendChild(renderFollowingSection(
+    `Following + active (${activeUnpinned.length})`,
+    "compact",
+    activeUnpinned,
+    { currentUser, yearMonth }
+  ));
+
+  board.appendChild(renderFollowingSection(
+    `No tracker this month (${noTracker.length})`,
+    "compact",
+    noTracker,
+    { currentUser, yearMonth }
+  ));
+
+  board.appendChild(renderBrowseNudge(onSwitchToAll));
+  container.appendChild(board);
+}
+
+function renderFollowingSection(title, type, items, ctx) {
+  const section = document.createElement("section");
+  section.className = "following-section";
+
+  const header = document.createElement("div");
+  header.className = "following-section-header";
+  header.innerHTML = `<h3>${title}</h3>`;
+  section.appendChild(header);
+
+  if (items.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "following-section-empty";
+    empty.textContent = "No users in this section yet.";
+    section.appendChild(empty);
+    return section;
+  }
+
+  if (type === "calendar") {
+    const grid = document.createElement("div");
+    grid.className = "following-calendar-grid";
+    items.forEach(item => {
+      const slot = document.createElement("div");
+      slot.className = "following-card-slot";
+      slot.appendChild(renderPinControl(item, ctx.currentUser));
+      slot.appendChild(renderMobileCard(item.log, ctx.yearMonth, ctx.currentUser, { isFollowing: true, showFollowBtn: true }));
+      grid.appendChild(slot);
+    });
+    section.appendChild(grid);
+    return section;
+  }
+
+  const list = document.createElement("div");
+  list.className = "following-compact-list";
+  items.forEach(item => {
+    list.appendChild(renderCompactRow(item, ctx.currentUser));
+  });
+  section.appendChild(list);
+  return section;
+}
+
+function renderPinControl(item, currentUser) {
+  const wrap = document.createElement("div");
+  wrap.className = "following-pin-wrap";
+  const btn = document.createElement("button");
+  btn.className = `following-pin-btn ${item.isPinned ? "active" : ""}`;
+  btn.textContent = item.isPinned ? "★ Pinned" : "☆ Pin";
+  btn.addEventListener("click", async () => {
+    await togglePinned(currentUser.uid, item.uid, !item.isPinned);
+  });
+  wrap.appendChild(btn);
+  return wrap;
+}
+
+function renderCompactRow(item, currentUser) {
+  const row = document.createElement("div");
+  row.className = "following-compact-row";
+  const displayName = item.user?.displayName || "Unknown user";
+  const initials = displayName.charAt(0).toUpperCase();
+  const avatarUrl = item.user?.decoration?.avatarUrl;
+  const hasTracker = !!item.log;
+  const statText = hasTracker
+    ? `${countMarkedDays(item.log)} check-ins this month`
+    : "No tracker set up for this month";
+
+  row.innerHTML = `
+    <div class="following-compact-user">
+      <div class="following-compact-avatar-wrap">
+        ${avatarUrl
+          ? `<img src="${avatarUrl}" class="following-compact-avatar" alt="avatar" />`
+          : `<div class="following-compact-avatar-initials">${initials}</div>`
+        }
+      </div>
+      <div class="following-compact-copy">
+        <div class="following-compact-name">${displayName}</div>
+        <div class="following-compact-meta">${statText}</div>
+      </div>
+    </div>
+    <div class="following-compact-actions">
+      <span class="following-status-chip ${hasTracker ? "has-tracker" : "no-tracker"}">
+        ${hasTracker ? "Has tracker" : "No tracker"}
+      </span>
+    </div>
+  `;
+
+  const actions = row.querySelector(".following-compact-actions");
+  const pinBtn = document.createElement("button");
+  pinBtn.className = `following-pin-btn following-pin-btn-small ${item.isPinned ? "active" : ""}`;
+  pinBtn.textContent = item.isPinned ? "Pinned" : "Pin";
+  pinBtn.addEventListener("click", async () => {
+    await togglePinned(currentUser.uid, item.uid, !item.isPinned);
+  });
+  actions.appendChild(pinBtn);
+
+  return row;
+}
+
+function renderBrowseNudge(onSwitchToAll) {
   const slot = document.createElement("div");
   slot.className = "following-nudge-slot";
   slot.innerHTML = `
@@ -687,29 +842,24 @@ function appendNudgeCard(container, onSwitchToAll) {
       <button class="following-browse-btn" id="nudge-browse-btn">Browse All →</button>
     </div>`;
   slot.querySelector("#nudge-browse-btn")?.addEventListener("click", onSwitchToAll);
-  container.appendChild(slot);
+  return slot;
 }
 
-function renderPlaceholderCard(userData) {
-  const { color = "#80B9B9", fontColor = "white", font = "Inter", sticker = "✨", avatarUrl } = userData.decoration || {};
-  const card = document.createElement("div");
-  card.className = "cal-card cal-card-placeholder";
-  card.style.borderColor = color;
-  const avatarHTML = avatarUrl
-    ? `<img src="${avatarUrl}" class="cal-card-avatar" alt="avatar" />`
-    : `<div class="cal-card-avatar-initials">${(userData.displayName || "?").charAt(0).toUpperCase()}</div>`;
-  card.innerHTML = `
-    <div class="cal-card-badge" style="background:${color};color:${fontColor};font-family:'${font}',sans-serif;">
-      <div class="cal-card-avatar-wrap">${avatarHTML}</div>
-      <div class="cal-card-name-wrap">
-        <span class="cal-card-name">${userData.displayName}</span>
-        <span class="cal-card-sticker">${sticker}</span>
-      </div>
-    </div>
-    <div class="cal-card-placeholder-body">
-      <span class="cal-card-placeholder-text">No tracker set up this month yet</span>
-    </div>`;
-  return card;
+function countMarkedDays(entry) {
+  if (!entry?.marks) return 0;
+  return Object.values(entry.marks).reduce((sum, days) => sum + (Array.isArray(days) ? days.length : 0), 0);
+}
+
+async function togglePinned(currentUid, targetUid, shouldPin) {
+  try {
+    const userRef = doc(db, "users", currentUid);
+    await setDoc(userRef, {
+      pinnedFollowing: shouldPin ? arrayUnion(targetUid) : arrayRemove(targetUid)
+    }, { merge: true });
+  } catch (error) {
+    console.error("Pin update error:", error);
+    showToast("Couldn't update pin. Try again.", "error");
+  }
 }
 
 // ─── RENDER ONE USER SECTION (desktop My Log) ─────────────

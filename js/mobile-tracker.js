@@ -78,7 +78,10 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
       try {
         const myRef = doc(db, "users", currentUser.uid);
         if (following) {
-          await setDoc(myRef, { following: arrayRemove(entry.id) }, { merge: true });
+          await setDoc(myRef, {
+            following: arrayRemove(entry.id),
+            pinnedFollowing: arrayRemove(entry.id)
+          }, { merge: true });
           following = false;
           followBtn.innerHTML = `<span class="follow-btn-plus">+</span> Follow`;
           followBtn.classList.remove("following");
