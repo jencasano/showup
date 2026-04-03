@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pace Badge Color Variants</title>
+  <style>
+    :root {
+      --bg: #232845;
+      --card: #2a3050;
+      --border: #3a4268;
+      --text: #e9ecff;
+      --muted: #b3b8d6;
+      --track: #1fd16b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(circle at 20% 0%, #2f3560 0, #222745 45%, #1a1f38 100%);
+      color: var(--text);
+      padding: 24px;
+    }
+
+    h1 { margin: 0 0 8px; font-size: 1.35rem; }
+    .subtitle { margin: 0 0 20px; color: var(--muted); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .variant {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    .variant h2 {
+      margin: 0 0 10px;
+      font-size: 0.92rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #d7ddff;
+    }
+
+    .row { margin-bottom: 12px; }
+    .row:last-child { margin-bottom: 0; }
+
+    .habit-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 5px;
+      font-size: 0.93rem;
+    }
+
+    .habit-name { font-weight: 700; }
+    .habit-meta { color: var(--muted); font-size: 0.8rem; }
+
+    .bar {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--track), black 40%);
+      margin-bottom: 7px;
+      overflow: hidden;
+    }
+
+    .fill {
+      width: 100%;
+      height: 100%;
+      background: var(--track);
+      border-radius: inherit;
+    }
+
+    .pace {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      border: 1.5px solid;
+      padding: 3px 9px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .msg {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* baseline */
+    .v1 .ahead {
+      color: #4ade80;
+      background: rgba(34,197,94,0.16);
+      border-color: rgba(34,197,94,0.45);
+    }
+    .v1 .ontrack {
+      color: #fcd34d;
+      background: rgba(245,158,11,0.14);
+      border-color: rgba(245,158,11,0.40);
+    }
+
+    /* teal on-track */
+    .v2 .ahead {
+      color: #4ade80;
+      background: rgba(34,197,94,0.16);
+      border-color: rgba(34,197,94,0.45);
+    }
+    .v2 .ontrack {
+      color: #67e8f9;
+      background: rgba(6,182,212,0.14);
+      border-color: rgba(6,182,212,0.38);
+    }
+
+    /* brighter ahead + teal on-track */
+    .v3 .ahead {
+      color: #86efac;
+      background: rgba(16,185,129,0.22);
+      border-color: rgba(16,185,129,0.55);
+      box-shadow: 0 0 0 1px rgba(16,185,129,0.12) inset;
+    }
+    .v3 .ontrack {
+      color: #67e8f9;
+      background: rgba(6,182,212,0.14);
+      border-color: rgba(6,182,212,0.38);
+    }
+
+    .legend {
+      margin-top: 8px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      border-top: 1px dashed rgba(255,255,255,0.12);
+      padding-top: 8px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pace Badge Color Mockups</h1>
+  <p class="subtitle">Compare: 1) current amber, 2) teal on-track, 3) slightly brighter ahead.</p>
+
+  <section class="grid">
+    <article class="variant v1">
+      <h2>1) Current amber</h2>
+
+      <div class="row">
+        <div class="habit-line">
+          <span class="habit-name">Workout</span>
+          <span class="habit-meta">5x/wk · 23/23</span>
+        </div>
+        <div class="bar"><div class="fill"></div></div>
+        <div class="pace">
+          <span class="badge ahead">Ahead</span>
+          <span class="msg">Overachiever alert. Do not stop now.</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="habit-line">
+          <span class="habit-name">Mobility</span>
+          <span class="habit-meta">4x/wk · 18/18</span>
+        </div>
+        <div class="bar"><div class="fill"></div></div>
+        <div class="pace">
+          <span class="badge ontrack">On track</span>
+          <span class="msg">You are doing the work. That is all that matters.</span>
+        </div>
+      </div>
+
+      <div class="legend">Keeps existing visual language. Highest distinction between green progress bar and amber status chip.</div>
+    </article>
+
+    <article class="variant v2">
+      <h2>2) Teal on-track</h2>
+
+      <div class="row">
+        <div class="habit-line">
+          <span class="habit-name">Workout</span>
+          <span class="habit-meta">5x/wk · 23/23</span>
+        </div>
+        <div class="bar"><div class="fill"></div></div>
+        <div class="pace">
+          <span class="badge ahead">Ahead</span>
+          <span class="msg">Overachiever alert. Do not stop now.</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="habit-line">
+          <span class="habit-name">Mobility</span>
+          <span class="habit-meta">4x/wk · 18/18</span>
+        </div>
+        <div class="bar"><div class="fill"></div></div>
+        <div class="pace">
+          <span class="badge ontrack">On track</span>
+          <span class="msg">You are doing the work. That is all that matters.</span>
+        </div>
+      </div>
+
+      <div class="legend">Feels calmer and less warning-like than amber, but still distinct from green "Ahead".</div>
+    </article>
+
+    <article class="variant v3">
+      <h2>3) Brighter ahead</h2>
+
+      <div class="row">
+        <div class="habit-line">
+          <span class="habit-name">Workout</span>
+          <span class="habit-meta">5x/wk · 23/23</span>
+        </div>
+        <div class="bar"><div class="fill"></div></div>
+        <div class="pace">
+          <span class="badge ahead">Ahead</span>
+          <span class="msg">Overachiever alert. Do not stop now.</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="habit-line">
+          <span class="habit-name">Mobility</span>
+          <span class="habit-meta">4x/wk · 18/18</span>
+        </div>
+        <div class="bar"><div class="fill"></div></div>
+        <div class="pace">
+          <span class="badge ontrack">On track</span>
+          <span class="msg">You are doing the work. That is all that matters.</span>
+        </div>
+      </div>
+
+      <div class="legend">More celebratory "Ahead" emphasis while retaining teal "On track" for hierarchy.</div>
+    </article>
+  </section>
+</body>
+</html>
