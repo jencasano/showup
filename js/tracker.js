@@ -256,7 +256,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       </div>
     </div>
     <div class="summary-note">
-      “Cadence-based monthly goal” = ceil(cadence × daysInMonth / 7).
+      "Cadence-based monthly goal" = ceil(cadence × daysInMonth / 7).
     </div>
     <div class="summary-habits">
       <div class="summary-habits__label">This Month's Progress</div>
@@ -278,6 +278,24 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
     } else {
       navigator.clipboard.writeText(text).then(() => showToast("Stats copied!", "info"));
     }
+  });
+
+  // Attach popover listeners for overflow dots
+  card.querySelectorAll(".fw-day[data-overflow]").forEach(dayEl => {
+    dayEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      // Remove any existing popover
+      document.querySelectorAll(".fw-day-popover").forEach(p => p.remove());
+      const allDots = JSON.parse(dayEl.dataset.overflow);
+      const popover = document.createElement("div");
+      popover.className = "fw-day-popover";
+      popover.innerHTML = allDots.map(d =>
+        `<span class="fw-popover-dot" style="background:${d.color}"></span><span class="fw-popover-label">${d.name}</span>`
+      ).join("");
+      dayEl.appendChild(popover);
+      const dismiss = () => { popover.remove(); document.removeEventListener("click", dismiss); };
+      setTimeout(() => document.addEventListener("click", dismiss), 0);
+    });
   });
 
   return card;
@@ -302,11 +320,23 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
   }
 
   const marks = entry.marks || {};
+
+  // Build per-day dot data: { dayKey -> [{name, color}] }
+  const dayDots = {};
+  habitStats.forEach((h, i) => {
+    const color = getActivityColor(i);
+    (marks[h.name] || []).forEach(dayNum => {
+      const key = `${year}-${month}-${dayNum}`;
+      if (!dayDots[key]) dayDots[key] = [];
+      dayDots[key].push({ name: h.name, color });
+    });
+  });
+
   const fullWeekByStart = new Map();
   habitStats.forEach(h => {
     (h.fullWeeksBreakdown || []).forEach((w, idx) => {
       if (!fullWeekByStart.has(w.label)) fullWeekByStart.set(w.label, []);
-      fullWeekByStart.get(w.label).push({ name: h.name, logged: w.logged, target: w.target, hit: w.hit });
+      fullWeekByStart.get(w.label).push({ name: h.name, color: getActivityColor(habitStats.indexOf(h)), logged: w.logged, target: w.target, hit: w.hit });
     });
   });
 
@@ -317,14 +347,35 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
     const weekLabel = isFullInMonthWeek ? `Wk${++fullWeekOrdinal}` : null;
     const badgeRows = (fullWeekByStart.get(weekLabel) || []).map(w => {
       const state = w.hit ? "hit" : (w.logged >= Math.max(1, w.target - 1) ? "close" : "miss");
-      return `<span class="fw-badge fw-badge--${state}">${w.name} ${w.logged}/${w.target}</span>`;
+      return `<span class="fw-badge fw-badge--${state}"><i class="fw-badge-dot" style="background:${w.color}"></i>${w.name} ${w.logged}/${w.target}</span>`;
     }).join("");
 
+    const MAX_VISIBLE_DOTS = 5;
     const dayCells = row.map(date => {
       const inCurrent = date.getMonth() === (month - 1);
       const dayNum = date.getDate();
-      const hasAnyMark = inCurrent && habitStats.some(h => (marks[h.name] || []).includes(dayNum));
-      return `<div class="fw-day ${inCurrent ? "" : "fw-day--muted"}">${dayNum}${hasAnyMark ? `<span class="fw-check">✓</span>` : ""}</div>`;
+      const key = `${year}-${month}-${dayNum}`;
+      const dots = inCurrent ? (dayDots[key] || []) : [];
+      const visibleDots = dots.slice(0, MAX_VISIBLE_DOTS);
+      const overflowDots = dots.slice(MAX_VISIBLE_DOTS);
+      const hasOverflow = overflowDots.length > 0;
+
+      const dotsHTML = visibleDots.map(d =>
+        `<span class="fw-activity-dot" style="background:${d.color}"></span>`
+      ).join("");
+
+      const overflowAttr = hasOverflow
+        ? ` data-overflow='${JSON.stringify(dots)}'`
+        : "";
+      const overflowIndicator = hasOverflow
+        ? `<span class="fw-overflow-indicator">+${overflowDots.length}</span>`
+        : "";
+      const clickable = hasOverflow ? " fw-day--clickable" : "";
+
+      return `<div class="fw-day${inCurrent ? "" : " fw-day--muted"}${clickable}"${overflowAttr}>
+        <span class="fw-day-num">${dayNum}</span>
+        <div class="fw-day-dots">${dotsHTML}${overflowIndicator}</div>
+      </div>`;
     }).join("");
 
     if (isFullInMonthWeek) {
@@ -333,17 +384,21 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
     return `<div class="fw-week"><div class="fw-week-grid">${dayCells}</div></div>`;
   }).join("");
 
+  // Legend pills
+  const legendHTML = `
+    <div class="fw-legend">
+      <span class="fw-legend-pill fw-legend-pill--hit">Target hit</span>
+      <span class="fw-legend-pill fw-legend-pill--close">Close</span>
+      <span class="fw-legend-pill fw-legend-pill--miss">Missed</span>
+    </div>`;
+
   return `
     <div class="fullweek-calendar">
       <div class="fullweek-calendar__title">${monthName(yearMonth)}</div>
-      <div class="fullweek-calendar__sub">Full-week cadence view (Monday–Sunday only)</div>
+      <div class="fullweek-calendar__sub">Full-week cadence view (Monday–Sunday)</div>
       <div class="fw-dow"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
       ${weekBlocks}
-      <div class="fw-legend">
-        <span><i class="fw-dot fw-dot--hit"></i>Target hit</span>
-        <span><i class="fw-dot fw-dot--close"></i>Close</span>
-        <span><i class="fw-dot fw-dot--miss"></i>Missed</span>
-      </div>
+      ${legendHTML}
     </div>`;
 }
 
