@@ -2,7 +2,7 @@
    TRACKER — Grid, badges, rows, dots
    ═══════════════════════════════════════════════ */
 
-/* ── Section ─────────────────────────────────── */
+/* ── Section ─────────────────────────────────────── */
 .mylog-centered-stack {
   width: fit-content;
   max-width: 100%;
@@ -25,7 +25,7 @@
   width: fit-content;
 }
 
-/* ── Badge ───────────────────────────────────── */
+/* ── Badge ──────────────────────────────────────── */
 .tracker-badge {
   display: inline-flex;
   align-items: center;
@@ -48,7 +48,7 @@
 .badge-name  { font-weight: 700; }
 .badge-sticker { font-style: normal; }
 
-/* ── Header Row ──────────────────────────────── */
+/* ── Header Row ─────────────────────────────────── */
 .tracker-header-row,
 .tracker-row {
   display: flex;
@@ -61,7 +61,7 @@
 .tracker-header-row::-webkit-scrollbar,
 .tracker-row::-webkit-scrollbar { display: none; }
 
-/* ── Activity Label ──────────────────────────── */
+/* ── Activity Label ─────────────────────────────── */
 .activity-label {
   width: 185px;
   min-width: 185px;
@@ -108,7 +108,7 @@
   border-color: rgba(99, 102, 241, 0.22);
 }
 
-/* ── Activity Color Dot ──────────────────────── */
+/* ── Activity Color Dot ─────────────────────────── */
 .activity-dot {
   width: 7px;
   height: 7px;
@@ -117,7 +117,7 @@
   display: inline-block;
 }
 
-/* ── Day Header ──────────────────────────────── */
+/* ── Day Header ─────────────────────────────────── */
 .day-header {
   width: 34px;
   min-width: 34px;
@@ -174,7 +174,7 @@
 [data-theme="light"] .day-header-future .day-num,
 [data-theme="light"] .day-header-future .day-label { opacity: 0.7; }
 
-/* ── Day Cell ────────────────────────────────── */
+/* ── Day Cell ────────────────────────────────────── */
 .day-cell {
   width: 26px;
   height: 26px;
@@ -199,7 +199,7 @@
 .day-cell.clickable.day-cell-today:hover { border-color: var(--color-primary); }
 .day-cell.marked    { font-size: 0.8rem; }
 
-/* ── Empty State ─────────────────────────────── */
+/* ── Empty State ────────────────────────────────── */
 .empty-state {
   text-align: center;
   color: var(--text-faint);
@@ -329,7 +329,7 @@
   color: #fff;
 }
 
-/* ── Big 3 stats ─────────────────────────────── */
+/* ── Big 3 stats ─────────────────────────────────── */
 .summary-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -367,7 +367,7 @@
   color: var(--text-faint);
 }
 
-/* ── Calculation note ────────────────────────── */
+/* ── Calculation note ────────────────────────────── */
 .summary-note {
   margin: 0 18px 14px;
   padding: 9px 12px;
@@ -380,7 +380,7 @@
 
 .summary-note strong { color: var(--text-primary); }
 
-/* ── Top-level insight banner ────────────────── */
+/* ── Top-level insight banner ────────────────────── */
 .top-insight {
   display: flex;
   align-items: center;
@@ -415,7 +415,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Per-habit breakdown ─────────────────────── */
+/* ── Per-habit breakdown ─────────────────────────── */
 .summary-habits {
   padding: 0 18px 16px;
 }
@@ -484,7 +484,7 @@
   font-weight: 800;
 }
 
-/* ── Per-habit inline streak badge ──────────── */
+/* ── Per-habit inline streak badge ──────────────── */
 .summary-habit-streak {
   display: inline-flex;
   align-items: center;
@@ -535,7 +535,7 @@
   background: rgba(245, 158, 11, 0.12);
 }
 
-/* ── Full-week calendar block ───────────────── */
+/* ── Full-week calendar block ────────────────────── */
 .fullweek-calendar {
   background: var(--bg-subtle);
   border: 1px solid var(--border);
@@ -587,7 +587,7 @@
   outline-color: rgba(165, 180, 252, 0.45);
 }
 
-/* ── Day box ─────────────────────────────────── */
+/* ── Day box ─────────────────────────────────────── */
 .fw-day {
   position: relative;
   min-height: 36px;
@@ -741,68 +741,73 @@
   transition: width 0.6s ease;
 }
 
-/* ── Pace status + message row ───────────────── */
+/* ═══════════════════════════════════════════════
+   PACE STATUS ROW
+   Badge (pill) on its own line, message beneath it.
+   ═══════════════════════════════════════════════ */
 .summary-habit-sub {
   display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 5px;
-  flex-wrap: wrap;
+  flex-direction: column;       /* badge on top, message beneath */
+  align-items: flex-start;
+  gap: 4px;
+  margin-top: 6px;
 }
 
-/* Pace badge: pill with strong colour signal */
+/* Pace badge: prominent coloured pill */
 .pace-badge {
   display: inline-flex;
   align-items: center;
   font-size: 0.6rem;
   font-weight: 800;
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: 999px;
-  border: 1px solid;
+  border: 1.5px solid;
   white-space: nowrap;
   flex-shrink: 0;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .pace-badge--ahead {
-  color: #16a34a;
-  background: rgba(34, 197, 94, 0.14);
-  border-color: rgba(34, 197, 94, 0.35);
+  color: #15803d;
+  background: rgba(34, 197, 94, 0.16);
+  border-color: rgba(34, 197, 94, 0.45);
 }
 
 .pace-badge--on-track {
-  color: #b45309;
+  color: #92400e;
   background: rgba(245, 158, 11, 0.14);
-  border-color: rgba(245, 158, 11, 0.35);
+  border-color: rgba(245, 158, 11, 0.40);
 }
 
 .pace-badge--behind {
-  color: #dc2626;
+  color: #b91c1c;
   background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.30);
+  border-color: rgba(239, 68, 68, 0.38);
 }
 
 .pace-badge--early {
-  color: #6366f1;
+  color: #4338ca;
   background: rgba(99, 102, 241, 0.12);
-  border-color: rgba(99, 102, 241, 0.28);
+  border-color: rgba(99, 102, 241, 0.32);
 }
 
-[data-theme="light"] .pace-badge--ahead    { color: #15803d; }
-[data-theme="light"] .pace-badge--on-track { color: #92400e; }
-[data-theme="light"] .pace-badge--behind   { color: #b91c1c; }
-[data-theme="light"] .pace-badge--early    { color: #4338ca; }
+/* Dark mode overrides for badge text */
+[data-theme="dark"] .pace-badge--ahead    { color: #4ade80; }
+[data-theme="dark"] .pace-badge--on-track { color: #fcd34d; }
+[data-theme="dark"] .pace-badge--behind   { color: #f87171; }
+[data-theme="dark"] .pace-badge--early    { color: #a5b4fc; }
 
-/* Pace message: muted italic nudge beside the badge */
+/* Pace message: softer, italic, clearly a supporting note */
 .pace-message {
-  font-size: 0.67rem;
+  font-size: 0.68rem;
   font-style: italic;
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: 1.45;
+  padding-left: 1px;            /* subtle left indent under the badge */
 }
 
-/* ── Per-habit inline insight message ────────── */
+/* ── Per-habit inline insight message ────────────── */
 .habit-insight {
   margin-top: 5px;
   font-size: 0.68rem;
