@@ -78,11 +78,11 @@ function hitWeeklyTarget(markedDays, cadence, yearMonth, date) {
 }
 
 // ─── Pace status ──────────────────────────────────────────
-// Uses a ratio-based approach so every cadence is judged fairly.
-// Thresholds: >= 1.10 = Ahead, >= 0.85 = On Track, < 0.85 = Behind.
-// Suppressed for the first 3 days of the month (too noisy).
+// Ratio-based so every cadence is judged on the same relative scale.
+// Thresholds: >= 1.10 = ahead, >= 0.85 = on-track, < 0.85 = behind.
+// Days 1-3 show "Early days!" instead so noisy ratios are hidden.
 export function getPaceStatus(logged, expectedByNow, lastDay) {
-  if (lastDay < 3) return "early";
+  if (lastDay <= 3) return "early";
   if (expectedByNow <= 0) return logged > 0 ? "ahead" : "early";
   const ratio = logged / expectedByNow;
   if (ratio >= 1.10) return "ahead";
@@ -112,7 +112,9 @@ const PACE_MESSAGES = {
     "The month is not over yet. Close the gap."
   ],
   early: [
-    "Month is just getting started. Show up!"
+    "A fresh month. Start strong and set the tone!",
+    "First days of the month. Every log counts from here.",
+    "The month is young. Make it count from day one."
   ]
 };
 
@@ -229,8 +231,13 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
   const paceKey = getPaceStatus(logged, expectedByNow, lastDay);
   const paceMessage = getPaceMessage(paceKey);
 
-  // Human-readable label
-  const paceLabel = { ahead: "Ahead", "on-track": "On track", behind: "Behind pace", early: "" }[paceKey];
+  // Human-readable badge label
+  const paceLabel = {
+    ahead:      "Ahead",
+    "on-track": "On track",
+    behind:     "Behind pace",
+    early:      "Early days!"
+  }[paceKey];
 
   const fullWeeksBreakdown = fullWeeks.map((w, idx) => {
     const weekLogged = countInRange(marks[activity] || [], w.startDay, w.endDay);

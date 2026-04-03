@@ -209,16 +209,12 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
         ? `<span class="summary-habit-streak">✅ Target met</span>`
         : `<span class="summary-habit-streak">${h.monthTarget - h.monthLogged} to go</span>`;
 
-    // Pace badge: colour-coded by status
     const paceBadgeClass = {
-      ahead: "pace-badge--ahead",
+      ahead:      "pace-badge--ahead",
       "on-track": "pace-badge--on-track",
-      behind: "pace-badge--behind",
-      early: "pace-badge--early"
+      behind:     "pace-badge--behind",
+      early:      "pace-badge--early"
     }[h.paceKey] || "";
-    const paceBadge = h.paceLabel
-      ? `<span class="pace-badge ${paceBadgeClass}">${h.paceLabel}</span>`
-      : "";
 
     return `
       <div class="summary-habit-row">
@@ -237,7 +233,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
           <div class="summary-habit-fill" style="width:${displayRate}%;background:${barColor}"></div>
         </div>
         <div class="summary-habit-sub">
-          ${paceBadge}
+          <span class="pace-badge ${paceBadgeClass}">${h.paceLabel}</span>
           <span class="pace-message">${h.paceMessage}</span>
         </div>
       </div>`;
@@ -271,7 +267,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       </div>
     </div>
     <div class="summary-note">
-      Your monthly goals are set by how often per week you want to show up. Keep your cadences updated and this will always reflect your real targets.
+      Your monthly goals are based on how often per week you want to show up. You set the bar. Now go hit it.
     </div>
     <div class="summary-habits">
       <div class="summary-habits__label">This Month's Progress</div>
@@ -295,7 +291,6 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
     }
   });
 
-  // Wire up day-box popovers for overflow habits (>5)
   card.querySelectorAll(".fw-day[data-overflow]").forEach(dayEl => {
     dayEl.addEventListener("click", (e) => {
       e.stopPropagation();

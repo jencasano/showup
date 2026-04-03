@@ -574,21 +574,14 @@
   margin-bottom: 6px;
 }
 
-/*
-  Full-week highlight: use box-shadow + outline instead of border
-  so the highlight does NOT affect layout/column widths.
-  This keeps day cells perfectly aligned with non-full weeks.
-*/
 .fw-week--full {
   border-radius: 10px;
   padding: 6px;
-  /* Light mode: subtle warm highlight */
   background: rgba(99, 102, 241, 0.06);
   outline: 1.5px solid rgba(99, 102, 241, 0.28);
   outline-offset: 0px;
 }
 
-/* Dark mode: stronger highlight so it's clearly visible */
 [data-theme="dark"] .fw-week--full {
   background: rgba(99, 102, 241, 0.14);
   outline-color: rgba(165, 180, 252, 0.45);
@@ -603,17 +596,14 @@
   background: var(--bg-surface);
   display: flex;
   flex-direction: column;
-  align-items: flex-end;   /* date number top-right */
+  align-items: flex-end;
   justify-content: flex-start;
   padding: 3px 4px 3px 4px;
   overflow: visible;
 }
 
-.fw-day--muted {
-  opacity: 0.4;
-}
+.fw-day--muted { opacity: 0.4; }
 
-/* Date number: top-right corner */
 .fw-day-num {
   font-size: 0.6rem;
   font-weight: 600;
@@ -622,7 +612,6 @@
   align-self: flex-end;
 }
 
-/* Dots row: fills remaining space, centered */
 .fw-day-dots {
   display: flex;
   flex-wrap: wrap;
@@ -634,7 +623,6 @@
   padding-top: 2px;
 }
 
-/* Individual habit dot */
 .fw-habit-dot {
   display: block;
   width: 7px;
@@ -643,7 +631,6 @@
   flex-shrink: 0;
 }
 
-/* Overflow indicator (+N more) */
 .fw-habit-dot--more {
   width: auto;
   height: auto;
@@ -657,12 +644,8 @@
   cursor: pointer;
 }
 
-/* Clickable day box when there's overflow */
-.fw-day--has-overflow {
-  cursor: pointer;
-}
+.fw-day--has-overflow { cursor: pointer; }
 
-/* ── Badge dot (inside counter pills) ───────── */
 .fw-badge-dot {
   display: inline-block;
   width: 7px;
@@ -673,7 +656,6 @@
   vertical-align: middle;
 }
 
-/* ── Popover for overflow habits ─────────────── */
 .fw-popover {
   position: absolute;
   bottom: calc(100% + 4px);
@@ -698,7 +680,6 @@
   color: var(--text);
 }
 
-/* ── Week counter pills (below full weeks) ───── */
 .fw-badges {
   margin-top: 6px;
   display: flex;
@@ -718,25 +699,10 @@
   background: var(--bg-surface);
 }
 
-.fw-badge--hit {
-  color: #22c55e;
-  border-color: rgba(34, 197, 94, 0.35);
-  background: rgba(34, 197, 94, 0.14);
-}
+.fw-badge--hit   { color: #22c55e; border-color: rgba(34,197,94,0.35);  background: rgba(34,197,94,0.14); }
+.fw-badge--close { color: #f59e0b; border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.14); }
+.fw-badge--miss  { color: #ef4444; border-color: rgba(239,68,68,0.35);  background: rgba(239,68,68,0.14); }
 
-.fw-badge--close {
-  color: #f59e0b;
-  border-color: rgba(245, 158, 11, 0.35);
-  background: rgba(245, 158, 11, 0.14);
-}
-
-.fw-badge--miss {
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.35);
-  background: rgba(239, 68, 68, 0.14);
-}
-
-/* ── Legend: pills matching badge style ──────── */
 .fw-legend {
   margin-top: 8px;
   display: flex;
@@ -745,27 +711,15 @@
   align-items: center;
 }
 
-.fw-legend-pill {
-  /* inherits fw-badge styles via dual class in HTML */
-  font-size: 0.62rem;
-}
+.fw-legend-pill { font-size: 0.62rem; }
 
-/* Remove old dot classes (kept for safety) */
-.fw-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 4px;
-}
-.fw-dot--hit { background: #22c55e; }
+.fw-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+.fw-dot--hit   { background: #22c55e; }
 .fw-dot--close { background: #f59e0b; }
-.fw-dot--miss { background: #ef4444; }
+.fw-dot--miss  { background: #ef4444; }
 
 @media (max-width: 900px) {
-  .summary-habits-grid {
-    grid-template-columns: 1fr;
-  }
+  .summary-habits-grid { grid-template-columns: 1fr; }
 }
 
 [data-theme="light"] .summary-habit-streak {
@@ -787,10 +741,65 @@
   transition: width 0.6s ease;
 }
 
+/* ── Pace status + message row ───────────────── */
 .summary-habit-sub {
-  font-size: 0.65rem;
-  color: var(--text-faint);
-  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+/* Pace badge: pill with strong colour signal */
+.pace-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.pace-badge--ahead {
+  color: #16a34a;
+  background: rgba(34, 197, 94, 0.14);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.pace-badge--on-track {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.pace-badge--behind {
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.30);
+}
+
+.pace-badge--early {
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.28);
+}
+
+[data-theme="light"] .pace-badge--ahead    { color: #15803d; }
+[data-theme="light"] .pace-badge--on-track { color: #92400e; }
+[data-theme="light"] .pace-badge--behind   { color: #b91c1c; }
+[data-theme="light"] .pace-badge--early    { color: #4338ca; }
+
+/* Pace message: muted italic nudge beside the badge */
+.pace-message {
+  font-size: 0.67rem;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.4;
 }
 
 /* ── Per-habit inline insight message ────────── */
