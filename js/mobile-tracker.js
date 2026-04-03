@@ -17,10 +17,9 @@ const MARKER_SYMBOLS = {
   scribble: "〰"
 };
 
+const MAX_VISIBLE_DOTS = 5;
+
 // ─── RENDER MOBILE CALENDAR CARD ────────────────────
-// opts.onMarkToggled — optional callback(entry) fired immediately
-// after a habit is toggled. loadMyLog passes this to refresh the
-// summary card and status banner in-place without any page reload.
 export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   const { isFollowing = false, showFollowBtn = false, onMarkToggled = null } = opts;
   const isOwner = currentUser && currentUser.uid === entry.id;
@@ -121,7 +120,7 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   calBody.className = "cal-card-body";
   card.appendChild(calBody);
 
-  // ── Footer Stats ────────────────────────────────────
+  // ── Legend Footer ───────────────────────────────────
   const footer = document.createElement("div");
   footer.className = "cal-card-footer";
   card.appendChild(footer);
@@ -130,7 +129,7 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
     calBody.innerHTML = "";
     renderCalGrid(calBody, entry, yearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap);
     renderFilterBar(filterBar, activeFilter, entry.activities, onFilterClear);
-    renderFooter(footer, entry, yearMonth, todayDate, isCurrentMonth, color);
+    renderLegend(footer, entry);
   }
 
   function onDayTap(day) {
@@ -138,18 +137,10 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
     if (isFuture) return;
     showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate, marker,
       async (activity, newMarkedDays) => {
-        // 1. Update local entry state immediately.
         if (!entry.marks) entry.marks = {};
         entry.marks[activity] = newMarkedDays;
-
-        // 2. Re-render card grid + footer in-place (no flash).
         render();
-
-        // 3. If loadMyLog passed a callback, call it now so the
-        //    summary card and status banner update instantly too.
         if (onMarkToggled) onMarkToggled(entry);
-
-        // 4. Persist to Firestore in the background.
         try {
           const logRef = doc(db, "logs", yearMonth, "entries", entry.id);
           const logSnap = await getDoc(logRef);
@@ -216,45 +207,84 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
     if (isToday)  cell.classList.add("cal-day-today");
     if (isFuture) cell.classList.add("cal-day-future");
 
+    // Date number — top right
     const dayNum = document.createElement("span");
     dayNum.className = "cal-day-num";
     dayNum.textContent = d;
     cell.appendChild(dayNum);
 
     if (activeFilter) {
+      // ── Single-activity filter mode ──────────────
       const actIndex = activities.indexOf(activeFilter);
       const actColor = getActivityColor(actIndex);
       const markedDays = marks[activeFilter] || [];
       if (markedDays.includes(d) && !isFuture) {
         cell.classList.add("cal-day-done");
-        cell.style.background = actColor;
-        dayNum.style.color = "white";
+        // Show single dot in that activity colour
+        const dotsRow = document.createElement("div");
+        dotsRow.className = "cal-day-dots";
         const dot = document.createElement("span");
-        dot.className = "cal-day-big-dot";
-        dot.style.background = "rgba(255,255,255,0.7)";
-        cell.appendChild(dot);
+        dot.className = "cal-day-dot";
+        dot.style.background = actColor;
+        dotsRow.appendChild(dot);
+        cell.appendChild(dotsRow);
       }
     } else {
-      let doneCount = 0;
-      activities.forEach(act => {
-        if ((marks[act] || []).includes(d)) doneCount++;
-      });
-      if (!isFuture && doneCount > 0) {
-        const count = document.createElement("span");
-        count.className = "cal-day-count";
-        if (doneCount === activities.length) {
-          cell.classList.add("cal-day-full");
-          cell.style.background = color;
-          dayNum.style.color = "white";
-          count.style.color = "rgba(255,255,255,0.8)";
-        } else {
-          cell.classList.add("cal-day-partial");
-          cell.style.background = hexWithOpacity(color, 0.2);
-          dayNum.style.color = color;
-          count.style.color = color;
+      // ── Normal mode: coloured dots per logged activity ──
+      if (!isFuture) {
+        const loggedHabits = activities
+          .map((act, i) => ({ act, color: getActivityColor(i) }))
+          .filter(({ act }) => (marks[act] || []).includes(d));
+
+        if (loggedHabits.length > 0) {
+          const allDone = loggedHabits.length === activities.length;
+          if (allDone) cell.classList.add("cal-day-full");
+          else         cell.classList.add("cal-day-partial");
+
+          const visible  = loggedHabits.slice(0, MAX_VISIBLE_DOTS);
+          const overflow = loggedHabits.slice(MAX_VISIBLE_DOTS);
+
+          const dotsRow = document.createElement("div");
+          dotsRow.className = "cal-day-dots";
+
+          visible.forEach(({ color }) => {
+            const dot = document.createElement("span");
+            dot.className = "cal-day-dot";
+            dot.style.background = color;
+            dotsRow.appendChild(dot);
+          });
+
+          if (overflow.length > 0) {
+            // Tap-to-expand popover for >5 habits
+            const moreDot = document.createElement("span");
+            moreDot.className = "cal-day-dot cal-day-dot--more";
+            moreDot.textContent = `+${overflow.length}`;
+            moreDot.title = overflow.map(h => h.act).join(", ");
+            dotsRow.appendChild(moreDot);
+          }
+
+          cell.appendChild(dotsRow);
+
+          // Overflow popover on tap/click
+          if (overflow.length > 0) {
+            cell.addEventListener("click", (e) => {
+              e.stopPropagation();
+              document.querySelectorAll(".cal-overflow-popover").forEach(p => p.remove());
+              const pop = document.createElement("div");
+              pop.className = "cal-overflow-popover";
+              loggedHabits.forEach(({ act, color }) => {
+                const item = document.createElement("span");
+                item.className = "cal-overflow-item";
+                item.innerHTML = `<i style="background:${color}"></i>${act}`;
+                pop.appendChild(item);
+              });
+              cell.appendChild(pop);
+              setTimeout(() => {
+                document.addEventListener("click", () => pop.remove(), { once: true });
+              }, 0);
+            }, { capture: true });
+          }
         }
-        count.textContent = `${doneCount}/${activities.length}`;
-        cell.appendChild(count);
       }
     }
 
@@ -289,41 +319,28 @@ function renderFilterBar(filterBar, activeFilter, activities, onFilterClear) {
   filterBar.querySelector(".filter-pill").addEventListener("click", onFilterClear);
 }
 
-// ─── RENDER FOOTER STATS ────────────────────────────
-function renderFooter(footer, entry, yearMonth, todayDate, isCurrentMonth, color) {
-  const marks = entry.marks || {};
+// ─── RENDER ACTIVITY LEGEND (replaces stats footer) ─
+function renderLegend(footer, entry) {
   const activities = entry.activities || [];
-  const daysInMonth = getDaysInMonth(yearMonth);
-  const lastDay = isCurrentMonth ? todayDate : daysInMonth;
+  footer.innerHTML = "";
 
-  let doneDays = 0;
-  let streak = 0;
-  for (let d = 1; d <= lastDay; d++) {
-    if (activities.some(act => (marks[act] || []).includes(d))) doneDays++;
-  }
+  if (activities.length === 0) return;
 
-  let s = lastDay;
-  while (s >= 1 && activities.some(act => (marks[act] || []).includes(s))) {
-    streak++;
-    s--;
-  }
+  const list = document.createElement("div");
+  list.className = "cal-legend";
 
-  const rate = lastDay > 0 ? Math.round(doneDays / lastDay * 100) : 0;
+  activities.forEach((act, i) => {
+    const color = getActivityColor(i);
+    const item = document.createElement("div");
+    item.className = "cal-legend-item";
+    item.innerHTML = `
+      <span class="cal-legend-dot" style="background:${color}"></span>
+      <span class="cal-legend-name">${act}</span>
+    `;
+    list.appendChild(item);
+  });
 
-  footer.innerHTML = `
-    <div class="cal-stat">
-      <div class="cal-stat-val" style="color:${color}">${doneDays}</div>
-      <div class="cal-stat-label">Days Done</div>
-    </div>
-    <div class="cal-stat">
-      <div class="cal-stat-val">🔥 ${streak}</div>
-      <div class="cal-stat-label">Streak</div>
-    </div>
-    <div class="cal-stat">
-      <div class="cal-stat-val">${rate}%</div>
-      <div class="cal-stat-label">Rate</div>
-    </div>
-  `;
+  footer.appendChild(list);
 }
 
 // ─── SHOW DAY SHEET ─────────────────────────────────

@@ -204,41 +204,68 @@
 
 /* ── Day Cell ────────────────────────────────── */
 .cal-grid-day {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: space-between;
   border-radius: var(--radius-sm);
-  min-height: 32px;
-  padding: 2px 1px;
-  transition: all var(--transition);
-  position: relative;
+  min-height: 36px;
+  padding: 2px 3px 3px;
+  transition: background var(--transition);
 }
 
+/* Date number pinned to top-right */
 .cal-day-num {
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 600;
   color: var(--text-muted);
   line-height: 1;
+  align-self: flex-end;
+  margin-left: auto;
 }
 
-.cal-day-count {
-  font-size: 0.42rem;
-  font-weight: 700;
-  line-height: 1;
-  margin-top: 1px;
+/* Dots row sits at the bottom of the cell */
+.cal-day-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-items: center;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 2px;
 }
 
-.cal-day-big-dot {
-  width: 6px;
-  height: 6px;
+.cal-day-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  margin-top: 2px;
-  display: block;
+  flex-shrink: 0;
 }
 
-.cal-day-full  { border-radius: var(--radius-md); }
-.cal-day-partial { border-radius: var(--radius-md); }
+/* Overflow indicator — tiny pill */
+.cal-day-dot--more {
+  width: auto;
+  height: auto;
+  border-radius: 99px;
+  font-size: 0.38rem;
+  font-weight: 700;
+  padding: 0 2px;
+  background: var(--text-faint) !important;
+  color: white;
+  line-height: 1.4;
+}
+
+/* Subtle background tints for partial / full days */
+.cal-day-partial {
+  background: var(--bg-subtle);
+}
+
+.cal-day-full {
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+}
 
 .cal-day-today {
   outline: 1.5px solid var(--color-primary);
@@ -253,39 +280,75 @@
 
 .cal-day-future .cal-day-num { opacity: 0.35; }
 
-/* ── Footer Stats ─────────────────────────────── */
-.cal-card-footer {
-  display: flex;
-  gap: 0;
-  border-top: 1px solid var(--border);
-  background: var(--bg-subtle);
-}
-
-.cal-stat {
-  flex: 1;
+/* Overflow popover */
+.cal-overflow-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px 8px;
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  padding: 7px 8px;
-  border-right: 1px solid var(--border-faint);
+  gap: 4px;
+  white-space: nowrap;
+  min-width: 110px;
+  pointer-events: none;
 }
 
-.cal-stat:last-child { border-right: none; }
-
-.cal-stat-val {
-  font-size: 0.82rem;
-  font-weight: 800;
+.cal-overflow-item {
+  font-size: 0.65rem;
   color: var(--text);
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.cal-stat-label {
-  font-size: 0.52rem;
-  color: var(--text-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  font-weight: 600;
+.cal-overflow-item i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Activity Legend Footer ───────────────────── */
+.cal-card-footer {
+  border-top: 1px solid var(--border);
+  background: var(--bg-subtle);
+  padding: 8px 12px;
+}
+
+.cal-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cal-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.cal-legend-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cal-legend-name {
+  font-size: 0.72rem;
+  color: var(--text);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── Placeholder Card (no tracker this month) ── */
@@ -311,17 +374,10 @@
   min-width: 0;
 }
 
-/*
-  The nudge slot must stretch to match the tallest card
-  in its grid row (the calendar card), then pass that
-  height down to .following-nudge-card via height: 100%.
-  align-self: stretch overrides the grid's align-items: start
-  just for this one slot.
-*/
 .following-nudge-slot {
   min-width: 0;
-  align-self: stretch;  /* fill the row height set by the tallest card */
-  display: flex;        /* so the inner card can use height: 100% */
+  align-self: stretch;
+  display: flex;
 }
 
 /* ── Full Empty State (zero follows) ──────────── */
@@ -364,10 +420,7 @@
   line-height: 1.5;
 }
 
-/* ── Nudge Card (alongside real cards) ──────────
-   height: 100% works because the parent slot uses
-   align-self: stretch + display: flex.
-   ─────────────────────────────────────────── */
+/* ── Nudge Card (alongside real cards) ──────────── */
 .following-nudge-card {
   width: 100%;
   height: 100%;
@@ -532,7 +585,6 @@
 
   .following-empty { padding: 36px 16px; max-width: 100%; }
 
-  /* On mobile cards stack, so natural height is fine */
   .following-nudge-slot {
     align-self: auto;
   }
