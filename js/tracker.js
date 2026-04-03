@@ -709,29 +709,54 @@ function renderFollowingBoard(container, model) {
   board.className = "following-board";
 
   if (pinnedActive.length > 0) {
-    board.appendChild(renderFollowingSection(
+    board.classList.add("has-pinned");
+
+    const pinnedCol = renderFollowingSection(
       `Pinned + active this month (${pinnedActive.length})`,
       "calendar",
       pinnedActive,
       { currentUser, yearMonth }
+    );
+    pinnedCol.classList.add("following-main-col");
+
+    const sideCol = document.createElement("div");
+    sideCol.className = "following-side-col";
+    sideCol.appendChild(renderFollowingSection(
+      `Following + Active (Not Pinned) (${activeUnpinned.length})`,
+      "compact",
+      activeUnpinned,
+      { currentUser, yearMonth }
     ));
+    sideCol.appendChild(renderFollowingSection(
+      `Following + No Tracker This Month (${noTracker.length})`,
+      "compact",
+      noTracker,
+      { currentUser, yearMonth }
+    ));
+    sideCol.appendChild(renderBrowseNudge(onSwitchToAll, { asSection: true }));
+
+    board.appendChild(pinnedCol);
+    board.appendChild(sideCol);
+  } else {
+    board.classList.add("no-pinned");
+    const cards = document.createElement("div");
+    cards.className = "following-no-pinned-grid";
+    cards.appendChild(renderFollowingSection(
+      `Following + Active (${activeUnpinned.length})`,
+      "compact",
+      activeUnpinned,
+      { currentUser, yearMonth }
+    ));
+    cards.appendChild(renderFollowingSection(
+      `No Tracker This Month (${noTracker.length})`,
+      "compact",
+      noTracker,
+      { currentUser, yearMonth }
+    ));
+    cards.appendChild(renderBrowseNudge(onSwitchToAll, { asSection: true }));
+    board.appendChild(cards);
   }
 
-  board.appendChild(renderFollowingSection(
-    `Following + active (${activeUnpinned.length})`,
-    "compact",
-    activeUnpinned,
-    { currentUser, yearMonth }
-  ));
-
-  board.appendChild(renderFollowingSection(
-    `No tracker this month (${noTracker.length})`,
-    "compact",
-    noTracker,
-    { currentUser, yearMonth }
-  ));
-
-  board.appendChild(renderBrowseNudge(onSwitchToAll));
   container.appendChild(board);
 }
 
@@ -831,9 +856,10 @@ function renderCompactRow(item, currentUser) {
   return row;
 }
 
-function renderBrowseNudge(onSwitchToAll) {
+function renderBrowseNudge(onSwitchToAll, opts = {}) {
+  const { asSection = false } = opts;
   const slot = document.createElement("div");
-  slot.className = "following-nudge-slot";
+  slot.className = asSection ? "following-section following-nudge-section" : "following-nudge-slot";
   slot.innerHTML = `
     <div class="following-nudge-card">
       <div class="following-nudge-icon">👥</div>
