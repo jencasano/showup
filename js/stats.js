@@ -80,9 +80,9 @@ function hitWeeklyTarget(markedDays, cadence, yearMonth, date) {
 // ─── Pace status ──────────────────────────────────────────
 // Ratio-based so every cadence is judged on the same relative scale.
 // Thresholds: >= 1.10 = ahead, >= 0.85 = on-track, < 0.85 = behind.
-// Days 1-3 show "Early days!" instead so noisy ratios are hidden.
+// Days 1-3: if no logs => "early", if at least one log => "started".
 export function getPaceStatus(logged, expectedByNow, lastDay) {
-  if (lastDay <= 3) return "early";
+  if (lastDay <= 3) return logged > 0 ? "started" : "early";
   if (expectedByNow <= 0) return logged > 0 ? "ahead" : "early";
   const ratio = logged / expectedByNow;
   if (ratio >= 1.10) return "ahead";
@@ -115,12 +115,40 @@ const PACE_MESSAGES = {
     "A fresh month. Start strong and set the tone!",
     "First days of the month. Every log counts from here.",
     "The month is young. Make it count from day one."
+  ],
+  started: [
+    "Congratulations on actually starting!",
+    "Great start. Keep the momentum rolling.",
+    "You showed up early. Keep going!",
+    "Strong opening. Stack another win tomorrow."
   ]
 };
 
-export function getPaceMessage(status) {
+function hashString(input = "") {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = ((hash << 5) - hash) + input.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+function pickDeterministic(pool, variantKey = "") {
+  if (!Array.isArray(pool) || pool.length === 0) return "";
+  const idx = hashString(variantKey) % pool.length;
+  return pool[idx];
+}
+
+export function getPaceMessage(status, variantKey = "") {
   const pool = PACE_MESSAGES[status] || PACE_MESSAGES["on-track"];
-  return pool[Math.floor(Math.random() * pool.length)];
+  return pickDeterministic(pool, variantKey || status);
+}
+
+function getStartedBadgeLabel(variantKey = "") {
+  return pickDeterministic(
+    ["Started strong", "Good start", "Strong start"],
+    variantKey || "started"
+  );
 }
 
 // ─── Per-habit streak ─────────────────────────────────────
@@ -229,15 +257,17 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
   const expectedByNow = cad * (lastDay / 7);
 
   const paceKey = getPaceStatus(logged, expectedByNow, lastDay);
-  const paceMessage = getPaceMessage(paceKey);
+  const variantKey = `${yearMonth}|${activity}|${paceKey}|${logged}|${lastDay}`;
+  const paceMessage = getPaceMessage(paceKey, variantKey);
 
   // Human-readable badge label
   const paceLabel = {
     ahead:      "Ahead",
     "on-track": "On track",
     behind:     "Behind pace",
-    early:      "Early days!"
-  }[paceKey];
+    early:      "Early days!",
+    started:    getStartedBadgeLabel(variantKey)
+  }[paceKey] || "On track";
 
   const fullWeeksBreakdown = fullWeeks.map((w, idx) => {
     const weekLogged = countInRange(marks[activity] || [], w.startDay, w.endDay);
