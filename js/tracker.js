@@ -88,7 +88,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
       if (isMobile()) {
         if (isCurrentMonth) {
-          container.appendChild(renderStatusBanner(entry, todayDate, true));
+          container.appendChild(renderStatusBanner(entry, todayDate));
         }
         container.appendChild(
           renderMobileCard(entry, yearMonth, user, { onMarkToggled })
@@ -102,7 +102,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
         const centeredStack = document.createElement("div");
         centeredStack.className = "mylog-centered-stack";
         if (isCurrentMonth) {
-          centeredStack.appendChild(renderStatusBanner(entry, todayDate, false));
+          centeredStack.appendChild(renderStatusBanner(entry, todayDate));
         }
         centeredStack.appendChild(
           renderUserSection(entry, yearMonth, user, isCurrentMonth, todayDate, onMarkToggled)
@@ -135,7 +135,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 function refreshBannerInPlace(container, entry, todayDate) {
   const existing = container.querySelector(".status-banner");
   if (!existing) return;
-  existing.replaceWith(renderStatusBanner(entry, todayDate, isMobile()));
+  existing.replaceWith(renderStatusBanner(entry, todayDate));
 }
 
 // ─── PATCH: replace summary card node in-place ────────────
@@ -157,12 +157,44 @@ function refreshSummaryInPlace(container, entry, stats, yearMonth, isCurrentMont
 }
 
 // ─── TODAY'S STATUS BANNER ────────────────────────────────
-function renderStatusBanner(entry, todayDate, isMob) {
+const STATUS_BANNER_MESSAGES = {
+  noneLogged: [
+    "Hey, busy is not an excuse — no one's weak here, right?!",
+    "No logs yet today. Start now and set the tone.",
+    "Clock is ticking. Show up and make today count."
+  ],
+  someLogged: [
+    "Good job! Let's get it!",
+    "Nice start. Keep stacking wins today.",
+    "You're in motion now — keep going."
+  ],
+  allDone: [
+    "All habits done. Elite consistency.",
+    "Perfect day. That's how it's done.",
+    "Every habit checked off. You're on fire."
+  ]
+};
+
+function pickBannerMessage(stateKey, todayDate, completedToday, totalHabits) {
+  const pool = STATUS_BANNER_MESSAGES[stateKey] || STATUS_BANNER_MESSAGES.someLogged;
+  const seed = `${stateKey}|${todayDate}|${completedToday}|${totalHabits}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+    hash |= 0;
+  }
+  return pool[Math.abs(hash) % pool.length];
+}
+
+function renderStatusBanner(entry, todayDate) {
   const activities = entry.activities || [];
   const marks      = entry.marks      || {};
 
   const pending = activities.filter(a => !(marks[a] || []).includes(todayDate));
+  const completedToday = activities.length - pending.length;
   const allDone = pending.length === 0;
+  const noneLogged = completedToday === 0;
+  const stateKey = allDone ? "allDone" : (noneLogged ? "noneLogged" : "someLogged");
 
   const banner = document.createElement("div");
   banner.className = `status-banner ${allDone ? "status-banner--done" : "status-banner--pending"}`;
@@ -170,10 +202,10 @@ function renderStatusBanner(entry, todayDate, isMob) {
   const icon  = allDone ? "🎉" : "🔥";
   const title = allDone
     ? "Good job, you showed up today!"
-    : "Log a completed habit for today!";
-  const sub = allDone
-    ? `All ${activities.length} habit${activities.length !== 1 ? "s" : ""} logged. Keep the streak alive!`
-    : `${pending.length} habit${pending.length !== 1 ? "s" : ""} left. ${pending.slice(0, isMob ? 1 : 2).join(", ")}${pending.length > (isMob ? 1 : 2) ? " and more" : ""}.`;
+    : noneLogged
+      ? "Let's kick off today."
+      : "Keep the momentum rolling.";
+  const sub = pickBannerMessage(stateKey, todayDate, completedToday, activities.length);
   const pill = allDone ? "All done!" : `${pending.length} left`;
 
   banner.innerHTML = `
