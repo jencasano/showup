@@ -261,7 +261,6 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
           <span class="summary-stat__help-wrap">
             <span class="summary-stat__help" aria-hidden="true">i</span>
             <span class="summary-stat__tooltip" role="tooltip">
-              <strong>How this is calculated</strong>
               <span>The percentage of your habits that have already reached their monthly target.</span>
             </span>
           </span>
@@ -275,7 +274,6 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
           <span class="summary-stat__help-wrap">
             <span class="summary-stat__help" aria-hidden="true">i</span>
             <span class="summary-stat__tooltip" role="tooltip">
-              <strong>What this means</strong>
               <span>Days you completed every habit.</span>
             </span>
           </span>
@@ -289,7 +287,6 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
           <span class="summary-stat__help-wrap">
             <span class="summary-stat__help" aria-hidden="true">i</span>
             <span class="summary-stat__tooltip" role="tooltip">
-              <strong>What this means</strong>
               <span>Days you logged at least one habit.</span>
             </span>
           </span>
