@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ShowUp Admin Tools</title>
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <style>
+    body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #f5f7fb; color: #0f172a; }
+    .wrap { max-width: 820px; margin: 32px auto; padding: 0 16px; }
+    .card { background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 6px 18px rgba(2,6,23,.08); }
+    h1 { margin-top: 0; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 13px; font-weight: 600; color: #334155; }
+    input[type="text"], input[type="number"], input[type="month"] {
+      border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font-size: 14px;
+    }
+    .row { display:flex; align-items:center; gap:10px; margin: 10px 0; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button {
+      border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 600; cursor: pointer;
+      background: #0f766e; color: #fff;
+    }
+    button.secondary { background: #334155; }
+    button.danger { background: #b91c1c; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .muted { color:#64748b; font-size: 13px; }
+    pre { background:#0b1020; color:#e2e8f0; border-radius: 12px; padding: 12px; overflow:auto; }
+    .status { margin-top: 14px; min-height: 24px; font-weight: 600; }
+    .ok { color: #047857; }
+    .err { color: #b91c1c; }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Admin Dummy Data Tools</h1>
+      <p class="muted">For production-safe seeding of dummy users and logs. Access is enforced by backend UID checks + expiry window.</p>
+
+      <div id="auth-block" class="muted">Checking auth...</div>
+
+      <form id="seed-form" style="display:none;">
+        <div class="grid">
+          <div class="field">
+            <label for="user-count"># of users</label>
+            <input id="user-count" type="number" min="1" max="100" value="15" />
+          </div>
+          <div class="field">
+            <label for="seed-value">Seed</label>
+            <input id="seed-value" type="number" value="2026" />
+          </div>
+
+          <div class="field">
+            <label for="start-month">Start month</label>
+            <input id="start-month" type="month" value="2026-01" />
+          </div>
+          <div class="field">
+            <label for="end-month">End month</label>
+            <input id="end-month" type="month" />
+          </div>
+        </div>
+
+        <div class="row">
+          <input id="upto-today" type="checkbox" checked />
+          <label for="upto-today">For current month, generate only through today</label>
+        </div>
+
+        <div class="row">
+          <input id="overwrite" type="checkbox" />
+          <label for="overwrite">Overwrite existing dummy logs if they already exist</label>
+        </div>
+
+        <div class="actions">
+          <button id="generate-btn" type="submit">Generate Dummy Data</button>
+          <button id="delete-last-btn" type="button" class="secondary">Delete Last Batch</button>
+        </div>
+
+        <div class="field" style="margin-top: 14px;">
+          <label for="batch-id">Delete specific batch ID</label>
+          <input id="batch-id" type="text" placeholder="e.g. 1762342342_9172" />
+        </div>
+        <div class="actions">
+          <button id="delete-batch-btn" type="button" class="danger">Delete Batch ID</button>
+        </div>
+      </form>
+
+      <div id="status" class="status"></div>
+      <pre id="result">No actions yet.</pre>
+    </div>
+  </div>
+
+  <script type="module" src="/js/admin-tools.js"></script>
+</body>
+</html>
