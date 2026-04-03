@@ -207,39 +207,40 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;        /* centre children horizontally */
+  justify-content: flex-start;
   border-radius: var(--radius-sm);
-  min-height: 36px;
-  padding: 2px 3px 3px;
+  min-height: 40px;           /* taller, like fw-day */
+  padding: 4px 3px 4px;       /* comfortable top/bottom inset */
   transition: background var(--transition);
 }
 
-/* Date number pinned to top-right */
+/* Date number — top-right with a small inset from the corner */
 .cal-day-num {
   font-size: 0.58rem;
   font-weight: 600;
   color: var(--text-muted);
   line-height: 1;
-  align-self: flex-end;
-  margin-left: auto;
+  align-self: flex-end;       /* push to right edge */
+  margin-right: 2px;          /* small inset so it’s not flush to corner */
 }
 
-/* Dots row sits at the bottom of the cell */
+/* Dots row — centred below the date number */
 .cal-day-dots {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;    /* centre the dots */
   gap: 2px;
   align-items: center;
   width: 100%;
-  margin-top: auto;
-  padding-top: 2px;
+  margin-top: 3px;
 }
 
+/* Bigger dots matching the full-week cadence view (~7px) */
 .cal-day-dot {
   display: inline-block;
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -322,16 +323,18 @@
   padding: 8px 12px;
 }
 
+/* Fill the row before wrapping — compact multi-column legend */
 .cal-legend {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px 14px;              /* row-gap | col-gap */
 }
 
 .cal-legend-item {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
 }
 
 .cal-legend-dot {
@@ -347,8 +350,6 @@
   color: var(--text);
   font-weight: 500;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* ── Placeholder Card (no tracker this month) ── */
