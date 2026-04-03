@@ -120,26 +120,29 @@ function pickProfile(idx) {
 }
 
 const REALISTIC_NAMES = [
-  "Ava Bennett",
-  "Liam Carter",
-  "Mia Reyes",
-  "Noah Kim",
-  "Sofia Patel",
-  "Ethan Cruz",
-  "Isla Moreno",
-  "Lucas Tan",
-  "Chloe Santos",
-  "Mason Walker",
-  "Ella Brooks",
-  "James Hall",
-  "Nina Flores",
-  "Leo Rivera",
-  "Aria Chen",
-  "Owen Gray",
-  "Zoe Diaz",
-  "Caleb Young",
-  "Maya Lopez",
-  "Elijah Reed"
+  "Alice in Wonderland",
+  "Little Lulu",
+  "Witch Doctor",
+  "Maria Santos",
+  "Joshua Dela Cruz",
+  "Angela Reyes",
+  "Paolo Villanueva",
+  "Katrina Bautista",
+  "Miguel Fernandez",
+  "Camille Navarro",
+  "Carlo Mendoza",
+  "Patricia Garcia",
+  "Renz Manalo",
+  "Jasmine Aquino",
+  "Nathaniel Ramos",
+  "Bea Mercado",
+  "Andre Castillo",
+  "Trisha Lim",
+  "Kian Domingo",
+  "Alyssa Flores",
+  "Jericho Valdez",
+  "Danica Soriano",
+  "Vince Tolentino",  
 ];
 
 function toUsername(fullName, suffixNumber) {
@@ -317,27 +320,47 @@ export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeout
 
   let logsDeleted = 0;
   let usersDeleted = 0;
+  const skipped = [];
+  const writer = db.bulkWriter();
+
+  writer.onWriteError((error) => {
+    skipped.push({
+      path: error.documentRef?.path || "unknown",
+      code: error.code,
+      message: error.message
+    });
+    return false;
+  });
 
   for (const uid of createdUserIds) {
-    if (typeof uid !== "string" || !uid.startsWith("dummy_")) continue;
+    if (typeof uid !== "string" || !uid.startsWith("dummy_")) {
+      skipped.push({ path: `users/${String(uid)}`, code: "invalid-id", message: "Skipped non-dummy or invalid UID." });
+      continue;
+    }
 
     for (const ym of months) {
-      if (typeof ym !== "string") continue;
-      await db.doc(`logs/${ym}/entries/${uid}`).delete();
+      if (typeof ym !== "string" || !/^\d{4}-(0[1-9]|1[0-2])$/.test(ym)) {
+        skipped.push({ path: `logs/${String(ym)}/entries/${uid}`, code: "invalid-month", message: "Skipped invalid yearMonth key." });
+        continue;
+      }
+      writer.delete(db.doc(`logs/${ym}/entries/${uid}`));
       logsDeleted++;
     }
 
-    await db.doc(`users/${uid}`).delete();
+    writer.delete(db.doc(`users/${uid}`));
     usersDeleted++;
   }
 
-  await batchRef.delete();
+  writer.delete(batchRef);
+  await writer.close();
 
   return {
     ok: true,
     seedBatchId,
     usersDeleted,
     logsDeleted,
+    skippedCount: skipped.length,
+    skipped: skipped.slice(0, 25),
     deletedAt: new Date().toISOString()
   };
 });
