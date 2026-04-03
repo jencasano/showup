@@ -213,7 +213,8 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       ahead:      "pace-badge--ahead",
       "on-track": "pace-badge--on-track",
       behind:     "pace-badge--behind",
-      early:      "pace-badge--early"
+      early:      "pace-badge--early",
+      started:    "pace-badge--started"
     }[h.paceKey] || "";
 
     return `
