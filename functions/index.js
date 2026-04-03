@@ -292,6 +292,19 @@ export const adminGenerateDummyUsers = onCall({ region: "asia-southeast1", timeo
   };
 });
 
+// Commit up to 500 Firestore deletes at a time using a WriteBatch
+async function deleteInBatches(refs) {
+  const CHUNK = 500;
+  for (let i = 0; i < refs.length; i += CHUNK) {
+    const chunk = refs.slice(i, i + CHUNK);
+    const wb = db.batch();
+    for (const ref of chunk) {
+      wb.delete(ref);
+    }
+    await wb.commit();
+  }
+}
+
 export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeoutSeconds: 120, invoker: "public" }, async (request) => {
   const adminUid = requireAdminAuth(request);
   const payload = request.data || {};
@@ -301,23 +314,23 @@ export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeout
     throw new HttpsError("invalid-argument", "seedBatchId is required.");
   }
 
-  const batchRef = db.doc(`devSeeds/${seedBatchId}`);
-  const batchSnap = await batchRef.get();
+  const batchDocRef = db.doc(`devSeeds/${seedBatchId}`);
+  const batchSnap = await batchDocRef.get();
   if (!batchSnap.exists) {
     throw new HttpsError("not-found", "seedBatchId was not found.");
   }
 
-  const batch = batchSnap.data();
-  if (!batch?.isDummyBatch || batch.ownerUid !== adminUid) {
+  const batchData = batchSnap.data();
+  if (!batchData?.isDummyBatch || batchData.ownerUid !== adminUid) {
     throw new HttpsError("permission-denied", "You can only delete your own dummy batch.");
   }
 
-  const createdUserIds = Array.isArray(batch.createdUserIds) ? batch.createdUserIds : [];
-  const months = Array.isArray(batch.months) ? batch.months : [];
+  const createdUserIds = Array.isArray(batchData.createdUserIds) ? batchData.createdUserIds : [];
+  const months = Array.isArray(batchData.months) ? batchData.months : [];
 
-  let logsDeleted = 0;
-  let usersDeleted = 0;
   const skipped = [];
+  const logRefs = [];
+  const userRefs = [];
 
   for (const uid of createdUserIds) {
     if (typeof uid !== "string" || !uid.startsWith("dummy_")) {
@@ -330,45 +343,23 @@ export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeout
         skipped.push({ path: `logs/${String(ym)}/entries/${uid}`, code: "invalid-month", message: "Skipped invalid yearMonth key." });
         continue;
       }
-      try {
-        await db.doc(`logs/${ym}/entries/${uid}`).delete();
-        logsDeleted++;
-      } catch (error) {
-        skipped.push({
-          path: `logs/${ym}/entries/${uid}`,
-          code: error?.code || "delete-failed",
-          message: error?.message || "Delete failed."
-        });
-      }
+      logRefs.push(db.doc(`logs/${ym}/entries/${uid}`));
     }
 
-    try {
-      await db.doc(`users/${uid}`).delete();
-      usersDeleted++;
-    } catch (error) {
-      skipped.push({
-        path: `users/${uid}`,
-        code: error?.code || "delete-failed",
-        message: error?.message || "Delete failed."
-      });
-    }
+    userRefs.push(db.doc(`users/${uid}`));
   }
 
   try {
-    await batchRef.delete();
+    await deleteInBatches([...logRefs, ...userRefs, batchDocRef]);
   } catch (error) {
-    skipped.push({
-      path: batchRef.path,
-      code: error?.code || "delete-failed",
-      message: error?.message || "Delete failed."
-    });
+    throw new HttpsError("internal", `Batch delete failed: ${error?.message || "unknown error"}`);
   }
 
   return {
     ok: true,
     seedBatchId,
-    usersDeleted,
-    logsDeleted,
+    usersDeleted: userRefs.length,
+    logsDeleted: logRefs.length,
     skippedCount: skipped.length,
     skipped: skipped.slice(0, 25),
     deletedAt: new Date().toISOString()
