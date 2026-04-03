@@ -189,7 +189,7 @@ function renderStatusBanner(entry, todayDate, isMob) {
 
 // ─── PROGRESS SUMMARY CARD ────────────────────────────────
 function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
-  const { doneThisMonth, totalThisMonth, habitStats, monthlyTargetHitRate, fullWeeksCount } = stats;
+  const { showUpDays = 0, perfectDays = 0, totalThisMonth, habitStats, monthlyTargetHitRate, fullWeeksCount } = stats;
   const activities = entry.activities || [];
   const [year, month] = yearMonth.split("-").map(Number);
   const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
@@ -208,12 +208,15 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       : h.monthLogged >= h.monthTarget
         ? `<span class="summary-habit-streak">✅ Target met</span>`
         : `<span class="summary-habit-streak">${h.monthTarget - h.monthLogged} to go</span>`;
+    const pctClass = `summary-habit-pct${h.extra > 0 ? " summary-habit-pct--over" : ""}`;
+    const pctStyle = h.extra > 0 ? "" : `style="color:${barColor}"`;
 
     const paceBadgeClass = {
       ahead:      "pace-badge--ahead",
       "on-track": "pace-badge--on-track",
       behind:     "pace-badge--behind",
-      early:      "pace-badge--early"
+      early:      "pace-badge--early",
+      started:    "pace-badge--started"
     }[h.paceKey] || "";
 
     return `
@@ -226,7 +229,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
           <div class="summary-habit-meta">
             ${statusPill}
             <span class="summary-habit-cad">${h.cadenceLabel}</span>
-            <span class="summary-habit-pct" style="color:${barColor}">${h.displayLogged}/${h.monthTarget}</span>
+            <span class="${pctClass}" ${pctStyle}>${h.monthLogged}/${h.monthTarget}</span>
           </div>
         </div>
         <div class="summary-habit-track">
@@ -251,19 +254,28 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
     </div>
     <div class="summary-stats">
       <div class="summary-stat">
-        <span class="summary-stat__icon">✅</span>
+        <span class="summary-stat__icon">🎯</span>
         <div class="summary-stat__val">${monthlyTargetHitRate}<span class="summary-stat__unit">%</span></div>
-        <div class="summary-stat__label">Monthly Target Hit Rate</div>
+        <div class="summary-stat__label">
+          <span>Targeted Habits Completed</span>
+          <span class="summary-stat__help-wrap">
+            <span class="summary-stat__help" aria-hidden="true">i</span>
+            <span class="summary-stat__tooltip" role="tooltip">
+              <strong>How this is calculated</strong>
+              <span>The percentage of your habits that have already reached their monthly target.</span>
+            </span>
+          </span>
+        </div>
+      </div>
+      <div class="summary-stat">
+        <span class="summary-stat__icon">✨</span>
+        <div class="summary-stat__val">${perfectDays}/${totalThisMonth}</div>
+        <div class="summary-stat__label"><span>Perfect Days</span></div>
       </div>
       <div class="summary-stat">
         <span class="summary-stat__icon">📅</span>
-        <div class="summary-stat__val">${doneThisMonth}/${totalThisMonth}</div>
-        <div class="summary-stat__label">Days Logged</div>
-      </div>
-      <div class="summary-stat">
-        <span class="summary-stat__icon">🗓️</span>
-        <div class="summary-stat__val">${fullWeeksCount}</div>
-        <div class="summary-stat__label">Full Weeks In Month</div>
+        <div class="summary-stat__val">${showUpDays}/${totalThisMonth}</div>
+        <div class="summary-stat__label"><span>Show-Up Days</span></div>
       </div>
     </div>
     <div class="summary-note">
@@ -283,7 +295,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
   `;
 
   card.querySelector(".summary-share-btn").addEventListener("click", () => {
-    const text = `My showup. stats for ${monthName} ${year}:\n✅ ${monthlyTargetHitRate}% monthly target hit rate\n📅 ${doneThisMonth}/${totalThisMonth} days logged\n${habitStats.map(h => `• ${h.name}: ${h.displayLogged}/${h.monthTarget} this month${h.extra > 0 ? ` (+${h.extra} extra)` : ""}`).join("\n")}`;
+    const text = `My showup. stats for ${monthName} ${year}:\n🎯 ${monthlyTargetHitRate}% targeted habits completed\n✨ ${perfectDays}/${totalThisMonth} perfect days\n📅 ${showUpDays}/${totalThisMonth} show-up days\n${habitStats.map(h => `• ${h.name}: ${h.monthLogged}/${h.monthTarget} this month${h.extra > 0 ? ` (+${h.extra} extra)` : ""}`).join("\n")}`;
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
     } else {
