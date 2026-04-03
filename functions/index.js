@@ -119,11 +119,42 @@ function pickProfile(idx) {
   return PROFILES[idx % PROFILES.length];
 }
 
+const REALISTIC_NAMES = [
+  "Ava Bennett",
+  "Liam Carter",
+  "Mia Reyes",
+  "Noah Kim",
+  "Sofia Patel",
+  "Ethan Cruz",
+  "Isla Moreno",
+  "Lucas Tan",
+  "Chloe Santos",
+  "Mason Walker",
+  "Ella Brooks",
+  "James Hall",
+  "Nina Flores",
+  "Leo Rivera",
+  "Aria Chen",
+  "Owen Gray",
+  "Zoe Diaz",
+  "Caleb Young",
+  "Maya Lopez",
+  "Elijah Reed"
+];
+
+function toUsername(fullName, suffixNumber) {
+  const base = String(fullName || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return `${base}_${String(suffixNumber).padStart(2, "0")}`;
+}
+
 function buildDummyUser(batchId, index) {
   const number = String(index + 1).padStart(2, "0");
   const uid = `dummy_${batchId}_${number}`;
-  const displayName = `Dummy User ${number}`;
-  return { uid, displayName, username: `dummy_user_${number}` };
+  const displayName = REALISTIC_NAMES[index % REALISTIC_NAMES.length];
+  return { uid, displayName, username: toUsername(displayName, index + 1) };
 }
 
 export const adminGenerateDummyUsers = onCall({ region: "asia-southeast1", timeoutSeconds: 120 }, async (request) => {
