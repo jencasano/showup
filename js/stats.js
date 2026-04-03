@@ -67,6 +67,16 @@ function countConsecutiveDays(markedDays, yearMonth, today) {
   return streak;
 }
 
+function countPerfectDays(activities, marks, lastDay) {
+  if (!activities.length) return 0;
+  let perfect = 0;
+  for (let day = 1; day <= lastDay; day++) {
+    const allDone = activities.every(activity => (marks[activity] || []).includes(day));
+    if (allDone) perfect++;
+  }
+  return perfect;
+}
+
 export function cadenceLabel(n) {
   const cadence = Number(n);
   if (n == null || !Number.isFinite(cadence) || cadence >= 7) return "Daily";
@@ -321,6 +331,7 @@ export function computeStatsFromEntry(entry, yearMonth) {
   activities.forEach(activity => {
     (marks[activity] || []).forEach(d => { if (d <= lastDay) doneDays.add(d); });
   });
+  const perfectDays = countPerfectDays(activities, marks, lastDay);
 
   const habitStats = activities.map((activity, i) =>
     buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks, 0)
@@ -336,6 +347,8 @@ export function computeStatsFromEntry(entry, yearMonth) {
   return {
     streak: 0,
     doneThisMonth:  doneDays.size,
+    showUpDays: doneDays.size,
+    perfectDays,
     totalThisMonth: lastDay,
     overallRate,
     habitStats,
@@ -367,6 +380,7 @@ export async function getUserStats(userId, yearMonth) {
     activities.forEach(activity => {
       (marks[activity] || []).forEach(d => { if (d <= lastDay) doneDays.add(d); });
     });
+    const perfectDays = countPerfectDays(activities, marks, lastDay);
 
     const habitStreaks = await Promise.all(
       activities.map((activity, i) =>
@@ -392,6 +406,8 @@ export async function getUserStats(userId, yearMonth) {
     return {
       streak,
       doneThisMonth:  doneDays.size,
+      showUpDays: doneDays.size,
+      perfectDays,
       totalThisMonth: lastDay,
       overallRate,
       habitStats,
@@ -408,6 +424,8 @@ function emptyStats() {
   return {
     streak: 0,
     doneThisMonth: 0,
+    showUpDays: 0,
+    perfectDays: 0,
     totalThisMonth: 0,
     overallRate: 0,
     habitStats: [],
