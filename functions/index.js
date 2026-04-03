@@ -120,9 +120,6 @@ function pickProfile(idx) {
 }
 
 const REALISTIC_NAMES = [
-  "Alice in Wonderland",
-  "Little Lulu",
-  "Witch Doctor",
   "Maria Santos",
   "Joshua Dela Cruz",
   "Angela Reyes",
@@ -142,7 +139,7 @@ const REALISTIC_NAMES = [
   "Alyssa Flores",
   "Jericho Valdez",
   "Danica Soriano",
-  "Vince Tolentino",  
+  "Vince Tolentino"
 ];
 
 function toUsername(fullName, suffixNumber) {
@@ -321,16 +318,6 @@ export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeout
   let logsDeleted = 0;
   let usersDeleted = 0;
   const skipped = [];
-  const writer = db.bulkWriter();
-
-  writer.onWriteError((error) => {
-    skipped.push({
-      path: error.documentRef?.path || "unknown",
-      code: error.code,
-      message: error.message
-    });
-    return false;
-  });
 
   for (const uid of createdUserIds) {
     if (typeof uid !== "string" || !uid.startsWith("dummy_")) {
@@ -343,16 +330,39 @@ export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeout
         skipped.push({ path: `logs/${String(ym)}/entries/${uid}`, code: "invalid-month", message: "Skipped invalid yearMonth key." });
         continue;
       }
-      writer.delete(db.doc(`logs/${ym}/entries/${uid}`));
-      logsDeleted++;
+      try {
+        await db.doc(`logs/${ym}/entries/${uid}`).delete();
+        logsDeleted++;
+      } catch (error) {
+        skipped.push({
+          path: `logs/${ym}/entries/${uid}`,
+          code: error?.code || "delete-failed",
+          message: error?.message || "Delete failed."
+        });
+      }
     }
 
-    writer.delete(db.doc(`users/${uid}`));
-    usersDeleted++;
+    try {
+      await db.doc(`users/${uid}`).delete();
+      usersDeleted++;
+    } catch (error) {
+      skipped.push({
+        path: `users/${uid}`,
+        code: error?.code || "delete-failed",
+        message: error?.message || "Delete failed."
+      });
+    }
   }
 
-  writer.delete(batchRef);
-  await writer.close();
+  try {
+    await batchRef.delete();
+  } catch (error) {
+    skipped.push({
+      path: batchRef.path,
+      code: error?.code || "delete-failed",
+      message: error?.message || "Delete failed."
+    });
+  }
 
   return {
     ok: true,
