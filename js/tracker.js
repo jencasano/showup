@@ -373,7 +373,7 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
         ? ` data-overflow='${JSON.stringify(loggedHabits).replace(/'/g, "&#39;")}'`
         : "";
 
-      return `<div class="fw-day${hasOverflow ? " fw-day--has-overflow" : "}"${overflowAttr}><span class="fw-day-num">${dayNum}</span>${dotsHTML ? `<div class="fw-day-dots">${dotsHTML}</div>` : ""}</div>`;
+      return `<div class="fw-day${hasOverflow ? " fw-day--has-overflow" : ""}"${overflowAttr}><span class="fw-day-num">${dayNum}</span>${dotsHTML ? `<div class="fw-day-dots">${dotsHTML}</div>` : ""}</div>`;
     }).join("");
 
     if (isFullInMonthWeek) {
