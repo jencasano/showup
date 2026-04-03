@@ -257,9 +257,9 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
         <span class="summary-stat__icon">🎯</span>
         <div class="summary-stat__val">${monthlyTargetHitRate}<span class="summary-stat__unit">%</span></div>
         <div class="summary-stat__label">
-          <span>Targeted Habits Completed</span>
+          <span class="summary-stat__label-text">Targeted Habits Completed</span>
           <span class="summary-stat__help-wrap">
-            <span class="summary-stat__help" aria-hidden="true">i</span>
+            <button class="summary-stat__help-btn" type="button" aria-label="About targeted habits completed" aria-expanded="false">i</button>
             <span class="summary-stat__tooltip" role="tooltip">
               <span>The percentage of your habits that have already reached their monthly target.</span>
             </span>
@@ -270,9 +270,9 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
         <span class="summary-stat__icon">✨</span>
         <div class="summary-stat__val">${perfectDays}/${totalThisMonth}</div>
         <div class="summary-stat__label">
-          <span>Perfect Days</span>
+          <span class="summary-stat__label-text">Perfect Days</span>
           <span class="summary-stat__help-wrap">
-            <span class="summary-stat__help" aria-hidden="true">i</span>
+            <button class="summary-stat__help-btn" type="button" aria-label="About perfect days" aria-expanded="false">i</button>
             <span class="summary-stat__tooltip" role="tooltip">
               <span>Days you completed every habit.</span>
             </span>
@@ -283,9 +283,9 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
         <span class="summary-stat__icon">📅</span>
         <div class="summary-stat__val">${showUpDays}/${totalThisMonth}</div>
         <div class="summary-stat__label">
-          <span>Show-Up Days</span>
+          <span class="summary-stat__label-text">Show-Up Days</span>
           <span class="summary-stat__help-wrap">
-            <span class="summary-stat__help" aria-hidden="true">i</span>
+            <button class="summary-stat__help-btn" type="button" aria-label="About show-up days" aria-expanded="false">i</button>
             <span class="summary-stat__tooltip" role="tooltip">
               <span>Days you logged at least one habit.</span>
             </span>
@@ -316,6 +316,33 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
     } else {
       navigator.clipboard.writeText(text).then(() => showToast("Stats copied!", "info"));
     }
+  });
+
+  const statHelpWraps = Array.from(card.querySelectorAll(".summary-stat__help-wrap"));
+  const closeStatTooltips = () => {
+    statHelpWraps.forEach((wrap) => {
+      wrap.classList.remove("is-open");
+      const btn = wrap.querySelector(".summary-stat__help-btn");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    });
+  };
+
+  card.querySelectorAll(".summary-stat__help-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const wrap = btn.closest(".summary-stat__help-wrap");
+      if (!wrap) return;
+      const willOpen = !wrap.classList.contains("is-open");
+      closeStatTooltips();
+      if (willOpen) {
+        wrap.classList.add("is-open");
+        btn.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+
+  card.addEventListener("click", (e) => {
+    if (!e.target.closest(".summary-stat__help-wrap")) closeStatTooltips();
   });
 
   card.querySelectorAll(".fw-day[data-overflow]").forEach(dayEl => {

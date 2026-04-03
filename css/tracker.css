@@ -282,7 +282,7 @@
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow: visible;
   box-shadow: var(--shadow-sm);
   margin-top: 4px;
   margin-bottom: 24px;
@@ -365,31 +365,45 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-faint);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  display: block;
   position: relative;
+  line-height: 1.25;
+}
+
+.summary-stat__label-text {
+  display: inline;
 }
 
 .summary-stat__help-wrap {
   position: relative;
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
+  vertical-align: baseline;
+  margin-left: 4px;
 }
 
-.summary-stat__help {
+.summary-stat__help-btn {
+  appearance: none;
+  -webkit-appearance: none;
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  display: inline-grid;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   place-items: center;
   border: 1px solid rgba(255,255,255,0.25);
   font-size: 9px;
   line-height: 1;
   color: var(--text-muted);
+  background: transparent;
   text-transform: none;
   cursor: help;
+  padding: 0;
+}
+
+.summary-stat__help-btn:focus-visible {
+  outline: 2px solid rgba(99,102,241,0.55);
+  outline-offset: 2px;
 }
 
 .summary-stat__tooltip {
@@ -416,14 +430,9 @@
   box-shadow: 0 10px 24px rgba(0,0,0,0.3);
 }
 
-.summary-stat__tooltip strong {
-  display: block;
-  color: var(--text-primary);
-  margin-bottom: 3px;
-}
-
 .summary-stat__help-wrap:hover .summary-stat__tooltip,
-.summary-stat__help-wrap:focus-within .summary-stat__tooltip {
+.summary-stat__help-wrap:focus-within .summary-stat__tooltip,
+.summary-stat__help-wrap.is-open .summary-stat__tooltip {
   opacity: 1;
   visibility: visible;
 }
@@ -434,8 +443,25 @@
   color: #475569;
 }
 
-[data-theme="light"] .summary-stat__tooltip strong {
-  color: #0f172a;
+@media (max-width: 700px) {
+  .summary-stat__label {
+    letter-spacing: 0.06em;
+  }
+
+  .summary-stat__tooltip {
+    width: min(220px, 86vw);
+  }
+
+  .summary-stat:first-child .summary-stat__tooltip {
+    left: 8px;
+    transform: none;
+  }
+
+  .summary-stat:last-child .summary-stat__tooltip {
+    left: auto;
+    right: 8px;
+    transform: none;
+  }
 }
 
 /* ── Calculation note ────────────────────────────── */
