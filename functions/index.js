@@ -157,7 +157,7 @@ function buildDummyUser(batchId, index) {
   return { uid, displayName, username: toUsername(displayName, index + 1) };
 }
 
-export const adminGenerateDummyUsers = onCall({ region: "asia-southeast1", timeoutSeconds: 120 }, async (request) => {
+export const adminGenerateDummyUsers = onCall({ region: "asia-southeast1", timeoutSeconds: 120, invoker: "public" }, async (request) => {
   const adminUid = requireAdminAuth(request);
   const payload = request.data || {};
 
@@ -292,7 +292,7 @@ export const adminGenerateDummyUsers = onCall({ region: "asia-southeast1", timeo
   };
 });
 
-export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeoutSeconds: 120 }, async (request) => {
+export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeoutSeconds: 120, invoker: "public" }, async (request) => {
   const adminUid = requireAdminAuth(request);
   const payload = request.data || {};
   const seedBatchId = String(payload.seedBatchId || "").trim();
