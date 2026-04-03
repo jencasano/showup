@@ -280,21 +280,21 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
     }
   });
 
-  // Attach popover listeners for overflow dots
+  // Wire up day-box popovers for overflow habits (>5)
   card.querySelectorAll(".fw-day[data-overflow]").forEach(dayEl => {
     dayEl.addEventListener("click", (e) => {
       e.stopPropagation();
-      // Remove any existing popover
-      document.querySelectorAll(".fw-day-popover").forEach(p => p.remove());
-      const allDots = JSON.parse(dayEl.dataset.overflow);
-      const popover = document.createElement("div");
-      popover.className = "fw-day-popover";
-      popover.innerHTML = allDots.map(d =>
-        `<span class="fw-popover-dot" style="background:${d.color}"></span><span class="fw-popover-label">${d.name}</span>`
+      document.querySelectorAll(".fw-popover").forEach(p => p.remove());
+      const allHabits = JSON.parse(dayEl.dataset.overflow);
+      const pop = document.createElement("div");
+      pop.className = "fw-popover";
+      pop.innerHTML = allHabits.map(h =>
+        `<span class="fw-popover-item"><i style="background:${h.color};width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0;"></i>${h.name}</span>`
       ).join("");
-      dayEl.appendChild(popover);
-      const dismiss = () => { popover.remove(); document.removeEventListener("click", dismiss); };
-      setTimeout(() => document.addEventListener("click", dismiss), 0);
+      dayEl.appendChild(pop);
+      setTimeout(() => {
+        document.addEventListener("click", () => pop.remove(), { once: true });
+      }, 0);
     });
   });
 
@@ -321,61 +321,59 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
 
   const marks = entry.marks || {};
 
-  // Build per-day dot data: { dayKey -> [{name, color}] }
-  const dayDots = {};
-  habitStats.forEach((h, i) => {
-    const color = getActivityColor(i);
-    (marks[h.name] || []).forEach(dayNum => {
-      const key = `${year}-${month}-${dayNum}`;
-      if (!dayDots[key]) dayDots[key] = [];
-      dayDots[key].push({ name: h.name, color });
+  // Build a map: weekLabel → array of { name, logged, target, hit } per habit
+  const fullWeekByStart = new Map();
+  habitStats.forEach(h => {
+    (h.fullWeeksBreakdown || []).forEach((w) => {
+      if (!fullWeekByStart.has(w.label)) fullWeekByStart.set(w.label, []);
+      fullWeekByStart.get(w.label).push({ name: h.name, logged: w.logged, target: w.target, hit: w.hit });
     });
   });
 
-  const fullWeekByStart = new Map();
-  habitStats.forEach(h => {
-    (h.fullWeeksBreakdown || []).forEach((w, idx) => {
-      if (!fullWeekByStart.has(w.label)) fullWeekByStart.set(w.label, []);
-      fullWeekByStart.get(w.label).push({ name: h.name, color: getActivityColor(habitStats.indexOf(h)), logged: w.logged, target: w.target, hit: w.hit });
-    });
-  });
+  // Color lookup by activity name
+  const colorByName = {};
+  habitStats.forEach((h, i) => { colorByName[h.name] = getActivityColor(i); });
+
+  const MAX_DOTS = 5;
 
   let fullWeekOrdinal = 0;
   const weekBlocks = weekRows.map((row) => {
     const inMonth = row.filter(d => d.getMonth() === (month - 1));
     const isFullInMonthWeek = inMonth.length === 7;
     const weekLabel = isFullInMonthWeek ? `Wk${++fullWeekOrdinal}` : null;
+
+    // Counter pills with colored dot for full weeks
     const badgeRows = (fullWeekByStart.get(weekLabel) || []).map(w => {
       const state = w.hit ? "hit" : (w.logged >= Math.max(1, w.target - 1) ? "close" : "miss");
-      return `<span class="fw-badge fw-badge--${state}"><i class="fw-badge-dot" style="background:${w.color}"></i>${w.name} ${w.logged}/${w.target}</span>`;
+      const color = colorByName[w.name] || "#888";
+      return `<span class="fw-badge fw-badge--${state}"><i class="fw-badge-dot" style="background:${color}"></i>${w.name} ${w.logged}/${w.target}</span>`;
     }).join("");
 
-    const MAX_VISIBLE_DOTS = 5;
     const dayCells = row.map(date => {
       const inCurrent = date.getMonth() === (month - 1);
       const dayNum = date.getDate();
-      const key = `${year}-${month}-${dayNum}`;
-      const dots = inCurrent ? (dayDots[key] || []) : [];
-      const visibleDots = dots.slice(0, MAX_VISIBLE_DOTS);
-      const overflowDots = dots.slice(MAX_VISIBLE_DOTS);
-      const hasOverflow = overflowDots.length > 0;
 
-      const dotsHTML = visibleDots.map(d =>
-        `<span class="fw-activity-dot" style="background:${d.color}"></span>`
-      ).join("");
+      if (!inCurrent) {
+        return `<div class="fw-day fw-day--muted"><span class="fw-day-num">${dayNum}</span></div>`;
+      }
+
+      // Collect logged habits for this day
+      const loggedHabits = habitStats
+        .map((h, i) => ({ name: h.name, color: getActivityColor(i) }))
+        .filter(h => (marks[h.name] || []).includes(dayNum));
+
+      const visibleDots = loggedHabits.slice(0, MAX_DOTS);
+      const hasOverflow = loggedHabits.length > MAX_DOTS;
+
+      const dotsHTML = visibleDots.map(h =>
+        `<i class="fw-habit-dot" style="background:${h.color}"></i>`
+      ).join("") + (hasOverflow ? `<i class="fw-habit-dot fw-habit-dot--more">+${loggedHabits.length - MAX_DOTS}</i>` : "");
 
       const overflowAttr = hasOverflow
-        ? ` data-overflow='${JSON.stringify(dots)}'`
+        ? ` data-overflow='${JSON.stringify(loggedHabits).replace(/'/g, "&#39;")}'`
         : "";
-      const overflowIndicator = hasOverflow
-        ? `<span class="fw-overflow-indicator">+${overflowDots.length}</span>`
-        : "";
-      const clickable = hasOverflow ? " fw-day--clickable" : "";
 
-      return `<div class="fw-day${inCurrent ? "" : " fw-day--muted"}${clickable}"${overflowAttr}>
-        <span class="fw-day-num">${dayNum}</span>
-        <div class="fw-day-dots">${dotsHTML}${overflowIndicator}</div>
-      </div>`;
+      return `<div class="fw-day${hasOverflow ? " fw-day--has-overflow" : "}"${overflowAttr}><span class="fw-day-num">${dayNum}</span>${dotsHTML ? `<div class="fw-day-dots">${dotsHTML}</div>` : ""}</div>`;
     }).join("");
 
     if (isFullInMonthWeek) {
@@ -384,12 +382,12 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
     return `<div class="fw-week"><div class="fw-week-grid">${dayCells}</div></div>`;
   }).join("");
 
-  // Legend pills
+  // Legend with pills styled like fw-badge
   const legendHTML = `
     <div class="fw-legend">
-      <span class="fw-legend-pill fw-legend-pill--hit">Target hit</span>
-      <span class="fw-legend-pill fw-legend-pill--close">Close</span>
-      <span class="fw-legend-pill fw-legend-pill--miss">Missed</span>
+      <span class="fw-legend-pill fw-badge fw-badge--hit">Target hit</span>
+      <span class="fw-legend-pill fw-badge fw-badge--close">Close</span>
+      <span class="fw-legend-pill fw-badge fw-badge--miss">Missed</span>
     </div>`;
 
   return `

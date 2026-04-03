@@ -535,9 +535,7 @@
   background: rgba(245, 158, 11, 0.12);
 }
 
-/* ═══════════════════════════════════════════════
-   FULL-WEEK CADENCE CALENDAR
-   ═══════════════════════════════════════════════ */
+/* ── Full-week calendar block ───────────────── */
 .fullweek-calendar {
   background: var(--bg-subtle);
   border: 1px solid var(--border);
@@ -572,31 +570,31 @@
   text-align: center;
 }
 
-/* ── Week rows ───────────────────────────────── */
 .fw-week {
   margin-bottom: 6px;
 }
 
 /*
-  Full-week highlight uses box-shadow + outline instead of border
-  so it doesn't affect the layout box model and avoids mis-alignment
-  of day cells between full and non-full weeks.
+  Full-week highlight: use box-shadow + outline instead of border
+  so the highlight does NOT affect layout/column widths.
+  This keeps day cells perfectly aligned with non-full weeks.
 */
 .fw-week--full {
   border-radius: 10px;
   padding: 6px;
-  /* Light mode: soft indigo tint */
-  background: rgba(99, 102, 241, 0.07);
-  outline: 1.5px solid rgba(99, 102, 241, 0.30);
-  outline-offset: 0;
+  /* Light mode: subtle warm highlight */
+  background: rgba(99, 102, 241, 0.06);
+  outline: 1.5px solid rgba(99, 102, 241, 0.28);
+  outline-offset: 0px;
 }
 
+/* Dark mode: stronger highlight so it's clearly visible */
 [data-theme="dark"] .fw-week--full {
   background: rgba(99, 102, 241, 0.14);
   outline-color: rgba(165, 180, 252, 0.45);
 }
 
-/* ── Day boxes ───────────────────────────────── */
+/* ── Day box ─────────────────────────────────── */
 .fw-day {
   position: relative;
   min-height: 36px;
@@ -605,98 +603,102 @@
   background: var(--bg-surface);
   display: flex;
   flex-direction: column;
-  align-items: flex-end; /* date sits top-right */
-  justify-content: space-between;
-  padding: 3px 4px 3px 3px;
-  overflow: hidden;
-  box-sizing: border-box;
+  align-items: flex-end;   /* date number top-right */
+  justify-content: flex-start;
+  padding: 3px 4px 3px 4px;
+  overflow: visible;
 }
 
 .fw-day--muted {
   opacity: 0.4;
 }
 
-.fw-day--clickable {
-  cursor: pointer;
-}
-
-.fw-day--clickable:hover {
-  border-color: var(--text-muted);
-}
-
-/* Date number — top-right corner */
+/* Date number: top-right corner */
 .fw-day-num {
-  font-size: 0.62rem;
-  font-weight: 700;
+  font-size: 0.6rem;
+  font-weight: 600;
   color: var(--text-muted);
   line-height: 1;
   align-self: flex-end;
 }
 
-/* Dot strip — bottom of box */
+/* Dots row: fills remaining space, centered */
 .fw-day-dots {
   display: flex;
   flex-wrap: wrap;
   gap: 2px;
+  justify-content: center;
   align-items: center;
-  align-self: flex-start;
+  flex: 1;
   width: 100%;
-  min-height: 8px;
+  padding-top: 2px;
 }
 
-/* Individual activity dot */
-.fw-activity-dot {
-  width: 6px;
-  height: 6px;
+/* Individual habit dot */
+.fw-habit-dot {
+  display: block;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
-  display: inline-block;
 }
 
-/* Overflow indicator when >5 habits logged */
-.fw-overflow-indicator {
-  font-size: 0.48rem;
+/* Overflow indicator (+N more) */
+.fw-habit-dot--more {
+  width: auto;
+  height: auto;
+  border-radius: 999px;
+  font-size: 0.5rem;
   font-weight: 700;
-  color: var(--text-faint);
-  line-height: 1;
-  margin-left: 1px;
+  padding: 1px 3px;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  cursor: pointer;
 }
 
-/* Overflow popover */
-.fw-day-popover {
+/* Clickable day box when there's overflow */
+.fw-day--has-overflow {
+  cursor: pointer;
+}
+
+/* ── Badge dot (inside counter pills) ───────── */
+.fw-badge-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* ── Popover for overflow habits ─────────────── */
+.fw-popover {
   position: absolute;
   bottom: calc(100% + 4px);
-  left: 50%;
-  transform: translateX(-50%);
+  right: 0;
+  z-index: 100;
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   padding: 6px 8px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  z-index: 100;
+  min-width: 130px;
   white-space: nowrap;
-  min-width: 110px;
 }
 
-.fw-popover-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: inline-block;
-  margin-right: 5px;
-}
-
-.fw-popover-label {
+.fw-popover-item {
+  display: flex;
+  align-items: center;
   font-size: 0.68rem;
-  font-weight: 600;
   color: var(--text);
 }
 
-/* ── Week badges row ─────────────────────────── */
+/* ── Week counter pills (below full weeks) ───── */
 .fw-badges {
   margin-top: 6px;
   display: flex;
@@ -705,26 +707,15 @@
   flex-wrap: wrap;
 }
 
-/* Badge pill with colored dot prefix */
 .fw-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
   font-size: 0.58rem;
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--bg-surface);
-}
-
-/* Dot inside badge */
-.fw-badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: inline-block;
 }
 
 .fw-badge--hit {
@@ -745,42 +736,31 @@
   background: rgba(239, 68, 68, 0.14);
 }
 
-/* ── Legend pills ────────────────────────────── */
+/* ── Legend: pills matching badge style ──────── */
 .fw-legend {
   margin-top: 8px;
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-}
-
-/* Legend pills match badge style */
-.fw-legend-pill {
-  display: inline-flex;
   align-items: center;
-  font-size: 0.6rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 999px;
-  border: 1px solid;
 }
 
-.fw-legend-pill--hit {
-  color: #22c55e;
-  border-color: rgba(34, 197, 94, 0.40);
-  background: rgba(34, 197, 94, 0.14);
+.fw-legend-pill {
+  /* inherits fw-badge styles via dual class in HTML */
+  font-size: 0.62rem;
 }
 
-.fw-legend-pill--close {
-  color: #f59e0b;
-  border-color: rgba(245, 158, 11, 0.40);
-  background: rgba(245, 158, 11, 0.14);
+/* Remove old dot classes (kept for safety) */
+.fw-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
 }
-
-.fw-legend-pill--miss {
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.40);
-  background: rgba(239, 68, 68, 0.14);
-}
+.fw-dot--hit { background: #22c55e; }
+.fw-dot--close { background: #f59e0b; }
+.fw-dot--miss { background: #ef4444; }
 
 @media (max-width: 900px) {
   .summary-habits-grid {
