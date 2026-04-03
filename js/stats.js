@@ -124,9 +124,29 @@ const PACE_MESSAGES = {
   ]
 };
 
-export function getPaceMessage(status) {
+function hashString(input = "") {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = ((hash << 5) - hash) + input.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+function pickDeterministic(pool, variantKey = "") {
+  if (!Array.isArray(pool) || pool.length === 0) return "";
+  const idx = hashString(variantKey) % pool.length;
+  return pool[idx];
+}
+
+export function getPaceMessage(status, variantKey = "") {
   const pool = PACE_MESSAGES[status] || PACE_MESSAGES["on-track"];
-  return pool[Math.floor(Math.random() * pool.length)];
+  return pickDeterministic(pool, variantKey || status);
+}
+
+const STARTED_BADGE_LABELS = ["Started strong", "Good start", "Strong start"];
+function getStartedBadgeLabel(variantKey = "") {
+  return pickDeterministic(STARTED_BADGE_LABELS, variantKey || "started");
 }
 
 const STARTED_BADGE_LABELS = ["Started strong", "Good start", "Strong start"];
@@ -240,7 +260,8 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
   const expectedByNow = cad * (lastDay / 7);
 
   const paceKey = getPaceStatus(logged, expectedByNow, lastDay);
-  const paceMessage = getPaceMessage(paceKey);
+  const variantKey = `${yearMonth}|${activity}|${paceKey}|${logged}|${lastDay}`;
+  const paceMessage = getPaceMessage(paceKey, variantKey);
 
   // Human-readable badge label
   const paceLabel = {
@@ -248,7 +269,7 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
     "on-track": "On track",
     behind:     "Behind pace",
     early:      "Early days!",
-    started:    getStartedBadgeLabel()
+    started:    getStartedBadgeLabel(variantKey)
   }[paceKey] || "On track";
 
   const fullWeeksBreakdown = fullWeeks.map((w, idx) => {
