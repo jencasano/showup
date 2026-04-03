@@ -149,6 +149,11 @@ function getStartedBadgeLabel(variantKey = "") {
   return pickDeterministic(STARTED_BADGE_LABELS, variantKey || "started");
 }
 
+const STARTED_BADGE_LABELS = ["Started strong", "Good start", "Strong start"];
+function getStartedBadgeLabel() {
+  return STARTED_BADGE_LABELS[Math.floor(Math.random() * STARTED_BADGE_LABELS.length)];
+}
+
 // ─── Per-habit streak ─────────────────────────────────────
 async function calculateHabitStreak(userId, activity, cadence, yearMonth, markedDays, referenceDate = new Date()) {
   const today = new Date(referenceDate);
