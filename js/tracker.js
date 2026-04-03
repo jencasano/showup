@@ -270,12 +270,30 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       <div class="summary-stat">
         <span class="summary-stat__icon">✨</span>
         <div class="summary-stat__val">${perfectDays}/${totalThisMonth}</div>
-        <div class="summary-stat__label"><span>Perfect Days</span></div>
+        <div class="summary-stat__label">
+          <span>Perfect Days</span>
+          <span class="summary-stat__help-wrap">
+            <span class="summary-stat__help" aria-hidden="true">i</span>
+            <span class="summary-stat__tooltip" role="tooltip">
+              <strong>What this means</strong>
+              <span>Days you completed every habit.</span>
+            </span>
+          </span>
+        </div>
       </div>
       <div class="summary-stat">
         <span class="summary-stat__icon">📅</span>
         <div class="summary-stat__val">${showUpDays}/${totalThisMonth}</div>
-        <div class="summary-stat__label"><span>Show-Up Days</span></div>
+        <div class="summary-stat__label">
+          <span>Show-Up Days</span>
+          <span class="summary-stat__help-wrap">
+            <span class="summary-stat__help" aria-hidden="true">i</span>
+            <span class="summary-stat__tooltip" role="tooltip">
+              <strong>What this means</strong>
+              <span>Days you logged at least one habit.</span>
+            </span>
+          </span>
+        </div>
       </div>
     </div>
     <div class="summary-note">
