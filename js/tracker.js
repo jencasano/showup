@@ -88,7 +88,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
       if (isMobile()) {
         if (isCurrentMonth) {
-          container.appendChild(renderStatusBanner(entry, todayDate, true));
+          container.appendChild(renderStatusBanner(entry, todayDate));
         }
         container.appendChild(
           renderMobileCard(entry, yearMonth, user, { onMarkToggled })
@@ -102,7 +102,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
         const centeredStack = document.createElement("div");
         centeredStack.className = "mylog-centered-stack";
         if (isCurrentMonth) {
-          centeredStack.appendChild(renderStatusBanner(entry, todayDate, false));
+          centeredStack.appendChild(renderStatusBanner(entry, todayDate));
         }
         centeredStack.appendChild(
           renderUserSection(entry, yearMonth, user, isCurrentMonth, todayDate, onMarkToggled)
@@ -135,7 +135,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 function refreshBannerInPlace(container, entry, todayDate) {
   const existing = container.querySelector(".status-banner");
   if (!existing) return;
-  existing.replaceWith(renderStatusBanner(entry, todayDate, isMobile()));
+  existing.replaceWith(renderStatusBanner(entry, todayDate));
 }
 
 // ─── PATCH: replace summary card node in-place ────────────
@@ -157,12 +157,44 @@ function refreshSummaryInPlace(container, entry, stats, yearMonth, isCurrentMont
 }
 
 // ─── TODAY'S STATUS BANNER ────────────────────────────────
-function renderStatusBanner(entry, todayDate, isMob) {
+const STATUS_BANNER_MESSAGES = {
+  noneLogged: [
+    "Hey, busy is not an excuse — no one's weak here, right?!",
+    "No logs yet today. Start now and set the tone.",
+    "Clock is ticking. Show up and make today count."
+  ],
+  someLogged: [
+    "Good job! Let's get it!",
+    "Nice start. Keep stacking wins today.",
+    "You're in motion now — keep going."
+  ],
+  allDone: [
+    "All habits done. Elite consistency.",
+    "Perfect day. That's how it's done.",
+    "Every habit checked off. You're on fire."
+  ]
+};
+
+function pickBannerMessage(stateKey, todayDate, completedToday, totalHabits) {
+  const pool = STATUS_BANNER_MESSAGES[stateKey] || STATUS_BANNER_MESSAGES.someLogged;
+  const seed = `${stateKey}|${todayDate}|${completedToday}|${totalHabits}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+    hash |= 0;
+  }
+  return pool[Math.abs(hash) % pool.length];
+}
+
+function renderStatusBanner(entry, todayDate) {
   const activities = entry.activities || [];
   const marks      = entry.marks      || {};
 
   const pending = activities.filter(a => !(marks[a] || []).includes(todayDate));
+  const completedToday = activities.length - pending.length;
   const allDone = pending.length === 0;
+  const noneLogged = completedToday === 0;
+  const stateKey = allDone ? "allDone" : (noneLogged ? "noneLogged" : "someLogged");
 
   const banner = document.createElement("div");
   banner.className = `status-banner ${allDone ? "status-banner--done" : "status-banner--pending"}`;
@@ -170,10 +202,10 @@ function renderStatusBanner(entry, todayDate, isMob) {
   const icon  = allDone ? "🎉" : "🔥";
   const title = allDone
     ? "Good job, you showed up today!"
-    : "Log a completed habit for today!";
-  const sub = allDone
-    ? `All ${activities.length} habit${activities.length !== 1 ? "s" : ""} logged. Keep the streak alive!`
-    : `${pending.length} habit${pending.length !== 1 ? "s" : ""} left. ${pending.slice(0, isMob ? 1 : 2).join(", ")}${pending.length > (isMob ? 1 : 2) ? " and more" : ""}.`;
+    : noneLogged
+      ? "Let's kick off today."
+      : "Keep the momentum rolling.";
+  const sub = pickBannerMessage(stateKey, todayDate, completedToday, activities.length);
   const pill = allDone ? "All done!" : `${pending.length} left`;
 
   banner.innerHTML = `
@@ -189,7 +221,7 @@ function renderStatusBanner(entry, todayDate, isMob) {
 
 // ─── PROGRESS SUMMARY CARD ────────────────────────────────
 function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
-  const { doneThisMonth, totalThisMonth, habitStats, monthlyTargetHitRate, fullWeeksCount } = stats;
+  const { showUpDays = 0, perfectDays = 0, totalThisMonth, habitStats, monthlyTargetHitRate, fullWeeksCount } = stats;
   const activities = entry.activities || [];
   const [year, month] = yearMonth.split("-").map(Number);
   const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
@@ -208,12 +240,15 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       : h.monthLogged >= h.monthTarget
         ? `<span class="summary-habit-streak">✅ Target met</span>`
         : `<span class="summary-habit-streak">${h.monthTarget - h.monthLogged} to go</span>`;
+    const pctClass = `summary-habit-pct${h.extra > 0 ? " summary-habit-pct--over" : ""}`;
+    const pctStyle = h.extra > 0 ? "" : `style="color:${barColor}"`;
 
     const paceBadgeClass = {
       ahead:      "pace-badge--ahead",
       "on-track": "pace-badge--on-track",
       behind:     "pace-badge--behind",
-      early:      "pace-badge--early"
+      early:      "pace-badge--early",
+      started:    "pace-badge--started"
     }[h.paceKey] || "";
 
     return `
@@ -226,7 +261,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
           <div class="summary-habit-meta">
             ${statusPill}
             <span class="summary-habit-cad">${h.cadenceLabel}</span>
-            <span class="summary-habit-pct" style="color:${barColor}">${h.displayLogged}/${h.monthTarget}</span>
+            <span class="${pctClass}" ${pctStyle}>${h.monthLogged}/${h.monthTarget}</span>
           </div>
         </div>
         <div class="summary-habit-track">
@@ -251,19 +286,43 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
     </div>
     <div class="summary-stats">
       <div class="summary-stat">
-        <span class="summary-stat__icon">✅</span>
+        <span class="summary-stat__icon">🎯</span>
         <div class="summary-stat__val">${monthlyTargetHitRate}<span class="summary-stat__unit">%</span></div>
-        <div class="summary-stat__label">Monthly Target Hit Rate</div>
+        <div class="summary-stat__label">
+          <span class="summary-stat__label-text">Targeted Habits Completed</span>
+          <span class="summary-stat__help-wrap">
+            <button class="summary-stat__help-btn" type="button" aria-label="About targeted habits completed" aria-expanded="false">i</button>
+            <span class="summary-stat__tooltip" role="tooltip">
+              <span>The percentage of your habits that have already reached their monthly target.</span>
+            </span>
+          </span>
+        </div>
+      </div>
+      <div class="summary-stat">
+        <span class="summary-stat__icon">✨</span>
+        <div class="summary-stat__val">${perfectDays}/${totalThisMonth}</div>
+        <div class="summary-stat__label">
+          <span class="summary-stat__label-text">Perfect Days</span>
+          <span class="summary-stat__help-wrap">
+            <button class="summary-stat__help-btn" type="button" aria-label="About perfect days" aria-expanded="false">i</button>
+            <span class="summary-stat__tooltip" role="tooltip">
+              <span>Days you completed every habit.</span>
+            </span>
+          </span>
+        </div>
       </div>
       <div class="summary-stat">
         <span class="summary-stat__icon">📅</span>
-        <div class="summary-stat__val">${doneThisMonth}/${totalThisMonth}</div>
-        <div class="summary-stat__label">Days Logged</div>
-      </div>
-      <div class="summary-stat">
-        <span class="summary-stat__icon">🗓️</span>
-        <div class="summary-stat__val">${fullWeeksCount}</div>
-        <div class="summary-stat__label">Full Weeks In Month</div>
+        <div class="summary-stat__val">${showUpDays}/${totalThisMonth}</div>
+        <div class="summary-stat__label">
+          <span class="summary-stat__label-text">Show-Up Days</span>
+          <span class="summary-stat__help-wrap">
+            <button class="summary-stat__help-btn" type="button" aria-label="About show-up days" aria-expanded="false">i</button>
+            <span class="summary-stat__tooltip" role="tooltip">
+              <span>Days you logged at least one habit.</span>
+            </span>
+          </span>
+        </div>
       </div>
     </div>
     <div class="summary-note">
@@ -283,12 +342,39 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
   `;
 
   card.querySelector(".summary-share-btn").addEventListener("click", () => {
-    const text = `My showup. stats for ${monthName} ${year}:\n✅ ${monthlyTargetHitRate}% monthly target hit rate\n📅 ${doneThisMonth}/${totalThisMonth} days logged\n${habitStats.map(h => `• ${h.name}: ${h.displayLogged}/${h.monthTarget} this month${h.extra > 0 ? ` (+${h.extra} extra)` : ""}`).join("\n")}`;
+    const text = `My showup. stats for ${monthName} ${year}:\n🎯 ${monthlyTargetHitRate}% targeted habits completed\n✨ ${perfectDays}/${totalThisMonth} perfect days\n📅 ${showUpDays}/${totalThisMonth} show-up days\n${habitStats.map(h => `• ${h.name}: ${h.monthLogged}/${h.monthTarget} this month${h.extra > 0 ? ` (+${h.extra} extra)` : ""}`).join("\n")}`;
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
     } else {
       navigator.clipboard.writeText(text).then(() => showToast("Stats copied!", "info"));
     }
+  });
+
+  const statHelpWraps = Array.from(card.querySelectorAll(".summary-stat__help-wrap"));
+  const closeStatTooltips = () => {
+    statHelpWraps.forEach((wrap) => {
+      wrap.classList.remove("is-open");
+      const btn = wrap.querySelector(".summary-stat__help-btn");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    });
+  };
+
+  card.querySelectorAll(".summary-stat__help-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const wrap = btn.closest(".summary-stat__help-wrap");
+      if (!wrap) return;
+      const willOpen = !wrap.classList.contains("is-open");
+      closeStatTooltips();
+      if (willOpen) {
+        wrap.classList.add("is-open");
+        btn.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+
+  card.addEventListener("click", (e) => {
+    if (!e.target.closest(".summary-stat__help-wrap")) closeStatTooltips();
   });
 
   card.querySelectorAll(".fw-day[data-overflow]").forEach(dayEl => {

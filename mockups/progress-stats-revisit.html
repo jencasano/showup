@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progress Stats Revisit Mockup</title>
+  <style>
+    :root {
+      --bg: #1f2442;
+      --card: #2a3050;
+      --card-2: #30385d;
+      --border: #414b77;
+      --text: #e8ecff;
+      --muted: #b8bfdf;
+      --faint: #9ca5cc;
+      --success: #22c55e;
+      --teal: #22d3ee;
+      --violet: #a78bfa;
+      --amber: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 25% 0%, #2d3461 0%, #202646 42%, #171c34 100%);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      padding: 28px;
+    }
+
+    .frame {
+      max-width: 1180px;
+      margin: 0 auto;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+      background: var(--card);
+    }
+
+    .header {
+      padding: 18px 20px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .title {
+      margin: 0;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    .sub {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .stat {
+      padding: 22px 18px 20px;
+      border-right: 1px solid rgba(255,255,255,0.07);
+      min-height: 160px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 6px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0));
+    }
+
+    .stat:last-child { border-right: none; }
+
+    .icon {
+      font-size: 1rem;
+      opacity: 0.95;
+    }
+
+    .value {
+      font-size: clamp(1.9rem, 2.3vw, 2.35rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      color: #f8fafc;
+    }
+
+    .unit {
+      font-size: 0.62em;
+      opacity: 0.85;
+      margin-left: 1px;
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+      text-align: center;
+    }
+
+    .help-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .help {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.25);
+      font-size: 10px;
+      font-weight: 700;
+      color: #d8deff;
+      cursor: help;
+    }
+
+    .tooltip {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(320px, 80vw);
+      background: var(--card-2);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 10px;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.3);
+      padding: 10px 11px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 140ms ease;
+      z-index: 3;
+      pointer-events: none;
+      text-align: left;
+    }
+
+    .help-wrap:hover .tooltip,
+    .help-wrap:focus-within .tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .tooltip b {
+      display: block;
+      margin-bottom: 4px;
+      color: #eef2ff;
+      font-size: 0.75rem;
+    }
+
+    .tooltip span {
+      color: var(--muted);
+      font-size: 0.74rem;
+      line-height: 1.35;
+    }
+
+    .stat--targeted .icon, .stat--targeted .value { color: #86efac; }
+    .stat--perfect  .icon, .stat--perfect  .value { color: #7dd3fc; }
+    .stat--showup   .icon, .stat--showup   .value { color: #fcd34d; }
+
+    .footer-note {
+      padding: 12px 16px 16px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      border-top: 1px dashed rgba(255,255,255,0.09);
+      background: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0));
+    }
+
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: 1fr; }
+      .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
+      .stat:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="frame">
+    <header class="header">
+      <h1 class="title">My Progress</h1>
+      <p class="sub">Proposed top stats refresh · January 2026</p>
+    </header>
+
+    <div class="stats">
+      <article class="stat stat--targeted">
+        <div class="icon">🎯</div>
+        <div class="value">67<span class="unit">%</span></div>
+        <div class="label">
+          Targeted Habits Completed
+          <span class="help-wrap">
+            <span class="help" aria-hidden="true">i</span>
+            <span class="tooltip" role="tooltip">
+              <b>How this is calculated</b>
+              <span>The percentage of your habits that have already reached their monthly target.</span>
+            </span>
+          </span>
+        </div>
+      </article>
+
+      <article class="stat stat--perfect">
+        <div class="icon">✨</div>
+        <div class="value">12/31</div>
+        <div class="label">Perfect Days</div>
+      </article>
+
+      <article class="stat stat--showup">
+        <div class="icon">📅</div>
+        <div class="value">25/31</div>
+        <div class="label">Show-Up Days</div>
+      </article>
+    </div>
+
+    <div class="footer-note">
+      <strong>Reading this row:</strong>
+      You have completed monthly targets for 67% of habits, had 12 fully-complete days, and showed up on 25 days with at least one habit logged.
+    </div>
+  </section>
+</body>
+</html>

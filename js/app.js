@@ -95,10 +95,9 @@ async function updateStat() {
   }
   const stats = await getMyLogStatsPromise();
   if (!stats) return;
-  const { streak, doneThisMonth, totalThisMonth } = stats;
+  const { streak } = stats;
   const parts = [];
   if (streak > 0) parts.push(`🔥 ${streak} day streak`);
-  parts.push(`${doneThisMonth}/${totalThisMonth} days done`);
   monthBarStat.textContent = parts.join(" · ");
 }
 
