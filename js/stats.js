@@ -144,14 +144,11 @@ export function getPaceMessage(status, variantKey = "") {
   return pickDeterministic(pool, variantKey || status);
 }
 
-const STARTED_BADGE_LABELS = ["Started strong", "Good start", "Strong start"];
 function getStartedBadgeLabel(variantKey = "") {
-  return pickDeterministic(STARTED_BADGE_LABELS, variantKey || "started");
-}
-
-const STARTED_BADGE_LABELS = ["Started strong", "Good start", "Strong start"];
-function getStartedBadgeLabel() {
-  return STARTED_BADGE_LABELS[Math.floor(Math.random() * STARTED_BADGE_LABELS.length)];
+  return pickDeterministic(
+    ["Started strong", "Good start", "Strong start"],
+    variantKey || "started"
+  );
 }
 
 // ─── Per-habit streak ─────────────────────────────────────
