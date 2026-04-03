@@ -54,9 +54,6 @@ function countInRange(markedDays, startDay, endDay) {
   return markedDays.filter(d => d >= startDay && d <= endDay).length;
 }
 
-/**
- * Count how many consecutive days ending on `today` are in markedDays.
- */
 function countConsecutiveDays(markedDays, yearMonth, today) {
   const todayNum = today.getDate();
   let streak = 0;
@@ -73,14 +70,58 @@ function countConsecutiveDays(markedDays, yearMonth, today) {
 export function cadenceLabel(n) {
   const cadence = Number(n);
   if (n == null || !Number.isFinite(cadence) || cadence >= 7) return "Daily";
-  return `${cadence}×/wk`;
+  return `${cadence}x/wk`;
 }
 
 function hitWeeklyTarget(markedDays, cadence, yearMonth, date) {
   return logsInWeek(markedDays, yearMonth, date) >= cadence;
 }
 
-// ─── Per-habit streak: consecutive weeks this habit hit its target ───
+// ─── Pace status ──────────────────────────────────────────
+// Uses a ratio-based approach so every cadence is judged fairly.
+// Thresholds: >= 1.10 = Ahead, >= 0.85 = On Track, < 0.85 = Behind.
+// Suppressed for the first 3 days of the month (too noisy).
+export function getPaceStatus(logged, expectedByNow, lastDay) {
+  if (lastDay < 3) return "early";
+  if (expectedByNow <= 0) return logged > 0 ? "ahead" : "early";
+  const ratio = logged / expectedByNow;
+  if (ratio >= 1.10) return "ahead";
+  if (ratio >= 0.85) return "on-track";
+  return "behind";
+}
+
+// ─── Message pools ────────────────────────────────────────
+const PACE_MESSAGES = {
+  ahead: [
+    "You are ahead of pace. Keep that momentum going!",
+    "Overachiever alert. Do not stop now.",
+    "You are crushing it this month. Stay consistent!",
+    "Ahead of schedule. This is what showing up looks like."
+  ],
+  "on-track": [
+    "Steady progress. You are right where you need to be.",
+    "Holding the line. Do not let up.",
+    "On track and looking good. Keep it up!",
+    "You are doing the work. That is all that matters."
+  ],
+  behind: [
+    "A little behind. A few extra sessions and you are back.",
+    "Busy is not an excuse. You have got time.",
+    "This will not complete itself. Let us go.",
+    "You are not weak, are you? Catch up.",
+    "The month is not over yet. Close the gap."
+  ],
+  early: [
+    "Month is just getting started. Show up!"
+  ]
+};
+
+export function getPaceMessage(status) {
+  const pool = PACE_MESSAGES[status] || PACE_MESSAGES["on-track"];
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+// ─── Per-habit streak ─────────────────────────────────────
 async function calculateHabitStreak(userId, activity, cadence, yearMonth, markedDays, referenceDate = new Date()) {
   const today = new Date(referenceDate);
   let streak = 0;
@@ -183,9 +224,14 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
   const consecutiveDays  = countConsecutiveDays(marks[activity] || [], yearMonth, today);
   const displayLogged = Math.min(logged, monthTarget);
   const extra = Math.max(0, logged - monthTarget);
-  const expectedByNow = Number((cad * (lastDay / 7)).toFixed(2));
-  const paceDelta = logged - expectedByNow;
-  const paceStatus = paceDelta <= -1 ? "Behind pace" : "On track";
+  const expectedByNow = cad * (lastDay / 7);
+
+  const paceKey = getPaceStatus(logged, expectedByNow, lastDay);
+  const paceMessage = getPaceMessage(paceKey);
+
+  // Human-readable label
+  const paceLabel = { ahead: "Ahead", "on-track": "On track", behind: "Behind pace", early: "" }[paceKey];
+
   const fullWeeksBreakdown = fullWeeks.map((w, idx) => {
     const weekLogged = countInRange(marks[activity] || [], w.startDay, w.endDay);
     return {
@@ -213,7 +259,9 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
     monthRate: Math.min(100, Math.round((logged / monthTarget) * 100)),
     displayLogged,
     extra,
-    paceStatus,
+    paceKey,
+    paceLabel,
+    paceMessage,
     fullWeeksBreakdown
   };
 }

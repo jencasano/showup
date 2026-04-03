@@ -173,7 +173,7 @@ function renderStatusBanner(entry, todayDate, isMob) {
     : "Log a completed habit for today!";
   const sub = allDone
     ? `All ${activities.length} habit${activities.length !== 1 ? "s" : ""} logged. Keep the streak alive!`
-    : `${pending.length} habit${pending.length !== 1 ? "s" : ""} left — ${pending.slice(0, isMob ? 1 : 2).join(", ")}${pending.length > (isMob ? 1 : 2) ? " & more" : ""}.`;
+    : `${pending.length} habit${pending.length !== 1 ? "s" : ""} left. ${pending.slice(0, isMob ? 1 : 2).join(", ")}${pending.length > (isMob ? 1 : 2) ? " and more" : ""}.`;
   const pill = allDone ? "All done!" : `${pending.length} left`;
 
   banner.innerHTML = `
@@ -208,6 +208,18 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       : h.monthLogged >= h.monthTarget
         ? `<span class="summary-habit-streak">✅ Target met</span>`
         : `<span class="summary-habit-streak">${h.monthTarget - h.monthLogged} to go</span>`;
+
+    // Pace badge: colour-coded by status
+    const paceBadgeClass = {
+      ahead: "pace-badge--ahead",
+      "on-track": "pace-badge--on-track",
+      behind: "pace-badge--behind",
+      early: "pace-badge--early"
+    }[h.paceKey] || "";
+    const paceBadge = h.paceLabel
+      ? `<span class="pace-badge ${paceBadgeClass}">${h.paceLabel}</span>`
+      : "";
+
     return `
       <div class="summary-habit-row">
         <div class="summary-habit-top">
@@ -224,7 +236,10 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
         <div class="summary-habit-track">
           <div class="summary-habit-fill" style="width:${displayRate}%;background:${barColor}"></div>
         </div>
-        <div class="summary-habit-sub">${h.paceStatus}</div>
+        <div class="summary-habit-sub">
+          ${paceBadge}
+          <span class="pace-message">${h.paceMessage}</span>
+        </div>
       </div>`;
   }).join("");
 
@@ -256,7 +271,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       </div>
     </div>
     <div class="summary-note">
-      "Cadence-based monthly goal" = ceil(cadence × daysInMonth / 7).
+      Your monthly goals are set by how often per week you want to show up. Keep your cadences updated and this will always reflect your real targets.
     </div>
     <div class="summary-habits">
       <div class="summary-habits__label">This Month's Progress</div>
@@ -305,7 +320,7 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
   const [year, month] = yearMonth.split("-").map(Number);
   const first = new Date(year, month - 1, 1);
   const daysInMonth = getDaysInMonth(yearMonth);
-  const mondayOffset = (first.getDay() + 6) % 7; // Mon=0
+  const mondayOffset = (first.getDay() + 6) % 7;
   const gridStart = new Date(year, month - 1, 1 - mondayOffset);
   const weekRows = [];
 
@@ -321,7 +336,6 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
 
   const marks = entry.marks || {};
 
-  // Build a map: weekLabel → array of { name, logged, target, hit } per habit
   const fullWeekByStart = new Map();
   habitStats.forEach(h => {
     (h.fullWeeksBreakdown || []).forEach((w) => {
@@ -330,7 +344,6 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
     });
   });
 
-  // Color lookup by activity name
   const colorByName = {};
   habitStats.forEach((h, i) => { colorByName[h.name] = getActivityColor(i); });
 
@@ -342,7 +355,6 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
     const isFullInMonthWeek = inMonth.length === 7;
     const weekLabel = isFullInMonthWeek ? `Wk${++fullWeekOrdinal}` : null;
 
-    // Counter pills with colored dot for full weeks
     const badgeRows = (fullWeekByStart.get(weekLabel) || []).map(w => {
       const state = w.hit ? "hit" : (w.logged >= Math.max(1, w.target - 1) ? "close" : "miss");
       const color = colorByName[w.name] || "#888";
@@ -357,7 +369,6 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
         return `<div class="fw-day fw-day--muted"><span class="fw-day-num">${dayNum}</span></div>`;
       }
 
-      // Collect logged habits for this day
       const loggedHabits = habitStats
         .map((h, i) => ({ name: h.name, color: getActivityColor(i) }))
         .filter(h => (marks[h.name] || []).includes(dayNum));
@@ -382,7 +393,6 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
     return `<div class="fw-week"><div class="fw-week-grid">${dayCells}</div></div>`;
   }).join("");
 
-  // Legend with pills styled like fw-badge
   const legendHTML = `
     <div class="fw-legend">
       <span class="fw-legend-pill fw-badge fw-badge--hit">Target hit</span>
@@ -393,7 +403,7 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
   return `
     <div class="fullweek-calendar">
       <div class="fullweek-calendar__title">${monthName(yearMonth)}</div>
-      <div class="fullweek-calendar__sub">Full-week cadence view (Monday–Sunday)</div>
+      <div class="fullweek-calendar__sub">Full-week cadence view (Monday to Sunday)</div>
       <div class="fw-dow"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
       ${weekBlocks}
       ${legendHTML}
