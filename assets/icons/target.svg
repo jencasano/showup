@@ -5,8 +5,10 @@
   <circle cx="10" cy="13" r="2.2" fill="#D8584E"/>
   <circle cx="10" cy="13" r="1" fill="#596088"/>
 
-  <path d="M10 13L17.7 5.3" stroke="#B3A1B4" stroke-width="0.9" stroke-linecap="round"/>
-  <path d="M17.1 4.7L18.8 3L18.6 5.5Z" fill="#596088"/>
-  <path d="M17.5 5.9L20.6 5.9L18.6 7.7L16.7 7.6Z" fill="#80B9B9"/>
-  <path d="M16.5 4.9L16.6 2L18.6 3.8L18.5 5.6Z" fill="#A29BFE"/>
+  <path d="M10 13L17.8 5.2" stroke="#B3A1B4" stroke-width="0.9" stroke-linecap="round"/>
+  <path d="M17.2 4.7L18.9 2.9L18.7 5.5Z" fill="#596088"/>
+  <path d="M17.8 5.3L18.3 4.8L19.1 5.5L18.6 5.9Z" fill="#596088"/>
+  <path d="M17.8 5.6L20.8 5.6L19 7.8L16.8 7.7Z" fill="#80B9B9"/>
+  <path d="M18 4.7L18.1 2L20.4 4.4L19.7 5.6Z" fill="#A29BFE"/>
+  <path d="M19.8 4.3L20.3 3.3L20.2 5.6Z" fill="#596088"/>
 </svg>
