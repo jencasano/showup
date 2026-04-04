@@ -1,7 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <path d="M21 12.8C20.2 16.9 16.5 20 12.1 20C7.1 20 3 15.9 3 10.9C3 7.2 5.1 3.9 8.3 2.3C7.2 3.8 6.7 5.7 6.7 7.7C6.7 13.1 11 17.4 16.4 17.4C18.1 17.4 19.7 16.9 21 16.1C21.1 15 21 13.8 21 12.8Z" fill="#2A2E45"/>
-  <circle cx="5.5" cy="6.5" r="0.9" fill="#F8C08A"/>
-  <circle cx="8.5" cy="3.5" r="0.6" fill="#F8C08A"/>
-  <circle cx="3.5" cy="9.5" r="0.6" fill="#F8C08A"/>
-  <circle cx="19" cy="8" r="0.8" fill="#80B9B9" opacity="0.6"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-label="moon icon">
+  <defs>
+    <mask id="moon-crescent-cut">
+      <rect width="24" height="24" fill="black"/>
+      <circle cx="11.5" cy="12" r="9" fill="white"/>
+      <circle cx="15" cy="10.8" r="7.4" fill="black"/>
+    </mask>
+  </defs>
+
+  <circle cx="11.5" cy="12" r="9" fill="#F8C08A" mask="url(#moon-crescent-cut)"/>
+  <circle cx="10.9" cy="11.4" r="8.2" fill="#FBDFCB" opacity="0.35" mask="url(#moon-crescent-cut)"/>
+
+  <path d="M3.1 6L3.7 7.2L5 7.4L4.1 8.2L4.3 9.5L3.1 8.9L1.9 9.5L2.1 8.2L1.2 7.4L2.5 7.2L3.1 6Z" fill="#F8C08A"/>
+  <path d="M18.2 3.8L18.7 4.8L19.8 5L19 5.8L19.2 6.9L18.2 6.4L17.2 6.9L17.4 5.8L16.6 5L17.7 4.8L18.2 3.8Z" fill="#F8C08A"/>
+  <path d="M15.4 9.3L16.1 10.7L17.6 10.9L16.5 11.9L16.8 13.4L15.4 12.7L14 13.4L14.3 11.9L13.2 10.9L14.7 10.7L15.4 9.3Z" fill="#F8C08A"/>
+
+  <circle cx="9.8" cy="7.5" r="0.35" fill="#80B9B9"/>
+  <circle cx="11.3" cy="14.2" r="0.4" fill="#80B9B9"/>
+  <circle cx="17.1" cy="9.1" r="0.38" fill="#80B9B9"/>
 </svg>
