@@ -10,6 +10,7 @@ const ICONS_PATH = '/assets/icons';
 export const ICON_NAMES = [
   'flame',       // 🔥  streak stat, badges
   'sunflower',   // 🌻  sticker
+  'sunflower2',  // 🌻  alternate sticker
   'muscle',      // 💪  sticker
   'star',        // ⭐  sticker
   'target',      // 🎯  sticker
