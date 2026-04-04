@@ -678,7 +678,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
 function renderFollowingEmpty(container, onSwitchToAll) {
   container.innerHTML = `
     <div class="following-empty">
-      <div class="following-empty-icon">👥</div>
+      <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_jtbfg2nb.json" background="transparent" speed="1" class="following-lottie-icon" loop autoplay></lottie-player>
       <h3 class="following-empty-title">See who shows up</h3>
       <p class="following-empty-sub">Head to the All tab to find people who show up →</p>
       <button class="following-browse-btn" id="browse-all-btn">Browse All →</button>
@@ -783,8 +783,8 @@ function renderFollowingSection(title, type, items, ctx) {
     items.forEach(item => {
       const slot = document.createElement("div");
       slot.className = "following-card-slot";
-      slot.appendChild(renderPinControl(item, ctx.currentUser));
       slot.appendChild(renderMobileCard(item.log, ctx.yearMonth, ctx.currentUser, { isFollowing: true, showFollowBtn: true }));
+      slot.appendChild(renderPinControl(item, ctx.currentUser));
       grid.appendChild(slot);
     });
     section.appendChild(grid);
@@ -864,7 +864,7 @@ function renderBrowseNudge(onSwitchToAll, opts = {}) {
   slot.className = asSection ? "following-section following-nudge-section" : "following-nudge-slot";
   slot.innerHTML = `
     <div class="following-nudge-card">
-      <div class="following-nudge-icon">👥</div>
+      <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_jtbfg2nb.json" background="transparent" speed="1" class="following-lottie-icon" loop autoplay></lottie-player>
       <p class="following-nudge-title">See who shows up</p>
       <p class="following-nudge-sub">Head to the All tab to find people who show up →</p>
       <button class="following-browse-btn" id="nudge-browse-btn">Browse All →</button>

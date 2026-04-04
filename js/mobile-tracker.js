@@ -54,7 +54,7 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   const nameWrap = document.createElement("div");
   nameWrap.className = "cal-card-name-wrap";
   nameWrap.innerHTML = `
-    <span class="cal-card-name">${entry.displayName}</span>
+    <span class="cal-card-name" title="${entry.displayName}">${entry.displayName}</span>
     <span class="cal-card-sticker">${sticker}</span>
   `;
 
@@ -132,7 +132,18 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
     calBody.innerHTML = "";
     renderCalGrid(calBody, entry, yearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap);
     renderFilterBar(filterBar, activeFilter, entry.activities, onFilterClear);
-    renderLegend(footer, entry);
+    renderLegend(footer, entry, (activityName) => {
+      activeFilter = activeFilter === activityName ? null : activityName;
+      render();
+    });
+    if (activeFilter) {
+      footer.querySelectorAll(".cal-legend-item").forEach(el => {
+        el.classList.toggle(
+          "cal-legend-item--active",
+          el.querySelector(".cal-legend-name").textContent === activeFilter
+        );
+      });
+    }
   }
 
   function onDayTap(day) {
@@ -323,7 +334,7 @@ function renderFilterBar(filterBar, activeFilter, activities, onFilterClear) {
 }
 
 // ─── RENDER ACTIVITY LEGEND (replaces stats footer) ─
-function renderLegend(footer, entry) {
+function renderLegend(footer, entry, onActivityClick = null) {
   const activities = entry.activities || [];
   footer.innerHTML = "";
 
@@ -336,6 +347,10 @@ function renderLegend(footer, entry) {
     const color = getActivityColor(i);
     const item = document.createElement("div");
     item.className = "cal-legend-item";
+    if (onActivityClick) {
+      item.classList.add("cal-legend-item--clickable");
+      item.addEventListener("click", () => onActivityClick(act));
+    }
     item.innerHTML = `
       <span class="cal-legend-dot" style="background:${color}"></span>
       <span class="cal-legend-name">${act}</span>

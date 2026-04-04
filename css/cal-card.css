@@ -356,6 +356,25 @@
   white-space: nowrap;
 }
 
+/* ── Legend filter interactions ────────────────── */
+.cal-legend-item--clickable {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  transition: background 0.15s;
+}
+.cal-legend-item--clickable:hover {
+  background: rgba(0,0,0,0.06);
+}
+.cal-legend-item--active {
+  background: rgba(0,0,0,0.06);
+}
+.cal-legend-item--active .cal-legend-name {
+  font-weight: 700;
+  color: var(--text);
+}
+
 /* ── Placeholder Card (no tracker this month) ── */
 .cal-card-placeholder { opacity: 0.75; }
 
@@ -376,31 +395,41 @@
 
 /* ── Following tab — card slot wrappers ───────── */
 .following-card-slot {
+  position: relative;
   min-width: 0;
 }
 
 .following-pin-wrap {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 6px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  margin: 0;
 }
 
 .following-pin-btn {
-  border: 1px solid var(--border);
-  background: var(--bg-subtle);
-  color: var(--text-muted);
-  border-radius: var(--radius-full);
-  font-size: 1rem;
-  font-weight: 700;
-  padding: 5px 8px;
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  padding: 2px;
   cursor: pointer;
   line-height: 1;
+  opacity: 0.35;
+  transition: opacity 0.15s, transform 0.15s;
+  filter: grayscale(1);
+}
+
+.following-pin-btn:hover {
+  opacity: 0.7;
+  filter: none;
 }
 
 .following-pin-btn.active {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  background: #FFF7F2;
+  border: none;
+  background: none;
+  opacity: 1;
+  filter: none;
+  transform: rotate(-15deg);
 }
 
 .following-board {
@@ -575,10 +604,11 @@
   width: 100%;
 }
 
-.following-empty-icon {
-  font-size: 2.2rem;
-  margin-bottom: 4px;
-  opacity: 0.85;
+.following-lottie-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 4px;
+  display: block;
 }
 
 .following-empty-title {
@@ -632,11 +662,7 @@
   background: var(--bg-subtle);
 }
 
-.following-nudge-icon {
-  font-size: 1.8rem;
-  opacity: 0.75;
-  margin-bottom: 2px;
-}
+/* .following-nudge-icon replaced by .following-lottie-icon above */
 
 .following-nudge-title {
   font-family: var(--font-heading);
