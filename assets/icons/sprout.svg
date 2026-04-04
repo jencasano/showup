@@ -1,6 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <ellipse cx="12" cy="22" rx="5.5" ry="1.5" fill="#EDE5DA"/>
-  <path d="M12 22V13" stroke="#1DD1A1" stroke-width="2" stroke-linecap="round"/>
-  <path d="M12 16C12 16 8.5 14.5 7.5 10.5C7.5 10.5 10.5 9.5 12 12.5" fill="#1DD1A1"/>
-  <path d="M12 12.5C12 12.5 15.5 10 16.5 6C16.5 6 13.5 5 12 8" fill="#80B9B9"/>
+  <path d="M2.8 18.4C3.7 16.2 5.8 14.8 8.1 14.8H11.9V23H3.8C2.9 23 2.4 22 2.7 21.2C2.8 20.3 2.6 19.2 2.8 18.4Z" fill="#EDE5DA"/>
+  <path d="M21.2 18.4C20.3 16.2 18.2 14.8 15.9 14.8H12V23H20.2C21.1 23 21.6 22 21.3 21.2C21.2 20.3 21.4 19.2 21.2 18.4Z" fill="#B3A1B4"/>
+  <path d="M8.1 14.8C8.8 12.9 10.2 12.1 12 12.1V14.8H8.1Z" fill="#EDE5DA"/>
+  <path d="M15.9 14.8C15.2 12.9 13.8 12.1 12 12.1V14.8H15.9Z" fill="#B3A1B4"/>
+
+  <rect x="11.2" y="9.7" width="1.6" height="6" rx="0.8" fill="#F8C08A"/>
+  <path d="M11.9 10.6L8 6.8" stroke="#F8C08A" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M12.1 10.6L16 6.8" stroke="#F8C08A" stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M11.9 10.8C9.5 10.8 7.1 9.3 5.8 6.8C4.7 4.8 4.5 2.8 4.5 1.7C5.6 1.7 7.6 2 9.6 3.1C11.9 4.4 13.1 6.4 13.4 8L11.9 10.8Z" fill="#80B9B9"/>
+  <path d="M12.1 10.8C14.5 10.8 16.9 9.3 18.2 6.8C19.3 4.8 19.5 2.8 19.5 1.7C18.4 1.7 16.4 2 14.4 3.1C12.1 4.4 10.9 6.4 10.6 8L12.1 10.8Z" fill="#1DD1A1"/>
 </svg>
