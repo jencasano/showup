@@ -27,20 +27,23 @@ export const ICON_NAMES = [
   'boom',        // 💥  sticker
   'megaphone',   // 📢  sticker
   'pushpin',     // 📌  sticker
+  'pushpin2',    // 📌  alternate pushpin sticker
+  'now',         // ⚡  NOW badge/sticker
   'calendar',    // 📅  month picker button
   'sun',         // ☀️   light mode toggle
   'moon',        // 🌙  dark mode toggle
   'my-log',      // 👤✨ My Log nav (mobile bottom nav)
   'following',   // ❤️   Following nav
   'all',         // ⊞   All nav
-  'now',         // 🟨  NOW badge/sticker
+  'favicon',     // .   The showup. period — used as favicon
 ];
 
 // Sticker options shown in month setup
 export const STICKER_ICONS = [
-  'sunflower', 'muscle', 'star', 'target', 'run',
+  'sunflower', 'sunflower2', 'muscle', 'star', 'target', 'run',
   'brain', 'bacon', 'steak', 'butter', 'sparkle',
-  'sprout', 'dumbbell', 'headphones', 'siren', 'boom', 'megaphone'
+  'sprout', 'dumbbell', 'headphones', 'siren', 'boom', 'megaphone',
+  'pushpin', 'pushpin2', 'now',
 ];
 
 // ── Returns an <img> DOM element ─────────────────
