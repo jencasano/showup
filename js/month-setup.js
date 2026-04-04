@@ -9,7 +9,8 @@ const FONTS = [
   { value: "Inter", label: "Aa — Clean" },
   { value: "Caveat", label: "Aa — Handwritten" },
   { value: "Fredoka One", label: "Aa — Chunky" },
-  { value: "Playfair Display", label: "Aa — Elegant" }
+  { value: "Playfair Display", label: "Aa — Elegant" },
+  { value: "Pixelify Sans", label: "Aa — Pixel" }
 ];
 
 const COLORS = ["#FF6B6B","#FF9F43","#FECA57","#48DBFB","#1DD1A1","#A29BFE","#FD79A8","#636E72"];
