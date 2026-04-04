@@ -20,6 +20,47 @@
   grid-column: 1 / -1;
 }
 
+.all-search-row {
+  grid-column: 1 / -1;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+}
+
+.all-search-input {
+  flex: 1;
+  min-width: 180px;
+  height: 36px;
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  padding: 0 12px;
+  font: inherit;
+  color: var(--text-main);
+  background: #fff;
+}
+
+.all-search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.all-search-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
 /* Mine tab — single centered card */
 #tab-mylog .cal-card {
   max-width: 480px;
