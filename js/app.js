@@ -6,6 +6,7 @@ import { showToast, showLoader, hideLoader } from "./ui.js";
 import { checkMonthlySetup } from "./month-setup.js";
 import { getUserStats } from "./stats.js";
 import { toggleMonthPicker, closeMonthPicker } from "./month-picker.js";
+import { icon } from "./icons.js";
 
 // ── Elements ──────────────────────────────────
 const loginScreen  = document.getElementById("login-screen");
@@ -177,14 +178,14 @@ document.getElementById("signout-btn").addEventListener("click", async () => {
 const themeToggle = document.getElementById("theme-toggle");
 const savedTheme  = localStorage.getItem("theme") || "light";
 document.documentElement.setAttribute("data-theme", savedTheme);
-themeToggle.textContent = savedTheme === "dark" ? "☀️" : "🌙";
+themeToggle.innerHTML = icon(savedTheme === "dark" ? "sun" : "moon", 16);
 
 themeToggle.addEventListener("click", () => {
   const current = document.documentElement.getAttribute("data-theme");
   const next = current === "dark" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme", next);
   localStorage.setItem("theme", next);
-  themeToggle.textContent = next === "dark" ? "☀️" : "🌙";
+  themeToggle.innerHTML = icon(next === "dark" ? "sun" : "moon", 16);
 });
 
 // ── Auth state ────────────────────────────────
