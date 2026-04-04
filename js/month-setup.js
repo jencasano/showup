@@ -50,7 +50,7 @@ const CADENCE_OPTIONS = [
   { value: 7, label: "Daily" }
 ];
 
-export function showMonthSetup(userId, avatarUrl, prevData = null) {
+export function showMonthSetup(userId, avatarUrl, prevData = null, displayName = "") {
   return new Promise((resolve) => {
     const yearMonth = getCurrentYearMonth();
 
@@ -61,7 +61,8 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
       sticker:    prevData?.decoration?.sticker   || "sunflower2",
       marker:     prevData?.decoration?.marker    || "square",
       activities: prevData?.activities            || [],
-      cadences:   prevData?.cadences              || []
+      cadences:   prevData?.cadences              || [],
+      previewName: displayName || prevData?.displayName || "Your Name"
     };
 
     let currentStep = 1;
@@ -304,6 +305,15 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
   });
 }
 
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("\"", "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 // ── Preview updater ───────────────────────────────────────
 function updatePreview(state) {
   const badge = document.getElementById("ms-badge-preview");
@@ -311,7 +321,7 @@ function updatePreview(state) {
   badge.style.background = state.color;
   badge.style.fontFamily = `'${state.font}', sans-serif`;
   badge.style.color = state.fontColor;
-  badge.innerHTML = `<span>Your Name</span>${icon(state.sticker, 22, "ms-preview-sticker")}`;
+  badge.innerHTML = `<span>${escapeHtml(state.previewName)}</span>${icon(state.sticker, 22, "ms-preview-sticker")}`;
 }
 
 // ── Modal HTML builder ────────────────────────────────────
@@ -371,7 +381,7 @@ function buildModalHTML(yearMonth, state) {
           <div class="ms-section-label">Preview</div>
           <div id="ms-badge-preview"
             style="background:${state.color}; font-family:'${state.font}'; color:${state.fontColor};">
-            <span>Your Name</span>
+            <span>${escapeHtml(state.previewName)}</span>
             ${icon(state.sticker, 22, "ms-preview-sticker")}
           </div>
         </div>

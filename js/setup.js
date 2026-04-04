@@ -36,7 +36,7 @@ document.getElementById("next-btn").addEventListener("click", async () => {
     setupContainer.style.visibility = "hidden";
 
     // Now trigger monthly setup (decoration + activities)
-    await showMonthSetup(currentUser.uid, currentUser.photoURL, null);
+    await showMonthSetup(currentUser.uid, currentUser.photoURL, null, name);
 
     window.location.href = "index.html";
   } catch (error) {
