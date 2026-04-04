@@ -337,18 +337,6 @@ function buildModalHTML(yearMonth, state) {
 
           <div class="ms-section-label">Font Color</div>
           <div id="ms-font-color-options"></div>
-        </div>
-
-        <div class="ms-step1-col">
-          <div class="ms-section-label">Font</div>
-          <div id="ms-font-options">
-            ${FONTS.map(f => `
-              <div class="ms-font-option ${state.font === f.value ? "selected" : ""}"
-                data-font="${f.value}">
-                <span style="font-family:'${f.value}';">${f.label}</span>
-              </div>
-            `).join("")}
-          </div>
 
           <div class="ms-section-label">Sticker</div>
           <div id="ms-sticker-options">
@@ -363,6 +351,18 @@ function buildModalHTML(yearMonth, state) {
             ${MARKERS.map(m => `
               <div class="ms-marker-option ${state.marker === m.value ? "selected" : ""}"
                 data-marker="${m.value}">${m.symbol}</div>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="ms-step1-col">
+          <div class="ms-section-label">Font</div>
+          <div id="ms-font-options">
+            ${FONTS.map(f => `
+              <div class="ms-font-option ${state.font === f.value ? "selected" : ""}"
+                data-font="${f.value}">
+                <span style="font-family:'${f.value}';">${f.label}</span>
+              </div>
             `).join("")}
           </div>
 
