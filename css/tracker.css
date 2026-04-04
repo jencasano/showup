@@ -46,7 +46,11 @@
 }
 
 .badge-name  { font-weight: 700; }
-.badge-sticker { font-style: normal; }
+.badge-sticker {
+  font-style: normal;
+  display: inline-flex;
+  align-items: center;
+}
 
 /* ── Header Row ─────────────────────────────────── */
 .tracker-header-row,
