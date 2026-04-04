@@ -7,8 +7,10 @@ import { getDaysInMonth, getCurrentYearMonth } from "./utils.js";
 import { getActivityColor } from "./tracker.js";
 import { showToast } from "./ui.js";
 import { computeStatsFromEntry } from "./stats.js";
+import { icon, STICKER_ICONS } from "./icons.js";
 
 const MARKER_SYMBOLS = {
+  square:   "■",
   circle:   "●",
   star:     "★",
   heart:    "♥",
@@ -18,6 +20,13 @@ const MARKER_SYMBOLS = {
 };
 
 const MAX_VISIBLE_DOTS = 5;
+
+function renderSticker(sticker) {
+  if (STICKER_ICONS.includes(sticker)) {
+    return icon(sticker, 18, "cal-card-sticker-icon");
+  }
+  return sticker || "";
+}
 
 // ─── RENDER MOBILE CALENDAR CARD ────────────────────
 export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
@@ -55,7 +64,7 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   nameWrap.className = "cal-card-name-wrap";
   nameWrap.innerHTML = `
     <span class="cal-card-name" title="${entry.displayName}">${entry.displayName}</span>
-    <span class="cal-card-sticker">${sticker}</span>
+    <span class="cal-card-sticker">${renderSticker(sticker)}</span>
   `;
 
   badge.appendChild(avatarEl);

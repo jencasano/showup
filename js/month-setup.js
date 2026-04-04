@@ -3,17 +3,35 @@ import {
   doc, getDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getCurrentYearMonth, getPrevYearMonth, formatYearMonth, getFontColorSuggestions } from "./utils.js";
+import { icon } from "./icons.js";
 
 const FONTS = [
   { value: "Inter", label: "Aa — Clean" },
   { value: "Caveat", label: "Aa — Handwritten" },
   { value: "Fredoka One", label: "Aa — Chunky" },
-  { value: "Playfair Display", label: "Aa — Elegant" }
+  { value: "Playfair Display", label: "Aa — Elegant" },
+  { value: "Pixelify Sans", label: "Aa — Pixel" }
 ];
 
 const COLORS = ["#FF6B6B","#FF9F43","#FECA57","#48DBFB","#1DD1A1","#A29BFE","#FD79A8","#636E72"];
-const STICKERS = ["🌻","💪","🔥","⭐","🎯","🌈","🦋","🌸","⚡","🍀"];
+const STICKERS = [
+  "sunflower2",
+  "muscle",
+  "star",
+  "run",
+  "brain",
+  "bacon",
+  "steak",
+  "butter",
+  "sprout",
+  "boom",
+  "headphones",
+  "dumbbell",
+  "flame",
+  "target"
+];
 const MARKERS = [
+  { value: "square",   symbol: "■" },
   { value: "circle",   symbol: "●" },
   { value: "star",     symbol: "★" },
   { value: "heart",    symbol: "♥" },
@@ -40,8 +58,8 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
       color:      prevData?.decoration?.color     || "#FF6B6B",
       fontColor:  prevData?.decoration?.fontColor || "#FFFFFF",
       font:       prevData?.decoration?.font      || "Inter",
-      sticker:    prevData?.decoration?.sticker   || "🌻",
-      marker:     prevData?.decoration?.marker    || "circle",
+      sticker:    prevData?.decoration?.sticker   || "sunflower2",
+      marker:     prevData?.decoration?.marker    || "square",
       activities: prevData?.activities            || [],
       cadences:   prevData?.cadences              || []
     };
@@ -293,7 +311,7 @@ function updatePreview(state) {
   badge.style.background = state.color;
   badge.style.fontFamily = `'${state.font}', sans-serif`;
   badge.style.color = state.fontColor;
-  badge.innerHTML = `<span>${state.sticker}</span><span>Your Name</span>`;
+  badge.innerHTML = `<span>Your Name</span>${icon(state.sticker, 22, "ms-preview-sticker")}`;
 }
 
 // ── Modal HTML builder ────────────────────────────────────
@@ -309,48 +327,54 @@ function buildModalHTML(yearMonth, state) {
       <h2>Make it yours.</h2>
       <p>Customize your section for <strong>${formatYearMonth(yearMonth)}</strong>.</p>
 
-      <div class="ms-section-label">Badge Color</div>
-      <div id="ms-color-options">
-        ${COLORS.map(c => `
-          <div class="ms-color-swatch ${state.color === c ? "selected" : ""}"
-            data-color="${c}" style="background:${c};"></div>
-        `).join("")}
-      </div>
-
-      <div class="ms-section-label">Font Color</div>
-      <div id="ms-font-color-options"></div>
-
-      <div class="ms-section-label">Font</div>
-      <div id="ms-font-options">
-        ${FONTS.map(f => `
-          <div class="ms-font-option ${state.font === f.value ? "selected" : ""}"
-            data-font="${f.value}">
-            <span style="font-family:'${f.value}';">${f.label}</span>
+      <div class="ms-step1-grid">
+        <div class="ms-step1-col">
+          <div class="ms-section-label">Badge Color</div>
+          <div id="ms-color-options">
+            ${COLORS.map(c => `
+              <div class="ms-color-swatch ${state.color === c ? "selected" : ""}"
+                data-color="${c}" style="background:${c};"></div>
+            `).join("")}
           </div>
-        `).join("")}
-      </div>
 
-      <div class="ms-section-label">Sticker</div>
-      <div id="ms-sticker-options">
-        ${STICKERS.map(s => `
-          <div class="ms-sticker-option ${state.sticker === s ? "selected" : ""}"
-            data-sticker="${s}">${s}</div>
-        `).join("")}
-      </div>
+          <div class="ms-section-label">Font Color</div>
+          <div id="ms-font-color-options"></div>
 
-      <div class="ms-section-label">Marker</div>
-      <div id="ms-marker-options">
-        ${MARKERS.map(m => `
-          <div class="ms-marker-option ${state.marker === m.value ? "selected" : ""}"
-            data-marker="${m.value}">${m.symbol}</div>
-        `).join("")}
-      </div>
+          <div class="ms-section-label">Sticker</div>
+          <div id="ms-sticker-options">
+            ${STICKERS.map(s => `
+              <div class="ms-sticker-option ${state.sticker === s ? "selected" : ""}"
+                data-sticker="${s}">${icon(s, 24, "ms-sticker-icon")}</div>
+            `).join("")}
+          </div>
 
-      <div class="ms-section-label">Preview</div>
-      <div id="ms-badge-preview"
-        style="background:${state.color}; font-family:'${state.font}'; color:${state.fontColor};">
-        <span>🌻</span>
-        <span>Your Name</span>
+          <div class="ms-section-label">Marker</div>
+          <div id="ms-marker-options">
+            ${MARKERS.map(m => `
+              <div class="ms-marker-option ${state.marker === m.value ? "selected" : ""}"
+                data-marker="${m.value}">${m.symbol}</div>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="ms-step1-col">
+          <div class="ms-section-label">Font</div>
+          <div id="ms-font-options">
+            ${FONTS.map(f => `
+              <div class="ms-font-option ${state.font === f.value ? "selected" : ""}"
+                data-font="${f.value}">
+                <span style="font-family:'${f.value}';">${f.label}</span>
+              </div>
+            `).join("")}
+          </div>
+
+          <div class="ms-section-label">Preview</div>
+          <div id="ms-badge-preview"
+            style="background:${state.color}; font-family:'${state.font}'; color:${state.fontColor};">
+            <span>Your Name</span>
+            ${icon(state.sticker, 22, "ms-preview-sticker")}
+          </div>
+        </div>
       </div>
     </div>
 
