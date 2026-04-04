@@ -289,7 +289,13 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       </div>`;
   }).join("");
 
-  const calendarHTML = renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount);
+  let calJoinDay = null;
+  if (entry.joinDate) {
+    const jd = entry.joinDate instanceof Date ? entry.joinDate : new Date(entry.joinDate);
+    const joinYM = `${jd.getFullYear()}-${String(jd.getMonth() + 1).padStart(2, "0")}`;
+    if (joinYM === yearMonth) calJoinDay = jd.getDate();
+  }
+  const calendarHTML = renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, calJoinDay);
 
   card.innerHTML = `
     <div class="summary-card__header">
@@ -412,7 +418,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
   return card;
 }
 
-function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
+function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, joinDay = null) {
   const [year, month] = yearMonth.split("-").map(Number);
   const first = new Date(year, month - 1, 1);
   const daysInMonth = getDaysInMonth(yearMonth);
@@ -448,7 +454,7 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount) {
   let fullWeekOrdinal = 0;
   const weekBlocks = weekRows.map((row) => {
     const inMonth = row.filter(d => d.getMonth() === (month - 1));
-    const isFullInMonthWeek = inMonth.length === 7;
+    const isFullInMonthWeek = inMonth.length === 7 && (joinDay == null || row[0].getDate() >= joinDay);
     const weekLabel = isFullInMonthWeek ? `Wk${++fullWeekOrdinal}` : null;
 
     const badgeRows = (fullWeekByStart.get(weekLabel) || []).map(w => {

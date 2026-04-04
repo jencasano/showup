@@ -34,7 +34,7 @@ function logsInWeek(markedDays, yearMonth, referenceDate) {
   }).length;
 }
 
-function getFullWeeksInMonth(yearMonth) {
+function getFullWeeksInMonth(yearMonth, joinDay = null) {
   const [y, m] = yearMonth.split("-").map(Number);
   const totalDays = getDaysInMonth(yearMonth);
   const weeks = [];
@@ -43,7 +43,7 @@ function getFullWeeksInMonth(yearMonth) {
     const isMonday = date.getDay() === 1;
     if (!isMonday) continue;
     const endDay = day + 6;
-    if (endDay <= totalDays) {
+    if (endDay <= totalDays && (joinDay == null || day >= joinDay)) {
       weeks.push({ startDay: day, endDay });
     }
   }
@@ -341,7 +341,6 @@ export function computeStatsFromEntry(entry, yearMonth, joinDate = null) {
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
   const lastDay        = isCurrentMonth ? new Date().getDate() : daysInMonth;
   const today          = getReferenceDate(yearMonth, isCurrentMonth, lastDay);
-  const fullWeeks = getFullWeeksInMonth(yearMonth);
 
   const resolvedJoinDate = joinDate || (entry.joinDate instanceof Date ? entry.joinDate : entry.joinDate ? new Date(entry.joinDate) : null);
 
@@ -354,6 +353,8 @@ export function computeStatsFromEntry(entry, yearMonth, joinDate = null) {
       daysAvailable = daysInMonth - (joinDay - 1);
     }
   }
+
+  const fullWeeks = getFullWeeksInMonth(yearMonth, joinDay);
 
   const doneDays = new Set();
   activities.forEach(activity => {
@@ -405,7 +406,6 @@ export async function getUserStats(userId, yearMonth) {
     const isCurrentMonth = yearMonth === getCurrentYearMonth();
     const lastDay        = isCurrentMonth ? new Date().getDate() : daysInMonth;
     const today          = getReferenceDate(yearMonth, isCurrentMonth, lastDay);
-    const fullWeeks = getFullWeeksInMonth(yearMonth);
 
     let daysAvailable = daysInMonth;
     let joinDay = null;
@@ -420,6 +420,8 @@ export async function getUserStats(userId, yearMonth) {
         }
       }
     }
+
+    const fullWeeks = getFullWeeksInMonth(yearMonth, joinDay);
 
     const doneDays = new Set();
     activities.forEach(activity => {
