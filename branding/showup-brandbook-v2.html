@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>showup. Brand Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Inter:wght@400;500;600;700&family=Caveat:wght@600&family=Fredoka+One&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --coral:    #D8584E;
+      --coral-h:  #C4473D;
+      --teal:     #80B9B9;
+      --amber:    #F8C08A;
+      --lavender: #A29BFE;
+      --mint:     #1DD1A1;
+      --bg:       #FFFAF5;
+      --surface:  #FFFFFF;
+      --subtle:   #F5EFE8;
+      --border:   #EDE5DA;
+      --text:     #2A2E45;
+      --muted:    #596088;
+      --faint:    #B3A1B4;
+      --dark-bg:      #1D2142;
+      --dark-surface: #2A2E45;
+      --dark-subtle:  #353B5C;
+      --dark-border:  #3D4468;
+      --dark-text:    #FBDFCB;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* Cover */
+    .cover {
+      min-height: 100vh;
+      background: var(--dark-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 60px 40px;
+    }
+
+    .cover-dots {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(20, 1fr);
+      grid-template-rows: repeat(12, 1fr);
+      opacity: 0.08;
+    }
+
+    .cover-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--dark-text);
+      margin: auto;
+    }
+
+    .cover-dot.c { background: var(--coral); opacity: 1; }
+    .cover-dot.t { background: var(--teal); opacity: 1; }
+    .cover-dot.a { background: var(--amber); opacity: 1; }
+
+    .cover-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .cover-logo {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(4rem, 10vw, 8rem);
+      font-weight: 800;
+      color: var(--dark-text);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .cover-logo .up { color: var(--coral); }
+    .cover-logo .dot { color: var(--coral); }
+
+    .cover-tagline {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: var(--teal);
+      font-style: italic;
+      margin-bottom: 48px;
+    }
+
+    .cover-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--dark-border);
+      padding: 8px 20px;
+      border-radius: 99px;
+    }
+
+    /* Page */
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 80px 40px;
+    }
+
+    .section-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--coral);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .section-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      max-width: 540px;
+      margin-bottom: 48px;
+      line-height: 1.65;
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* Logo */
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .logo-card {
+      border-radius: 16px;
+      padding: 48px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-card.light { background: var(--surface); border: 1px solid var(--border); }
+    .logo-card.warm  { background: var(--subtle); border: 1px solid var(--border); }
+    .logo-card.dark  { background: var(--dark-bg); }
+
+    .logo-wordmark {
+      font-family: 'Sora', sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .logo-wordmark .base { color: var(--text); }
+    .logo-wordmark .accent { color: var(--coral); }
+    .logo-card.dark .logo-wordmark .base { color: var(--dark-text); }
+
+    .logo-wordmark.xl { font-size: 2.8rem; }
+    .logo-wordmark.md { font-size: 1.8rem; }
+    .logo-wordmark.sm { font-size: 1.1rem; }
+
+    .logo-card-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    .logo-card.dark .logo-card-label { color: var(--muted); }
+
+    .logo-sizes {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    /* Color */
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .swatch {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(42,46,69,0.08);
+    }
+
+    .swatch-color { height: 100px; }
+
+    .swatch-info {
+      padding: 12px 14px;
+      background: white;
+      border-top: 1px solid var(--border);
+    }
+
+    .swatch-name { font-size: 0.75rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .swatch-hex  { font-size: 0.65rem; color: var(--muted); font-family: 'Sora', monospace; }
+    .swatch-use  { font-size: 0.6rem; color: var(--faint); margin-top: 4px; }
+
+    .neutral-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+
+    .neutral-swatch { border-radius: 8px; overflow: hidden; }
+    .neutral-color  { height: 48px; border: 1px solid var(--border); }
+    .neutral-info   { padding: 6px 0; }
+    .neutral-name   { font-size: 0.58rem; font-weight: 600; color: var(--text); }
+    .neutral-hex    { font-size: 0.55rem; color: var(--faint); }
+
+    .activity-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+
+    .act-swatch { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+    .act-color  { height: 56px; }
+    .act-info   { padding: 8px 10px; background: white; }
+    .act-num    { font-size: 0.6rem; font-weight: 700; color: var(--faint); }
+    .act-name   { font-size: 0.68rem; font-weight: 600; color: var(--text); }
+    .act-hex    { font-size: 0.6rem; color: var(--muted); }
+
+    .dark-palette {
+      background: var(--dark-bg);
+      border-radius: 20px;
+      padding: 32px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .dark-swatch { border-radius: 10px; overflow: hidden; border: 1px solid var(--dark-border); }
+    .dark-color  { height: 48px; }
+    .dark-info   { padding: 8px 10px; background: var(--dark-surface); }
+    .dark-name   { font-size: 0.6rem; font-weight: 700; color: var(--dark-text); }
+    .dark-hex    { font-size: 0.58rem; color: var(--muted); }
+
+    /* Typography */
+    .type-row {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 32px;
+      align-items: start;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .type-row:last-child { border-bottom: none; }
+
+    .type-role   { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--coral); margin-bottom: 4px; }
+    .type-family { font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .type-detail { font-size: 0.7rem; color: var(--faint); line-height: 1.5; }
+
+    .sample-logo {
+      font-family: 'Sora', sans-serif;
+      font-weight: 800;
+      font-size: 3.2rem;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .sample-logo .up  { color: var(--coral); }
+    .sample-logo .dot { color: var(--coral); }
+
+    .sample-heading {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 2.4rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .sample-body {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 480px;
+    }
+
+    .badge-sample {
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: white;
+      background: var(--coral);
+    }
+
+    .badge-sample.hand    { font-family: 'Caveat', cursive; font-size: 1.1rem; }
+    .badge-sample.chunky  { font-family: 'Fredoka One', cursive; font-size: 1rem; letter-spacing: 0.02em; }
+    .badge-sample.elegant { font-family: 'Playfair Display', serif; font-size: 0.9rem; }
+    .badge-sample.teal    { background: var(--teal); color: var(--text); }
+    .badge-sample.amber   { background: var(--amber); color: var(--text); }
+
+    /* Spacing */
+    .radius-grid {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+      align-items: flex-end;
+    }
+
+    .radius-item  { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .radius-box   { background: var(--subtle); border: 2px solid var(--border); width: 72px; height: 72px; }
+    .radius-label { font-size: 0.65rem; font-weight: 600; color: var(--muted); text-align: center; }
+    .radius-val   { font-size: 0.6rem; color: var(--faint); }
+
+    .shadow-row   { display: flex; gap: 32px; align-items: flex-end; flex-wrap: wrap; }
+    .shadow-item  { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .shadow-box   { width: 80px; height: 80px; background: white; border-radius: 12px; }
+    .shadow-box.sm { box-shadow: 0 1px 4px rgba(42, 46, 69, 0.06); }
+    .shadow-box.md { box-shadow: 0 4px 16px rgba(42, 46, 69, 0.10); }
+    .shadow-box.lg { box-shadow: 0 8px 32px rgba(42, 46, 69, 0.14); }
+    .shadow-label { font-size: 0.65rem; font-weight: 600; color: var(--muted); text-align: center; }
+
+    /* Components */
+    .component-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .component-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .component-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 16px;
+    }
+
+    .badge-previews { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .badge-preview {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 0 0 10px 0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .badge-preview .avatar {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem;
+    }
+
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    .btn {
+      padding: 8px 20px;
+      border-radius: 99px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary { background: var(--coral); color: white; }
+    .btn-ghost   { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-teal    { background: var(--teal); color: var(--text); }
+
+    .tab-preview {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .tab-item {
+      padding: 8px 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--faint);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+
+    .tab-item.active { color: var(--text); border-bottom-color: var(--coral); }
+
+    .tracker-mini        { display: flex; flex-direction: column; gap: 4px; }
+    .tracker-mini-badge  { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 0 0 8px 0; font-size: 0.75rem; font-weight: 700; color: white; background: var(--coral); margin-bottom: 4px; }
+    .tracker-mini-row    { display: flex; align-items: center; gap: 4px; }
+    .act-label           { font-size: 0.5rem; font-weight: 600; color: var(--faint); width: 70px; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 3px; }
+    .mini-dot            { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .circles             { display: flex; gap: 3px; }
+    .circ                { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.4rem; }
+    .circ.marked         { border: none; color: white; }
+
+    .cal-mini       { border-radius: 12px; overflow: hidden; border: 2px solid var(--coral); }
+    .cal-mini-badge { padding: 8px 12px; background: var(--coral); color: white; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .cal-mini-grid  { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; padding: 8px; background: white; }
+    .cal-cell       { height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.48rem; font-weight: 600; color: var(--muted); }
+    .cal-cell.full    { background: var(--coral); color: white; }
+    .cal-cell.partial { background: rgba(216,88,78,0.18); color: var(--coral); }
+    .cal-cell.today   { outline: 1.5px solid var(--coral); outline-offset: 1px; color: var(--coral); font-weight: 700; }
+    .cal-cell.future  { opacity: 0.4; }
+
+    .sticker-item { width: 56px; height: 56px; border-radius: 12px; background: var(--subtle); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
+    .stickers-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+    .markers-row  { display: flex; gap: 12px; flex-wrap: wrap; }
+    .marker-item  { width: 48px; height: 48px; border-radius: 50%; background: var(--coral); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: white; border: 2px solid var(--coral-h); }
+
+    /* Voice & Tone */
+    .voice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
+
+    .voice-card { border-radius: 12px; padding: 24px; }
+    .voice-card.do   { background: rgba(128,185,185,0.12); border: 1px solid var(--teal); }
+    .voice-card.dont { background: rgba(216,88,78,0.06); border: 1px solid rgba(216,88,78,0.2); }
+
+    .voice-title           { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; }
+    .voice-title.do-title  { color: var(--teal); }
+    .voice-title.dont-title { color: var(--coral); }
+
+    .voice-item {
+      font-size: 0.82rem;
+      color: var(--text);
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.4;
+    }
+
+    .voice-item:last-child { border-bottom: none; }
+    .voice-icon { flex-shrink: 0; font-size: 0.75rem; margin-top: 2px; }
+
+    .personality-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px; }
+
+    .personality-card {
+      padding: 20px;
+      background: var(--subtle);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .personality-icon  { font-size: 1.4rem; margin-bottom: 8px; }
+    .personality-title { font-size: 0.75rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .personality-desc  { font-size: 0.72rem; color: var(--muted); line-height: 1.5; }
+
+    /* Footer */
+    .footer { background: var(--dark-bg); padding: 60px 40px; text-align: center; }
+
+    .footer-logo { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.6rem; color: var(--dark-text); letter-spacing: -0.04em; margin-bottom: 8px; }
+    .footer-logo .up  { color: var(--coral); }
+    .footer-logo .dot { color: var(--coral); }
+    .footer-text { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .palette-grid      { grid-template-columns: repeat(2, 1fr); }
+      .logo-grid         { grid-template-columns: 1fr; }
+      .type-row          { grid-template-columns: 1fr; }
+      .component-grid    { grid-template-columns: 1fr; }
+      .voice-grid        { grid-template-columns: 1fr; }
+      .neutral-row       { grid-template-columns: repeat(4, 1fr); }
+      .dark-palette      { grid-template-columns: repeat(2, 1fr); }
+      .activity-row      { grid-template-columns: repeat(3, 1fr); }
+      .personality-grid  { grid-template-columns: repeat(2, 1fr); }
+      .page              { padding: 48px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cover -->
+  <section class="cover">
+    <div class="cover-dots">
+      <script>
+        for(let i=0;i<240;i++){
+          const cls = i%17===0?'c':i%11===0?'t':i%13===0?'a':'';
+          document.write(`<div class="cover-dot ${cls}"></div>`);
+        }
+      </script>
+    </div>
+    <div class="cover-content">
+      <div class="cover-logo">show<span class="up">up</span><span class="dot">.</span></div>
+      <div class="cover-tagline">Track your activities. Keep each other accountable.</div>
+      <div class="cover-label">Brand Book · 2026</div>
+    </div>
+  </section>
+
+  <!-- 01 Identity -->
+  <section class="page">
+    <div class="section-tag">01 — Identity</div>
+    <h2 class="section-title">The Logo</h2>
+    <p class="section-desc">The showup. wordmark is set in Sora 800. Both "up" and the period are always coral (#D8584E). They are inseparable from the logotype — the period is the mark of accountability, the full stop that says you did the thing.</p>
+
+    <div class="logo-grid">
+      <div class="logo-card light">
+        <div class="logo-wordmark xl">
+          <span class="base">show</span><span class="accent">up.</span>
+        </div>
+        <div class="logo-card-label">Light background</div>
+      </div>
+      <div class="logo-card warm">
+        <div class="logo-wordmark xl">
+          <span class="base">show</span><span class="accent">up.</span>
+        </div>
+        <div class="logo-card-label">Warm background</div>
+      </div>
+      <div class="logo-card dark">
+        <div class="logo-wordmark xl">
+          <span class="base">show</span><span class="accent">up.</span>
+        </div>
+        <div class="logo-card-label">Dark background</div>
+      </div>
+    </div>
+
+    <p class="section-desc" style="margin-bottom:16px;">The logo scales across sizes. Always Sora 800. Always coral on "up."</p>
+    <div class="logo-sizes">
+      <div class="logo-wordmark xl"><span class="base" style="color:var(--text)">show</span><span class="accent">up.</span></div>
+      <div class="logo-wordmark md"><span class="base" style="color:var(--text)">show</span><span class="accent">up.</span></div>
+      <div class="logo-wordmark sm"><span class="base" style="color:var(--text)">show</span><span class="accent">up.</span></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- 02 Color -->
+  <section class="page">
+    <div class="section-tag">02 — Color</div>
+    <h2 class="section-title">Color Palette</h2>
+    <p class="section-desc">The palette is inspired by Hilda and Wes Anderson — warm, slightly retro, full of personality. Coral is the primary brand color. Teal and Amber are secondary accents. Lavender and Mint are reserved for activity color coding only.</p>
+
+    <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;">Brand Colors</p>
+    <div class="palette-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#D8584E;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Coral</div>
+          <div class="swatch-hex">#D8584E</div>
+          <div class="swatch-use">Primary · CTA · Active states</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#80B9B9;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Teal</div>
+          <div class="swatch-hex">#80B9B9</div>
+          <div class="swatch-use">Secondary accent · Activity 2</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#F8C08A;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Amber</div>
+          <div class="swatch-hex">#F8C08A</div>
+          <div class="swatch-use">Warm accent · Activity 3</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#A29BFE;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Lavender</div>
+          <div class="swatch-hex">#A29BFE</div>
+          <div class="swatch-use">Activity 4 only</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#1DD1A1;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Mint</div>
+          <div class="swatch-hex">#1DD1A1</div>
+          <div class="swatch-use">Activity 5 only</div>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;">Activity Color Order</p>
+    <div class="activity-row">
+      <div class="act-swatch"><div class="act-color" style="background:#D8584E;"></div><div class="act-info"><div class="act-num">Activity 1</div><div class="act-name">Coral</div><div class="act-hex">#D8584E</div></div></div>
+      <div class="act-swatch"><div class="act-color" style="background:#80B9B9;"></div><div class="act-info"><div class="act-num">Activity 2</div><div class="act-name">Teal</div><div class="act-hex">#80B9B9</div></div></div>
+      <div class="act-swatch"><div class="act-color" style="background:#F8C08A;"></div><div class="act-info"><div class="act-num">Activity 3</div><div class="act-name">Amber</div><div class="act-hex">#F8C08A</div></div></div>
+      <div class="act-swatch"><div class="act-color" style="background:#A29BFE;"></div><div class="act-info"><div class="act-num">Activity 4</div><div class="act-name">Lavender</div><div class="act-hex">#A29BFE</div></div></div>
+      <div class="act-swatch"><div class="act-color" style="background:#1DD1A1;"></div><div class="act-info"><div class="act-num">Activity 5</div><div class="act-name">Mint</div><div class="act-hex">#1DD1A1</div></div></div>
+    </div>
+
+    <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;">Light Mode Neutrals</p>
+    <div class="neutral-row">
+      <div class="neutral-swatch"><div class="neutral-color" style="background:#FFFAF5;"></div><div class="neutral-info"><div class="neutral-name">bg</div><div class="neutral-hex">#FFFAF5</div></div></div>
+      <div class="neutral-swatch"><div class="neutral-color" style="background:#FFFFFF;"></div><div class="neutral-info"><div class="neutral-name">surface</div><div class="neutral-hex">#FFFFFF</div></div></div>
+      <div class="neutral-swatch"><div class="neutral-color" style="background:#F5EFE8;"></div><div class="neutral-info"><div class="neutral-name">subtle</div><div class="neutral-hex">#F5EFE8</div></div></div>
+      <div class="neutral-swatch"><div class="neutral-color" style="background:#EDE5DA;"></div><div class="neutral-info"><div class="neutral-name">border</div><div class="neutral-hex">#EDE5DA</div></div></div>
+      <div class="neutral-swatch"><div class="neutral-color" style="background:#2A2E45;"></div><div class="neutral-info"><div class="neutral-name">text</div><div class="neutral-hex">#2A2E45</div></div></div>
+      <div class="neutral-swatch"><div class="neutral-color" style="background:#596088;"></div><div class="neutral-info"><div class="neutral-name">muted</div><div class="neutral-hex">#596088</div></div></div>
+      <div class="neutral-swatch"><div class="neutral-color" style="background:#B3A1B4;"></div><div class="neutral-info"><div class="neutral-name">faint</div><div class="neutral-hex">#B3A1B4</div></div></div>
+    </div>
+
+    <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:16px;">Dark Mode</p>
+    <div class="dark-palette">
+      <div class="dark-swatch"><div class="dark-color" style="background:#1D2142;border:1px solid #3D4468;"></div><div class="dark-info"><div class="dark-name">bg</div><div class="dark-hex">#1D2142</div></div></div>
+      <div class="dark-swatch"><div class="dark-color" style="background:#2A2E45;"></div><div class="dark-info"><div class="dark-name">surface</div><div class="dark-hex">#2A2E45</div></div></div>
+      <div class="dark-swatch"><div class="dark-color" style="background:#353B5C;"></div><div class="dark-info"><div class="dark-name">subtle</div><div class="dark-hex">#353B5C</div></div></div>
+      <div class="dark-swatch"><div class="dark-color" style="background:#FBDFCB;"></div><div class="dark-info"><div class="dark-name">text</div><div class="dark-hex">#FBDFCB</div></div></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- 03 Typography -->
+  <section class="page">
+    <div class="section-tag">03 — Typography</div>
+    <h2 class="section-title">Type System</h2>
+    <p class="section-desc">Three core typefaces, each with a clear role. Sora owns the logo. Fraunces owns the headings. Inter handles everything else. Badge fonts are a personality layer — users pick from three options for their name badge.</p>
+
+    <div style="display:flex;flex-direction:column;">
+      <div class="type-row">
+        <div>
+          <div class="type-role">Logo Only</div>
+          <div class="type-family">Sora</div>
+          <div class="type-detail">Weight: 800<br>Used exclusively for the showup. wordmark</div>
+        </div>
+        <div>
+          <div class="sample-logo">show<span class="up">up</span><span class="dot">.</span></div>
+          <div style="font-family:'Sora',sans-serif;font-size:0.75rem;color:var(--faint);letter-spacing:0.02em;">Sora 800 — ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</div>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div>
+          <div class="type-role">Headings</div>
+          <div class="type-family">Fraunces</div>
+          <div class="type-detail">Weight: 700<br>Month labels, modal titles, card headings, section headers</div>
+        </div>
+        <div>
+          <div class="sample-heading">April 2026</div>
+          <div style="font-family:'Fraunces',serif;font-size:0.85rem;color:var(--faint);">Fraunces 700 — Track your activities</div>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div>
+          <div class="type-role">Body / UI</div>
+          <div class="type-family">Inter</div>
+          <div class="type-detail">Weight: 400 / 500 / 600<br>All UI labels, body text, tabs, buttons, stats</div>
+        </div>
+        <div>
+          <div class="sample-body">Track your activities. Keep each other accountable. Show up every day and let the calendar fill itself in.</div>
+          <div style="font-size:0.75rem;color:var(--faint);margin-top:8px;">Inter 400 / 500 / 600 — Labels, tabs, stats, toasts</div>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div>
+          <div class="type-role">Badge Fonts</div>
+          <div class="type-family">Caveat · Fredoka One · Playfair Display</div>
+          <div class="type-detail">User-selectable during monthly setup. Applied to name badge only.</div>
+        </div>
+        <div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+            <span class="badge-sample hand">t4nj3nt 🌻</span>
+            <span class="badge-sample chunky teal">Neithan 🔥</span>
+            <span class="badge-sample elegant amber" style="color:#2A2E45;">Jeni 💪</span>
+          </div>
+          <div style="font-size:0.7rem;color:var(--faint);margin-top:10px;">Caveat · Fredoka One · Playfair Display</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- 04 Shape & Space -->
+  <section class="page">
+    <div class="section-tag">04 — Shape & Space</div>
+    <h2 class="section-title">Radius & Shadows</h2>
+    <p class="section-desc">Rounded corners are core to showup.'s personality — friendly, soft, human. Shadows are light and warm, never harsh.</p>
+
+    <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:20px;">Border Radius</p>
+    <div class="radius-grid">
+      <div class="radius-item"><div class="radius-box" style="border-radius:6px;"></div><div class="radius-label">sm<br><span class="radius-val">6px</span></div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:10px;"></div><div class="radius-label">md<br><span class="radius-val">10px</span></div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:16px;"></div><div class="radius-label">lg<br><span class="radius-val">16px</span></div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:24px;"></div><div class="radius-label">xl<br><span class="radius-val">24px</span></div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:99px;"></div><div class="radius-label">full<br><span class="radius-val">99px</span></div></div>
+    </div>
+
+    <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:20px;margin-top:40px;">Shadows</p>
+    <div class="shadow-row">
+      <div class="shadow-item"><div class="shadow-box sm"></div><div class="shadow-label">sm<br><span style="font-size:0.55rem;color:var(--faint);">Cards, subtle lift</span></div></div>
+      <div class="shadow-item"><div class="shadow-box md"></div><div class="shadow-label">md<br><span style="font-size:0.55rem;color:var(--faint);">Modals, sheets</span></div></div>
+      <div class="shadow-item"><div class="shadow-box lg"></div><div class="shadow-label">lg<br><span style="font-size:0.55rem;color:var(--faint);">Overlays</span></div></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- 05 Components -->
+  <section class="page">
+    <div class="section-tag">05 — Components</div>
+    <h2 class="section-title">UI Components</h2>
+    <p class="section-desc">Core building blocks of the showup. interface — badges, trackers, calendar cards, tabs, and buttons.</p>
+
+    <div class="component-grid">
+
+      <div class="component-card">
+        <div class="component-label">Name Badges</div>
+        <div class="badge-previews">
+          <div class="badge-preview" style="background:#D8584E;font-family:'Caveat',cursive;font-size:1rem;"><div class="avatar">J</div>t4nj3nt 🌻</div>
+          <div class="badge-preview" style="background:#80B9B9;font-family:'Fredoka One',cursive;color:#2A2E45;"><div class="avatar">N</div>Neithan 🔥</div>
+          <div class="badge-preview" style="background:#A29BFE;font-family:'Playfair Display',serif;color:#2A2E45;"><div class="avatar">A</div>Alex ⭐</div>
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-label">Buttons</div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Sign in with Google</button>
+          <button class="btn btn-ghost">Sign out</button>
+          <button class="btn btn-teal" style="color:#2A2E45;">Following</button>
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-label">Navigation Tabs</div>
+        <div class="tab-preview">
+          <div class="tab-item active">My Log</div>
+          <div class="tab-item">Following</div>
+          <div class="tab-item">All</div>
+        </div>
+        <div style="font-size:0.65rem;color:var(--faint);">Inter 600 · Active state: coral underline + full text color</div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-label">Desktop Tracker (mini)</div>
+        <div class="tracker-mini">
+          <div class="tracker-mini-badge">t4nj3nt 🌻</div>
+          <div class="tracker-mini-row">
+            <div class="act-label"><div class="mini-dot" style="background:#D8584E;"></div>Workout</div>
+            <div class="circles">
+              <div class="circ marked" style="background:#D8584E;">〰</div>
+              <div class="circ"></div>
+              <div class="circ marked" style="background:#D8584E;">〰</div>
+              <div class="circ"></div>
+              <div class="circ marked" style="background:#D8584E;">〰</div>
+              <div class="circ" style="opacity:0.4;border-style:dashed;"></div>
+              <div class="circ" style="opacity:0.4;border-style:dashed;"></div>
+            </div>
+          </div>
+          <div class="tracker-mini-row">
+            <div class="act-label"><div class="mini-dot" style="background:#80B9B9;"></div>Paldo</div>
+            <div class="circles">
+              <div class="circ marked" style="background:#80B9B9;">〰</div>
+              <div class="circ marked" style="background:#80B9B9;">〰</div>
+              <div class="circ"></div>
+              <div class="circ marked" style="background:#80B9B9;">〰</div>
+              <div class="circ"></div>
+              <div class="circ" style="opacity:0.4;border-style:dashed;"></div>
+              <div class="circ" style="opacity:0.4;border-style:dashed;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-label">Mobile Calendar Card</div>
+        <div class="cal-mini">
+          <div class="cal-mini-badge">
+            <div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.35);display:flex;align-items:center;justify-content:center;font-size:0.5rem;">J</div>
+            t4nj3nt 🌻
+          </div>
+          <div class="cal-mini-grid">
+            <div class="cal-cell" style="color:var(--faint);font-size:0.42rem;">S</div>
+            <div class="cal-cell" style="color:var(--faint);font-size:0.42rem;">M</div>
+            <div class="cal-cell" style="color:var(--faint);font-size:0.42rem;">T</div>
+            <div class="cal-cell" style="color:var(--faint);font-size:0.42rem;">W</div>
+            <div class="cal-cell" style="color:var(--faint);font-size:0.42rem;">T</div>
+            <div class="cal-cell" style="color:var(--faint);font-size:0.42rem;">F</div>
+            <div class="cal-cell" style="color:var(--faint);font-size:0.42rem;">S</div>
+            <div class="cal-cell"></div><div class="cal-cell"></div><div class="cal-cell"></div>
+            <div class="cal-cell today">1</div>
+            <div class="cal-cell future">2</div>
+            <div class="cal-cell future">3</div>
+            <div class="cal-cell future">4</div>
+            <div class="cal-cell full">28</div>
+            <div class="cal-cell full">29</div>
+            <div class="cal-cell partial">30</div>
+            <div class="cal-cell full">31</div>
+            <div class="cal-cell future">—</div>
+            <div class="cal-cell future">—</div>
+            <div class="cal-cell future">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-label">Stickers & Markers</div>
+        <div class="stickers-row">
+          <div class="sticker-item">🌻</div>
+          <div class="sticker-item">💪</div>
+          <div class="sticker-item">🔥</div>
+          <div class="sticker-item">⭐</div>
+          <div class="sticker-item">🎯</div>
+          <div class="sticker-item">🌈</div>
+          <div class="sticker-item">🦋</div>
+          <div class="sticker-item">🌸</div>
+          <div class="sticker-item">⚡</div>
+          <div class="sticker-item">🍀</div>
+        </div>
+        <div style="font-size:0.65rem;color:var(--faint);margin-bottom:12px;">Day markers (user-chosen)</div>
+        <div class="markers-row">
+          <div class="marker-item">●</div>
+          <div class="marker-item">★</div>
+          <div class="marker-item">♥</div>
+          <div class="marker-item">✓</div>
+          <div class="marker-item">✗</div>
+          <div class="marker-item">〰</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- 06 Voice & Tone -->
+  <section class="page">
+    <div class="section-tag">06 — Voice & Tone</div>
+    <h2 class="section-title">Brand Personality</h2>
+    <p class="section-desc">showup. is an activity tracker, but it's also a friendship app. The tone is warm, direct, a little playful, and always honest. It can be sarcastic or even a bit harsh — but only in the name of holding you accountable. We celebrate showing up, not perfection.</p>
+
+    <div class="voice-grid">
+      <div class="voice-card do">
+        <div class="voice-title do-title">We say</div>
+        <div class="voice-item"><span class="voice-icon">🔥</span>"1 day streak · 1/1 days done"</div>
+        <div class="voice-item"><span class="voice-icon">✨</span>"April 15, 2026 — today ✨"</div>
+        <div class="voice-item"><span class="voice-icon">👀</span>"No trackers yet for this month."</div>
+        <div class="voice-item"><span class="voice-icon">😅</span>"Okay, it's been a while. No judgment. Well, maybe a little."</div>
+        <div class="voice-item"><span class="voice-icon">✓</span>"All done today! 🎉"</div>
+        <div class="voice-item"><span class="voice-icon">💬</span>"Track your activities. Keep each other accountable."</div>
+      </div>
+      <div class="voice-card dont">
+        <div class="voice-title dont-title">We don't say</div>
+        <div class="voice-item"><span class="voice-icon">✕</span>"Error: No data found"</div>
+        <div class="voice-item"><span class="voice-icon">✕</span>"Please complete your profile"</div>
+        <div class="voice-item"><span class="voice-icon">✕</span>"You have 0 activities logged"</div>
+        <div class="voice-item"><span class="voice-icon">✕</span>"Invalid input detected"</div>
+        <div class="voice-item"><span class="voice-icon">✕</span>"Optimize your wellness synergy"</div>
+        <div class="voice-item"><span class="voice-icon">✕</span>"Great job! Keep it up! You're amazing!"</div>
+      </div>
+    </div>
+
+    <div class="personality-grid">
+      <div class="personality-card">
+        <div class="personality-icon">👟</div>
+        <div class="personality-title">Friendly</div>
+        <div class="personality-desc">Warm and approachable. Like a gym buddy, not a personal trainer.</div>
+      </div>
+      <div class="personality-card">
+        <div class="personality-icon">🎯</div>
+        <div class="personality-title">Direct</div>
+        <div class="personality-desc">Short, clear labels. No jargon. The UI gets out of the way.</div>
+      </div>
+      <div class="personality-card">
+        <div class="personality-icon">😏</div>
+        <div class="personality-title">Sarcastic (when needed)</div>
+        <div class="personality-desc">A well-placed jab is fine. showup. holds you accountable because it cares, not to be mean.</div>
+      </div>
+      <div class="personality-card">
+        <div class="personality-icon">🌻</div>
+        <div class="personality-title">Personal</div>
+        <div class="personality-desc">Users bring their own color, font, sticker, and marker. The app reflects them.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-logo">show<span class="up">up</span><span class="dot">.</span></div>
+    <p class="footer-text">showup.jeni.rocks · Built by Jen & Cii · 2026 🪨</p>
+    <p class="footer-text" style="font-size:0.65rem;margin-top:8px;">Brand Book v1.1 · Internal reference document</p>
+  </footer>
+
+</body>
+</html>
