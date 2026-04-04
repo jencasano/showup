@@ -31,6 +31,7 @@ export const ICON_NAMES = [
   'my-log',      // 👤✨ My Log nav (mobile bottom nav)
   'following',   // ❤️   Following nav
   'all',         // ⊞   All nav
+  'now',         // 🟨  NOW badge/sticker
 ];
 
 // Sticker options shown in month setup
