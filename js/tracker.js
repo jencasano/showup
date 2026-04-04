@@ -7,7 +7,7 @@ import { getDaysInMonth, getDayLabel, getCurrentYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard } from "./mobile-tracker.js";
 import { getUserStats, computeStatsFromEntry, cadenceLabel } from "./stats.js";
-import { icon } from "./icons.js";
+import { icon, STICKER_ICONS } from "./icons.js";
 
 const MARKER_SYMBOLS = {
   circle:   "●",
@@ -35,6 +35,13 @@ function isMobile() {
 }
 
 let unsubscribe = null;
+
+function renderSticker(sticker) {
+  if (STICKER_ICONS.includes(sticker)) {
+    return icon(sticker, 20, "badge-sticker-icon");
+  }
+  return sticker || "";
+}
 
 // ─── LOAD MY LOG ──────────────────────────────────────────
 export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise = null) {
@@ -909,7 +916,7 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   const avatarHTML = avatarUrl
     ? `<img src="${avatarUrl}" class="badge-avatar" alt="avatar" />`
     : "";
-  badge.innerHTML = `${avatarHTML}<span class="badge-name">${entry.displayName}</span><span class="badge-sticker">${sticker}</span>`;
+  badge.innerHTML = `${avatarHTML}<span class="badge-name">${entry.displayName}</span><span class="badge-sticker">${renderSticker(sticker)}</span>`;
   section.appendChild(badge);
 
   const headerRow = document.createElement("div");
