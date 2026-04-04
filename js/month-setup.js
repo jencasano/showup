@@ -3,6 +3,7 @@ import {
   doc, getDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getCurrentYearMonth, getPrevYearMonth, formatYearMonth, getFontColorSuggestions } from "./utils.js";
+import { icon } from "./icons.js";
 
 const FONTS = [
   { value: "Inter", label: "Aa — Clean" },
@@ -12,7 +13,22 @@ const FONTS = [
 ];
 
 const COLORS = ["#FF6B6B","#FF9F43","#FECA57","#48DBFB","#1DD1A1","#A29BFE","#FD79A8","#636E72"];
-const STICKERS = ["🌻","💪","🔥","⭐","🎯","🌈","🦋","🌸","⚡","🍀"];
+const STICKERS = [
+  "sunflower2",
+  "muscle",
+  "star",
+  "run",
+  "brain",
+  "bacon",
+  "steak",
+  "butter",
+  "sprout",
+  "boom",
+  "headphones",
+  "dumbbell",
+  "flame",
+  "target"
+];
 const MARKERS = [
   { value: "circle",   symbol: "●" },
   { value: "star",     symbol: "★" },
@@ -40,7 +56,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
       color:      prevData?.decoration?.color     || "#FF6B6B",
       fontColor:  prevData?.decoration?.fontColor || "#FFFFFF",
       font:       prevData?.decoration?.font      || "Inter",
-      sticker:    prevData?.decoration?.sticker   || "🌻",
+      sticker:    prevData?.decoration?.sticker   || "sunflower2",
       marker:     prevData?.decoration?.marker    || "circle",
       activities: prevData?.activities            || [],
       cadences:   prevData?.cadences              || []
@@ -293,7 +309,7 @@ function updatePreview(state) {
   badge.style.background = state.color;
   badge.style.fontFamily = `'${state.font}', sans-serif`;
   badge.style.color = state.fontColor;
-  badge.innerHTML = `<span>${state.sticker}</span><span>Your Name</span>`;
+  badge.innerHTML = `${icon(state.sticker, 22, "ms-preview-sticker")}<span>Your Name</span>`;
 }
 
 // ── Modal HTML builder ────────────────────────────────────
@@ -334,7 +350,7 @@ function buildModalHTML(yearMonth, state) {
       <div id="ms-sticker-options">
         ${STICKERS.map(s => `
           <div class="ms-sticker-option ${state.sticker === s ? "selected" : ""}"
-            data-sticker="${s}">${s}</div>
+            data-sticker="${s}">${icon(s, 24, "ms-sticker-icon")}</div>
         `).join("")}
       </div>
 
@@ -349,7 +365,7 @@ function buildModalHTML(yearMonth, state) {
       <div class="ms-section-label">Preview</div>
       <div id="ms-badge-preview"
         style="background:${state.color}; font-family:'${state.font}'; color:${state.fontColor};">
-        <span>🌻</span>
+        ${icon(state.sticker, 22, "ms-preview-sticker")}
         <span>Your Name</span>
       </div>
     </div>
