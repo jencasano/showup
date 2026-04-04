@@ -31,6 +31,7 @@ const STICKERS = [
   "target"
 ];
 const MARKERS = [
+  { value: "square",   symbol: "■" },
   { value: "circle",   symbol: "●" },
   { value: "star",     symbol: "★" },
   { value: "heart",    symbol: "♥" },

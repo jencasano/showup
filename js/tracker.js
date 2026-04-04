@@ -10,6 +10,7 @@ import { getUserStats, computeStatsFromEntry, cadenceLabel } from "./stats.js";
 import { icon, STICKER_ICONS } from "./icons.js";
 
 const MARKER_SYMBOLS = {
+  square:   "■",
   circle:   "●",
   star:     "★",
   heart:    "♥",
