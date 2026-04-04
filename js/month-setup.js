@@ -59,7 +59,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null) {
       fontColor:  prevData?.decoration?.fontColor || "#FFFFFF",
       font:       prevData?.decoration?.font      || "Inter",
       sticker:    prevData?.decoration?.sticker   || "sunflower2",
-      marker:     prevData?.decoration?.marker    || "circle",
+      marker:     prevData?.decoration?.marker    || "square",
       activities: prevData?.activities            || [],
       cadences:   prevData?.cadences              || []
     };
