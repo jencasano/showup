@@ -337,12 +337,14 @@ export function computeStatsFromEntry(entry, yearMonth, joinDate = null) {
   const today          = getReferenceDate(yearMonth, isCurrentMonth, lastDay);
   const fullWeeks = getFullWeeksInMonth(yearMonth);
 
+  const resolvedJoinDate = joinDate || (entry.joinDate instanceof Date ? entry.joinDate : entry.joinDate ? new Date(entry.joinDate) : null);
+
   let daysAvailable = daysInMonth;
   let joinDay = null;
-  if (joinDate) {
-    const joinYM = `${joinDate.getFullYear()}-${String(joinDate.getMonth() + 1).padStart(2, "0")}`;
+  if (resolvedJoinDate) {
+    const joinYM = `${resolvedJoinDate.getFullYear()}-${String(resolvedJoinDate.getMonth() + 1).padStart(2, "0")}`;
     if (joinYM === yearMonth) {
-      joinDay = joinDate.getDate();
+      joinDay = resolvedJoinDate.getDate();
       daysAvailable = daysInMonth - (joinDay - 1);
     }
   }

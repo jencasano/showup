@@ -64,6 +64,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
   const entryRef = doc(db, "logs", yearMonth, "entries", uid);
   let hasRendered = false;
   let hasUsedInitialStats = false;
+  let userJoinDate = undefined; // undefined = not yet fetched, null = fetched but no createdAt
 
   function onMarkToggled(entry) {
     const stats = computeStatsFromEntry(entry, yearMonth);
@@ -84,11 +85,16 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
     const entry = { id: uid, ...docSnap.data() };
 
-    if (!entry.displayName) {
+    if (!entry.displayName || userJoinDate === undefined) {
       const userSnap = await getDoc(doc(db, "users", uid));
       if (!userSnap.exists()) { hideLoader(); return; }
-      entry.displayName = userSnap.data().displayName;
+      const userData = userSnap.data();
+      if (!entry.displayName) entry.displayName = userData.displayName;
+      if (userJoinDate === undefined) {
+        userJoinDate = userData.createdAt ? userData.createdAt.toDate() : null;
+      }
     }
+    entry.joinDate = userJoinDate;
 
     const user = auth.currentUser;
 
