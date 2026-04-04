@@ -231,7 +231,7 @@ header h1 span { color: var(--color-primary); }
 }
 
 .bottom-tab.active { color: var(--color-primary); }
-.bottom-tab-icon { font-size: 1.1rem; }
+.bottom-tab-icon { width: 24px; height: 24px; display: block; }
 
 /* ── Month Heading ─────────────────────────────── */
 .month-heading {
