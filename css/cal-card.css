@@ -94,7 +94,12 @@
   text-overflow: ellipsis;
 }
 
-.cal-card-sticker { font-size: 0.95rem; flex-shrink: 0; }
+.cal-card-sticker {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
 
 /* "you" pill */
 .cal-you-pill {
