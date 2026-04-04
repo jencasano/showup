@@ -10,6 +10,7 @@ const ICONS_PATH = '/assets/icons';
 export const ICON_NAMES = [
   'flame',       // 🔥  streak stat, badges
   'sunflower',   // 🌻  sticker
+  'sunflower2',  // 🌻  alternate sticker
   'muscle',      // 💪  sticker
   'star',        // ⭐  sticker
   'target',      // 🎯  sticker
@@ -25,12 +26,14 @@ export const ICON_NAMES = [
   'siren',       // 🚨  sticker
   'boom',        // 💥  sticker
   'megaphone',   // 📢  sticker
+  'pushpin',     // 📌  sticker
   'calendar',    // 📅  month picker button
   'sun',         // ☀️   light mode toggle
   'moon',        // 🌙  dark mode toggle
   'my-log',      // 👤✨ My Log nav (mobile bottom nav)
   'following',   // ❤️   Following nav
   'all',         // ⊞   All nav
+  'now',         // 🟨  NOW badge/sticker
 ];
 
 // Sticker options shown in month setup
