@@ -117,10 +117,10 @@
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 11px;
+  gap: 3px;
+  padding: 3px 8px;
   border-radius: var(--radius-full);
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.18s ease;
@@ -401,7 +401,7 @@
 
 .following-pin-wrap {
   position: absolute;
-  top: 10px;
+  top: -10px;
   right: 10px;
   z-index: 10;
   margin: 0;
@@ -410,17 +410,19 @@
 .following-pin-btn {
   border: none;
   background: none;
-  font-size: 1.1rem;
-  padding: 2px;
+  font-size: 1.3rem;
+  padding: 0;
   cursor: pointer;
   line-height: 1;
-  opacity: 0.35;
+  opacity: 0.25;
   transition: opacity 0.15s, transform 0.15s;
   filter: grayscale(1);
+  display: block;
+  transform: rotate(45deg); /* point downward like a real pin */
 }
 
 .following-pin-btn:hover {
-  opacity: 0.7;
+  opacity: 0.65;
   filter: none;
 }
 
@@ -429,7 +431,7 @@
   background: none;
   opacity: 1;
   filter: none;
-  transform: rotate(-15deg);
+  transform: rotate(0deg); /* upright = pinned */
 }
 
 .following-board {
