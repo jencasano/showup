@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>showup. Brand Kit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@800&family=Fraunces:opsz,wght@9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --coral:#D8584E;--teal:#80B9B9;--amber:#F8C08A;
+      --navy:#1D2142;--surface:#2A2E45;--warm:#FFFAF5;--warm-text:#FBDFCB;
+      --text:#2A2E45;--muted:#596088;--faint:#B3A1B4;--border:#EDE5DA;
+    }
+    body{font-family:'Inter',sans-serif;background:var(--warm);color:var(--text);}
+
+    /* ── Header ── */
+    .header{background:var(--navy);padding:40px;text-align:center;}
+    .header-logo{font-family:'Sora',sans-serif;font-weight:800;font-size:2.4rem;letter-spacing:-0.04em;color:var(--warm-text);}
+    .header-logo span{color:var(--coral);}
+    .header-sub{font-family:'Fraunces',serif;color:var(--teal);font-style:italic;margin-top:6px;font-size:1rem;}
+    .header-meta{font-size:0.65rem;color:var(--muted);margin-top:16px;letter-spacing:0.1em;text-transform:uppercase;}
+
+    /* ── Tabs ── */
+    .tabs{display:flex;background:var(--surface);border-bottom:2px solid rgba(255,255,255,0.06);position:sticky;top:0;z-index:10;}
+    .tab-btn{flex:1;padding:14px;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;transition:all 0.2s;color:#B3A1B4;}
+    .tab-btn.active{color:var(--coral);border-bottom:2px solid var(--coral);margin-bottom:-2px;}
+
+    /* ── Page ── */
+    .page{max-width:1100px;margin:0 auto;padding:48px 32px;}
+    .section{display:none;}
+    .section.active{display:block;}
+    .section-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:6px;}
+    .section-desc{font-size:0.82rem;color:var(--muted);margin-bottom:32px;line-height:1.6;}
+
+    /* ── Asset Grid ── */
+    .asset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+    .asset-card{background:#FFFFFF;border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+    .asset-preview{position:relative;display:flex;align-items:center;justify-content:center;min-height:160px;}
+    .asset-preview canvas{max-width:100%;display:block;}
+    .asset-preview.transparent-bg{background:repeating-conic-gradient(#EDE5DA 0% 25%,transparent 0% 50%) 0 0/20px 20px;}
+    .asset-info{padding:14px 16px;border-top:1px solid var(--border);}
+    .asset-name{font-size:0.78rem;font-weight:700;color:var(--text);margin-bottom:2px;}
+    .asset-desc{font-size:0.65rem;color:var(--faint);margin-bottom:10px;}
+    .asset-actions{display:flex;gap:6px;}
+    .btn-dl{padding:5px 12px;border-radius:6px;font-size:0.68rem;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;font-family:'Inter',sans-serif;}
+    .btn-svg{background:var(--navy);color:var(--warm-text);}
+    .btn-svg:hover{background:#2A2E45;}
+    .btn-png{background:var(--coral);color:white;}
+    .btn-png:hover{background:#C4473D;}
+    .btn-size{padding:5px 10px;border-radius:6px;font-size:0.62rem;font-weight:600;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:transparent;font-family:'Inter',sans-serif;}
+    .btn-size.active{border-color:var(--coral);color:var(--coral);background:rgba(216,88,78,0.06);}
+
+    /* ── Social Grid ── */
+    .social-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:700px){.social-grid{grid-template-columns:1fr;}.asset-grid{grid-template-columns:1fr;}}
+    .social-card{background:#FFFFFF;border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+    .social-preview{padding:12px;background:var(--warm);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;}
+    .social-preview canvas{max-width:100%;height:auto;display:block;border-radius:6px;}
+    .social-info{padding:14px 16px;}
+    .social-name{font-size:0.82rem;font-weight:700;color:var(--text);margin-bottom:2px;}
+    .social-size{font-size:0.62rem;color:var(--faint);margin-bottom:10px;font-family:monospace;}
+    .social-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+    /* ── Usage Note ── */
+    .usage-note{background:rgba(42,46,69,0.05);border-radius:12px;padding:16px 20px;margin-bottom:28px;font-size:0.78rem;color:var(--muted);line-height:1.6;border:1px solid var(--border);}
+    .usage-note strong{color:var(--text);}
+
+    /* ── Footer ── */
+    .footer{background:var(--navy);padding:32px;text-align:center;}
+    .footer-logo{font-family:'Sora',sans-serif;font-weight:800;font-size:1.2rem;color:var(--warm-text);letter-spacing:-0.04em;}
+    .footer-logo span{color:var(--coral);}
+    .footer-text{font-size:0.7rem;color:var(--muted);margin-top:4px;}
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-logo">show<span>up.</span></div>
+    <div class="header-sub">Show up. Period.</div>
+    <div class="header-meta">Brand Asset Kit · 2026</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('wordmarks',this)">Wordmarks</button>
+    <button class="tab-btn" onclick="switchTab('marks',this)">Marks</button>
+    <button class="tab-btn" onclick="switchTab('social',this)">Social Media</button>
+  </div>
+
+  <div class="page">
+
+    <!-- ── WORDMARKS ── -->
+    <div id="tab-wordmarks" class="section active">
+      <h2 class="section-title">Logo Wordmarks</h2>
+      <p class="section-desc">The full showup. wordmark in all official colour variations. Use SVG for web and design work. Use PNG for social media, documents, and email signatures.</p>
+      <div class="usage-note"><strong>Clear space rule:</strong> Always maintain a minimum clear space around the logo equal to the height of the letter "s" in the wordmark. Never place the logo on a background that makes it hard to read.</div>
+      <div class="asset-grid" id="wordmark-grid"></div>
+    </div>
+
+    <!-- ── MARKS ── -->
+    <div id="tab-marks" class="section">
+      <h2 class="section-title">The Mark</h2>
+      <p class="section-desc">The period mark — a square, faithful to Sora's geometric period. Use when the full wordmark is too wide (favicons, app icons, small spaces). The coral square IS the brand at its most reduced.</p>
+      <div class="usage-note"><strong>The mark is never circular</strong> — Sora's period is a square, and the mark must always match. Don't round the corners or turn it into a circle.</div>
+      <div class="asset-grid" id="mark-grid"></div>
+    </div>
+
+    <!-- ── SOCIAL ── -->
+    <div id="tab-social" class="section">
+      <h2 class="section-title">Social Media Assets</h2>
+      <p class="section-desc">Ready-to-upload assets for every major platform. Each downloads at the correct full resolution. PNG recommended for social media uploads.</p>
+      <div class="social-grid" id="social-grid"></div>
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer-logo">show<span>up.</span></div>
+    <div class="footer-text">showup. Brand Kit v1.0 · Built by Jen &amp; Cii · 2026 🪨</div>
+  </footer>
+
+<script>
+// ── BRAND COLOURS
+const C = {
+  coral:'#D8584E', coralH:'#C4473D',
+  navy:'#1D2142', surface:'#2A2E45',
+  warm:'#FFFAF5', warmText:'#FBDFCB',
+  textDark:'#2A2E45', white:'#FFFFFF', black:'#000000',
+  muted:'#596088', faint:'#B3A1B4', border:'#EDE5DA',
+  teal:'#80B9B9', amber:'#F8C08A',
+};
+
+// ── TAB SWITCHING
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── CANVAS HELPERS
+function makeCanvas(w,h) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  return c;
+}
+
+function drawBg(ctx, w, h, color) {
+  if(!color) return;
+  ctx.fillStyle = color;
+  ctx.fillRect(0,0,w,h);
+}
+
+function drawWordmark(ctx, x, y, size, showColor, upColor) {
+  ctx.save();
+  ctx.font = `800 ${size}px 'Sora', 'Arial Black', sans-serif`;
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = showColor;
+  const sw = ctx.measureText('show').width;
+  ctx.fillText('show', x, y);
+  ctx.fillStyle = upColor;
+  ctx.fillText('up.', x + sw, y);
+  ctx.restore();
+}
+
+function drawMark(ctx, x, y, size, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, size, size);
+}
+
+function drawDots(ctx, positions, radius, color) {
+  ctx.fillStyle = color;
+  positions.forEach(([x,y]) => {
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI*2);
+    ctx.fill();
+  });
+}
+
+// ── WORDMARK DEFINITIONS
+const WORDMARKS = [
+  {
+    id: 'wm-light',
+    name: 'Colour — Light',
+    desc: 'Primary logo. Use on warm white or light backgrounds.',
+    bg: C.warm, showColor: C.textDark, upColor: C.coral,
+    isTransparent: false,
+    w: 760, h: 200,
+  },
+  {
+    id: 'wm-dark',
+    name: 'Colour — Dark',
+    desc: 'Use on dark navy or dark backgrounds.',
+    bg: C.navy, showColor: C.warmText, upColor: C.coral,
+    isTransparent: false,
+    w: 760, h: 200,
+  },
+  {
+    id: 'wm-coral',
+    name: 'Colour — Coral',
+    desc: 'White wordmark on the brand coral. Bold, energetic.',
+    bg: C.coral, showColor: C.white, upColor: C.white,
+    isTransparent: false,
+    w: 760, h: 200,
+  },
+  {
+    id: 'wm-white',
+    name: 'Mono — White',
+    desc: 'All white. Use on dark or photo backgrounds.',
+    bg: null, showColor: C.white, upColor: C.white,
+    isTransparent: true,
+    w: 760, h: 200,
+  },
+  {
+    id: 'wm-black',
+    name: 'Mono — Black',
+    desc: 'All black. Use for print, embroidery, and single-colour reproduction.',
+    bg: C.white, showColor: C.black, upColor: C.black,
+    isTransparent: false,
+    w: 760, h: 200,
+  },
+];
+
+// ── MARK DEFINITIONS
+const MARKS = [
+  {
+    id: 'mk-dark',
+    name: 'Colour — Dark',
+    desc: 'Primary mark. Use as profile photo, app icon, favicon.',
+    bg: C.navy, markColor: C.coral,
+    isTransparent: false,
+    w: 400, h: 400,
+  },
+  {
+    id: 'mk-light',
+    name: 'Colour — Light',
+    desc: 'Use on warm white or light backgrounds.',
+    bg: C.warm, markColor: C.coral,
+    isTransparent: false,
+    w: 400, h: 400,
+  },
+  {
+    id: 'mk-coral',
+    name: 'Colour — Coral',
+    desc: 'White mark on coral. Energetic, high-contrast.',
+    bg: C.coral, markColor: C.white,
+    isTransparent: false,
+    w: 400, h: 400,
+  },
+  {
+    id: 'mk-white',
+    name: 'Mono — White',
+    desc: 'White mark, transparent background. Overlay on any dark surface.',
+    bg: null, markColor: C.white,
+    isTransparent: true,
+    w: 400, h: 400,
+  },
+  {
+    id: 'mk-black',
+    name: 'Mono — Black',
+    desc: 'Black mark on white. For print and single-colour use.',
+    bg: C.white, markColor: C.black,
+    isTransparent: false,
+    w: 400, h: 400,
+  },
+];
+
+// ── SOCIAL DEFINITIONS
+const SOCIAL = [
+  {
+    id: 'social-profile',
+    name: 'Profile Photo',
+    desc: 'Facebook · Instagram · Twitter/X · LinkedIn',
+    w: 400, h: 400,
+    platforms: 'FB, IG, Twitter, LinkedIn',
+  },
+  {
+    id: 'social-ig',
+    name: 'Instagram Post',
+    desc: '1:1 square post',
+    w: 1080, h: 1080,
+    platforms: 'Instagram',
+  },
+  {
+    id: 'social-fb-cover',
+    name: 'Facebook Cover',
+    desc: 'Cover photo for Facebook Pages',
+    w: 851, h: 315,
+    platforms: 'Facebook',
+  },
+  {
+    id: 'social-twitter',
+    name: 'Twitter/X Banner',
+    desc: 'Profile header image',
+    w: 1500, h: 500,
+    platforms: 'Twitter/X',
+  },
+  {
+    id: 'social-linkedin',
+    name: 'LinkedIn Banner',
+    desc: 'Company page cover image',
+    w: 1584, h: 396,
+    platforms: 'LinkedIn',
+  },
+];
+
+// ── RENDER WORDMARK
+function renderWordmark(def) {
+  const scale = 0.5; // display at half size
+  const c = makeCanvas(def.w * scale, def.h * scale);
+  const ctx = c.getContext('2d');
+  ctx.scale(scale, scale);
+  drawBg(ctx, def.w, def.h, def.bg);
+  const fontSize = def.h * 0.6;
+  const x = def.w * 0.074;
+  const y = def.h * 0.76;
+  drawWordmark(ctx, x, y, fontSize, def.showColor, def.upColor);
+  return c;
+}
+
+// ── RENDER MARK
+function renderMark(def) {
+  const scale = 0.5;
+  const c = makeCanvas(def.w * scale, def.h * scale);
+  const ctx = c.getContext('2d');
+  ctx.scale(scale, scale);
+  drawBg(ctx, def.w, def.h, def.bg);
+  const markSize = def.w * 0.44;
+  const offset = (def.w - markSize) / 2;
+  drawMark(ctx, offset, offset, markSize, def.markColor);
+  return c;
+}
+
+// ── RENDER SOCIAL: PROFILE
+function renderProfile(w, h) {
+  const c = makeCanvas(w, h);
+  const ctx = c.getContext('2d');
+  drawBg(ctx, w, h, C.navy);
+  // Large mark centered
+  const markSize = w * 0.45;
+  const mx = (w - markSize) / 2;
+  const my = h * 0.2;
+  drawMark(ctx, mx, my, markSize, C.coral);
+  // Wordmark bottom
+  const fs = w * 0.095;
+  ctx.font = `800 ${fs}px 'Sora', sans-serif`;
+  ctx.textBaseline = 'alphabetic';
+  const totalW = ctx.measureText('showup.').width;
+  const tx = (w - totalW) / 2;
+  const ty = h * 0.895;
+  ctx.fillStyle = C.warmText;
+  ctx.fillText('show', tx, ty);
+  const sw = ctx.measureText('show').width;
+  ctx.fillStyle = C.coral;
+  ctx.fillText('up.', tx + sw, ty);
+  return c;
+}
+
+// ── RENDER SOCIAL: IG POST
+function renderIgPost(w, h) {
+  const c = makeCanvas(w, h);
+  const ctx = c.getContext('2d');
+  drawBg(ctx, w, h, C.navy);
+  // Decorative dots pattern (top-right quadrant)
+  const dotPositions = [];
+  for(let row = 0; row < 6; row++) {
+    for(let col = 0; col < 6; col++) {
+      dotPositions.push([w * 0.62 + col * 70, h * 0.06 + row * 70]);
+    }
+  }
+  ctx.globalAlpha = 0.12;
+  drawDots(ctx, dotPositions, 8, C.coral);
+  // Bottom-left dots
+  const dotPositions2 = [];
+  for(let row = 0; row < 4; row++) {
+    for(let col = 0; col < 4; col++) {
+      dotPositions2.push([w * 0.04 + col * 55, h * 0.72 + row * 55]);
+    }
+  }
+  drawDots(ctx, dotPositions2, 6, C.teal);
+  ctx.globalAlpha = 1;
+  // Large wordmark centered
+  const fs = w * 0.118;
+  ctx.font = `800 ${fs}px 'Sora', sans-serif`;
+  ctx.textBaseline = 'alphabetic';
+  const sw = ctx.measureText('show').width;
+  const upW = ctx.measureText('up.').width;
+  const totalW = sw + upW;
+  const tx = (w - totalW) / 2;
+  const ty = h * 0.535;
+  ctx.fillStyle = C.warmText;
+  ctx.fillText('show', tx, ty);
+  ctx.fillStyle = C.coral;
+  ctx.fillText('up.', tx + sw, ty);
+  // Tagline
+  const tfs = w * 0.038;
+  ctx.font = `800 ${tfs}px 'Sora', sans-serif`;
+  ctx.fillStyle = C.coral;
+  ctx.textAlign = 'center';
+  ctx.fillText('Show up. Period.', w/2, ty + fs * 0.78);
+  ctx.textAlign = 'start';
+  // Coral mark bottom-right as decor
+  const mSize = w * 0.06;
+  drawMark(ctx, w * 0.82, h * 0.87, mSize, C.coral);
+  return c;
+}
+
+// ── RENDER SOCIAL: BANNER
+function renderBanner(w, h) {
+  const c = makeCanvas(w, h);
+  const ctx = c.getContext('2d');
+  drawBg(ctx, w, h, C.navy);
+  // Vertical coral line accent (left edge)
+  ctx.fillStyle = C.coral;
+  ctx.fillRect(0, 0, w * 0.006, h);
+  // Decorative marks (top-right area)
+  ctx.globalAlpha = 0.09;
+  const mS = h * 0.55;
+  drawMark(ctx, w * 0.82, (h - mS) / 2, mS, C.coral);
+  ctx.globalAlpha = 0.05;
+  const mS2 = h * 0.8;
+  drawMark(ctx, w * 0.89, (h - mS2) / 2, mS2, C.warmText);
+  ctx.globalAlpha = 1;
+  // Wordmark — left side
+  const fs = h * 0.46;
+  ctx.font = `800 ${fs}px 'Sora', sans-serif`;
+  ctx.textBaseline = 'alphabetic';
+  const x = w * 0.06;
+  const y = h * 0.665;
+  const showW = ctx.measureText('show').width;
+  ctx.fillStyle = C.warmText;
+  ctx.fillText('show', x, y);
+  ctx.fillStyle = C.coral;
+  ctx.fillText('up.', x + showW, y);
+  // Tagline — below wordmark
+  const tfs = h * 0.165;
+  ctx.font = `800 ${tfs}px 'Sora', sans-serif`;
+  ctx.fillStyle = C.coral;
+  ctx.fillText('Show up. Period.', x, y + fs * 0.38);
+  return c;
+}
+
+// ── GENERATE SVG CONTENT
+function genWordmarkSvg(def) {
+  const bg = def.bg ? `<rect width="380" height="100" fill="${def.bg}"/>` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 100" role="img" aria-label="showup.">
+  <title>showup. — ${def.name}</title>
+  <defs><style><![CDATA[@import url('https://fonts.googleapis.com/css2?family=Sora:wght@800&display=swap');]]></style></defs>
+  ${bg}
+  <text x="28" y="76" font-family="'Sora','Arial Black',sans-serif" font-weight="800" font-size="60" style="letter-spacing:-2.4px">
+    <tspan fill="${def.showColor}">show</tspan><tspan fill="${def.upColor}">up.</tspan>
+  </text>
+</svg>`;
+}
+
+function genMarkSvg(def) {
+  const bg = def.bg ? `<rect width="180" height="180" fill="${def.bg}"/>` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="showup. mark">
+  <title>showup. mark — ${def.name}</title>
+  ${bg}
+  <rect x="40" y="40" width="100" height="100" fill="${def.markColor}"/>
+</svg>`;
+}
+
+// ── DOWNLOAD HELPERS
+function downloadSvg(content, filename) {
+  const blob = new Blob([content], {type:'image/svg+xml'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.download = filename + '.svg';
+  a.href = url;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function downloadPng(canvas, filename) {
+  const a = document.createElement('a');
+  a.download = filename + '.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+// ── BUILD WORDMARK CARDS
+function buildWordmarkCards() {
+  const grid = document.getElementById('wordmark-grid');
+  WORDMARKS.forEach(def => {
+    const canvas = renderWordmark(def);
+    const card = document.createElement('div');
+    card.className = 'asset-card';
+    const preview = document.createElement('div');
+    preview.className = 'asset-preview' + (def.isTransparent ? ' transparent-bg' : '');
+    preview.appendChild(canvas);
+    card.appendChild(preview);
+    const info = document.createElement('div');
+    info.className = 'asset-info';
+    info.innerHTML = `
+      <div class="asset-name">${def.name}</div>
+      <div class="asset-desc">${def.desc}</div>
+      <div class="asset-actions">
+        <button class="btn-dl btn-svg" onclick="downloadSvg(genWordmarkSvg(WORDMARKS.find(d=>d.id==='${def.id}')), '${def.id}')">SVG</button>
+        <button class="btn-dl btn-png" onclick="downloadPng(renderWordmark(WORDMARKS.find(d=>d.id==='${def.id}')), '${def.id}')">PNG</button>
+      </div>`;
+    card.appendChild(info);
+    grid.appendChild(card);
+  });
+}
+
+// ── BUILD MARK CARDS
+function buildMarkCards() {
+  const grid = document.getElementById('mark-grid');
+  MARKS.forEach(def => {
+    const canvas = renderMark(def);
+    const card = document.createElement('div');
+    card.className = 'asset-card';
+    const preview = document.createElement('div');
+    preview.className = 'asset-preview' + (def.isTransparent ? ' transparent-bg' : '');
+    preview.style.padding = '20px';
+    preview.appendChild(canvas);
+    card.appendChild(preview);
+    const info = document.createElement('div');
+    info.className = 'asset-info';
+    info.innerHTML = `
+      <div class="asset-name">${def.name}</div>
+      <div class="asset-desc">${def.desc}</div>
+      <div class="asset-actions">
+        <button class="btn-dl btn-svg" onclick="downloadSvg(genMarkSvg(MARKS.find(d=>d.id==='${def.id}')), '${def.id}')">SVG</button>
+        <button class="btn-dl btn-png" onclick="downloadPng(renderMark(MARKS.find(d=>d.id==='${def.id}')), '${def.id}')">PNG</button>
+      </div>`;
+    card.appendChild(info);
+    grid.appendChild(card);
+  });
+}
+
+// ── BUILD SOCIAL CARDS
+function buildSocialCards() {
+  const grid = document.getElementById('social-grid');
+  SOCIAL.forEach(def => {
+    // Render at display scale
+    const displayW = Math.min(600, def.w);
+    const scale = displayW / def.w;
+    const displayH = def.h * scale;
+    let fullCanvas;
+    if(def.id === 'social-profile') fullCanvas = renderProfile(def.w, def.h);
+    else if(def.id === 'social-ig') fullCanvas = renderIgPost(def.w, def.h);
+    else fullCanvas = renderBanner(def.w, def.h);
+    // Create display canvas
+    const displayCanvas = makeCanvas(displayW, Math.round(displayH));
+    const ctx = displayCanvas.getContext('2d');
+    ctx.drawImage(fullCanvas, 0, 0, displayW, displayH);
+    const card = document.createElement('div');
+    card.className = 'social-card';
+    const preview = document.createElement('div');
+    preview.className = 'social-preview';
+    preview.appendChild(displayCanvas);
+    card.appendChild(preview);
+    const info = document.createElement('div');
+    info.className = 'social-info';
+    info.innerHTML = `
+      <div class="social-name">${def.name}</div>
+      <div class="social-size">${def.w} × ${def.h}px &nbsp;·&nbsp; ${def.platforms}</div>
+      <div class="social-actions">
+        <button class="btn-dl btn-png" onclick="downloadFullSocial('${def.id}')">Download PNG (${def.w}×${def.h})</button>
+      </div>`;
+    card.appendChild(info);
+    grid.appendChild(card);
+  });
+}
+
+function downloadFullSocial(id) {
+  const def = SOCIAL.find(d => d.id === id);
+  let c;
+  if(id === 'social-profile') c = renderProfile(def.w, def.h);
+  else if(id === 'social-ig') c = renderIgPost(def.w, def.h);
+  else c = renderBanner(def.w, def.h);
+  downloadPng(c, id);
+}
+
+// ── INIT
+document.fonts.ready.then(() => {
+  buildWordmarkCards();
+  buildMarkCards();
+  buildSocialCards();
+});
+</script>
+</body>
+</html>
