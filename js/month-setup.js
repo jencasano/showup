@@ -13,7 +13,7 @@ const FONTS = [
   { value: "Pixelify Sans", label: "Aa — Pixel" }
 ];
 
-const COLORS = ["#FF6B6B","#FF9F43","#FECA57","#48DBFB","#1DD1A1","#A29BFE","#FD79A8","#636E72"];
+const COLORS = ["#F46D6A", "#D97A5E", "#F2A65A", "#E9C46A", "#E89AA8", "#C97C8D", "#8FAF8F", "#8D6A9F"];
 const STICKERS = [
   "sunflower2",
   "muscle",
