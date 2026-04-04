@@ -515,6 +515,7 @@ export function loadAllLogs(yearMonth, container, currentUser) {
   let includeFollowed = true;
   let latestEntries = [];
   let latestFollows = new Set();
+  let controlsMounted = false;
 
   function normalizeText(value) {
     return String(value || "").toLowerCase().trim();
@@ -601,9 +602,13 @@ export function loadAllLogs(yearMonth, container, currentUser) {
     return filtered;
   }
 
-  function renderAllList() {
-    const visibleEntries = getVisibleEntries();
-    container.innerHTML = "";
+  function clearRenderedResults() {
+    container.querySelectorAll(".all-result-card-slot, .all-search-empty").forEach(node => node.remove());
+  }
+
+  function ensureControls() {
+    if (controlsMounted) return;
+    controlsMounted = true;
 
     const controls = document.createElement("div");
     controls.className = "all-search-row";
@@ -624,7 +629,6 @@ export function loadAllLogs(yearMonth, container, currentUser) {
 
     const input = controls.querySelector("#all-search-input");
     const includeToggle = controls.querySelector("#all-search-include-followed");
-    if (input) input.value = searchQuery;
 
     input?.addEventListener("input", () => {
       searchQuery = input.value;
@@ -635,11 +639,17 @@ export function loadAllLogs(yearMonth, container, currentUser) {
       includeFollowed = includeToggle.checked;
       renderAllList();
     });
+  }
+
+  function renderAllList() {
+    const visibleEntries = getVisibleEntries();
+    ensureControls();
+    clearRenderedResults();
 
     if (visibleEntries.length === 0) {
       const queryLabel = normalizeText(searchQuery);
       const empty = document.createElement("p");
-      empty.className = "empty-state";
+      empty.className = "empty-state all-search-empty";
       empty.textContent = queryLabel
         ? `No matches for "${searchQuery.trim()}".`
         : "No other trackers yet for this month.";
@@ -650,7 +660,10 @@ export function loadAllLogs(yearMonth, container, currentUser) {
     for (const entry of visibleEntries) {
       const isFollowing = latestFollows.has(entry.id);
       const card = renderMobileCard(entry, yearMonth, currentUser, { isFollowing, showFollowBtn: true });
-      container.appendChild(card);
+      const slot = document.createElement("div");
+      slot.className = "all-result-card-slot";
+      slot.appendChild(card);
+      container.appendChild(slot);
     }
   }
 
