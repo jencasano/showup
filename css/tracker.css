@@ -765,6 +765,23 @@
 
 .fw-day--has-overflow { cursor: pointer; }
 
+.fw-join-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: center;
+  gap: 1px;
+  margin-top: 1px;
+}
+
+.fw-join-label {
+  font-size: 0.55rem;
+  font-weight: 600;
+  color: #D8584E;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .fw-badge-dot {
   display: inline-block;
   width: 7px;

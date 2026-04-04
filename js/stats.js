@@ -382,7 +382,8 @@ export function computeStatsFromEntry(entry, yearMonth, joinDate = null) {
     overallRate,
     habitStats,
     monthlyTargetHitRate,
-    fullWeeksCount: fullWeeks.length
+    fullWeeksCount: fullWeeks.length,
+    joinDay
   };
 }
 
@@ -459,7 +460,8 @@ export async function getUserStats(userId, yearMonth) {
       overallRate,
       habitStats,
       monthlyTargetHitRate,
-      fullWeeksCount: fullWeeks.length
+      fullWeeksCount: fullWeeks.length,
+      joinDay
     };
   } catch (error) {
     console.error("Stats error:", error);

@@ -236,7 +236,7 @@ function renderStatusBanner(entry, todayDate) {
 
 // ─── PROGRESS SUMMARY CARD ────────────────────────────────
 function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
-  const { showUpDays = 0, perfectDays = 0, totalThisMonth, habitStats, monthlyTargetHitRate, fullWeeksCount } = stats;
+  const { showUpDays = 0, perfectDays = 0, totalThisMonth, habitStats, monthlyTargetHitRate, fullWeeksCount, joinDay = null } = stats;
   const activities = entry.activities || [];
   const [year, month] = yearMonth.split("-").map(Number);
   const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
@@ -289,13 +289,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       </div>`;
   }).join("");
 
-  let calJoinDay = null;
-  if (entry.joinDate) {
-    const jd = entry.joinDate instanceof Date ? entry.joinDate : new Date(entry.joinDate);
-    const joinYM = `${jd.getFullYear()}-${String(jd.getMonth() + 1).padStart(2, "0")}`;
-    if (joinYM === yearMonth) calJoinDay = jd.getDate();
-  }
-  const calendarHTML = renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, calJoinDay);
+  const calendarHTML = renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, joinDay);
 
   card.innerHTML = `
     <div class="summary-card__header">
@@ -486,7 +480,11 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, jo
         ? ` data-overflow='${JSON.stringify(loggedHabits).replace(/'/g, "&#39;")}'`
         : "";
 
-      return `<div class="fw-day${hasOverflow ? " fw-day--has-overflow" : ""}"${overflowAttr}><span class="fw-day-num">${dayNum}</span>${dotsHTML ? `<div class="fw-day-dots">${dotsHTML}</div>` : ""}</div>`;
+      const joinIndicatorHTML = (joinDay != null && dayNum === joinDay)
+        ? `<span class="fw-join-indicator"><img src="/assets/icons/join-date.svg" width="10" height="10" alt="" /><span class="fw-join-label">Joined</span></span>`
+        : "";
+
+      return `<div class="fw-day${hasOverflow ? " fw-day--has-overflow" : ""}"${overflowAttr}><span class="fw-day-num">${dayNum}</span>${joinIndicatorHTML}${dotsHTML ? `<div class="fw-day-dots">${dotsHTML}</div>` : ""}</div>`;
     }).join("");
 
     if (isFullInMonthWeek) {
