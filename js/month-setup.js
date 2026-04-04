@@ -309,7 +309,7 @@ function updatePreview(state) {
   badge.style.background = state.color;
   badge.style.fontFamily = `'${state.font}', sans-serif`;
   badge.style.color = state.fontColor;
-  badge.innerHTML = `${icon(state.sticker, 22, "ms-preview-sticker")}<span>Your Name</span>`;
+  badge.innerHTML = `<span>Your Name</span>${icon(state.sticker, 22, "ms-preview-sticker")}`;
 }
 
 // ── Modal HTML builder ────────────────────────────────────
@@ -325,48 +325,54 @@ function buildModalHTML(yearMonth, state) {
       <h2>Make it yours.</h2>
       <p>Customize your section for <strong>${formatYearMonth(yearMonth)}</strong>.</p>
 
-      <div class="ms-section-label">Badge Color</div>
-      <div id="ms-color-options">
-        ${COLORS.map(c => `
-          <div class="ms-color-swatch ${state.color === c ? "selected" : ""}"
-            data-color="${c}" style="background:${c};"></div>
-        `).join("")}
-      </div>
-
-      <div class="ms-section-label">Font Color</div>
-      <div id="ms-font-color-options"></div>
-
-      <div class="ms-section-label">Font</div>
-      <div id="ms-font-options">
-        ${FONTS.map(f => `
-          <div class="ms-font-option ${state.font === f.value ? "selected" : ""}"
-            data-font="${f.value}">
-            <span style="font-family:'${f.value}';">${f.label}</span>
+      <div class="ms-step1-grid">
+        <div class="ms-step1-col">
+          <div class="ms-section-label">Badge Color</div>
+          <div id="ms-color-options">
+            ${COLORS.map(c => `
+              <div class="ms-color-swatch ${state.color === c ? "selected" : ""}"
+                data-color="${c}" style="background:${c};"></div>
+            `).join("")}
           </div>
-        `).join("")}
-      </div>
 
-      <div class="ms-section-label">Sticker</div>
-      <div id="ms-sticker-options">
-        ${STICKERS.map(s => `
-          <div class="ms-sticker-option ${state.sticker === s ? "selected" : ""}"
-            data-sticker="${s}">${icon(s, 24, "ms-sticker-icon")}</div>
-        `).join("")}
-      </div>
+          <div class="ms-section-label">Font Color</div>
+          <div id="ms-font-color-options"></div>
+        </div>
 
-      <div class="ms-section-label">Marker</div>
-      <div id="ms-marker-options">
-        ${MARKERS.map(m => `
-          <div class="ms-marker-option ${state.marker === m.value ? "selected" : ""}"
-            data-marker="${m.value}">${m.symbol}</div>
-        `).join("")}
-      </div>
+        <div class="ms-step1-col">
+          <div class="ms-section-label">Font</div>
+          <div id="ms-font-options">
+            ${FONTS.map(f => `
+              <div class="ms-font-option ${state.font === f.value ? "selected" : ""}"
+                data-font="${f.value}">
+                <span style="font-family:'${f.value}';">${f.label}</span>
+              </div>
+            `).join("")}
+          </div>
 
-      <div class="ms-section-label">Preview</div>
-      <div id="ms-badge-preview"
-        style="background:${state.color}; font-family:'${state.font}'; color:${state.fontColor};">
-        ${icon(state.sticker, 22, "ms-preview-sticker")}
-        <span>Your Name</span>
+          <div class="ms-section-label">Sticker</div>
+          <div id="ms-sticker-options">
+            ${STICKERS.map(s => `
+              <div class="ms-sticker-option ${state.sticker === s ? "selected" : ""}"
+                data-sticker="${s}">${icon(s, 24, "ms-sticker-icon")}</div>
+            `).join("")}
+          </div>
+
+          <div class="ms-section-label">Marker</div>
+          <div id="ms-marker-options">
+            ${MARKERS.map(m => `
+              <div class="ms-marker-option ${state.marker === m.value ? "selected" : ""}"
+                data-marker="${m.value}">${m.symbol}</div>
+            `).join("")}
+          </div>
+
+          <div class="ms-section-label">Preview</div>
+          <div id="ms-badge-preview"
+            style="background:${state.color}; font-family:'${state.font}'; color:${state.fontColor};">
+            <span>Your Name</span>
+            ${icon(state.sticker, 22, "ms-preview-sticker")}
+          </div>
+        </div>
       </div>
     </div>
 

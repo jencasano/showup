@@ -20,8 +20,20 @@
   border-radius: var(--radius-xl);
   padding: 40px;
   width: 100%;
-  max-width: 480px;
+  max-width: 880px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
   box-shadow: var(--shadow-lg);
+}
+
+.ms-step1-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px 28px;
+}
+
+.ms-step1-col {
+  min-width: 0;
 }
 
 #month-setup-modal h2 {
@@ -299,4 +311,22 @@
 
 #ms-next-btn:hover, #ms-save-btn:hover {
   background: var(--color-primary-hover);
+}
+
+@media (min-width: 980px) {
+  .ms-step1-grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+@media (max-width: 767px) {
+  #month-setup-overlay {
+    padding: 12px;
+  }
+
+  #month-setup-modal {
+    padding: 20px;
+    max-height: calc(100vh - 24px);
+  }
 }
