@@ -679,8 +679,8 @@ function renderFollowingEmpty(container, onSwitchToAll) {
   container.innerHTML = `
     <div class="following-empty">
       <div class="following-empty-icon">👥</div>
-      <h3 class="following-empty-title">Follow more people</h3>
-      <p class="following-empty-sub">Visit the All tab to discover and follow other trackers</p>
+      <h3 class="following-empty-title">See who shows up</h3>
+      <p class="following-empty-sub">Head to the All tab to find people who show up →</p>
       <button class="following-browse-btn" id="browse-all-btn">Browse All →</button>
     </div>`;
   container.querySelector("#browse-all-btn")?.addEventListener("click", onSwitchToAll);
@@ -712,7 +712,7 @@ function renderFollowingBoard(container, model) {
     board.classList.add("has-pinned");
 
     const pinnedCol = renderFollowingSection(
-      `Pinned + active this month (${pinnedActive.length})`,
+      `📌 Always Here (${pinnedActive.length})`,
       "calendar",
       pinnedActive,
       { currentUser, yearMonth }
@@ -722,13 +722,13 @@ function renderFollowingBoard(container, model) {
     const sideCol = document.createElement("div");
     sideCol.className = "following-side-col";
     sideCol.appendChild(renderFollowingSection(
-      `Following + Active (Not Pinned) (${activeUnpinned.length})`,
+      `Showing Up (${activeUnpinned.length})`,
       "compact",
       activeUnpinned,
       { currentUser, yearMonth }
     ));
     sideCol.appendChild(renderFollowingSection(
-      `Following + No Tracker This Month (${noTracker.length})`,
+      `Crickets... 🦗 (${noTracker.length})`,
       "compact",
       noTracker,
       { currentUser, yearMonth }
@@ -742,13 +742,13 @@ function renderFollowingBoard(container, model) {
     const cards = document.createElement("div");
     cards.className = "following-no-pinned-grid";
     cards.appendChild(renderFollowingSection(
-      `Following + Active (${activeUnpinned.length})`,
+      `Showing Up (${activeUnpinned.length})`,
       "compact",
       activeUnpinned,
       { currentUser, yearMonth }
     ));
     cards.appendChild(renderFollowingSection(
-      `No Tracker This Month (${noTracker.length})`,
+      `Crickets... 🦗 (${noTracker.length})`,
       "compact",
       noTracker,
       { currentUser, yearMonth }
@@ -805,7 +805,8 @@ function renderPinControl(item, currentUser) {
   wrap.className = "following-pin-wrap";
   const btn = document.createElement("button");
   btn.className = `following-pin-btn ${item.isPinned ? "active" : ""}`;
-  btn.textContent = item.isPinned ? "★ Pinned" : "☆ Pin";
+  btn.textContent = "📌";
+  btn.title = item.isPinned ? "Unpin" : "Pin to front row";
   btn.addEventListener("click", async () => {
     await togglePinned(currentUser.uid, item.uid, !item.isPinned);
   });
@@ -847,7 +848,8 @@ function renderCompactRow(item, currentUser) {
   const actions = row.querySelector(".following-compact-actions");
   const pinBtn = document.createElement("button");
   pinBtn.className = `following-pin-btn following-pin-btn-small ${item.isPinned ? "active" : ""}`;
-  pinBtn.textContent = item.isPinned ? "Pinned" : "Pin";
+  pinBtn.textContent = "📌";
+  pinBtn.title = item.isPinned ? "Unpin" : "Pin to front row";
   pinBtn.addEventListener("click", async () => {
     await togglePinned(currentUser.uid, item.uid, !item.isPinned);
   });
@@ -863,8 +865,8 @@ function renderBrowseNudge(onSwitchToAll, opts = {}) {
   slot.innerHTML = `
     <div class="following-nudge-card">
       <div class="following-nudge-icon">👥</div>
-      <p class="following-nudge-title">Follow more people</p>
-      <p class="following-nudge-sub">Visit the All tab to discover and follow other trackers</p>
+      <p class="following-nudge-title">See who shows up</p>
+      <p class="following-nudge-sub">Head to the All tab to find people who show up →</p>
       <button class="following-browse-btn" id="nudge-browse-btn">Browse All →</button>
     </div>`;
   slot.querySelector("#nudge-browse-btn")?.addEventListener("click", onSwitchToAll);

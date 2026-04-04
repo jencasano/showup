@@ -390,10 +390,11 @@
   background: var(--bg-subtle);
   color: var(--text-muted);
   border-radius: var(--radius-full);
-  font-size: 0.72rem;
+  font-size: 1rem;
   font-weight: 700;
-  padding: 5px 10px;
+  padding: 5px 8px;
   cursor: pointer;
+  line-height: 1;
 }
 
 .following-pin-btn.active {
