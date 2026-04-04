@@ -91,8 +91,10 @@ function hitWeeklyTarget(markedDays, cadence, yearMonth, date) {
 // Ratio-based so every cadence is judged on the same relative scale.
 // Thresholds: >= 1.10 = ahead, >= 0.85 = on-track, < 0.85 = behind.
 // Days 1-3: if no logs => "early", if at least one log => "started".
-export function getPaceStatus(logged, expectedByNow, lastDay) {
+// isNewUser: true when user joined mid-month (joinDay > 3) and has no logs yet.
+export function getPaceStatus(logged, expectedByNow, lastDay, isNewUser = false) {
   if (lastDay <= 3) return logged > 0 ? "started" : "early";
+  if (isNewUser && logged === 0) return "new";
   if (expectedByNow <= 0) return logged > 0 ? "ahead" : "early";
   const ratio = logged / expectedByNow;
   if (ratio >= 1.10) return "ahead";
@@ -131,6 +133,11 @@ const PACE_MESSAGES = {
     "Great start. Keep the momentum rolling.",
     "You showed up early. Keep going!",
     "Strong opening. Stack another win tomorrow."
+  ],
+  new: [
+    "Late start. Same standards. Let's go.",
+    "Mid-month entry. Targets adjusted. No excuses.",
+    "You just joined. Time to make up for lost days."
   ]
 };
 
@@ -252,9 +259,10 @@ async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, ma
 }
 
 // ─── Shared habit stat builder ────────────────────────────
-function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks = [], habitStreak = 0) {
+function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks = [], habitStreak = 0, daysAvailable = null, joinDay = null) {
   const cad    = cadences[i] ?? 7;
-  const monthTarget = Math.max(1, Math.ceil(cad * (getDaysInMonth(yearMonth) / 7)));
+  const effectiveDays = daysAvailable ?? getDaysInMonth(yearMonth);
+  const monthTarget = Math.max(1, Math.ceil(cad * (effectiveDays / 7)));
   const logged = (marks[activity] || []).filter(d => d <= lastDay).length;
   const target = Math.max(1, Math.ceil(cad * (lastDay / 7)));
   const rate   = Math.min(100, Math.round(Math.min(1, logged / target) * 100));
@@ -266,7 +274,8 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
   const extra = Math.max(0, logged - monthTarget);
   const expectedByNow = cad * (lastDay / 7);
 
-  const paceKey = getPaceStatus(logged, expectedByNow, lastDay);
+  const isNewUser = joinDay != null && joinDay > 3 && effectiveDays < getDaysInMonth(yearMonth);
+  const paceKey = getPaceStatus(logged, expectedByNow, lastDay, isNewUser);
   const variantKey = `${yearMonth}|${activity}|${paceKey}|${logged}|${lastDay}`;
   const paceMessage = getPaceMessage(paceKey, variantKey);
 
@@ -276,7 +285,8 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
     "on-track": "On track",
     behind:     "Behind pace",
     early:      "Early days!",
-    started:    getStartedBadgeLabel(variantKey)
+    started:    getStartedBadgeLabel(variantKey),
+    new:        "Just started"
   }[paceKey] || "On track";
 
   const fullWeeksBreakdown = fullWeeks.map((w, idx) => {
@@ -314,7 +324,7 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
 }
 
 // ─── computeStatsFromEntry ────────────────────────────────
-export function computeStatsFromEntry(entry, yearMonth) {
+export function computeStatsFromEntry(entry, yearMonth, joinDate = null) {
   const activities = entry.activities || [];
   const cadences   = entry.cadences   || activities.map(() => 7);
   const marks      = entry.marks      || {};
@@ -327,6 +337,16 @@ export function computeStatsFromEntry(entry, yearMonth) {
   const today          = getReferenceDate(yearMonth, isCurrentMonth, lastDay);
   const fullWeeks = getFullWeeksInMonth(yearMonth);
 
+  let daysAvailable = daysInMonth;
+  let joinDay = null;
+  if (joinDate) {
+    const joinYM = `${joinDate.getFullYear()}-${String(joinDate.getMonth() + 1).padStart(2, "0")}`;
+    if (joinYM === yearMonth) {
+      joinDay = joinDate.getDate();
+      daysAvailable = daysInMonth - (joinDay - 1);
+    }
+  }
+
   const doneDays = new Set();
   activities.forEach(activity => {
     (marks[activity] || []).forEach(d => { if (d <= lastDay) doneDays.add(d); });
@@ -334,7 +354,7 @@ export function computeStatsFromEntry(entry, yearMonth) {
   const perfectDays = countPerfectDays(activities, marks, lastDay);
 
   const habitStats = activities.map((activity, i) =>
-    buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks, 0)
+    buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks, 0, daysAvailable, joinDay)
   );
 
   const monthlyHits = habitStats.filter(h => h.monthLogged >= h.monthTarget).length;
@@ -360,7 +380,10 @@ export function computeStatsFromEntry(entry, yearMonth) {
 // ─── getUserStats ─────────────────────────────────────────
 export async function getUserStats(userId, yearMonth) {
   try {
-    const logSnap = await getDoc(doc(db, "logs", yearMonth, "entries", userId));
+    const [logSnap, userSnap] = await Promise.all([
+      getDoc(doc(db, "logs", yearMonth, "entries", userId)),
+      getDoc(doc(db, "users", userId))
+    ]);
     if (!logSnap.exists()) return emptyStats();
 
     const data       = logSnap.data();
@@ -376,6 +399,20 @@ export async function getUserStats(userId, yearMonth) {
     const today          = getReferenceDate(yearMonth, isCurrentMonth, lastDay);
     const fullWeeks = getFullWeeksInMonth(yearMonth);
 
+    let daysAvailable = daysInMonth;
+    let joinDay = null;
+    if (userSnap.exists()) {
+      const createdAt = userSnap.data().createdAt;
+      if (createdAt) {
+        const joinDate = createdAt.toDate();
+        const joinYM = `${joinDate.getFullYear()}-${String(joinDate.getMonth() + 1).padStart(2, "0")}`;
+        if (joinYM === yearMonth) {
+          joinDay = joinDate.getDate();
+          daysAvailable = daysInMonth - (joinDay - 1);
+        }
+      }
+    }
+
     const doneDays = new Set();
     activities.forEach(activity => {
       (marks[activity] || []).forEach(d => { if (d <= lastDay) doneDays.add(d); });
@@ -389,7 +426,7 @@ export async function getUserStats(userId, yearMonth) {
     );
 
     const habitStats = activities.map((activity, i) =>
-      buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks, habitStreaks[i])
+      buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks, habitStreaks[i], daysAvailable, joinDay)
     );
 
     const monthlyHits = habitStats.filter(h => h.monthLogged >= h.monthTarget).length;
