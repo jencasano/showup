@@ -1,18 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-label="moon icon">
-  <!-- crescent -->
-  <path fill-rule="evenodd" d="M12 2.2a9.8 9.8 0 1 0 0 19.6a9.8 9.8 0 1 0 0-19.6ZM15.9 4.6a8.1 8.1 0 1 0 0 14.8a8.1 8.1 0 1 0 0-14.8Z" fill="#F8C08A"/>
-  <path fill-rule="evenodd" d="M12 2.2a9.8 9.8 0 1 0 0 19.6a9.8 9.8 0 1 0 0-19.6ZM15.3 4.9a7.5 7.5 0 1 0 0 14.2a7.5 7.5 0 1 0 0-14.2Z" fill="#FBDFCB" opacity="0.38"/>
+  <defs>
+    <mask id="moon-crescent-cut">
+      <rect width="24" height="24" fill="black"/>
+      <circle cx="11.5" cy="12" r="9" fill="white"/>
+      <circle cx="15" cy="10.8" r="7.4" fill="black"/>
+    </mask>
+  </defs>
 
-  <!-- stars -->
-  <path d="M5 6.2L5.6 7.4L6.9 7.6L6 8.5L6.2 9.8L5 9.2L3.8 9.8L4 8.5L3.1 7.6L4.4 7.4L5 6.2Z" fill="#F8C08A"/>
-  <path d="M17.1 5.1L17.6 6.1L18.7 6.3L17.9 7L18.1 8.1L17.1 7.6L16.1 8.1L16.3 7L15.5 6.3L16.6 6.1L17.1 5.1Z" fill="#F8C08A"/>
-  <path d="M15.1 10.2L15.7 11.4L17 11.6L16.1 12.4L16.3 13.7L15.1 13.1L13.9 13.7L14.1 12.4L13.2 11.6L14.5 11.4L15.1 10.2Z" fill="#F8C08A"/>
+  <circle cx="11.5" cy="12" r="9" fill="#F8C08A" mask="url(#moon-crescent-cut)"/>
+  <circle cx="10.9" cy="11.4" r="8.2" fill="#FBDFCB" opacity="0.35" mask="url(#moon-crescent-cut)"/>
 
-  <!-- sky dots -->
-  <circle cx="9.2" cy="8.3" r="0.35" fill="#80B9B9"/>
-  <circle cx="11.4" cy="14.8" r="0.4" fill="#80B9B9"/>
-  <circle cx="16.9" cy="9.4" r="0.38" fill="#80B9B9"/>
+  <path d="M3.1 6L3.7 7.2L5 7.4L4.1 8.2L4.3 9.5L3.1 8.9L1.9 9.5L2.1 8.2L1.2 7.4L2.5 7.2L3.1 6Z" fill="#F8C08A"/>
+  <path d="M18.2 3.8L18.7 4.8L19.8 5L19 5.8L19.2 6.9L18.2 6.4L17.2 6.9L17.4 5.8L16.6 5L17.7 4.8L18.2 3.8Z" fill="#F8C08A"/>
+  <path d="M15.4 9.3L16.1 10.7L17.6 10.9L16.5 11.9L16.8 13.4L15.4 12.7L14 13.4L14.3 11.9L13.2 10.9L14.7 10.7L15.4 9.3Z" fill="#F8C08A"/>
 
-  <!-- brand accent stroke -->
-  <path d="M6.7 17.7C8.2 19 10.2 19.8 12.3 19.8" stroke="#D8584E" stroke-opacity="0.28" stroke-width="0.9" stroke-linecap="round"/>
+  <circle cx="9.8" cy="7.5" r="0.35" fill="#80B9B9"/>
+  <circle cx="11.3" cy="14.2" r="0.4" fill="#80B9B9"/>
+  <circle cx="17.1" cy="9.1" r="0.38" fill="#80B9B9"/>
 </svg>
