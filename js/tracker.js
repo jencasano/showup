@@ -603,7 +603,7 @@ export function loadAllLogs(yearMonth, container, currentUser) {
   }
 
   function clearRenderedResults() {
-    container.querySelectorAll(".all-result-card-slot, .all-search-empty").forEach(node => node.remove());
+    container.querySelectorAll(".all-result-card-slot, .all-search-empty, .empty-state").forEach(node => node.remove());
   }
 
   function ensureControls() {
