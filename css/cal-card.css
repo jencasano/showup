@@ -574,8 +574,18 @@
 }
 
 .following-pin-btn-small {
-  font-size: 0.68rem;
-  padding: 4px 8px;
+  font-size: 1rem;
+  padding: 4px 6px;
+  opacity: 0.5;
+  filter: grayscale(0.4);
+}
+
+.following-pin-btn-small:hover {
+  opacity: 0.8;
+}
+
+.following-pin-btn-small.active {
+  opacity: 1;
 }
 
 .following-nudge-section {
