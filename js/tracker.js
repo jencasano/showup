@@ -7,6 +7,7 @@ import { getDaysInMonth, getDayLabel, getCurrentYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard } from "./mobile-tracker.js";
 import { getUserStats, computeStatsFromEntry, cadenceLabel } from "./stats.js";
+import { icon } from "./icons.js";
 
 const MARKER_SYMBOLS = {
   circle:   "●",
@@ -199,7 +200,7 @@ function renderStatusBanner(entry, todayDate) {
   const banner = document.createElement("div");
   banner.className = `status-banner ${allDone ? "status-banner--done" : "status-banner--pending"}`;
 
-  const icon  = allDone ? "🎉" : "🔥";
+  const statusIcon = allDone ? "🎉" : icon('flame', 22);
   const title = allDone
     ? "Good job, you showed up today!"
     : noneLogged
@@ -209,7 +210,7 @@ function renderStatusBanner(entry, todayDate) {
   const pill = allDone ? "All done!" : `${pending.length} left`;
 
   banner.innerHTML = `
-    <span class="status-banner__icon">${icon}</span>
+    <span class="status-banner__icon">${statusIcon}</span>
     <div class="status-banner__body">
       <strong class="status-banner__title">${title}</strong>
       <span class="status-banner__sub">${sub}</span>
@@ -286,7 +287,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
     </div>
     <div class="summary-stats">
       <div class="summary-stat">
-        <span class="summary-stat__icon">🎯</span>
+        <span class="summary-stat__icon">${icon('target', 28)}</span>
         <div class="summary-stat__val">${monthlyTargetHitRate}<span class="summary-stat__unit">%</span></div>
         <div class="summary-stat__label">
           <span class="summary-stat__label-text">Targeted Habits Completed</span>
@@ -299,7 +300,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
         </div>
       </div>
       <div class="summary-stat">
-        <span class="summary-stat__icon">✨</span>
+        <span class="summary-stat__icon">${icon('sparkle', 28)}</span>
         <div class="summary-stat__val">${perfectDays}/${totalThisMonth}</div>
         <div class="summary-stat__label">
           <span class="summary-stat__label-text">Perfect Days</span>
@@ -312,7 +313,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
         </div>
       </div>
       <div class="summary-stat">
-        <span class="summary-stat__icon">📅</span>
+        <span class="summary-stat__icon">${icon('sunflower', 28)}</span>
         <div class="summary-stat__val">${showUpDays}/${totalThisMonth}</div>
         <div class="summary-stat__label">
           <span class="summary-stat__label-text">Show-Up Days</span>

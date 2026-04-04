@@ -109,8 +109,8 @@ header h1 span { color: var(--color-primary); }
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-faint);
+  background: var(--text);
+  border: 1px solid var(--text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,6 +119,11 @@ header h1 span { color: var(--color-primary); }
 }
 
 #theme-toggle:hover { border-color: var(--color-primary); }
+
+[data-theme="dark"] #theme-toggle {
+  background: var(--bg-subtle);
+  border-color: var(--border-faint);
+}
 
 /* ── Month Bar ─────────────────────────────────── */
 #month-bar {
