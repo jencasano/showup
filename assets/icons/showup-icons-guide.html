@@ -16,198 +16,46 @@
       --dark-bg: #1D2142; --dark-surface: #2A2E45; --dark-text: #FBDFCB;
     }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-
-    .header {
-      background: var(--dark-bg);
-      padding: 48px 40px 40px;
-      text-align: center;
-    }
+    .header { background: var(--dark-bg); padding: 48px 40px 40px; text-align: center; }
     .logo { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 2rem; color: var(--dark-text); letter-spacing: -0.04em; }
     .logo span { color: var(--coral); }
     .header-sub { font-family: 'Fraunces', serif; color: var(--teal); font-style: italic; margin-top: 4px; font-size: 1rem; }
-
     .page { max-width: 900px; margin: 0 auto; padding: 60px 32px; }
-
     h2 { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
     .sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 28px; line-height: 1.6; max-width: 600px; }
     .tag { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--coral); margin-bottom: 6px; }
-
     hr { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
-
-    /* Icon grid */
-    .icon-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .icon-cell {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 8px 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      transition: box-shadow 0.15s;
-    }
-
-    .icon-cell:hover {
-      box-shadow: 0 4px 16px rgba(42,46,69,0.10);
-    }
-
+    .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .icon-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 8px 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: box-shadow 0.15s; }
+    .icon-cell:hover { box-shadow: 0 4px 16px rgba(42,46,69,0.10); }
     .icon-cell img { display: block; }
     .icon-name { font-size: 0.58rem; font-weight: 600; color: var(--muted); text-align: center; }
     .icon-use  { font-size: 0.52rem; color: var(--faint); text-align: center; line-height: 1.3; }
-
-    /* Size demos */
+    .icon-cell.special { border-color: var(--coral); background: rgba(216,88,78,0.04); }
+    .icon-cell.special .icon-name { color: var(--coral); }
+    .fav-preview { background: var(--dark-bg); border-radius: 4px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
     .size-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
     .size-demo { display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .size-label { font-size: 0.6rem; color: var(--faint); }
-
-    /* Code blocks */
-    pre {
-      background: var(--dark-bg);
-      color: var(--dark-text);
-      border-radius: 10px;
-      padding: 18px 20px;
-      font-size: 0.78rem;
-      overflow-x: auto;
-      margin-bottom: 16px;
-      line-height: 1.7;
-    }
-
-    code {
-      font-family: 'SF Mono', 'Fira Code', monospace;
-    }
-
+    pre { background: var(--dark-bg); color: var(--dark-text); border-radius: 10px; padding: 18px 20px; font-size: 0.78rem; overflow-x: auto; margin-bottom: 16px; line-height: 1.7; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; }
     .code-comment { color: var(--faint); }
     .code-keyword { color: var(--teal); }
     .code-string  { color: var(--amber); }
     .code-fn      { color: var(--coral); }
-
-    /* Usage examples */
-    .usage-example {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px 24px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .usage-preview {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      background: var(--subtle);
-      border-radius: 8px;
-      flex-shrink: 0;
-      min-width: 180px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .usage-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
-    .usage-file { font-size: 0.65rem; color: var(--faint); margin-top: 2px; font-family: monospace; }
-
-    /* Bottom nav demo */
-    .bottom-nav-demo {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 0;
-      display: flex;
-      max-width: 320px;
-    }
-
-    .nav-tab {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      font-size: 0.58rem;
-      font-weight: 600;
-      color: var(--faint);
-    }
-
+    .bottom-nav-demo { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 0; display: flex; max-width: 320px; }
+    .nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.58rem; font-weight: 600; color: var(--faint); }
     .nav-tab.active { color: var(--coral); }
-
-    /* Sticker picker demo */
-    .sticker-picker {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      max-width: 400px;
-    }
-
-    .sticker-btn {
-      width: 44px; height: 44px;
-      border-radius: 10px;
-      background: var(--subtle);
-      border: 2px solid transparent;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
+    .sticker-picker { display: flex; flex-wrap: wrap; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; max-width: 440px; }
+    .sticker-btn { width: 44px; height: 44px; border-radius: 10px; background: var(--subtle); border: 2px solid transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; }
     .sticker-btn:hover { border-color: var(--border); }
     .sticker-btn.active { border-color: var(--coral); background: rgba(216,88,78,0.08); }
-
-    .step {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-      align-items: flex-start;
-    }
-
-    .step-num {
-      width: 24px; height: 24px;
-      border-radius: 50%;
-      background: var(--coral);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
+    .step { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start; }
+    .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--coral); color: white; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
     .step-text { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
     .step-text strong { color: var(--text); }
-
-    /* Inline usage rows */
-    .inline-demo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      background: var(--subtle);
-      border-radius: 8px;
-      font-size: 0.82rem;
-      color: var(--text);
-      font-weight: 500;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-    }
-
-    .footer {
-      background: var(--dark-bg);
-      padding: 32px;
-      text-align: center;
-    }
-
+    .inline-demo { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--subtle); border-radius: 8px; font-size: 0.82rem; color: var(--text); font-weight: 500; margin-bottom: 8px; flex-wrap: wrap; }
+    .footer { background: var(--dark-bg); padding: 32px; text-align: center; }
     .footer-logo { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--dark-text); letter-spacing: -0.04em; }
     .footer-logo span { color: var(--coral); }
     .footer-text { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
@@ -215,7 +63,6 @@
 </head>
 <body>
 
-  <!-- Header -->
   <div class="header">
     <div class="logo">show<span>up.</span></div>
     <div class="header-sub">Custom Icon System — Integration Guide</div>
@@ -223,356 +70,170 @@
 
   <div class="page">
 
-    <!-- 01 All Icons -->
     <div class="tag">01 — The Pack</div>
-    <h2>All 25 Icons</h2>
+    <h2>All 28 Icons</h2>
     <p class="sub">Every icon is an SVG file in <code>/assets/icons/</code>. They use the showup. brand palette and look identical on every device, unlike system emojis which vary between iOS, Android, and Windows.</p>
 
     <div class="icon-grid">
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/flame.svg" width="32" height="32" />
-        <div class="icon-name">flame</div>
-        <div class="icon-use">Streak stat</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/sunflower.svg" width="32" height="32" />
-        <div class="icon-name">sunflower</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/sunflower2.svg" width="32" height="32" />
-        <div class="icon-name">sunflower2</div>
-        <div class="icon-use">Sticker (alt)</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/muscle.svg" width="32" height="32" />
-        <div class="icon-name">muscle</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/star.svg" width="32" height="32" />
-        <div class="icon-name">star</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/target.svg" width="32" height="32" />
-        <div class="icon-name">target</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/run.svg" width="32" height="32" />
-        <div class="icon-name">run</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/brain.svg" width="32" height="32" />
-        <div class="icon-name">brain</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/bacon.svg" width="32" height="32" />
-        <div class="icon-name">bacon</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/steak.svg" width="32" height="32" />
-        <div class="icon-name">steak</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/butter.svg" width="32" height="32" />
-        <div class="icon-name">butter</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/sparkle.svg" width="32" height="32" />
-        <div class="icon-name">sparkle</div>
-        <div class="icon-use">Sticker / Celebration</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/sprout.svg" width="32" height="32" />
-        <div class="icon-name">sprout</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/dumbbell.svg" width="32" height="32" />
-        <div class="icon-name">dumbbell</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/headphones.svg" width="32" height="32" />
-        <div class="icon-name">headphones</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/siren.svg" width="32" height="32" />
-        <div class="icon-name">siren</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/boom.svg" width="32" height="32" />
-        <div class="icon-name">boom</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/megaphone.svg" width="32" height="32" />
-        <div class="icon-name">megaphone</div>
-        <div class="icon-use">Sticker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/calendar.svg" width="32" height="32" />
-        <div class="icon-name">calendar</div>
-        <div class="icon-use">Month picker</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/sun.svg" width="32" height="32" />
-        <div class="icon-name">sun</div>
-        <div class="icon-use">Light mode toggle</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/moon.svg" width="32" height="32" />
-        <div class="icon-name">moon</div>
-        <div class="icon-use">Dark mode toggle</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/my-log.svg" width="32" height="32" />
-        <div class="icon-name">my-log</div>
-        <div class="icon-use">Mobile nav: My Log</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/following.svg" width="32" height="32" />
-        <div class="icon-name">following</div>
-        <div class="icon-use">Mobile nav: Following</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/all.svg" width="32" height="32" />
-        <div class="icon-name">all</div>
-        <div class="icon-use">Mobile nav: All</div>
-      </div>
-      <div class="icon-cell">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/now.svg" width="32" height="32" />
-        <div class="icon-name">now</div>
-        <div class="icon-use">Badge / Sticker</div>
+      <div class="icon-cell"><img src="flame.svg" width="32" height="32" /><div class="icon-name">flame</div><div class="icon-use">Streak stat</div></div>
+      <div class="icon-cell"><img src="sunflower.svg" width="32" height="32" /><div class="icon-name">sunflower</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="sunflower2.svg" width="32" height="32" /><div class="icon-name">sunflower2</div><div class="icon-use">Sticker (alt)</div></div>
+      <div class="icon-cell"><img src="muscle.svg" width="32" height="32" /><div class="icon-name">muscle</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="star.svg" width="32" height="32" /><div class="icon-name">star</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="target.svg" width="32" height="32" /><div class="icon-name">target</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="run.svg" width="32" height="32" /><div class="icon-name">run</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="brain.svg" width="32" height="32" /><div class="icon-name">brain</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="bacon.svg" width="32" height="32" /><div class="icon-name">bacon</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="steak.svg" width="32" height="32" /><div class="icon-name">steak</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="butter.svg" width="32" height="32" /><div class="icon-name">butter</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="sparkle.svg" width="32" height="32" /><div class="icon-name">sparkle</div><div class="icon-use">Sticker / Celebration</div></div>
+      <div class="icon-cell"><img src="sprout.svg" width="32" height="32" /><div class="icon-name">sprout</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="dumbbell.svg" width="32" height="32" /><div class="icon-name">dumbbell</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="headphones.svg" width="32" height="32" /><div class="icon-name">headphones</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="siren.svg" width="32" height="32" /><div class="icon-name">siren</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="boom.svg" width="32" height="32" /><div class="icon-name">boom</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="megaphone.svg" width="32" height="32" /><div class="icon-name">megaphone</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="pushpin.svg" width="32" height="32" /><div class="icon-name">pushpin</div><div class="icon-use">Sticker</div></div>
+      <div class="icon-cell"><img src="pushpin2.svg" width="32" height="32" /><div class="icon-name">pushpin2</div><div class="icon-use">Sticker (alt)</div></div>
+      <div class="icon-cell"><img src="now.svg" width="32" height="32" /><div class="icon-name">now</div><div class="icon-use">Badge / Sticker</div></div>
+      <div class="icon-cell"><img src="calendar.svg" width="32" height="32" /><div class="icon-name">calendar</div><div class="icon-use">Month picker</div></div>
+      <div class="icon-cell"><img src="sun.svg" width="32" height="32" /><div class="icon-name">sun</div><div class="icon-use">Light mode toggle</div></div>
+      <div class="icon-cell"><img src="moon.svg" width="32" height="32" /><div class="icon-name">moon</div><div class="icon-use">Dark mode toggle</div></div>
+      <div class="icon-cell"><img src="my-log.svg" width="32" height="32" /><div class="icon-name">my-log</div><div class="icon-use">Mobile nav: My Log</div></div>
+      <div class="icon-cell"><img src="following.svg" width="32" height="32" /><div class="icon-name">following</div><div class="icon-use">Mobile nav: Following</div></div>
+      <div class="icon-cell"><img src="all.svg" width="32" height="32" /><div class="icon-name">all</div><div class="icon-use">Mobile nav: All</div></div>
+      <div class="icon-cell special">
+        <div class="fav-preview"><img src="favicon.svg" width="20" height="20" /></div>
+        <div class="icon-name">favicon</div>
+        <div class="icon-use">Browser tab / App icon</div>
       </div>
     </div>
 
     <hr />
 
-    <!-- 02 Sizes -->
     <div class="tag">02 — Sizes</div>
     <h2>Scaling</h2>
     <p class="sub">Icons are SVGs so they scale perfectly to any size. Use the size helpers in <code>css/icons.css</code> or pass a size directly to the JS helper.</p>
 
     <div class="size-row">
-      <div class="size-demo">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/flame.svg" width="12" height="12" />
-        <div class="size-label">12px</div>
-      </div>
-      <div class="size-demo">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/flame.svg" width="16" height="16" />
-        <div class="size-label">16px</div>
-      </div>
-      <div class="size-demo">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/flame.svg" width="20" height="20" />
-        <div class="size-label">20px</div>
-      </div>
-      <div class="size-demo">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/flame.svg" width="24" height="24" />
-        <div class="size-label">24px</div>
-      </div>
-      <div class="size-demo">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/flame.svg" width="32" height="32" />
-        <div class="size-label">32px</div>
-      </div>
-      <div class="size-demo">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/flame.svg" width="48" height="48" />
-        <div class="size-label">48px</div>
-      </div>
-      <div class="size-demo">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/flame.svg" width="64" height="64" />
-        <div class="size-label">64px</div>
-      </div>
+      <div class="size-demo"><img src="flame.svg" width="12" height="12" /><div class="size-label">12px</div></div>
+      <div class="size-demo"><img src="flame.svg" width="16" height="16" /><div class="size-label">16px</div></div>
+      <div class="size-demo"><img src="flame.svg" width="20" height="20" /><div class="size-label">20px</div></div>
+      <div class="size-demo"><img src="flame.svg" width="24" height="24" /><div class="size-label">24px</div></div>
+      <div class="size-demo"><img src="flame.svg" width="32" height="32" /><div class="size-label">32px</div></div>
+      <div class="size-demo"><img src="flame.svg" width="48" height="48" /><div class="size-label">48px</div></div>
+      <div class="size-demo"><img src="flame.svg" width="64" height="64" /><div class="size-label">64px</div></div>
     </div>
 
     <hr />
 
-    <!-- 03 Setup -->
     <div class="tag">03 — Setup</div>
     <h2>How to Add to showup.</h2>
 
     <div class="step">
       <div class="step-num">1</div>
-      <div class="step-text"><strong>Pull the latest code</strong> — the icons are already in the repo at <code>/assets/icons/</code> after the last git push.</div>
+      <div class="step-text"><strong>Pull the latest code</strong> — the icons are already in the repo at <code>/assets/icons/</code>.</div>
     </div>
-
     <div class="step">
       <div class="step-num">2</div>
-      <div class="step-text"><strong>Link the CSS</strong> in <code>index.html</code> — add this line after the other CSS links:</div>
+      <div class="step-text"><strong>Link the CSS</strong> in <code>index.html</code>:</div>
     </div>
-
-<pre><code><span class="code-comment">&lt;!-- In index.html, add after tracker.css --&gt;</span>
-<span class="code-keyword">&lt;link</span> rel="stylesheet" href="css/icons.css" <span class="code-keyword">/&gt;</span></code></pre>
-
+<pre><code><span class="code-keyword">&lt;link</span> rel="stylesheet" href="css/icons.css" <span class="code-keyword">/&gt;</span></code></pre>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-text"><strong>Import the JS helper</strong> in any JS file that needs icons:</div>
     </div>
-
 <pre><code><span class="code-keyword">import</span> { icon, iconEl, iconSrc, STICKER_ICONS } <span class="code-keyword">from</span> <span class="code-string">'./icons.js'</span>;</code></pre>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text"><strong>Link the favicon</strong> in <code>&lt;head&gt;</code> — already done in index.html:</div>
+    </div>
+<pre><code><span class="code-keyword">&lt;link</span> rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" <span class="code-keyword">/&gt;</span></code></pre>
 
     <hr />
 
-    <!-- 04 Usage -->
     <div class="tag">04 — Usage</div>
     <h2>Where to Use Them</h2>
-    <p class="sub">Anywhere you'd use an emoji, use an icon instead. Below are the exact spots in the app and the code to use.</p>
+    <p class="sub">Anywhere you'd use an emoji, use an icon instead.</p>
 
-    <!-- Streak stat -->
     <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;">Month Bar — Streak Stat</p>
     <div class="inline-demo">
-      <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/flame.svg" width="16" height="16" />
+      <img src="flame.svg" width="16" height="16" />
       <span>3 day streak · 3/4 days done</span>
     </div>
-<pre><code><span class="code-comment">// In app.js updateStat()</span>
-<span class="code-keyword">import</span> { icon } <span class="code-keyword">from</span> <span class="code-string">'./icons.js'</span>;
-
-<span class="code-keyword">const</span> parts = [];
+<pre><code><span class="code-comment">// In app.js updateStat() — use .innerHTML not .textContent</span>
 <span class="code-keyword">if</span> (streak > 0) parts.push(<span class="code-string">`${<span class="code-fn">icon</span>('flame', 16)} ${streak} day streak`</span>);
-parts.push(<span class="code-string">`${doneThisMonth}/${totalThisMonth} days done`</span>);
-monthBarStat.innerHTML = parts.join(<span class="code-string">' · '</span>);
-<span class="code-comment">// Note: use .innerHTML instead of .textContent</span></code></pre>
+monthBarStat.innerHTML = parts.join(<span class="code-string">' · '</span>);</code></pre>
 
-    <!-- Dark mode toggle -->
-    <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;margin-top:24px;">Theme Toggle Button</p>
+    <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;margin-top:24px;">Theme Toggle</p>
     <div class="inline-demo">
-      <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/moon.svg" width="16" height="16" />
-      <span style="color:var(--faint);font-size:0.7rem;">dark mode off</span>
+      <img src="moon.svg" width="16" height="16" />
+      <span style="color:var(--faint);font-size:0.7rem;">light mode</span>
       <span style="margin:0 8px;">vs</span>
-      <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/sun.svg" width="16" height="16" />
-      <span style="color:var(--faint);font-size:0.7rem;">dark mode on</span>
+      <img src="sun.svg" width="16" height="16" />
+      <span style="color:var(--faint);font-size:0.7rem;">dark mode</span>
     </div>
-<pre><code><span class="code-comment">// In app.js dark mode toggle</span>
-<span class="code-keyword">import</span> { iconEl } <span class="code-keyword">from</span> <span class="code-string">'./icons.js'</span>;
-
-<span class="code-comment">// Replace the 🌙/☀️ text content with icon elements</span>
-themeToggle.innerHTML = <span class="code-string">''</span>;
+<pre><code>themeToggle.innerHTML = <span class="code-string">''</span>;
 themeToggle.appendChild(<span class="code-fn">iconEl</span>(next === <span class="code-string">'dark'</span> ? <span class="code-string">'sun'</span> : <span class="code-string">'moon'</span>, 16));</code></pre>
 
-    <!-- Calendar picker -->
-    <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;margin-top:24px;">Month Bar Calendar Button</p>
-<pre><code><span class="code-comment">&lt;!-- In index.html, replace the 📅 emoji --&gt;</span>
-<span class="code-keyword">&lt;button</span> id="cal-picker-btn"<span class="code-keyword">&gt;</span>
-  <span class="code-keyword">&lt;img</span> src="/assets/icons/calendar.svg" width="16" height="16" class="showup-icon" <span class="code-keyword">/&gt;</span>
-<span class="code-keyword">&lt;/button&gt;</span></code></pre>
-
-    <!-- Mobile bottom nav -->
     <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;margin-top:24px;">Mobile Bottom Nav</p>
-
     <div class="bottom-nav-demo" style="margin-bottom:12px;">
-      <div class="nav-tab active">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/my-log.svg" width="22" height="22" />
-        My Log
-      </div>
-      <div class="nav-tab">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/following.svg" width="22" height="22" />
-        Following
-      </div>
-      <div class="nav-tab">
-        <img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/all.svg" width="22" height="22" />
-        All
-      </div>
+      <div class="nav-tab active"><img src="my-log.svg" width="22" height="22" />My Log</div>
+      <div class="nav-tab"><img src="following.svg" width="22" height="22" />Following</div>
+      <div class="nav-tab"><img src="all.svg" width="22" height="22" />All</div>
     </div>
 
-<pre><code><span class="code-comment">&lt;!-- In index.html, replace bottom-tab-icon spans --&gt;</span>
-<span class="code-keyword">&lt;button</span> class="bottom-tab active" data-tab="mylog"<span class="code-keyword">&gt;</span>
-  <span class="code-keyword">&lt;img</span> src="/assets/icons/my-log.svg" width="22" height="22" class="showup-icon bottom-tab-icon" <span class="code-keyword">/&gt;</span>
-  <span class="code-keyword">&lt;span&gt;</span>My Log<span class="code-keyword">&lt;/span&gt;</span>
-<span class="code-keyword">&lt;/button&gt;</span>
-
-<span class="code-keyword">&lt;button</span> class="bottom-tab" data-tab="following"<span class="code-keyword">&gt;</span>
-  <span class="code-keyword">&lt;img</span> src="/assets/icons/following.svg" width="22" height="22" class="showup-icon bottom-tab-icon" <span class="code-keyword">/&gt;</span>
-  <span class="code-keyword">&lt;span&gt;</span>Following<span class="code-keyword">&lt;/span&gt;</span>
-<span class="code-keyword">&lt;/button&gt;</span>
-
-<span class="code-keyword">&lt;button</span> class="bottom-tab" data-tab="all"<span class="code-keyword">&gt;</span>
-  <span class="code-keyword">&lt;img</span> src="/assets/icons/all.svg" width="22" height="22" class="showup-icon bottom-tab-icon" <span class="code-keyword">/&gt;</span>
-  <span class="code-keyword">&lt;span&gt;</span>All<span class="code-keyword">&lt;/span&gt;</span>
-<span class="code-keyword">&lt;/button&gt;</span></code></pre>
-
-    <!-- Sticker picker -->
-    <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;margin-top:24px;">Month Setup Sticker Picker</p>
-
+    <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;margin-top:24px;">Sticker Picker</p>
     <div class="sticker-picker" style="margin-bottom:12px;">
-      <div class="sticker-btn active"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/sunflower.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/muscle.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/star.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/target.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/run.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/brain.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/bacon.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/steak.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/dumbbell.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/sparkle.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/sprout.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/headphones.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/siren.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/boom.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/megaphone.svg" width="24" height="24" /></div>
-      <div class="sticker-btn"><img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/butter.svg" width="24" height="24" /></div>
+      <div class="sticker-btn active"><img src="sunflower.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="sunflower2.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="muscle.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="star.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="target.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="run.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="brain.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="bacon.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="steak.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="butter.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="sparkle.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="sprout.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="dumbbell.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="headphones.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="siren.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="boom.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="megaphone.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="pushpin.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="pushpin2.svg" width="24" height="24" /></div>
+      <div class="sticker-btn"><img src="now.svg" width="24" height="24" /></div>
     </div>
-
-<pre><code><span class="code-comment">// In month-setup.js — replace emoji sticker grid</span>
-<span class="code-keyword">import</span> { iconEl, STICKER_ICONS } <span class="code-keyword">from</span> <span class="code-string">'./icons.js'</span>;
-
-<span class="code-comment">// Build sticker picker buttons</span>
-STICKER_ICONS.forEach(name => {
-  <span class="code-keyword">const</span> btn = document.createElement(<span class="code-string">'button'</span>);
-  btn.className = <span class="code-string">'sticker-btn'</span>;
-  btn.dataset.sticker = name; <span class="code-comment">// store icon name as sticker value</span>
-  btn.appendChild(<span class="code-fn">iconEl</span>(name, 24));
-  btn.addEventListener(<span class="code-string">'click'</span>, () => selectSticker(name));
-  stickerGrid.appendChild(btn);
-});
-
-<span class="code-comment">// When rendering a badge, use iconSrc for the sticker img</span>
-<span class="code-keyword">import</span> { iconSrc } <span class="code-keyword">from</span> <span class="code-string">'./icons.js'</span>;
-
-badge.innerHTML = <span class="code-string">`
-  ${avatarHTML}
-  &lt;span class="badge-name"&gt;${entry.displayName}&lt;/span&gt;
-  &lt;img src="${<span class="code-fn">iconSrc</span>(entry.decoration.sticker)}" width="18" height="18" class="showup-icon" /&gt;
-`</span>;</code></pre>
 
     <hr />
 
-    <!-- 05 Notes -->
     <div class="tag">05 — Notes</div>
     <h2>A Few Things to Know</h2>
-
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;">
       <div style="padding:18px;background:var(--subtle);border-radius:12px;border:1px solid var(--border);">
         <div style="font-size:0.72rem;font-weight:700;color:var(--text);margin-bottom:6px;">Sticker value in Firestore</div>
-        <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;">The <code>decoration.sticker</code> field in Firestore currently stores emoji strings like "🌻". Once you switch to the icon system, store the icon name string instead: "sunflower", "flame", etc. Existing users will need to re-pick their sticker on next monthly setup.</div>
+        <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;">Store the icon name string: "sunflower", "flame", etc. Existing users will need to re-pick their sticker on next monthly setup.</div>
       </div>
       <div style="padding:18px;background:var(--subtle);border-radius:12px;border:1px solid var(--border);">
         <div style="font-size:0.72rem;font-weight:700;color:var(--text);margin-bottom:6px;">innerHTML vs textContent</div>
-        <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;">When inserting icons via the <code>icon()</code> helper (which returns an HTML string), always use <code>.innerHTML</code>, never <code>.textContent</code>. If you use <code>.textContent</code> it will render the raw HTML string as text.</div>
+        <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;">When inserting icons via <code>icon()</code>, always use <code>.innerHTML</code> — never <code>.textContent</code>.</div>
       </div>
       <div style="padding:18px;background:var(--subtle);border-radius:12px;border:1px solid var(--border);">
-        <div style="font-size:0.72rem;font-weight:700;color:var(--text);margin-bottom:6px;">Adding new icons later</div>
-        <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;">Drop a new .svg file into <code>/assets/icons/</code>, add its name to the <code>ICON_NAMES</code> array in <code>js/icons.js</code>, and it's available everywhere instantly. No other changes needed.</div>
+        <div style="font-size:0.72rem;font-weight:700;color:var(--text);margin-bottom:6px;">Adding new icons</div>
+        <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;">Drop a new .svg into <code>/assets/icons/</code>, add its name to <code>ICON_NAMES</code> in <code>js/icons.js</code>. Done.</div>
       </div>
       <div style="padding:18px;background:var(--subtle);border-radius:12px;border:1px solid var(--border);">
         <div style="font-size:0.72rem;font-weight:700;color:var(--text);margin-bottom:6px;">Firebase hosting</div>
-        <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;">The <code>/assets/</code> folder will be deployed automatically with <code>firebase deploy</code> — no extra config needed since <code>firebase.json</code> already serves the public folder.</div>
+        <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;"><code>/assets/</code> deploys automatically with <code>firebase deploy</code>. No extra config needed.</div>
       </div>
     </div>
-
   </div>
 
   <footer class="footer">
     <div class="footer-logo">show<span>up.</span></div>
-    <div class="footer-text">showup. Icon System v1.0 · Built by Jen & Cii · 2026 🪨</div>
+    <div class="footer-text">showup. Icon System v1.1 · Built by Jen & Cii · 2026 🪨</div>
   </footer>
 
 </body>
