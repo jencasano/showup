@@ -272,7 +272,13 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
   const consecutiveDays  = countConsecutiveDays(marks[activity] || [], yearMonth, today);
   const displayLogged = Math.min(logged, monthTarget);
   const extra = Math.max(0, logged - monthTarget);
-  const expectedByNow = cad * (lastDay / 7);
+
+  // ── Use daysSinceJoin for new users so pace is measured from their
+  //    actual start date, not the beginning of the month
+  const daysSinceJoin = (joinDay != null && joinDay > 1)
+    ? Math.max(1, lastDay - (joinDay - 1))
+    : lastDay;
+  const expectedByNow = cad * (daysSinceJoin / 7);
 
   const isNewUser = joinDay != null && joinDay > 3 && effectiveDays < getDaysInMonth(yearMonth);
   const paceKey = getPaceStatus(logged, expectedByNow, lastDay, isNewUser);
