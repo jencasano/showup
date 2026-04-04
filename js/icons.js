@@ -26,6 +26,7 @@ export const ICON_NAMES = [
   'siren',       // 🚨  sticker
   'boom',        // 💥  sticker
   'megaphone',   // 📢  sticker
+  'pushpin',     // 📌  sticker
   'calendar',    // 📅  month picker button
   'sun',         // ☀️   light mode toggle
   'moon',        // 🌙  dark mode toggle
