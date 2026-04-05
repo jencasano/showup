@@ -783,6 +783,8 @@
 }
 
 .fw-day:has(.fw-join-indicator) {
+  position: relative;
+  z-index: 2;
   background: rgba(216, 88, 78, 0.15);
   border-color: rgba(216, 88, 78, 0.5);
 }
@@ -871,6 +873,7 @@
 
 .fw-empty-overlay {
   position: absolute;
+  z-index: 1;
   inset: 0;
   display: flex;
   flex-direction: column;
