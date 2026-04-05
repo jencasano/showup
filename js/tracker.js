@@ -1370,14 +1370,12 @@ async function renderDiaryNotebook(userId, yearMonth) {
 function fadeOutOverlay(el, callback) {
   el.style.transition = "opacity 0.18s ease";
   el.style.opacity = "0";
-  setTimeout(() => { callback(); el.remove(); }, 180);
+  setTimeout(() => { el.remove(); callback(); }, 180);
 }
 
 // ─── PART C: OPEN NOTEBOOK MODAL ─────────────────────────
 // initialDay: optional day number to open directly (skips default startDay logic)
 function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
-  document.querySelector(".diary-modal-overlay")?.remove();
-
   const [year, month] = yearMonth.split("-").map(Number);
   const daysInMonth = getDaysInMonth(yearMonth);
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
@@ -1679,9 +1677,6 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
 
 // ─── PART D: PAGES MODAL ─────────────────────────────────
 function openDiaryPagesModal(userId, yearMonth, diaryDays) {
-  document.querySelector(".diary-modal-overlay")?.remove();
-  document.querySelector(".diary-pages-overlay")?.remove();
-
   const [year, month] = yearMonth.split("-").map(Number);
   const daysInMonth = getDaysInMonth(yearMonth);
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
