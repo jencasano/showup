@@ -532,6 +532,174 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
   });
 }
 
+// ─── CROP UI ─────────────────────────────────────────
+function showCropUI(file, onConfirm) {
+  const overlay = document.createElement("div");
+  overlay.className = "diary-crop-overlay";
+
+  // Hint
+  const hint = document.createElement("div");
+  hint.textContent = "Drag to reposition · Pinch or scroll to zoom";
+  hint.style.cssText = "font-size:0.72rem;color:rgba(255,255,255,0.5);text-align:center;";
+  overlay.appendChild(hint);
+
+  // Crop frame
+  const frame = document.createElement("div");
+  frame.className = "diary-crop-frame";
+
+  const cropImg = document.createElement("img");
+  cropImg.className = "diary-crop-img";
+  frame.appendChild(cropImg);
+
+  const grid = document.createElement("div");
+  grid.className = "diary-crop-grid";
+  frame.appendChild(grid);
+
+  overlay.appendChild(frame);
+
+  // Toolbar
+  const toolbar = document.createElement("div");
+  toolbar.className = "diary-crop-toolbar";
+
+  const cancelBtn = document.createElement("button");
+  cancelBtn.className = "diary-crop-cancel";
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.addEventListener("click", () => overlay.remove());
+
+  const confirmBtn = document.createElement("button");
+  confirmBtn.className = "diary-crop-confirm";
+  confirmBtn.textContent = "Use Photo";
+
+  toolbar.appendChild(cancelBtn);
+  toolbar.appendChild(confirmBtn);
+  overlay.appendChild(toolbar);
+  document.body.appendChild(overlay);
+
+  // State
+  let imgNaturalW = 0, imgNaturalH = 0;
+  let frameSize = 0;
+  let scale = 1, minScale = 1;
+  let dx = 0, dy = 0; // offset of img center from frame center
+
+  function clampOffset() {
+    // The rendered img dimensions
+    const rw = imgNaturalW * scale;
+    const rh = imgNaturalH * scale;
+    // Max offset so the img edge doesn't go inside the frame
+    const maxDx = Math.max(0, (rw - frameSize) / 2);
+    const maxDy = Math.max(0, (rh - frameSize) / 2);
+    dx = Math.max(-maxDx, Math.min(maxDx, dx));
+    dy = Math.max(-maxDy, Math.min(maxDy, dy));
+  }
+
+  function applyTransform() {
+    cropImg.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${scale})`;
+  }
+
+  cropImg.onload = () => {
+    imgNaturalW = cropImg.naturalWidth;
+    imgNaturalH = cropImg.naturalHeight;
+    frameSize = frame.getBoundingClientRect().width;
+    // Scale so shortest side fills frame
+    minScale = frameSize / Math.min(imgNaturalW, imgNaturalH);
+    scale = minScale;
+    dx = 0; dy = 0;
+    cropImg.style.left = "50%";
+    cropImg.style.top = "50%";
+    cropImg.style.width = imgNaturalW + "px";
+    cropImg.style.height = imgNaturalH + "px";
+    applyTransform();
+  };
+
+  const objectUrl = URL.createObjectURL(file);
+  cropImg.src = objectUrl;
+
+  // ── Drag (mouse + touch) ──────────────────────────
+  let dragging = false, lastX = 0, lastY = 0;
+
+  frame.addEventListener("mousedown", (e) => {
+    dragging = true;
+    lastX = e.clientX; lastY = e.clientY;
+    e.preventDefault();
+  });
+  window.addEventListener("mousemove", (e) => {
+    if (!dragging) return;
+    dx += e.clientX - lastX;
+    dy += e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    clampOffset(); applyTransform();
+  });
+  window.addEventListener("mouseup", () => { dragging = false; });
+
+  // ── Touch drag + pinch ────────────────────────────
+  let lastTouches = null, pinchStartDist = 0, pinchStartScale = 1;
+
+  frame.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    lastTouches = e.touches;
+    if (e.touches.length === 2) {
+      const a = e.touches[0], b = e.touches[1];
+      pinchStartDist = Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+      pinchStartScale = scale;
+    }
+  }, { passive: false });
+
+  frame.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    if (e.touches.length === 2) {
+      const a = e.touches[0], b = e.touches[1];
+      const dist = Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+      scale = Math.max(minScale, Math.min(4, pinchStartScale * (dist / pinchStartDist)));
+    } else if (e.touches.length === 1 && lastTouches && lastTouches.length === 1) {
+      dx += e.touches[0].clientX - lastTouches[0].clientX;
+      dy += e.touches[0].clientY - lastTouches[0].clientY;
+    }
+    lastTouches = e.touches;
+    clampOffset(); applyTransform();
+  }, { passive: false });
+
+  frame.addEventListener("touchend", (e) => { lastTouches = e.touches; });
+
+  // ── Scroll to zoom ────────────────────────────────
+  frame.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 1.08 : 0.93;
+    scale = Math.max(minScale, Math.min(4, scale * delta));
+    clampOffset(); applyTransform();
+  }, { passive: false });
+
+  // ── Confirm: render to canvas 800×800 ─────────────
+  confirmBtn.addEventListener("click", () => {
+    frameSize = frame.getBoundingClientRect().width;
+    const OUT = 800;
+    const canvas = document.createElement("canvas");
+    canvas.width = OUT; canvas.height = OUT;
+    const ctx = canvas.getContext("2d");
+
+    // In frame coords:
+    // img center is at (frameSize/2 + dx, frameSize/2 + dy)
+    // img rendered size is (imgNaturalW * scale, imgNaturalH * scale)
+    // visible crop window in img coords:
+    const renderedW = imgNaturalW * scale;
+    const renderedH = imgNaturalH * scale;
+    const imgCenterX = frameSize / 2 + dx; // px from frame left
+    const imgCenterY = frameSize / 2 + dy;
+    // Top-left of the frame in rendered-img coords
+    const srcLeft = (imgNaturalW / 2) - (imgCenterX / scale);
+    const srcTop  = (imgNaturalH / 2) - (imgCenterY / scale);
+    const srcSize = frameSize / scale;
+
+    ctx.drawImage(cropImg, srcLeft, srcTop, srcSize, srcSize, 0, 0, OUT, OUT);
+
+    canvas.toBlob((blob) => {
+      URL.revokeObjectURL(objectUrl);
+      overlay.remove();
+      const croppedFile = new File([blob], "diary-photo.jpg", { type: "image/jpeg" });
+      onConfirm(croppedFile);
+    }, "image/jpeg", 0.85);
+  });
+}
+
 // ─── OPEN DIARY PAGE ────────────────────────────────
 export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry, onSaved = null) {
   const [year, month] = yearMonth.split("-").map(Number);
@@ -661,6 +829,7 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
     const img = document.createElement("img");
     img.className = "diary-photo-preview";
     img.src = src;
+    img.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;";
     wrap.appendChild(img);
 
     const removeBtn = document.createElement("button");
@@ -694,18 +863,18 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
 
   fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
+    fileInput.value = "";
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      showToast("Photo must be under 5MB");
-      fileInput.value = "";
+    if (file.size > 10 * 1024 * 1024) {
+      showToast("Photo must be under 10MB.", "error");
       return;
     }
-    newPhotoFile = file;
-    photoToDelete = false;
-    const reader = new FileReader();
-    reader.onload = (e) => showPhotoPreview(e.target.result);
-    reader.readAsDataURL(file);
-    updateDirty();
+    showCropUI(file, (croppedFile) => {
+      newPhotoFile = croppedFile;
+      photoToDelete = false;
+      showPhotoPreview(URL.createObjectURL(croppedFile));
+      updateDirty();
+    });
   });
 
   // Save button (in body)
