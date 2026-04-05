@@ -4,7 +4,7 @@
 
 /* ── Section ─────────────────────────────────────── */
 .mylog-centered-stack {
-  width: fit-content;
+  width: 100%;
   max-width: 100%;
   margin: 0 auto;
 }
@@ -1162,7 +1162,7 @@
   grid-template-columns: 1fr 260px;
   gap: 20px;
   align-items: start;
-  width: min(1100px, calc(100vw - 120px));
+  width: 100%;
   overflow: hidden;
 }
 
