@@ -1,5 +1,5 @@
 import { db } from "./firebase-config.js";
-import { getDiaryDays } from "./diary.js";
+import { getDiaryDays, getDiaryEntry } from "./diary.js";
 import {
   doc, getDoc, setDoc, updateDoc,
   arrayUnion, arrayRemove
@@ -474,6 +474,55 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
     ? "tap ○ to mark done · tap name → to filter calendar"
     : "tap name → to filter calendar";
   sheet.appendChild(hint);
+
+  if (isOwner) {
+    const divider = document.createElement("div");
+    divider.className = "day-sheet-diary-divider";
+    sheet.appendChild(divider);
+
+    const diarySection = document.createElement("div");
+    diarySection.className = "day-sheet-diary-section";
+
+    const diaryLabel = document.createElement("span");
+    diaryLabel.className = "day-sheet-diary-label";
+    diaryLabel.textContent = "diary.";
+    diarySection.appendChild(diaryLabel);
+
+    const diaryBody = document.createElement("div");
+    diaryBody.className = "day-sheet-diary-body";
+    diaryBody.innerHTML = `<span style="color:var(--text-faint);font-size:0.8rem">...</span>`;
+    diarySection.appendChild(diaryBody);
+
+    sheet.appendChild(diarySection);
+
+    getDiaryEntry(entry.id, yearMonth, day).then(diaryEntry => {
+      diaryBody.innerHTML = "";
+
+      if (diaryEntry?.note) {
+        const noteEl = document.createElement("div");
+        noteEl.className = "day-sheet-diary-note";
+        noteEl.textContent = diaryEntry.note;
+        diaryBody.appendChild(noteEl);
+      }
+
+      if (diaryEntry?.photoUrl) {
+        const thumb = document.createElement("img");
+        thumb.className = "day-sheet-diary-thumb";
+        thumb.src = diaryEntry.photoUrl;
+        thumb.alt = "";
+        diaryBody.appendChild(thumb);
+      }
+
+      const btn = document.createElement("button");
+      btn.className = "day-sheet-diary-btn";
+      btn.textContent = diaryEntry ? "edit entry →" : "add entry →";
+      btn.addEventListener("click", () => {
+        overlay.remove();
+        openDiaryPage(day, entry, yearMonth, entry.id, diaryEntry || null);
+      });
+      diaryBody.appendChild(btn);
+    });
+  }
 
   overlay.appendChild(sheet);
   document.body.appendChild(overlay);
