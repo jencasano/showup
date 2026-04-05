@@ -272,36 +272,33 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;        /* centre children horizontally */
+  align-items: center;
   justify-content: flex-start;
   border-radius: var(--radius-sm);
-  min-height: 40px;           /* taller, like fw-day */
-  padding: 4px 3px 4px;       /* comfortable top/bottom inset */
+  min-height: 40px;
+  padding: 4px 3px 4px;
   transition: background var(--transition);
 }
 
-/* Date number — top-right with a small inset from the corner */
 .cal-day-num {
   font-size: 0.58rem;
   font-weight: 600;
   color: var(--text-muted);
   line-height: 1;
-  align-self: flex-end;       /* push to right edge */
-  margin-right: 2px;          /* small inset so it’s not flush to corner */
+  align-self: flex-end;
+  margin-right: 2px;
 }
 
-/* Dots row — centred below the date number */
 .cal-day-dots {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;    /* centre the dots */
+  justify-content: center;
   gap: 2px;
   align-items: center;
   width: 100%;
   margin-top: 3px;
 }
 
-/* Bigger dots matching the full-week cadence view (~7px) */
 .cal-day-dot {
   display: inline-block;
   width: 7px;
@@ -334,7 +331,6 @@
   line-height: 1.4;
 }
 
-/* Subtle background tints for partial / full days */
 .cal-day-partial {
   background: var(--bg-subtle);
 }
@@ -399,12 +395,11 @@
   padding: 8px 12px;
 }
 
-/* Fill the row before wrapping — compact multi-column legend */
 .cal-legend {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 5px 14px;              /* row-gap | col-gap */
+  gap: 5px 14px;
 }
 
 .cal-legend-item {
@@ -428,7 +423,6 @@
   white-space: nowrap;
 }
 
-/* ── Legend filter interactions ────────────────── */
 .cal-legend-item--clickable {
   cursor: pointer;
   border-radius: 4px;
@@ -490,7 +484,7 @@
   transition: opacity 0.15s, transform 0.15s;
   filter: grayscale(1);
   display: block;
-  transform: rotate(45deg); /* point downward like a real pin */
+  transform: rotate(45deg);
 }
 
 .following-pin-btn:hover {
@@ -503,7 +497,7 @@
   background: none;
   opacity: 1;
   filter: none;
-  transform: rotate(0deg); /* upright = pinned */
+  transform: rotate(0deg);
 }
 
 .following-board {
@@ -745,8 +739,6 @@
   border-color: var(--color-primary);
   background: var(--bg-subtle);
 }
-
-/* .following-nudge-icon replaced by .following-lottie-icon above */
 
 .following-nudge-title {
   font-family: var(--font-heading);
@@ -1129,11 +1121,13 @@
 }
 
 .diary-photo-preview {
-  width: 100%;
-  max-height: 220px;
+  max-width: 100%;
+  max-height: 180px;
+  width: auto;
   object-fit: cover;
   border-radius: 10px;
   display: block;
+  margin: 0 auto;
 }
 
 .diary-photo-remove-btn {
