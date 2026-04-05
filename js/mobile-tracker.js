@@ -655,10 +655,13 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
 
   function showPhotoPreview(src) {
     photoWrap.innerHTML = "";
+    const wrap = document.createElement("div");
+    wrap.className = "diary-photo-preview-wrap";
+
     const img = document.createElement("img");
     img.className = "diary-photo-preview";
     img.src = src;
-    photoWrap.appendChild(img);
+    wrap.appendChild(img);
 
     const removeBtn = document.createElement("button");
     removeBtn.className = "diary-photo-remove-btn";
@@ -670,7 +673,8 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
       showPhotoZone();
       updateDirty();
     });
-    photoWrap.appendChild(removeBtn);
+    wrap.appendChild(removeBtn);
+    photoWrap.appendChild(wrap);
   }
 
   function showPhotoZone() {
@@ -691,6 +695,11 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("Photo must be under 5MB");
+      fileInput.value = "";
+      return;
+    }
     newPhotoFile = file;
     photoToDelete = false;
     const reader = new FileReader();
