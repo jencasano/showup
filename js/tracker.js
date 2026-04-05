@@ -1366,6 +1366,13 @@ async function renderDiaryNotebook(userId, yearMonth) {
   return wrap;
 }
 
+// ─── SHARED TRANSITION HELPER ────────────────────────────
+function fadeOutOverlay(el, callback) {
+  el.style.transition = "opacity 0.18s ease";
+  el.style.opacity = "0";
+  setTimeout(() => { callback(); el.remove(); }, 180);
+}
+
 // ─── PART C: OPEN NOTEBOOK MODAL ─────────────────────────
 // initialDay: optional day number to open directly (skips default startDay logic)
 function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
@@ -1427,8 +1434,7 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
   leftPage.appendChild(toggle);
 
   pagesBtn.addEventListener("click", () => {
-    overlay.remove();
-    openDiaryPagesModal(userId, yearMonth, diaryDays);
+    fadeOutOverlay(overlay, () => openDiaryPagesModal(userId, yearMonth, diaryDays));
   });
 
   // Calendar content
@@ -1618,11 +1624,10 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
       editBtn.className = "diary-modal-edit-btn";
       editBtn.textContent = "✏️ Edit entry";
       editBtn.addEventListener("click", () => {
-        overlay.remove();
-        openDiaryPage(d, window._currentEntry, yearMonth, userId, diaryEntry, () => {
+        fadeOutOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, diaryEntry, () => {
           entryCache = {};
           openDiaryModal(userId, yearMonth, diaryDays);
-        });
+        }));
       });
       rightContent.appendChild(editBtn);
     } else {
@@ -1641,11 +1646,10 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
       writeBtn.className = "diary-modal-write-btn";
       writeBtn.textContent = "✏️ Write something";
       writeBtn.addEventListener("click", () => {
-        overlay.remove();
-        openDiaryPage(d, window._currentEntry, yearMonth, userId, null, () => {
+        fadeOutOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, null, () => {
           entryCache = {};
           openDiaryModal(userId, yearMonth, diaryDays);
-        });
+        }));
       });
       rightContent.appendChild(writeBtn);
     }
@@ -1728,8 +1732,7 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
   backBtn.className = "diary-pages-back-btn";
   backBtn.textContent = "← back to diary";
   backBtn.addEventListener("click", () => {
-    overlay.remove();
-    openDiaryModal(userId, yearMonth, diaryDays);
+    fadeOutOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays));
   });
   head.appendChild(backBtn);
 
@@ -1797,8 +1800,7 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
         // Pass the day number directly to openDiaryModal to avoid flash
         const dayToOpen = d;
         mini.addEventListener("click", () => {
-          overlay.remove();
-          openDiaryModal(userId, yearMonth, diaryDays, dayToOpen);
+          fadeOutOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays, dayToOpen));
         });
       }
 
