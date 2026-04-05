@@ -289,7 +289,13 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       </div>`;
   }).join("");
 
-  const calendarHTML = renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, joinDay);
+  const joinedThisMonth = (() => {
+    const jd = entry.joinDate instanceof Date ? entry.joinDate : entry.joinDate ? new Date(entry.joinDate) : null;
+    if (!jd) return false;
+    const jYM = `${jd.getFullYear()}-${String(jd.getMonth() + 1).padStart(2, "0")}`;
+    return jYM === yearMonth;
+  })();
+  const calendarHTML = renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, joinDay, joinedThisMonth);
 
   card.innerHTML = `
     <div class="summary-card__header">
@@ -412,7 +418,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
   return card;
 }
 
-function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, joinDay = null) {
+function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, joinDay = null, joinedThisMonth = false) {
   const [year, month] = yearMonth.split("-").map(Number);
   const first = new Date(year, month - 1, 1);
   const daysInMonth = getDaysInMonth(yearMonth);
@@ -481,7 +487,7 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, jo
         : "";
 
       const joinIndicatorHTML = (joinDay != null && dayNum === joinDay)
-        ? `<span class="fw-join-indicator"><img src="/assets/icons/join-date.svg" width="10" height="10" alt="" /><span class="fw-join-label">Joined</span></span>`
+        ? `<span class="fw-join-indicator"><img src="/assets/icons/join-date.svg" width="10" height="10" alt="" /><span class="fw-join-label">${joinedThisMonth ? "Joined" : "Started"}</span></span>`
         : "";
 
       return `<div class="fw-day${hasOverflow ? " fw-day--has-overflow" : ""}"${overflowAttr}><span class="fw-day-num">${dayNum}</span>${joinIndicatorHTML}${dotsHTML ? `<div class="fw-day-dots">${dotsHTML}</div>` : ""}</div>`;
