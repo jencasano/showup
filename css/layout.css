@@ -257,4 +257,5 @@ header h1 span { color: var(--color-primary); }
   #user-name { display: none; }
   header { padding: 0 16px; height: 48px; }
   #month-bar { padding: 6px 16px; top: 48px; }
+  #global-loader { top: 93px; }
 }
