@@ -178,6 +178,74 @@
 [data-theme="light"] .day-header-future .day-num,
 [data-theme="light"] .day-header-future .day-label { opacity: 0.7; }
 
+/* ── Week stripe (header only) ───────────────────── */
+.day-header.week-start,
+.day-header.week-mid,
+.day-header.week-end {
+  border-top: 2px solid rgba(99, 102, 241, 0.35);
+}
+.day-header.week-start { border-top-left-radius: var(--radius-sm); }
+.day-header.week-end   { border-top-right-radius: var(--radius-sm); }
+[data-theme="light"] .day-header.week-start,
+[data-theme="light"] .day-header.week-mid,
+[data-theme="light"] .day-header.week-end {
+  border-top-color: rgba(99, 102, 241, 0.25);
+}
+
+/* ── Start day square marker ─────────────────────── */
+.day-start-square {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: var(--color-primary);
+  margin: 0 auto 1px;
+}
+
+/* ── Tracker grid legend ─────────────────────────── */
+.tracker-grid-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 6px 16px 0;
+  border-top: 1px solid var(--border-faint);
+  font-size: 0.62rem;
+  color: var(--text-faint);
+}
+.tgl-item {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+}
+.tgl-square {
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--color-primary);
+  flex-shrink: 0;
+}
+.tgl-sunday {
+  width: 14px;
+  height: 8px;
+  border-radius: 2px;
+  background: rgba(249, 115, 22, 0.3);
+  flex-shrink: 0;
+}
+[data-theme="light"] .tgl-sunday {
+  background: rgba(234, 88, 12, 0.2);
+}
+.tgl-week {
+  width: 22px;
+  height: 3px;
+  border-radius: 1px;
+  background: rgba(99, 102, 241, 0.5);
+  flex-shrink: 0;
+}
+[data-theme="light"] .tgl-week {
+  background: rgba(99, 102, 241, 0.35);
+}
+
 /* ── Day Cell ────────────────────────────────────── */
 .day-cell {
   width: 26px;

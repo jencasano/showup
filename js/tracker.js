@@ -1085,6 +1085,23 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   const daysInMonth = getDaysInMonth(yearMonth);
   const { color, fontColor, font, sticker, marker, avatarUrl } = entry.decoration;
 
+  // ── Compute joinDay for start marker and legend ──────────
+  const [year, month] = yearMonth.split("-").map(Number);
+  let joinDay = null;
+  let joinedThisMonth = false;
+  const entryJoinDate = entry.joinDate instanceof Date ? entry.joinDate
+    : entry.joinDate ? new Date(entry.joinDate) : null;
+  if (entryJoinDate) {
+    const joinYM = `${entryJoinDate.getFullYear()}-${String(entryJoinDate.getMonth() + 1).padStart(2, "0")}`;
+    if (joinYM === yearMonth) {
+      joinDay = entryJoinDate.getDate();
+      joinedThisMonth = true;
+    }
+  }
+  if (joinDay == null && entry.setupDay > 3) {
+    joinDay = entry.setupDay;
+  }
+
   const section = document.createElement("div");
   section.className = "tracker-section";
   section.style.borderColor = color;
@@ -1103,18 +1120,24 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   const headerRow = document.createElement("div");
   headerRow.className = "tracker-header-row";
   headerRow.innerHTML = `<div class="activity-label"></div>`;
-  const [year, month] = yearMonth.split("-").map(Number);
   for (let d = 1; d <= daysInMonth; d++) {
     const cell = document.createElement("div");
     cell.className = "day-header";
     const isToday   = isCurrentMonth && d === todayDate;
     const isFuture  = isCurrentMonth && d > todayDate;
-    const isSunday  = new Date(year, month - 1, d).getDay() === 0;
+    const dow = new Date(year, month - 1, d).getDay(); // 0=Sun, 1=Mon
+    const isSunday  = dow === 0;
     if (isToday)  cell.classList.add("day-header-today");
     if (isFuture) cell.classList.add("day-header-future");
     if (isSunday) cell.classList.add("day-header-sunday");
+    if (dow === 1)                   cell.classList.add("week-start");
+    else if (dow >= 2 && dow <= 6)   cell.classList.add("week-mid");
+    else                             cell.classList.add("week-end"); // Sunday
+    const startSquare = (joinDay != null && d === joinDay)
+      ? `<span class="day-start-square"></span>`
+      : "";
     cell.innerHTML = `
-      <span class="day-num${isToday ? " today" : ""}">${d}</span>
+      <span class="day-num${isToday ? " today" : ""}">${startSquare}${d}</span>
       <span class="day-label">${getDayLabel(yearMonth, d)}</span>`;
     headerRow.appendChild(cell);
   }
@@ -1136,6 +1159,18 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
     );
     section.appendChild(row);
   });
+
+  // ── Legend ───────────────────────────────────────────────
+  if (joinDay != null) {
+    const legend = document.createElement("div");
+    legend.className = "tracker-grid-legend";
+    const startLabel = joinedThisMonth ? "Join day" : "Start day";
+    legend.innerHTML = `
+      <span class="tgl-item"><span class="tgl-square"></span>${startLabel}</span>
+      <span class="tgl-item"><span class="tgl-sunday"></span>Sunday</span>
+      <span class="tgl-item"><span class="tgl-week"></span>Full week</span>`;
+    section.appendChild(legend);
+  }
 
   return section;
   //Migoy taba!
@@ -1159,6 +1194,7 @@ function renderActivityRow(
     ${cadTag}`;
   row.appendChild(label);
 
+  const [ry, rm] = yearMonth.split("-").map(Number);
   for (let d = 1; d <= daysInMonth; d++) {
     const cell    = document.createElement("div");
     cell.className = "day-cell";
@@ -1166,6 +1202,10 @@ function renderActivityRow(
     const isFuture = isCurrentMonth && d > todayDate;
     if (isToday)  cell.classList.add("day-cell-today");
     if (isFuture) cell.classList.add("future");
+    const dow = new Date(ry, rm - 1, d).getDay();
+    if (dow === 1)                 cell.classList.add("week-start");
+    else if (dow >= 2 && dow <= 6) cell.classList.add("week-mid");
+    else                           cell.classList.add("week-end");
 
     const isMarked = markedDays.includes(d);
     if (isMarked) {
