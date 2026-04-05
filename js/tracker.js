@@ -1759,6 +1759,8 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
         thumb.className = "diary-mini-thumb";
         thumb.src = entry.photoUrl;
         thumb.alt = "";
+        thumb.style.height = "auto";
+        thumb.style.aspectRatio = "1 / 1";
         mini.appendChild(thumb);
       }
 
@@ -1770,8 +1772,11 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
           setTimeout(() => {
             const newModal = document.querySelector(".diary-modal-overlay");
             if (newModal) {
-              const cell = newModal.querySelector(`.diary-modal-cal-day:not(.offset):nth-of-type(${d})`);
-              if (cell) cell.click();
+              const cells = newModal.querySelectorAll(".diary-modal-cal-day:not(.offset)");
+              for (const cell of cells) {
+                const span = cell.querySelector("span");
+                if (span && parseInt(span.textContent, 10) === d) { cell.click(); break; }
+              }
             }
           }, 50);
         });
