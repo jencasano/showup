@@ -198,14 +198,22 @@ header h1 span { color: var(--color-primary); }
   background: var(--bg);
 }
 
-@keyframes tabFadeIn {
+.tab-panel { width: 100%; }
+
+/* ── View Transitions API — tab switch ───────────── */
+::view-transition-old(root) {
+  animation: 0.18s ease both tab-fade-out;
+}
+::view-transition-new(root) {
+  animation: 0.22s ease both tab-slide-in;
+}
+
+@keyframes tab-slide-in {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
-.tab-panel {
-  width: 100%;
-  animation: tabFadeIn 0.22s ease both;
+@keyframes tab-fade-out {
+  to { opacity: 0; }
 }
 
 /* ── Mobile Bottom Nav ─────────────────────────── */
