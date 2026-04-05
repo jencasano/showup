@@ -129,22 +129,17 @@ export function switchTab(tab) {
 
   closeMonthPicker();
 
-  const panels = [
-    { el: tabMyLog,     display: "block", active: tab === "mylog" },
-    { el: tabFollowing, display: "grid",  active: tab === "following" },
-    { el: tabAll,       display: "grid",  active: tab === "all" },
-  ];
-  panels.forEach(({ el, display, active }) => {
-    if (active) {
-      el.style.display = display;
-      el.style.animation = "none";
-      el.offsetHeight; // force reflow to restart animation
-      el.style.animation = "";
-    } else {
-      el.style.display = "none";
-    }
-  });
+  const applyTabDisplay = () => {
+    tabMyLog.style.display     = tab === "mylog"     ? "block" : "none";
+    tabFollowing.style.display = tab === "following" ? "grid"  : "none";
+    tabAll.style.display       = tab === "all"       ? "grid"  : "none";
+  };
 
+  if (document.startViewTransition) {
+    document.startViewTransition(applyTabDisplay);
+  } else {
+    applyTabDisplay();
+  }
   loadActiveTab();
   updateStat();
 }
