@@ -1847,31 +1847,31 @@
 }
 
 .diary-modal-edit-btn {
-  background: none;
-  border: 1px solid var(--color-primary);
-  color: var(--color-primary);
+  background: var(--color-primary);
+  color: white;
+  border: none;
   border-radius: 8px;
-  padding: 5px 14px;
-  font-size: 0.7rem;
+  padding: 7px 16px;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
-  font-family: inherit;
+  font-family: 'Sora', sans-serif;
   margin-top: 10px;
-  display: block;
+  display: inline-block;
 }
 
 .diary-modal-edit-btn:hover {
-  background: var(--color-primary);
-  color: #FAF7ED;
+  background: #C4473D;
 }
 
 .diary-modal-polaroid {
-  display: inline-block;
+  display: block;
   background: white;
   padding: 6px 6px 24px 6px;
   transform: rotate(1.8deg);
   box-shadow: 2px 3px 10px rgba(0,0,0,.15);
-  max-width: 160px;
+  width: 100%;
+  max-width: 180px;
   margin-bottom: 10px;
   position: relative;
 }
@@ -1888,8 +1888,9 @@
 }
 
 .diary-modal-polaroid img {
-  width: 140px;
+  width: 100%;
   aspect-ratio: 1 / 1;
+  height: auto;
   object-fit: cover;
   display: block;
 }
