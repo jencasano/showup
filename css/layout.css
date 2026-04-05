@@ -11,6 +11,7 @@
 
 /* ── Header ────────────────────────────────────── */
 header {
+  view-transition-name: app-header;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -37,6 +38,7 @@ header h1 span { color: var(--color-primary); }
 
 /* ── Tab Row ───────────────────────────────────── */
 #tab-row {
+  view-transition-name: app-tabs;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -127,6 +129,7 @@ header h1 span { color: var(--color-primary); }
 
 /* ── Month Bar ─────────────────────────────────── */
 #month-bar {
+  view-transition-name: app-monthbar;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -216,6 +219,15 @@ header h1 span { color: var(--color-primary); }
 @keyframes tab-in {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+::view-transition-old(app-header),
+::view-transition-new(app-header),
+::view-transition-old(app-tabs),
+::view-transition-new(app-tabs),
+::view-transition-old(app-monthbar),
+::view-transition-new(app-monthbar) {
+  animation: none;
 }
 
 /* ── Mobile Bottom Nav ─────────────────────────── */
