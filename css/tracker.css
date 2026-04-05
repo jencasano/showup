@@ -1684,10 +1684,10 @@
 
 .diary-modal-cal-dot {
   display: block;
-  width: 3px;
-  height: 3px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #F8C08A;
+  background: #D97706;
   margin-top: 1px;
 }
 
@@ -1723,8 +1723,8 @@
   right: 12px;
   z-index: 10;
   background: none;
-  border: 1px solid #8B5E3C;
-  color: #8B5E3C;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
   border-radius: 99px;
   font-size: 0.7rem;
   font-weight: 700;
@@ -1735,7 +1735,7 @@
 }
 
 .diary-modal-close:hover {
-  background: #8B5E3C;
+  background: var(--color-primary);
   color: #FAF7ED;
 }
 
@@ -1758,7 +1758,7 @@
   border: none;
   font-size: 0.65rem;
   font-weight: 700;
-  color: #7A6F55;
+  color: var(--color-primary);
   cursor: pointer;
   font-family: inherit;
   transition: color 0.15s;
@@ -1770,7 +1770,7 @@
 }
 
 .diary-modal-pf-btn:hover:not(:disabled) {
-  color: #2A2218;
+  color: #C4473D;
 }
 
 .diary-modal-entry-date {
@@ -1792,7 +1792,7 @@
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
 }
 
 .diary-modal-entry-chip {
@@ -1848,8 +1848,8 @@
 
 .diary-modal-edit-btn {
   background: none;
-  border: 1px solid rgba(139,94,60,.4);
-  color: #8B5E3C;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
   border-radius: 8px;
   padding: 5px 14px;
   font-size: 0.7rem;
@@ -1861,7 +1861,7 @@
 }
 
 .diary-modal-edit-btn:hover {
-  background: #8B5E3C;
+  background: var(--color-primary);
   color: #FAF7ED;
 }
 
@@ -1889,7 +1889,7 @@
 
 .diary-modal-polaroid img {
   width: 140px;
-  height: 100px;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   display: block;
 }

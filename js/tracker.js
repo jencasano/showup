@@ -1504,7 +1504,7 @@ function openDiaryModal(userId, yearMonth, diaryDays) {
 
   const closeBtn = document.createElement("button");
   closeBtn.className = "diary-modal-close";
-  closeBtn.textContent = "✕ close";
+  closeBtn.textContent = "✕";
   closeBtn.addEventListener("click", () => overlay.remove());
   rightPage.appendChild(closeBtn);
 
