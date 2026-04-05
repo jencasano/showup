@@ -883,20 +883,31 @@
   z-index: 1;
 }
 
+.diary-page-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 599;
+  background: rgba(8,10,24,0.75);
+  backdrop-filter: blur(8px);
+}
+
 @media (min-width: 769px) {
   .diary-page-overlay {
     inset: auto;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: min(780px, 92vw);
-    height: min(560px, 90vh);
+    width: min(900px, 94vw);
+    height: min(580px, 90vh);
     border-radius: 16px;
     box-shadow: 0 24px 64px rgba(0,0,0,0.4);
     overflow: hidden;
   }
   .diary-page-overlay::before {
     border-radius: 16px 0 0 16px;
+  }
+  .diary-page-save-btn {
+    display: none;
   }
 }
 
@@ -935,16 +946,26 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   overflow: hidden;
 }
 
 .diary-page-right {
-  width: 200px;
+  width: 240px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.diary-page-left-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.diary-page-right-spacer {
+  flex-shrink: 0;
 }
 
 .diary-page-date-big {
@@ -1108,17 +1129,61 @@
 .diary-page-save-btn:disabled { opacity: 0.4; }
 
 @media (max-width: 768px) {
+  .diary-page-overlay {
+    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    transform: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
   .diary-page-content {
     flex-direction: column;
-    padding: 16px 16px 16px 52px;
-    overflow-y: auto;
+    overflow: hidden;
+    padding: 12px 16px 12px 48px;
+    gap: 10px;
+    flex: 1;
   }
+
+  .diary-page-left {
+    flex: 0 0 auto;
+  }
+
+  .diary-page-left-hero {
+    gap: 6px;
+  }
+
+  .diary-page-right-spacer {
+    display: none;
+  }
+
+  .diary-note-textarea {
+    min-height: 100px;
+    max-height: 120px;
+    flex: none;
+  }
+
   .diary-page-right {
     width: 100%;
     align-items: center;
   }
+
   .diary-page-polaroid-wrap {
-    width: 160px;
+    width: min(260px, 75vw);
+    margin: 0 auto;
+  }
+
+  .diary-page-save-btn {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    flex-shrink: 0;
+    margin-top: auto;
   }
 }
 

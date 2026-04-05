@@ -753,9 +753,32 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   let photoToDelete = false;
   let currentPhotoUrl = existingDiaryEntry?.photoUrl || null;
 
+  // ── Backdrop ─────────────────────────────────────
+  const backdrop = document.createElement("div");
+  backdrop.className = "diary-page-backdrop";
+
   // ── Overlay ──────────────────────────────────────
   const overlay = document.createElement("div");
   overlay.className = "diary-page-overlay";
+
+  function closeAll() {
+    document.removeEventListener("keydown", onKeyDown);
+    backdrop.remove();
+    overlay.remove();
+  }
+
+  function tryClose() {
+    const originalNote = existingDiaryEntry?.note || "";
+    const isDirty = textarea.value !== originalNote || newPhotoFile !== null || photoToDelete;
+    if (isDirty && !confirm("You have unsaved changes. Leave without saving?")) return;
+    closeAll();
+  }
+
+  function onKeyDown(e) {
+    if (e.key === "Escape") tryClose();
+  }
+  document.addEventListener("keydown", onKeyDown);
+  backdrop.addEventListener("click", () => tryClose());
 
   // ── Top Nav ──────────────────────────────────────
   const nav = document.createElement("div");
@@ -764,7 +787,7 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   const backBtn = document.createElement("button");
   backBtn.className = "diary-page-nav-back";
   backBtn.textContent = "← back";
-  backBtn.addEventListener("click", () => overlay.remove());
+  backBtn.addEventListener("click", () => tryClose());
 
   const navTitle = document.createElement("span");
   navTitle.className = "diary-page-nav-title";
@@ -788,19 +811,22 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   const leftCol = document.createElement("div");
   leftCol.className = "diary-page-left";
 
-  // Date
+  // Date hero section (grouped for height measurement)
   const dayOfWeek = date.toLocaleDateString("en-US", { weekday: "long" });
   const monthName = date.toLocaleDateString("en-US", { month: "long" });
+
+  const leftHero = document.createElement("div");
+  leftHero.className = "diary-page-left-hero";
 
   const dateBig = document.createElement("div");
   dateBig.className = "diary-page-date-big";
   dateBig.innerHTML = `${dayOfWeek}, <strong>${day}</strong>`;
-  leftCol.appendChild(dateBig);
+  leftHero.appendChild(dateBig);
 
   const dateSub = document.createElement("div");
   dateSub.className = "diary-page-date-sub";
   dateSub.textContent = isToday ? "Today ✨" : monthName;
-  leftCol.appendChild(dateSub);
+  leftHero.appendChild(dateSub);
 
   const chips = document.createElement("div");
   chips.className = "diary-habit-chips";
@@ -817,11 +843,13 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
     }
     chips.appendChild(chip);
   });
-  leftCol.appendChild(chips);
+  leftHero.appendChild(chips);
 
   const rule = document.createElement("hr");
   rule.className = "diary-page-rule";
-  leftCol.appendChild(rule);
+  leftHero.appendChild(rule);
+
+  leftCol.appendChild(leftHero);
 
   const noteLabel = document.createElement("div");
   noteLabel.className = "diary-section-label";
@@ -846,17 +874,16 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   });
   leftCol.appendChild(charCounter);
 
-  const saveBtn = document.createElement("button");
-  saveBtn.className = "diary-page-save-btn";
-  saveBtn.textContent = "Save";
-  saveBtn.disabled = true;
-  leftCol.appendChild(saveBtn);
-
   content.appendChild(leftCol);
 
   // ── RIGHT COLUMN ──────────────────────────────────
   const rightCol = document.createElement("div");
   rightCol.className = "diary-page-right";
+
+  // Spacer to align photo label with note label
+  const rightSpacer = document.createElement("div");
+  rightSpacer.className = "diary-page-right-spacer";
+  rightCol.appendChild(rightSpacer);
 
   const photoLabel = document.createElement("div");
   photoLabel.className = "diary-section-label";
@@ -883,8 +910,22 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   rightCol.appendChild(fileInput);
 
   content.appendChild(rightCol);
+
+  // Save button — after right col so mobile order is: note → photo → save
+  const saveBtn = document.createElement("button");
+  saveBtn.className = "diary-page-save-btn";
+  saveBtn.textContent = "Save";
+  saveBtn.disabled = true;
+  content.appendChild(saveBtn);
+
   overlay.appendChild(content);
+  document.body.appendChild(backdrop);
   document.body.appendChild(overlay);
+
+  // Set spacer height to match left hero block after layout
+  setTimeout(() => {
+    rightSpacer.style.height = leftHero.offsetHeight + "px";
+  }, 0);
 
   // ── Photo state helpers ───────────────────────────
   function showPhotoEmpty() {
@@ -976,7 +1017,7 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
       await saveDiaryEntry(userId, yearMonth, day, saveData);
 
       showToast("Diary entry saved.", "info");
-      overlay.remove();
+      closeAll();
       if (onSaved) onSaved();
     } catch (err) {
       console.error("Diary save error:", err);
