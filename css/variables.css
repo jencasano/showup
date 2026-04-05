@@ -11,8 +11,9 @@
   --color-amber:         #F8C08A;
 
   /* ── Light Mode ──────────────────────────────── */
-  --bg:           #FFFAF5;
-  --bg-surface:   #FFFFFF;
+  --bg:               #FFFAF5;
+  --bg-surface:       #FFFFFF;
+  --bg-surface-rgb:   255 255 255;
   --bg-subtle:    #F5EFE8;
   --border:       #EDE5DA;
   --border-faint: #F5EFE8;
@@ -50,8 +51,9 @@
    Applied when <html> has data-theme="dark"
    ─────────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg:           #1D2142;
-  --bg-surface:   #2A2E45;
+  --bg:               #1D2142;
+  --bg-surface:       #2A2E45;
+  --bg-surface-rgb:   42 46 69;
   --bg-subtle:    #353B5C;
   --border:       #3D4468;
   --border-faint: #2F3456;

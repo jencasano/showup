@@ -500,7 +500,7 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, jo
       <span class="fw-legend-pill fw-badge fw-badge--miss">Missed</span>
     </div>`;
 
-  return `
+  const calendarHTML = `
     <div class="fullweek-calendar">
       <div class="fullweek-calendar__title">${monthName(yearMonth)}</div>
       <div class="fullweek-calendar__sub">Full-week cadence view (Monday to Sunday)</div>
@@ -508,6 +508,21 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, jo
       ${weekBlocks}
       ${legendHTML}
     </div>`;
+
+  if (fullWeeksCount === 0) {
+    const [y, m] = yearMonth.split("-").map(Number);
+    const nextMonthName = new Date(y, m, 1).toLocaleDateString("en-US", { month: "long" });
+    return `
+      <div class="fullweek-calendar-wrap fw-has-empty-overlay">
+        ${calendarHTML}
+        <div class="fw-empty-overlay">
+          <h4>No full weeks this month.</h4>
+          <p>Joined late? Fair. Show up in ${nextMonthName} and we'll clock every win.</p>
+        </div>
+      </div>`;
+  }
+
+  return `<div class="fullweek-calendar-wrap">${calendarHTML}</div>`;
 }
 
 function monthName(yearMonth) {

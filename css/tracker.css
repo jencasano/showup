@@ -854,6 +854,43 @@
 .fw-dot--close { background: #f59e0b; }
 .fw-dot--miss  { background: #ef4444; }
 
+.fullweek-calendar-wrap {
+  position: relative;
+}
+
+.fw-empty-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  background: rgba(var(--bg-surface-rgb, 255 255 255) / 0.85);
+  backdrop-filter: blur(4px);
+}
+
+.fw-empty-overlay h4 {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+}
+
+.fw-empty-overlay p {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.fw-has-empty-overlay .fullweek-calendar {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
 @media (max-width: 900px) {
   .summary-habits-grid { grid-template-columns: 1fr; }
 }
