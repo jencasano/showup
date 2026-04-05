@@ -927,6 +927,234 @@
   font-family: inherit;
 }
 
+/* ── Diary Page Overlay ──────────────────────── */
+.diary-page-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  background: #FAF7ED;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 27px,
+    #D5C9A8 27px,
+    #D5C9A8 28px
+  );
+  background-position: 0 80px;
+}
+
+.diary-page-overlay::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 44px;
+  bottom: 0;
+  width: 1px;
+  background: rgba(216, 88, 78, 0.3);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.diary-page-nav {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 0 52px;
+  background: rgba(250, 247, 237, 0.95);
+  border-bottom: 1px solid #D5C9A8;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.diary-page-nav-back {
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.diary-page-nav-title {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2A2218;
+}
+
+.diary-page-nav-save {
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.diary-page-nav-save:disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.diary-page-hero {
+  padding: 20px 20px 14px 52px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.diary-page-date-big {
+  font-family: 'Fraunces', serif;
+  font-size: 1.8rem;
+  font-weight: 300;
+  font-style: italic;
+  color: #2A2218;
+  line-height: 1;
+}
+
+.diary-page-date-big strong {
+  font-weight: 700;
+  font-style: normal;
+  color: var(--color-primary);
+}
+
+.diary-page-date-sub {
+  font-size: 0.72rem;
+  color: #7A6F55;
+  margin-top: 4px;
+}
+
+.diary-habit-chips {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.diary-habit-chip {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  color: white;
+  font-family: 'Sora', sans-serif;
+}
+
+.diary-habit-chip--undone {
+  background: transparent;
+  color: #7A6F55;
+  border: 1px solid #D5C9A8;
+}
+
+.diary-page-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px 32px 52px;
+  position: relative;
+  z-index: 2;
+}
+
+.diary-section-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7A6F55;
+  margin-bottom: 7px;
+  display: block;
+  margin-top: 16px;
+}
+
+.diary-note-textarea {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  width: 100%;
+  min-height: 110px;
+  border: 1.5px solid #D5C9A8;
+  border-radius: 10px;
+  background: transparent;
+  padding: 10px 12px;
+  resize: none;
+  outline: none;
+  line-height: 1.6;
+  color: #2A2218;
+  transition: border-color 0.2s;
+}
+
+.diary-note-char {
+  font-size: 0.6rem;
+  color: #7A6F55;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.diary-photo-zone {
+  min-height: 120px;
+  border: 1.5px dashed #D5C9A8;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.diary-photo-zone:hover {
+  border-color: var(--color-primary);
+}
+
+.diary-photo-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+.diary-photo-remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.diary-save-btn {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.diary-save-btn:disabled {
+  opacity: 0.4;
+}
+
 /* ── Responsive ──────────────────────────────── */
 @media (max-width: 768px) {
   #tab-all,

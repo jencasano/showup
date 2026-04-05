@@ -1,5 +1,5 @@
 import { db } from "./firebase-config.js";
-import { getDiaryDays, getDiaryEntry } from "./diary.js";
+import { getDiaryDays, getDiaryEntry, saveDiaryEntry, uploadDiaryPhoto, deleteDiaryPhoto } from "./diary.js";
 import {
   doc, getDoc, setDoc, updateDoc,
   arrayUnion, arrayRemove
@@ -530,6 +530,232 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay) overlay.remove();
   });
+}
+
+// ─── OPEN DIARY PAGE ────────────────────────────────
+export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry, onSaved = null) {
+  const [year, month] = yearMonth.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  const isCurrentMonth = yearMonth === getCurrentYearMonth();
+  const todayDate = new Date().getDate();
+  const isToday = isCurrentMonth && day === todayDate;
+
+  const activities = entry.activities || [];
+  const marks = entry.marks || {};
+
+  let newPhotoFile = null;
+  let photoToDelete = false;
+  let currentPhotoUrl = existingDiaryEntry?.photoUrl || null;
+
+  // ── Overlay ──────────────────────────────────────
+  const overlay = document.createElement("div");
+  overlay.className = "diary-page-overlay";
+
+  // ── Top Nav ──────────────────────────────────────
+  const nav = document.createElement("div");
+  nav.className = "diary-page-nav";
+
+  const backBtn = document.createElement("button");
+  backBtn.className = "diary-page-nav-back";
+  backBtn.textContent = "← back";
+  backBtn.addEventListener("click", () => overlay.remove());
+
+  const navTitle = document.createElement("span");
+  navTitle.className = "diary-page-nav-title";
+  navTitle.textContent = "diary.";
+
+  const navSave = document.createElement("button");
+  navSave.className = "diary-page-nav-save";
+  navSave.textContent = "Save";
+  navSave.disabled = true;
+
+  nav.appendChild(backBtn);
+  nav.appendChild(navTitle);
+  nav.appendChild(navSave);
+  overlay.appendChild(nav);
+
+  // ── Date Hero ────────────────────────────────────
+  const hero = document.createElement("div");
+  hero.className = "diary-page-hero";
+
+  const dayOfWeek = date.toLocaleDateString("en-US", { weekday: "long" });
+  const monthName = date.toLocaleDateString("en-US", { month: "long" });
+
+  const dateBig = document.createElement("div");
+  dateBig.className = "diary-page-date-big";
+  dateBig.innerHTML = `${dayOfWeek}, <strong>${day}</strong>`;
+  hero.appendChild(dateBig);
+
+  const dateSub = document.createElement("div");
+  dateSub.className = "diary-page-date-sub";
+  dateSub.textContent = isToday ? "Today ✨" : monthName;
+  hero.appendChild(dateSub);
+
+  const chips = document.createElement("div");
+  chips.className = "diary-habit-chips";
+  activities.forEach((act, i) => {
+    const marked = (marks[act] || []).includes(day);
+    const chip = document.createElement("span");
+    if (marked) {
+      chip.className = "diary-habit-chip";
+      chip.style.background = getActivityColor(i);
+      chip.textContent = `✓ ${act}`;
+    } else {
+      chip.className = "diary-habit-chip diary-habit-chip--undone";
+      chip.textContent = act;
+    }
+    chips.appendChild(chip);
+  });
+  hero.appendChild(chips);
+  overlay.appendChild(hero);
+
+  // ── Body ─────────────────────────────────────────
+  const body = document.createElement("div");
+  body.className = "diary-page-body";
+
+  // Note section
+  const noteLabel = document.createElement("div");
+  noteLabel.className = "diary-section-label";
+  noteLabel.textContent = "today's note";
+  body.appendChild(noteLabel);
+
+  const textarea = document.createElement("textarea");
+  textarea.className = "diary-note-textarea";
+  textarea.maxLength = 280;
+  textarea.placeholder = "what was today like? how did it feel to show up...";
+  textarea.value = existingDiaryEntry?.note || "";
+  textarea.addEventListener("focus", () => { textarea.style.borderColor = "var(--color-primary)"; });
+  textarea.addEventListener("blur",  () => { textarea.style.borderColor = "#D5C9A8"; });
+  body.appendChild(textarea);
+
+  const charCounter = document.createElement("div");
+  charCounter.className = "diary-note-char";
+  charCounter.textContent = `${textarea.value.length} / 280`;
+  textarea.addEventListener("input", () => {
+    charCounter.textContent = `${textarea.value.length} / 280`;
+    updateDirty();
+  });
+  body.appendChild(charCounter);
+
+  // Photo section
+  const photoLabel = document.createElement("div");
+  photoLabel.className = "diary-section-label";
+  photoLabel.textContent = "photo";
+  body.appendChild(photoLabel);
+
+  const photoWrap = document.createElement("div");
+  photoWrap.style.position = "relative";
+  body.appendChild(photoWrap);
+
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/*";
+  fileInput.style.display = "none";
+  body.appendChild(fileInput);
+
+  function showPhotoPreview(src) {
+    photoWrap.innerHTML = "";
+    const img = document.createElement("img");
+    img.className = "diary-photo-preview";
+    img.src = src;
+    photoWrap.appendChild(img);
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "diary-photo-remove-btn";
+    removeBtn.textContent = "×";
+    removeBtn.addEventListener("click", () => {
+      photoToDelete = true;
+      newPhotoFile = null;
+      currentPhotoUrl = null;
+      showPhotoZone();
+      updateDirty();
+    });
+    photoWrap.appendChild(removeBtn);
+  }
+
+  function showPhotoZone() {
+    photoWrap.innerHTML = "";
+    const zone = document.createElement("div");
+    zone.className = "diary-photo-zone";
+    zone.innerHTML = `<span style="font-size:1.5rem;opacity:0.4">📷</span><span style="font-size:0.72rem;color:#7A6F55">add a photo</span>`;
+    zone.addEventListener("click", () => fileInput.click());
+    photoWrap.appendChild(zone);
+  }
+
+  if (currentPhotoUrl) {
+    showPhotoPreview(currentPhotoUrl);
+  } else {
+    showPhotoZone();
+  }
+
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    newPhotoFile = file;
+    photoToDelete = false;
+    const reader = new FileReader();
+    reader.onload = (e) => showPhotoPreview(e.target.result);
+    reader.readAsDataURL(file);
+    updateDirty();
+  });
+
+  // Save button (in body)
+  const saveBtn = document.createElement("button");
+  saveBtn.className = "diary-save-btn";
+  saveBtn.textContent = "Save";
+  saveBtn.disabled = true;
+  body.appendChild(saveBtn);
+
+  overlay.appendChild(body);
+  document.body.appendChild(overlay);
+
+  // ── Dirty tracking ───────────────────────────────
+  function updateDirty() {
+    const originalNote = existingDiaryEntry?.note || "";
+    const isDirty = textarea.value !== originalNote || newPhotoFile !== null || photoToDelete;
+    navSave.disabled = !isDirty;
+    saveBtn.disabled = !isDirty;
+  }
+
+  // ── Save handler ─────────────────────────────────
+  async function handleSave() {
+    navSave.disabled = true;
+    saveBtn.disabled = true;
+    const originalNavText = navSave.textContent;
+    navSave.textContent = "Saving...";
+    saveBtn.textContent = "Saving...";
+
+    try {
+      let photoUrl = currentPhotoUrl;
+
+      if (newPhotoFile) {
+        photoUrl = await uploadDiaryPhoto(userId, yearMonth, day, newPhotoFile);
+      } else if (photoToDelete) {
+        await deleteDiaryPhoto(userId, yearMonth, day);
+        photoUrl = null;
+      }
+
+      const noteValue = textarea.value.trim();
+      const saveData = { note: noteValue };
+      if (photoUrl !== undefined) saveData.photoUrl = photoUrl;
+
+      await saveDiaryEntry(userId, yearMonth, day, saveData);
+
+      showToast("Diary entry saved.", "info");
+      overlay.remove();
+      if (onSaved) onSaved();
+    } catch (err) {
+      console.error("Diary save error:", err);
+      showToast("Couldn't save. Try again.", "error");
+      navSave.disabled = false;
+      saveBtn.disabled = false;
+      navSave.textContent = originalNavText;
+      saveBtn.textContent = "Save";
+    }
+  }
+
+  navSave.addEventListener("click", handleSave);
+  saveBtn.addEventListener("click", handleSave);
 }
 
 // ─── HELPERS ────────────────────────────────────────
