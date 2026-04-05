@@ -903,6 +903,18 @@
   line-height: 1.5;
 }
 
+.fw-overlay-join-note {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(216, 88, 78, 0.12);
+  border: 1px solid rgba(216, 88, 78, 0.3);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #D8584E;
+}
+
 @media (max-width: 900px) {
   .summary-habits-grid { grid-template-columns: 1fr; }
 }

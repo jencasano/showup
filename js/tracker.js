@@ -512,12 +512,16 @@ function renderFullWeekCalendar(entry, habitStats, yearMonth, fullWeeksCount, jo
   if (fullWeeksCount === 0) {
     const [y, m] = yearMonth.split("-").map(Number);
     const nextMonthName = new Date(y, m, 1).toLocaleDateString("en-US", { month: "long" });
+    const joinedOnHTML = joinDay != null
+      ? `<span class="fw-overlay-join-note">You joined on ${new Date(y, m - 1, joinDay).toLocaleDateString("en-US", { month: "long", day: "numeric" })}.</span>`
+      : "";
     return `
       <div class="fullweek-calendar-wrap fw-has-empty-overlay">
         ${calendarHTML}
         <div class="fw-empty-overlay">
           <h4>No full weeks this month.</h4>
           <p>Joined late? Fair. Show up in ${nextMonthName} and we'll clock every win.</p>
+          ${joinedOnHTML}
         </div>
       </div>`;
   }
