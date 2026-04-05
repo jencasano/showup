@@ -196,20 +196,18 @@ header h1 span { color: var(--color-primary); }
   flex: 1;
   padding: 24px 28px;
   background: var(--bg);
+  view-transition-name: tab-content;
+  will-change: opacity, transform;
 }
 
 .tab-panel { width: 100%; }
 
 /* ── View Transitions API — tab content only ─────── */
-#app-content {
-  view-transition-name: tab-content;
-}
-
 ::view-transition-old(tab-content) {
-  animation: 0.15s ease both tab-out;
+  animation: 0.12s ease both tab-out;
 }
 ::view-transition-new(tab-content) {
-  animation: 0.2s ease both tab-in;
+  animation: 0.18s ease both tab-in;
 }
 
 @keyframes tab-out {

@@ -103,7 +103,7 @@ async function updateStat() {
 }
 
 // ── Tab switching ─────────────────────────────
-export function switchTab(tab) {
+export async function switchTab(tab) {
   activeTab = tab;
   if (tab === "mylog") {
     resetMyLogStatsCache();
@@ -116,18 +116,6 @@ export function switchTab(tab) {
     btn.classList.toggle("active", btn.dataset.tab === tab);
   });
 
-  const applyTabDisplay = () => {
-    tabMyLog.style.display     = tab === "mylog"     ? "block" : "none";
-    tabFollowing.style.display = tab === "following" ? "grid"  : "none";
-    tabAll.style.display       = tab === "all"       ? "grid"  : "none";
-  };
-
-  if (document.startViewTransition) {
-    document.startViewTransition(applyTabDisplay);
-  } else {
-    applyTabDisplay();
-  }
-
   if (tab !== "all" && allLogsUnsub) {
     allLogsUnsub();
     allLogsUnsub = null;
@@ -139,11 +127,24 @@ export function switchTab(tab) {
     monthBarStat.textContent = "";
   }
 
-  // Close picker when switching tabs
   closeMonthPicker();
 
-  loadActiveTab();
+  // Pre-render content into the hidden panel first so the transition
+  // captures fully-rendered content rather than a blank screen.
+  await loadActiveTab();
   updateStat();
+
+  const applyTabDisplay = () => {
+    tabMyLog.style.display     = tab === "mylog"     ? "block" : "none";
+    tabFollowing.style.display = tab === "following" ? "grid"  : "none";
+    tabAll.style.display       = tab === "all"       ? "grid"  : "none";
+  };
+
+  if (document.startViewTransition) {
+    document.startViewTransition(applyTabDisplay);
+  } else {
+    applyTabDisplay();
+  }
 }
 
 async function loadActiveTab() {
