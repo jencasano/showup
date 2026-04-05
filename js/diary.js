@@ -1,6 +1,6 @@
 import { db, storage } from "./firebase-config.js";
 import {
-  collection, doc, getDoc, getDocs, setDoc, query, where
+  collection, doc, getDoc, getDocs, setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   ref, uploadBytes, getDownloadURL, deleteObject
@@ -45,17 +45,17 @@ export async function deleteDiaryPhoto(userId, yearMonth, day) {
 }
 
 export async function getDiaryDays(userId, yearMonth) {
+  // List all docs in the entries subcollection and filter by yearMonth in JS.
+  // Avoids __name__ query which requires a Firestore index and causes permission errors.
   const entriesRef = collection(db, "diary", userId, "entries");
-  const q = query(
-    entriesRef,
-    where("__name__", ">=", `${yearMonth}-01`),
-    where("__name__", "<=", `${yearMonth}-31`)
-  );
-  const snap = await getDocs(q);
+  const snap = await getDocs(entriesRef);
   const days = new Set();
   snap.forEach(d => {
-    const day = parseInt(d.id.split("-")[2], 10);
-    if (!isNaN(day)) days.add(day);
+    // Doc IDs are like "2026-04-05" -- only include ones matching this yearMonth
+    if (d.id.startsWith(yearMonth)) {
+      const day = parseInt(d.id.split("-")[2], 10);
+      if (!isNaN(day)) days.add(day);
+    }
   });
   return days;
 }
