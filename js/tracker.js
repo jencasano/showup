@@ -45,8 +45,8 @@ function renderSticker(sticker) {
 }
 
 // ─── LOAD MY LOG ──────────────────────────────────────────
-export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise = null) {
-  showLoader();
+export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise = null, silent = false) {
+  if (!silent) showLoader();
   container.innerHTML = "";
 
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
@@ -541,8 +541,8 @@ function monthName(yearMonth) {
 }
 
 // ─── LOAD ALL LOGS ────────────────────────────────────────
-export function loadAllLogs(yearMonth, container, currentUser) {
-  showLoader();
+export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
+  if (!silent) showLoader();
   container.innerHTML = "";
 
   const entriesRef = collection(db, "logs", yearMonth, "entries");
@@ -762,8 +762,8 @@ export function loadAllLogs(yearMonth, container, currentUser) {
 }
 
 // ─── LOAD FOLLOWING LOGS ─────────────────────────────────
-export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToAll) {
-  showLoader();
+export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToAll, silent = false) {
+  if (!silent) showLoader();
   container.innerHTML = "";
 
   if (!currentUser?.uid) {

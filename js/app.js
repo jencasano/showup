@@ -139,13 +139,13 @@ export function switchTab(tab) {
   activePanel.offsetHeight;
   activePanel.style.animation = "";
 
-  loadActiveTab();
+  loadActiveTab(true);
   updateStat();
 }
 
-async function loadActiveTab() {
+async function loadActiveTab(silent = false) {
   if (activeTab === "mylog") {
-    await loadMyLog(activeYearMonth, tabMyLog, currentUser, getMyLogStatsPromise());
+    await loadMyLog(activeYearMonth, tabMyLog, currentUser, getMyLogStatsPromise(), silent);
 
   } else if (activeTab === "following") {
     if (followingUnsub) { followingUnsub(); followingUnsub = null; }
@@ -153,12 +153,13 @@ async function loadActiveTab() {
       activeYearMonth,
       tabFollowing,
       currentUser,
-      () => switchTab("all")
+      () => switchTab("all"),
+      silent
     );
 
   } else if (activeTab === "all") {
     if (allLogsUnsub) { allLogsUnsub(); allLogsUnsub = null; }
-    allLogsUnsub = loadAllLogs(activeYearMonth, tabAll, currentUser);
+    allLogsUnsub = loadAllLogs(activeYearMonth, tabAll, currentUser, silent);
   }
 }
 
