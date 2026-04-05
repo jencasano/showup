@@ -1096,13 +1096,34 @@ async function togglePinned(currentUid, targetUid, shouldPin) {
   }
 }
 
-// ─── SHARED TRANSITION HELPER ────────────────────────────
-// True crossfade: keeps old overlay visible while new one fades in on top,
-// then removes old overlay. No gap frame, no flash of underlying page.
+// ─── DIARY CROSSFADE HELPER ────────────────────────────────
+// The key insight: when transitioning between diary modals, the new overlay
+// must be IMMEDIATELY opaque (no opacity fade-in on the backdrop). Only the
+// inner modal element scales in. The old overlay fades out on top while the
+// new one is already fully visible underneath. This prevents any gap frame
+// where the underlying page shows through.
 function crossfadeDiaryOverlay(oldOverlay, buildNewOverlay) {
-  // Build and append the new overlay at opacity 0 — it sits on top via z-index
+  // buildNewOverlay() appends the new overlay to the DOM.
+  // We override its opacity to be immediately visible (bypassing the CSS
+  // opacity:0 default), so the dark backdrop never disappears.
   buildNewOverlay();
-  // Fade out the old one over 180ms while new one is fading in
+
+  // Find whichever overlay was just appended (last child of body matching our selectors)
+  const newOverlay = document.querySelector(".diary-modal-overlay:last-of-type, .diary-pages-overlay:last-of-type") ||
+    [...document.querySelectorAll(".diary-modal-overlay, .diary-pages-overlay")].at(-1);
+
+  if (newOverlay && newOverlay !== oldOverlay) {
+    // Force the new overlay's backdrop to be immediately visible — no fade-in
+    // The CSS transition is suppressed here; only the modal scale-spring runs
+    newOverlay.style.transition = "none";
+    newOverlay.style.opacity = "1";
+    // Re-enable transition after paint so future interactions are smooth
+    requestAnimationFrame(() => {
+      newOverlay.style.transition = "";
+    });
+  }
+
+  // Fade the old overlay out over the new one
   oldOverlay.style.transition = "opacity 0.18s ease";
   oldOverlay.style.opacity = "0";
   setTimeout(() => { oldOverlay.remove(); }, 200);
@@ -1512,6 +1533,7 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
   book.appendChild(rightPage);
   overlay.appendChild(book);
   document.body.appendChild(overlay);
+  // Trigger entrance animation on next frame
   requestAnimationFrame(() => { overlay.classList.add("is-open"); });
 
   let activeDay = null;
@@ -1795,5 +1817,6 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
   modal.appendChild(gridWrap);
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
+  // Trigger entrance animation on next frame
   requestAnimationFrame(() => { overlay.classList.add("is-open"); });
 }
