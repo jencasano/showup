@@ -1744,6 +1744,7 @@
   min-height: 100%;
   position: relative;
   z-index: 2;
+  transition: opacity 0.15s ease;
 }
 
 .diary-modal-pf-row {
@@ -2088,6 +2089,17 @@
   margin-top: 5px;
   width: calc(100% - 4px);
   position: relative;
+}
+
+.diary-mini-polaroid::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 20%;
+  right: 20%;
+  height: 6px;
+  background: rgba(248,192,138,.55);
+  border-radius: 2px;
 }
 
 .diary-mini-polaroid-inner {

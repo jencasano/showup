@@ -1367,25 +1367,9 @@ async function renderDiaryNotebook(userId, yearMonth) {
 }
 
 // ─── PART C: OPEN NOTEBOOK MODAL ─────────────────────────
-function openDiaryModal(userId, yearMonth, diaryDays) {
+// initialDay: optional day number to open directly (skips default startDay logic)
+function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
   document.querySelector(".diary-modal-overlay")?.remove();
-
-  function playPageTurn() {
-    try {
-      const ac = new (window.AudioContext || window["webkitAudioContext"])();
-      const osc = ac.createOscillator();
-      const gain = ac.createGain();
-      osc.type = "sine";
-      osc.frequency.value = 880;
-      osc.connect(gain);
-      gain.connect(ac.destination);
-      gain.gain.setValueAtTime(0, ac.currentTime);
-      gain.gain.linearRampToValueAtTime(0.06, ac.currentTime + 0.008);
-      gain.gain.linearRampToValueAtTime(0, ac.currentTime + 0.06);
-      osc.start();
-      osc.stop(ac.currentTime + 0.08);
-    } catch (e) {}
-  }
 
   const [year, month] = yearMonth.split("-").map(Number);
   const daysInMonth = getDaysInMonth(yearMonth);
@@ -1538,7 +1522,6 @@ function openDiaryModal(userId, yearMonth, diaryDays) {
   let entryCache = {};
 
   async function selectDay(d) {
-    playPageTurn();
     // Update active calendar cell
     if (activeDay && dayCells[activeDay]) dayCells[activeDay].classList.remove("active");
     activeDay = d;
@@ -1664,9 +1647,10 @@ function openDiaryModal(userId, yearMonth, diaryDays) {
     }
   }
 
-  // Initial day selection
-  const startDay = isCurrentMonth ? todayDate
-    : (diaryDays.size > 0 ? Math.max(...diaryDays) : daysInMonth);
+  // Initial day selection — use initialDay if provided, otherwise default logic
+  const startDay = initialDay !== null
+    ? initialDay
+    : (isCurrentMonth ? todayDate : (diaryDays.size > 0 ? Math.max(...diaryDays) : daysInMonth));
   selectDay(startDay);
 }
 
@@ -1790,20 +1774,11 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
       }
 
       if (isFilled) {
+        // Pass the day number directly to openDiaryModal to avoid flash
+        const dayToOpen = d;
         mini.addEventListener("click", () => {
           overlay.remove();
-          openDiaryModal(userId, yearMonth, diaryDays);
-          // selectDay will be called after modal opens — use a small delay
-          setTimeout(() => {
-            const newModal = document.querySelector(".diary-modal-overlay");
-            if (newModal) {
-              const cells = newModal.querySelectorAll(".diary-modal-cal-day:not(.offset)");
-              for (const cell of cells) {
-                const span = cell.querySelector("span");
-                if (span && parseInt(span.textContent, 10) === d) { cell.click(); break; }
-              }
-            }
-          }, 50);
+          openDiaryModal(userId, yearMonth, diaryDays, dayToOpen);
         });
       }
 
