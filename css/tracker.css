@@ -775,11 +775,16 @@
 }
 
 .fw-join-label {
-  font-size: 0.55rem;
-  font-weight: 600;
+  font-size: 0.6rem;
+  font-weight: 700;
   color: #D8584E;
   line-height: 1;
   white-space: nowrap;
+}
+
+.fw-day:has(.fw-join-indicator) {
+  background: rgba(216, 88, 78, 0.15);
+  border-color: rgba(216, 88, 78, 0.5);
 }
 
 .fw-badge-dot {
