@@ -854,8 +854,14 @@
 .fw-dot--close { background: #f59e0b; }
 .fw-dot--miss  { background: #ef4444; }
 
+/* ── No-full-weeks empty state overlay ──────────── */
 .fullweek-calendar-wrap {
   position: relative;
+}
+
+.fw-has-empty-overlay .fullweek-calendar {
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .fw-empty-overlay {
@@ -868,8 +874,13 @@
   text-align: center;
   border-radius: var(--radius-md);
   padding: 16px;
-  background: rgba(var(--bg-surface-rgb, 255 255 255) / 0.85);
-  backdrop-filter: blur(4px);
+  background: rgba(30, 35, 60, 0.82);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+[data-theme="light"] .fw-empty-overlay {
+  background: rgba(255, 255, 255, 0.84);
 }
 
 .fw-empty-overlay h4 {
@@ -884,11 +895,6 @@
   color: var(--text-muted);
   margin: 0;
   line-height: 1.5;
-}
-
-.fw-has-empty-overlay .fullweek-calendar {
-  opacity: 0.3;
-  pointer-events: none;
 }
 
 @media (max-width: 900px) {
