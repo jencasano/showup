@@ -1516,6 +1516,7 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
   book.appendChild(rightPage);
   overlay.appendChild(book);
   document.body.appendChild(overlay);
+  requestAnimationFrame(() => { overlay.classList.add("is-open"); });
 
   // ── selectDay ──────────────────────────────────
   let activeDay = null;
@@ -1529,15 +1530,17 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
 
     // Fetch entry
     let diaryEntry = entryCache[d];
-    if (diaryEntry === undefined) {
+    const wasCached = diaryEntry !== undefined;
+    if (!wasCached) {
       rightContent.innerHTML = `<div style="color:#B5A88A;font-family:'Caveat',cursive;font-size:1rem;padding-top:20px">loading...</div>`;
       diaryEntry = await getDiaryEntry(userId, yearMonth, d);
       entryCache[d] = diaryEntry;
     }
 
-    rightContent.innerHTML = "";
+    function renderContent() {
+      rightContent.innerHTML = "";
 
-    // Prev/next row
+      // Prev/next row
     const pfRow = document.createElement("div");
     pfRow.className = "diary-modal-pf-row";
     const prevBtn = document.createElement("button");
@@ -1644,6 +1647,15 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
         });
       });
       rightContent.appendChild(writeBtn);
+    }
+    rightContent.style.opacity = "1";
+  }
+
+    if (wasCached) {
+      rightContent.style.opacity = "0";
+      setTimeout(() => { renderContent(); }, 130);
+    } else {
+      renderContent();
     }
   }
 
@@ -1782,7 +1794,10 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
         });
       }
 
+      mini.style.opacity = "0";
       grid.appendChild(mini);
+      const delay = Math.min(d * 30, 300);
+      setTimeout(() => { mini.style.opacity = "1"; }, delay);
     }
   }
 
@@ -1791,4 +1806,5 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
   modal.appendChild(gridWrap);
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
+  requestAnimationFrame(() => { overlay.classList.add("is-open"); });
 }
