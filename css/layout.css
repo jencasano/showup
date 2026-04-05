@@ -200,20 +200,24 @@ header h1 span { color: var(--color-primary); }
 
 .tab-panel { width: 100%; }
 
-/* ── View Transitions API — tab switch ───────────── */
-::view-transition-old(root) {
-  animation: 0.18s ease both tab-fade-out;
-}
-::view-transition-new(root) {
-  animation: 0.22s ease both tab-slide-in;
+/* ── View Transitions API — tab content only ─────── */
+#app-content {
+  view-transition-name: tab-content;
 }
 
-@keyframes tab-slide-in {
+::view-transition-old(tab-content) {
+  animation: 0.15s ease both tab-out;
+}
+::view-transition-new(tab-content) {
+  animation: 0.2s ease both tab-in;
+}
+
+@keyframes tab-out {
+  to { opacity: 0; transform: translateY(-4px); }
+}
+@keyframes tab-in {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes tab-fade-out {
-  to { opacity: 0; }
 }
 
 /* ── Mobile Bottom Nav ─────────────────────────── */
