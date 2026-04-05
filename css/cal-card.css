@@ -958,6 +958,23 @@
   z-index: 1;
 }
 
+@media (min-width: 769px) {
+  .diary-page-overlay {
+    inset: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(560px, 90vw);
+    height: min(720px, 90vh);
+    border-radius: 16px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+    overflow-y: auto;
+  }
+  .diary-page-overlay::before {
+    border-radius: 16px 0 0 16px;
+  }
+}
+
 .diary-page-nav {
   height: 52px;
   display: flex;
