@@ -547,9 +547,10 @@ function showCropUI(file, onConfirm) {
   const frame = document.createElement("div");
   frame.className = "diary-crop-frame";
 
-  const blurBg = document.createElement("div");
-  blurBg.className = "diary-crop-blur-bg";
-  frame.appendChild(blurBg);
+  const bgImg = document.createElement("img");
+  bgImg.className = "diary-crop-bg-img";
+  bgImg.style.display = "none";
+  frame.appendChild(bgImg);
 
   const cropImg = document.createElement("img");
   cropImg.className = "diary-crop-img";
@@ -608,7 +609,7 @@ function showCropUI(file, onConfirm) {
     hint.textContent = "Entire photo will be used";
     frame.style.cursor = "default";
     grid.style.display = "none";
-    blurBg.style.display = "block";
+    bgImg.style.display = "block";
     scale = fitScale;
     dx = 0; dy = 0;
     applyTransform();
@@ -620,7 +621,7 @@ function showCropUI(file, onConfirm) {
     hint.textContent = "Drag to reposition · Pinch or scroll to zoom";
     frame.style.cursor = "";
     grid.style.display = "";
-    blurBg.style.display = "none";
+    bgImg.style.display = "none";
     scale = minScale;
     dx = 0; dy = 0;
     applyTransform();
@@ -645,7 +646,7 @@ function showCropUI(file, onConfirm) {
 
   const objectUrl = URL.createObjectURL(file);
   cropImg.src = objectUrl;
-  blurBg.style.backgroundImage = `url(${objectUrl})`;
+  bgImg.src = objectUrl;
 
   // ── Drag (mouse + touch) ──────────────────────────
   let dragging = false, lastX = 0, lastY = 0;
@@ -714,13 +715,18 @@ function showCropUI(file, onConfirm) {
     const ctx = canvas.getContext("2d");
 
     if (fitMode) {
-      // Background: draw image scaled to cover entire 800x800 (no CSS filter — works on Safari iOS)
-      const bgScale = OUT / Math.min(imgNaturalW, imgNaturalH);
+      // Blurred background via downscale→upscale (no ctx.filter — works on Safari iOS)
+      const SMALL = 80;
+      const offscreen = document.createElement("canvas");
+      offscreen.width = SMALL; offscreen.height = SMALL;
+      const octx = offscreen.getContext("2d");
+      const bgScale = SMALL / Math.min(imgNaturalW, imgNaturalH);
       const bgW = imgNaturalW * bgScale;
       const bgH = imgNaturalH * bgScale;
-      ctx.drawImage(cropImg, (OUT - bgW) / 2, (OUT - bgH) / 2, bgW, bgH);
-      // Frosted overlay — simulates blur without ctx.filter
-      ctx.fillStyle = "rgba(255,255,255,0.35)";
+      octx.drawImage(cropImg, (SMALL - bgW) / 2, (SMALL - bgH) / 2, bgW, bgH);
+      ctx.drawImage(offscreen, 0, 0, OUT, OUT);
+      // Frosted overlay
+      ctx.fillStyle = "rgba(255,255,255,0.3)";
       ctx.fillRect(0, 0, OUT, OUT);
       // Foreground: image scaled to fit within OUT×OUT, centered
       const fgScale = OUT / Math.max(imgNaturalW, imgNaturalH);
