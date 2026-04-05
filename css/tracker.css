@@ -860,7 +860,7 @@
 }
 
 .fw-has-empty-overlay .fullweek-calendar {
-  opacity: 0.3;
+  opacity: 0.9;
   pointer-events: none;
 }
 
@@ -874,8 +874,8 @@
   text-align: center;
   border-radius: var(--radius-md);
   padding: 16px;
-  background: rgba(30, 35, 60, 0.82);
-  backdrop-filter: blur(3px);
+  background: rgba(30, 35, 60, 0.75);
+  backdrop-filter: blur(0px);
   -webkit-backdrop-filter: blur(3px);
 }
 
