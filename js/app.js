@@ -129,17 +129,16 @@ export function switchTab(tab) {
 
   closeMonthPicker();
 
-  const applyTabDisplay = () => {
-    tabMyLog.style.display     = tab === "mylog"     ? "block" : "none";
-    tabFollowing.style.display = tab === "following" ? "grid"  : "none";
-    tabAll.style.display       = tab === "all"       ? "grid"  : "none";
-  };
+  tabMyLog.style.display     = tab === "mylog"     ? "block" : "none";
+  tabFollowing.style.display = tab === "following" ? "grid"  : "none";
+  tabAll.style.display       = tab === "all"       ? "grid"  : "none";
 
-  if (document.startViewTransition) {
-    document.startViewTransition(applyTabDisplay);
-  } else {
-    applyTabDisplay();
-  }
+  const activePanel = tab === "mylog" ? tabMyLog
+    : tab === "following" ? tabFollowing : tabAll;
+  activePanel.style.animation = "none";
+  activePanel.offsetHeight;
+  activePanel.style.animation = "";
+
   loadActiveTab();
   updateStat();
 }
