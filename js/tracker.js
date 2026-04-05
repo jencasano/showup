@@ -1441,7 +1441,7 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
   const toggle = document.createElement("div");
   toggle.className = "diary-modal-left-toggle";
   const calBtn = document.createElement("button");
-  calBtn.textContent = "📅 Calendar";
+  calBtn.innerHTML = `<img src="/assets/icons/calendar.svg" width="14" height="14" alt="" style="vertical-align:-2px;opacity:0.75;margin-right:4px;"> Calendar`;
   calBtn.className = "active";
   const pagesBtn = document.createElement("button");
   pagesBtn.textContent = "📄 Pages";
@@ -1516,10 +1516,6 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
 
   const rightPage = document.createElement("div");
   rightPage.className = "diary-modal-right";
-
-  const curl = document.createElement("div");
-  curl.className = "diary-modal-curl";
-  rightPage.appendChild(curl);
 
   const closeBtn = document.createElement("button");
   closeBtn.className = "diary-modal-close";
