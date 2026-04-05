@@ -564,13 +564,18 @@ function showCropUI(file, onConfirm) {
   const cancelBtn = document.createElement("button");
   cancelBtn.className = "diary-crop-cancel";
   cancelBtn.textContent = "Cancel";
-  cancelBtn.addEventListener("click", () => overlay.remove());
+  cancelBtn.addEventListener("click", () => { URL.revokeObjectURL(objectUrl); overlay.remove(); });
+
+  const fitBtn = document.createElement("button");
+  fitBtn.className = "diary-crop-fit-btn";
+  fitBtn.textContent = "Fit";
 
   const confirmBtn = document.createElement("button");
   confirmBtn.className = "diary-crop-confirm";
   confirmBtn.textContent = "Use Photo";
 
   toolbar.appendChild(cancelBtn);
+  toolbar.appendChild(fitBtn);
   toolbar.appendChild(confirmBtn);
   overlay.appendChild(toolbar);
   document.body.appendChild(overlay);
@@ -578,16 +583,13 @@ function showCropUI(file, onConfirm) {
   // State
   let imgNaturalW = 0, imgNaturalH = 0;
   let frameSize = 0;
-  let scale = 1, minScale = 1;
+  let scale = 1, minScale = 1, fitScale = 1;
   let dx = 0, dy = 0; // offset of img center from frame center
+  let fitMode = false;
 
   function clampOffset() {
-    // The rendered img dimensions
-    const rw = imgNaturalW * scale;
-    const rh = imgNaturalH * scale;
-    // Max offset so the img edge doesn't go inside the frame
-    const maxDx = Math.max(0, (rw - frameSize) / 2);
-    const maxDy = Math.max(0, (rh - frameSize) / 2);
+    const maxDx = Math.max(0, (imgNaturalW * scale - frameSize) / 2);
+    const maxDy = Math.max(0, (imgNaturalH * scale - frameSize) / 2);
     dx = Math.max(-maxDx, Math.min(maxDx, dx));
     dy = Math.max(-maxDy, Math.min(maxDy, dy));
   }
@@ -596,12 +598,36 @@ function showCropUI(file, onConfirm) {
     cropImg.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${scale})`;
   }
 
+  function enterFitMode() {
+    fitMode = true;
+    fitBtn.classList.add("active");
+    hint.textContent = "Entire photo will be used";
+    frame.style.cursor = "default";
+    grid.style.display = "none";
+    scale = fitScale;
+    dx = 0; dy = 0;
+    applyTransform();
+  }
+
+  function enterFillMode() {
+    fitMode = false;
+    fitBtn.classList.remove("active");
+    hint.textContent = "Drag to reposition · Pinch or scroll to zoom";
+    frame.style.cursor = "";
+    grid.style.display = "";
+    scale = minScale;
+    dx = 0; dy = 0;
+    applyTransform();
+  }
+
+  fitBtn.addEventListener("click", () => fitMode ? enterFillMode() : enterFitMode());
+
   cropImg.onload = () => {
     imgNaturalW = cropImg.naturalWidth;
     imgNaturalH = cropImg.naturalHeight;
     frameSize = frame.getBoundingClientRect().width;
-    // Scale so shortest side fills frame
     minScale = frameSize / Math.min(imgNaturalW, imgNaturalH);
+    fitScale = frameSize / Math.max(imgNaturalW, imgNaturalH);
     scale = minScale;
     dx = 0; dy = 0;
     cropImg.style.left = "50%";
@@ -618,12 +644,13 @@ function showCropUI(file, onConfirm) {
   let dragging = false, lastX = 0, lastY = 0;
 
   frame.addEventListener("mousedown", (e) => {
+    if (fitMode) return;
     dragging = true;
     lastX = e.clientX; lastY = e.clientY;
     e.preventDefault();
   });
   window.addEventListener("mousemove", (e) => {
-    if (!dragging) return;
+    if (!dragging || fitMode) return;
     dx += e.clientX - lastX;
     dy += e.clientY - lastY;
     lastX = e.clientX; lastY = e.clientY;
@@ -635,6 +662,7 @@ function showCropUI(file, onConfirm) {
   let lastTouches = null, pinchStartDist = 0, pinchStartScale = 1;
 
   frame.addEventListener("touchstart", (e) => {
+    if (fitMode) return;
     e.preventDefault();
     lastTouches = e.touches;
     if (e.touches.length === 2) {
@@ -645,6 +673,7 @@ function showCropUI(file, onConfirm) {
   }, { passive: false });
 
   frame.addEventListener("touchmove", (e) => {
+    if (fitMode) return;
     e.preventDefault();
     if (e.touches.length === 2) {
       const a = e.touches[0], b = e.touches[1];
@@ -662,6 +691,7 @@ function showCropUI(file, onConfirm) {
 
   // ── Scroll to zoom ────────────────────────────────
   frame.addEventListener("wheel", (e) => {
+    if (fitMode) return;
     e.preventDefault();
     const delta = e.deltaY < 0 ? 1.08 : 0.93;
     scale = Math.max(minScale, Math.min(4, scale * delta));
@@ -676,20 +706,28 @@ function showCropUI(file, onConfirm) {
     canvas.width = OUT; canvas.height = OUT;
     const ctx = canvas.getContext("2d");
 
-    // In frame coords:
-    // img center is at (frameSize/2 + dx, frameSize/2 + dy)
-    // img rendered size is (imgNaturalW * scale, imgNaturalH * scale)
-    // visible crop window in img coords:
-    const renderedW = imgNaturalW * scale;
-    const renderedH = imgNaturalH * scale;
-    const imgCenterX = frameSize / 2 + dx; // px from frame left
-    const imgCenterY = frameSize / 2 + dy;
-    // Top-left of the frame in rendered-img coords
-    const srcLeft = (imgNaturalW / 2) - (imgCenterX / scale);
-    const srcTop  = (imgNaturalH / 2) - (imgCenterY / scale);
-    const srcSize = frameSize / scale;
-
-    ctx.drawImage(cropImg, srcLeft, srcTop, srcSize, srcSize, 0, 0, OUT, OUT);
+    if (fitMode) {
+      // Blurred background: draw image scaled to fill, blurred
+      const bgScale = OUT / Math.min(imgNaturalW, imgNaturalH);
+      const bgW = imgNaturalW * bgScale;
+      const bgH = imgNaturalH * bgScale;
+      ctx.filter = "blur(20px) brightness(0.6)";
+      ctx.drawImage(cropImg, (OUT - bgW) / 2, (OUT - bgH) / 2, bgW, bgH);
+      ctx.filter = "none";
+      // Foreground: image scaled to fit within OUT×OUT, centered
+      const fgScale = OUT / Math.max(imgNaturalW, imgNaturalH);
+      const fgW = imgNaturalW * fgScale;
+      const fgH = imgNaturalH * fgScale;
+      ctx.drawImage(cropImg, (OUT - fgW) / 2, (OUT - fgH) / 2, fgW, fgH);
+    } else {
+      // Fill mode: crop visible region
+      const imgCenterX = frameSize / 2 + dx;
+      const imgCenterY = frameSize / 2 + dy;
+      const srcLeft = (imgNaturalW / 2) - (imgCenterX / scale);
+      const srcTop  = (imgNaturalH / 2) - (imgCenterY / scale);
+      const srcSize = frameSize / scale;
+      ctx.drawImage(cropImg, srcLeft, srcTop, srcSize, srcSize, 0, 0, OUT, OUT);
+    }
 
     canvas.toBlob((blob) => {
       URL.revokeObjectURL(objectUrl);

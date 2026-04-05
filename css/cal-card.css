@@ -834,6 +834,24 @@
   font-family: 'Sora', sans-serif;
 }
 
+.diary-crop-fit-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.5);
+  color: white;
+  border-radius: 99px;
+  padding: 5px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.diary-crop-fit-btn.active {
+  background: var(--color-primary);
+  border-color: transparent;
+}
+
 /* ── Diary Page Overlay ──────────────────────── */
 .diary-page-overlay {
   position: fixed;
@@ -960,7 +978,8 @@
 .diary-note-char { font-size: 0.6rem; color: #7A6F55; text-align: right; margin-top: 4px; }
 
 .diary-photo-zone {
-  min-height: 120px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   border: 1.5px dashed #D5C9A8;
   border-radius: 10px;
   display: flex;
@@ -981,6 +1000,7 @@
   aspect-ratio: 1 / 1;
   border-radius: 10px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .diary-photo-preview {
