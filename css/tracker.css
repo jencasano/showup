@@ -1164,6 +1164,7 @@
   align-items: start;
   /* Explicit wide width so it breaks out of the fit-content parent */
   width: min(1100px, calc(100vw - 120px));
+  overflow: hidden;
 }
 
 .mylog-progress-col { min-width: 0; }
@@ -1171,6 +1172,7 @@
 .mylog-diary-col {
   height: 420px;
   display: flex;
+  overflow: hidden;
 }
 
 /* ── Part B: closed notebook ───────────────────── */
