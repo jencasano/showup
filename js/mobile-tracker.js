@@ -1,4 +1,5 @@
 import { db } from "./firebase-config.js";
+import { getDiaryDays } from "./diary.js";
 import {
   doc, getDoc, setDoc, updateDoc,
   arrayUnion, arrayRemove
@@ -137,9 +138,17 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   footer.className = "cal-card-footer";
   card.appendChild(footer);
 
+  let diaryDays = new Set();
+  if (isOwner) {
+    getDiaryDays(currentUser.uid, yearMonth).then(days => {
+      diaryDays = days;
+      render();
+    });
+  }
+
   function render() {
     calBody.innerHTML = "";
-    renderCalGrid(calBody, entry, yearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap);
+    renderCalGrid(calBody, entry, yearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap, diaryDays);
     renderFilterBar(filterBar, activeFilter, entry.activities, onFilterClear);
     renderLegend(footer, entry, (activityName) => {
       activeFilter = activeFilter === activityName ? null : activityName;
@@ -195,7 +204,7 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
 }
 
 // ─── RENDER CALENDAR GRID ───────────────────────────
-function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap) {
+function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap, diaryDays = new Set()) {
   const daysInMonth = getDaysInMonth(yearMonth);
   const marks = entry.marks || {};
   const activities = entry.activities || [];
@@ -309,6 +318,12 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
           }
         }
       }
+    }
+
+    if (!isFuture && diaryDays.has(d)) {
+      const diaryDot = document.createElement("span");
+      diaryDot.className = "cal-diary-dot";
+      cell.appendChild(diaryDot);
     }
 
     if (!isFuture) {

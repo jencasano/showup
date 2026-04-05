@@ -310,6 +310,17 @@
   flex-shrink: 0;
 }
 
+/* Diary entry dot — warm amber, sits below habit dots */
+.cal-diary-dot {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-amber, #F8C08A);
+  margin: 1px auto 0;
+  flex-shrink: 0;
+}
+
 /* Overflow indicator — tiny pill */
 .cal-day-dot--more {
   width: auto;
