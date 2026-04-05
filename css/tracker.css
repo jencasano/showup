@@ -4,14 +4,9 @@
 
 /* ── Section ─────────────────────────────────────── */
 .mylog-centered-stack {
-  width: fit-content;
+  width: 100%;
   max-width: 100%;
   margin: 0 auto;
-}
-
-.mylog-centered-stack .status-banner,
-.mylog-centered-stack .summary-card {
-  width: 100%;
 }
 
 .tracker-section {
