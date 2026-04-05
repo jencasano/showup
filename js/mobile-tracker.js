@@ -819,11 +819,18 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   const body = document.createElement("div");
   body.className = "diary-page-body";
 
-  // Note section
+  // ── Two-column row ────────────────────────────────
+  const cols = document.createElement("div");
+  cols.className = "diary-page-cols";
+
+  // ── Left column: note ─────────────────────────────
+  const leftCol = document.createElement("div");
+  leftCol.className = "diary-page-left-col";
+
   const noteLabel = document.createElement("div");
   noteLabel.className = "diary-section-label";
   noteLabel.textContent = "today's note";
-  body.appendChild(noteLabel);
+  leftCol.appendChild(noteLabel);
 
   const textarea = document.createElement("textarea");
   textarea.className = "diary-note-textarea";
@@ -832,7 +839,7 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   textarea.value = existingDiaryEntry?.note || "";
   textarea.addEventListener("focus", () => { textarea.style.borderColor = "var(--color-primary)"; });
   textarea.addEventListener("blur",  () => { textarea.style.borderColor = "#D5C9A8"; });
-  body.appendChild(textarea);
+  leftCol.appendChild(textarea);
 
   const charCounter = document.createElement("div");
   charCounter.className = "diary-note-char";
@@ -841,37 +848,42 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
     charCounter.textContent = `${textarea.value.length} / 280`;
     updateDirty();
   });
-  body.appendChild(charCounter);
+  leftCol.appendChild(charCounter);
 
-  // Photo section
+  cols.appendChild(leftCol);
+
+  // ── Right column: photo ───────────────────────────
+  const rightCol = document.createElement("div");
+  rightCol.className = "diary-page-right-col";
+
   const photoLabel = document.createElement("div");
   photoLabel.className = "diary-section-label";
   photoLabel.textContent = "photo";
-  body.appendChild(photoLabel);
+  rightCol.appendChild(photoLabel);
 
   const photoWrap = document.createElement("div");
-  photoWrap.style.position = "relative";
-  body.appendChild(photoWrap);
+  rightCol.appendChild(photoWrap);
 
   const fileInput = document.createElement("input");
   fileInput.type = "file";
   fileInput.accept = "image/*";
   fileInput.style.display = "none";
-  body.appendChild(fileInput);
+  rightCol.appendChild(fileInput);
+
+  cols.appendChild(rightCol);
+  body.appendChild(cols);
 
   function showPhotoPreview(src) {
     photoWrap.innerHTML = "";
-    const wrap = document.createElement("div");
-    wrap.className = "diary-photo-preview-wrap";
+    const polaroid = document.createElement("div");
+    polaroid.className = "diary-page-polaroid";
 
     const img = document.createElement("img");
-    img.className = "diary-photo-preview";
     img.src = src;
-    img.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;";
-    wrap.appendChild(img);
+    polaroid.appendChild(img);
 
     const removeBtn = document.createElement("button");
-    removeBtn.className = "diary-photo-remove-btn";
+    removeBtn.className = "diary-page-polaroid-remove";
     removeBtn.textContent = "×";
     removeBtn.addEventListener("click", () => {
       photoToDelete = true;
@@ -880,8 +892,8 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
       showPhotoZone();
       updateDirty();
     });
-    wrap.appendChild(removeBtn);
-    photoWrap.appendChild(wrap);
+    polaroid.appendChild(removeBtn);
+    photoWrap.appendChild(polaroid);
   }
 
   function showPhotoZone() {
