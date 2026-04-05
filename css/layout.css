@@ -11,7 +11,6 @@
 
 /* ── Header ────────────────────────────────────── */
 header {
-  view-transition-name: app-header;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -38,7 +37,6 @@ header h1 span { color: var(--color-primary); }
 
 /* ── Tab Row ───────────────────────────────────── */
 #tab-row {
-  view-transition-name: app-tabs;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -129,7 +127,6 @@ header h1 span { color: var(--color-primary); }
 
 /* ── Month Bar ─────────────────────────────────── */
 #month-bar {
-  view-transition-name: app-monthbar;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -199,35 +196,17 @@ header h1 span { color: var(--color-primary); }
   flex: 1;
   padding: 24px 28px;
   background: var(--bg);
-  view-transition-name: tab-content;
-  will-change: opacity, transform;
 }
 
-.tab-panel { width: 100%; }
-
-/* ── View Transitions API — tab content only ─────── */
-::view-transition-old(tab-content) {
-  animation: 0.12s ease both tab-out;
-}
-::view-transition-new(tab-content) {
-  animation: 0.18s ease both tab-in;
-}
-
-@keyframes tab-out {
-  to { opacity: 0; transform: translateY(-4px); }
-}
-@keyframes tab-in {
-  from { opacity: 0; transform: translateY(6px); }
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateY(5px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-::view-transition-old(app-header),
-::view-transition-new(app-header),
-::view-transition-old(app-tabs),
-::view-transition-new(app-tabs),
-::view-transition-old(app-monthbar),
-::view-transition-new(app-monthbar) {
-  animation: none;
+.tab-panel {
+  width: 100%;
+  opacity: 0;
+  animation: tabFadeIn 0.28s ease forwards;
 }
 
 /* ── Mobile Bottom Nav ─────────────────────────── */
