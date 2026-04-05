@@ -1385,7 +1385,7 @@
   50%       { opacity: 0.6; }
 }
 
-/* ── Open notebook modal ────────────────────────────── */
+/* ── Open notebook modal ───────────────────────────── */
 .diary-modal-overlay,
 .diary-pages-overlay {
   position: fixed;
@@ -1677,19 +1677,9 @@
   margin-top: 1px;
 }
 
+/* Fill bar hidden — the subtitle text already states the count */
 .diary-modal-cal-fill {
-  margin-top: 8px;
-  height: 3px;
-  border-radius: 99px;
-  background: rgba(139,94,60,.15);
-  overflow: hidden;
-}
-
-.diary-modal-cal-fill-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #C8972A, #8B5E3C);
-  border-radius: 99px;
-  transition: width 0.4s;
+  display: none;
 }
 
 .diary-modal-close {
@@ -1724,17 +1714,31 @@
   transition: opacity 0.2s ease;
 }
 
-/* Bottom page navigation — outside rightContent so it never fades */
+/* Bottom page nav — centered with coral square dot as separator */
 .diary-modal-page-nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 8px 20px 10px 60px;
+  gap: 16px;
+  padding: 8px 20px 10px;
   border-top: 1px solid rgba(197, 185, 156, 0.5);
   background: rgba(250, 247, 237, 0.92);
   flex-shrink: 0;
   position: relative;
   z-index: 3;
+}
+
+/* Coral square dot separator between the two buttons */
+.diary-modal-page-nav::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: #D8584E;
+  opacity: 0.65;
+  flex-shrink: 0;
+  order: 2;
 }
 
 .diary-modal-pf-btn {
@@ -1747,6 +1751,17 @@
   font-family: inherit;
   transition: color 0.15s;
   padding: 2px 0;
+  min-width: 80px;
+}
+
+.diary-modal-pf-btn:first-child {
+  order: 1;
+  text-align: right;
+}
+
+.diary-modal-pf-btn:last-child {
+  order: 3;
+  text-align: left;
 }
 
 .diary-modal-pf-btn:disabled {
