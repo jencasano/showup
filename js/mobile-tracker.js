@@ -780,22 +780,27 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   nav.appendChild(navSave);
   overlay.appendChild(nav);
 
-  // ── Date Hero ────────────────────────────────────
-  const hero = document.createElement("div");
-  hero.className = "diary-page-hero";
+  // ── Two-column content area ──────────────────────
+  const content = document.createElement("div");
+  content.className = "diary-page-content";
 
+  // ── LEFT COLUMN ───────────────────────────────────
+  const leftCol = document.createElement("div");
+  leftCol.className = "diary-page-left";
+
+  // Date
   const dayOfWeek = date.toLocaleDateString("en-US", { weekday: "long" });
   const monthName = date.toLocaleDateString("en-US", { month: "long" });
 
   const dateBig = document.createElement("div");
   dateBig.className = "diary-page-date-big";
   dateBig.innerHTML = `${dayOfWeek}, <strong>${day}</strong>`;
-  hero.appendChild(dateBig);
+  leftCol.appendChild(dateBig);
 
   const dateSub = document.createElement("div");
   dateSub.className = "diary-page-date-sub";
   dateSub.textContent = isToday ? "Today ✨" : monthName;
-  hero.appendChild(dateSub);
+  leftCol.appendChild(dateSub);
 
   const chips = document.createElement("div");
   chips.className = "diary-habit-chips";
@@ -812,20 +817,11 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
     }
     chips.appendChild(chip);
   });
-  hero.appendChild(chips);
-  overlay.appendChild(hero);
+  leftCol.appendChild(chips);
 
-  // ── Body ─────────────────────────────────────────
-  const body = document.createElement("div");
-  body.className = "diary-page-body";
-
-  // ── Two-column row ────────────────────────────────
-  const cols = document.createElement("div");
-  cols.className = "diary-page-cols";
-
-  // ── Left column: note ─────────────────────────────
-  const leftCol = document.createElement("div");
-  leftCol.className = "diary-page-left-col";
+  const rule = document.createElement("hr");
+  rule.className = "diary-page-rule";
+  leftCol.appendChild(rule);
 
   const noteLabel = document.createElement("div");
   noteLabel.className = "diary-section-label";
@@ -850,19 +846,35 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   });
   leftCol.appendChild(charCounter);
 
-  cols.appendChild(leftCol);
+  const saveBtn = document.createElement("button");
+  saveBtn.className = "diary-page-save-btn";
+  saveBtn.textContent = "Save";
+  saveBtn.disabled = true;
+  leftCol.appendChild(saveBtn);
 
-  // ── Right column: photo ───────────────────────────
+  content.appendChild(leftCol);
+
+  // ── RIGHT COLUMN ──────────────────────────────────
   const rightCol = document.createElement("div");
-  rightCol.className = "diary-page-right-col";
+  rightCol.className = "diary-page-right";
 
   const photoLabel = document.createElement("div");
   photoLabel.className = "diary-section-label";
   photoLabel.textContent = "photo";
   rightCol.appendChild(photoLabel);
 
-  const photoWrap = document.createElement("div");
-  rightCol.appendChild(photoWrap);
+  const polaroidWrap = document.createElement("div");
+  polaroidWrap.className = "diary-page-polaroid-wrap";
+
+  const polaroid = document.createElement("div");
+  polaroid.className = "diary-page-polaroid";
+
+  const polaroidInner = document.createElement("div");
+  polaroidInner.className = "diary-page-polaroid-inner";
+  polaroid.appendChild(polaroidInner);
+
+  polaroidWrap.appendChild(polaroid);
+  rightCol.appendChild(polaroidWrap);
 
   const fileInput = document.createElement("input");
   fileInput.type = "file";
@@ -870,45 +882,49 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   fileInput.style.display = "none";
   rightCol.appendChild(fileInput);
 
-  cols.appendChild(rightCol);
-  body.appendChild(cols);
+  content.appendChild(rightCol);
+  overlay.appendChild(content);
+  document.body.appendChild(overlay);
 
-  function showPhotoPreview(src) {
-    photoWrap.innerHTML = "";
-    const polaroid = document.createElement("div");
-    polaroid.className = "diary-page-polaroid";
+  // ── Photo state helpers ───────────────────────────
+  function showPhotoEmpty() {
+    polaroidInner.innerHTML = `
+      <span style="font-size:1.5rem;opacity:0.3">📷</span>
+      <span style="font-size:0.55rem;color:#B5A88A;font-family:'Sora',sans-serif">add photo</span>
+    `;
+    polaroid.classList.remove("has-photo");
+    polaroid.style.cursor = "pointer";
+    polaroid.onclick = () => fileInput.click();
+  }
 
+  function showPhotoFilled(src) {
+    polaroidInner.innerHTML = "";
     const img = document.createElement("img");
     img.src = src;
-    polaroid.appendChild(img);
+    polaroidInner.appendChild(img);
 
     const removeBtn = document.createElement("button");
     removeBtn.className = "diary-page-polaroid-remove";
     removeBtn.textContent = "×";
-    removeBtn.addEventListener("click", () => {
+    removeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
       photoToDelete = true;
       newPhotoFile = null;
       currentPhotoUrl = null;
-      showPhotoZone();
+      showPhotoEmpty();
       updateDirty();
     });
-    polaroid.appendChild(removeBtn);
-    photoWrap.appendChild(polaroid);
-  }
+    polaroidInner.appendChild(removeBtn);
 
-  function showPhotoZone() {
-    photoWrap.innerHTML = "";
-    const zone = document.createElement("div");
-    zone.className = "diary-photo-zone";
-    zone.innerHTML = `<span style="font-size:1.5rem;opacity:0.4">📷</span><span style="font-size:0.72rem;color:#7A6F55">add a photo</span>`;
-    zone.addEventListener("click", () => fileInput.click());
-    photoWrap.appendChild(zone);
+    polaroid.classList.add("has-photo");
+    polaroid.style.cursor = "default";
+    polaroid.onclick = null;
   }
 
   if (currentPhotoUrl) {
-    showPhotoPreview(currentPhotoUrl);
+    showPhotoFilled(currentPhotoUrl);
   } else {
-    showPhotoZone();
+    showPhotoEmpty();
   }
 
   fileInput.addEventListener("change", () => {
@@ -922,20 +938,10 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
     showCropUI(file, (croppedFile) => {
       newPhotoFile = croppedFile;
       photoToDelete = false;
-      showPhotoPreview(URL.createObjectURL(croppedFile));
+      showPhotoFilled(URL.createObjectURL(croppedFile));
       updateDirty();
     });
   });
-
-  // Save button (in body)
-  const saveBtn = document.createElement("button");
-  saveBtn.className = "diary-save-btn";
-  saveBtn.textContent = "Save";
-  saveBtn.disabled = true;
-  body.appendChild(saveBtn);
-
-  overlay.appendChild(body);
-  document.body.appendChild(overlay);
 
   // ── Dirty tracking ───────────────────────────────
   function updateDirty() {
