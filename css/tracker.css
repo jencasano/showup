@@ -9,6 +9,10 @@
   margin: 0 auto;
 }
 
+.mylog-centered-stack .status-banner {
+  width: 100%;
+}
+
 .tracker-section {
   background: var(--bg-surface);
   border: 2px solid var(--border);
