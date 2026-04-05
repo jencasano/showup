@@ -45,6 +45,20 @@ function renderSticker(sticker) {
   return sticker || "";
 }
 
+// ─── MODULE-LEVEL DIARY ENTRY CACHE ───────────────────────────
+// Keyed by "userId/yearMonth/day" so entries fetched in the pages modal
+// are immediately available when the diary modal opens, and vice versa.
+// This eliminates the delay on second open.
+const _diaryEntryCache = new Map();
+function _cacheKey(userId, yearMonth, d) { return `${userId}/${yearMonth}/${d}`; }
+async function _getDiaryEntry(userId, yearMonth, d) {
+  const key = _cacheKey(userId, yearMonth, d);
+  if (_diaryEntryCache.has(key)) return _diaryEntryCache.get(key);
+  const entry = await getDiaryEntry(userId, yearMonth, d);
+  _diaryEntryCache.set(key, entry);
+  return entry;
+}
+
 // ─── LOAD MY LOG ──────────────────────────────────────────
 export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise = null, silent = false) {
   if (!silent) showLoader();
@@ -1097,36 +1111,23 @@ async function togglePinned(currentUid, targetUid, shouldPin) {
 }
 
 // ─── DIARY CROSSFADE HELPER ────────────────────────────────
-// The key insight: when transitioning between diary modals, the new overlay
-// must be IMMEDIATELY opaque (no opacity fade-in on the backdrop). Only the
-// inner modal element scales in. The old overlay fades out on top while the
-// new one is already fully visible underneath. This prevents any gap frame
-// where the underlying page shows through.
+// The new overlay starts immediately opaque so the dark backdrop never
+// disappears. Only the inner modal element scales in. The old overlay
+// fades out on top while the new one is already visible underneath.
 function crossfadeDiaryOverlay(oldOverlay, buildNewOverlay) {
-  // buildNewOverlay() appends the new overlay to the DOM.
-  // We override its opacity to be immediately visible (bypassing the CSS
-  // opacity:0 default), so the dark backdrop never disappears.
   buildNewOverlay();
 
-  // Find whichever overlay was just appended (last child of body matching our selectors)
-  const newOverlay = document.querySelector(".diary-modal-overlay:last-of-type, .diary-pages-overlay:last-of-type") ||
-    [...document.querySelectorAll(".diary-modal-overlay, .diary-pages-overlay")].at(-1);
+  const newOverlay = [...document.querySelectorAll(".diary-modal-overlay, .diary-pages-overlay")].at(-1);
 
   if (newOverlay && newOverlay !== oldOverlay) {
-    // Force the new overlay's backdrop to be immediately visible — no fade-in
-    // The CSS transition is suppressed here; only the modal scale-spring runs
     newOverlay.style.transition = "none";
     newOverlay.style.opacity = "1";
-    // Re-enable transition after paint so future interactions are smooth
-    requestAnimationFrame(() => {
-      newOverlay.style.transition = "";
-    });
+    requestAnimationFrame(() => { newOverlay.style.transition = ""; });
   }
 
-  // Fade the old overlay out over the new one
-  oldOverlay.style.transition = "opacity 0.18s ease";
+  oldOverlay.style.transition = "opacity 0.22s ease";
   oldOverlay.style.opacity = "0";
-  setTimeout(() => { oldOverlay.remove(); }, 200);
+  setTimeout(() => { oldOverlay.remove(); }, 250);
 }
 
 // ─── RENDER ONE USER SECTION (desktop My Log) ─────────────
@@ -1533,11 +1534,9 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
   book.appendChild(rightPage);
   overlay.appendChild(book);
   document.body.appendChild(overlay);
-  // Trigger entrance animation on next frame
   requestAnimationFrame(() => { overlay.classList.add("is-open"); });
 
   let activeDay = null;
-  let entryCache = {};
   let selectSeq = 0;
 
   async function selectDay(d) {
@@ -1545,13 +1544,12 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
     activeDay = d;
     if (dayCells[d]) dayCells[d].classList.add("active");
 
-    let diaryEntry = entryCache[d];
-    const wasCached = diaryEntry !== undefined;
-    if (!wasCached) {
+    // Check module-level cache first
+    const cached = _diaryEntryCache.has(_cacheKey(userId, yearMonth, d));
+    if (!cached) {
       rightContent.innerHTML = `<div style="color:#B5A88A;font-family:'Caveat',cursive;font-size:1rem;padding-top:20px">loading...</div>`;
-      diaryEntry = await getDiaryEntry(userId, yearMonth, d);
-      entryCache[d] = diaryEntry;
     }
+    const diaryEntry = await _getDiaryEntry(userId, yearMonth, d);
 
     function renderContent() {
       rightContent.innerHTML = "";
@@ -1630,7 +1628,8 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
         editBtn.textContent = "✏️ Edit entry";
         editBtn.addEventListener("click", () => {
           crossfadeDiaryOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, diaryEntry, () => {
-            entryCache = {};
+            // Invalidate cache for this day so edits show up fresh
+            _diaryEntryCache.delete(_cacheKey(userId, yearMonth, d));
             openDiaryModal(userId, yearMonth, diaryDays);
           }));
         });
@@ -1651,7 +1650,8 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
         writeBtn.textContent = "✏️ Write something";
         writeBtn.addEventListener("click", () => {
           crossfadeDiaryOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, null, () => {
-            entryCache = {};
+            // Invalidate cache so new entry shows up fresh
+            _diaryEntryCache.delete(_cacheKey(userId, yearMonth, d));
             openDiaryModal(userId, yearMonth, diaryDays);
           }));
         });
@@ -1749,12 +1749,10 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
   grid.className = "diary-pages-grid";
 
   const filledDays = Array.from(diaryDays).sort((a, b) => a - b);
-  const allDayEntries = {};
 
   async function loadAndRender() {
-    await Promise.all(filledDays.map(async d => {
-      allDayEntries[d] = await getDiaryEntry(userId, yearMonth, d);
-    }));
+    // Fetch all entries, using module cache — instant on second open
+    await Promise.all(filledDays.map(d => _getDiaryEntry(userId, yearMonth, d)));
 
     let staggerIdx = 0;
     for (let d = 1; d <= daysInMonth; d++) {
@@ -1769,7 +1767,7 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
 
       mini.innerHTML = `<div class="diary-mini-day">${d}</div>`;
 
-      const entry = allDayEntries[d];
+      const entry = _diaryEntryCache.get(_cacheKey(userId, yearMonth, d));
       if (entry?.note) {
         const noteEl = document.createElement("div");
         noteEl.className = "diary-mini-note";
@@ -1803,9 +1801,11 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
       if (!isFilled) {
         grid.appendChild(mini);
       } else {
+        // Only stagger on first open (when we had to fetch);
+        // on cached opens use a much tighter 20ms max stagger for snappiness
         mini.style.opacity = "0";
         grid.appendChild(mini);
-        const delay = Math.min(staggerIdx * 30, 300);
+        const delay = Math.min(staggerIdx * 25, 200);
         setTimeout(() => { mini.style.opacity = "1"; }, delay);
         staggerIdx++;
       }
@@ -1817,6 +1817,5 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
   modal.appendChild(gridWrap);
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
-  // Trigger entrance animation on next frame
   requestAnimationFrame(() => { overlay.classList.add("is-open"); });
 }
