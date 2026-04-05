@@ -2,7 +2,6 @@
    TRACKER — Grid, badges, rows, dots
    ═══════════════════════════════════════════════ */
 
-/* ── Section ─────────────────────────────────────── */
 .mylog-centered-stack {
   width: fit-content;
   max-width: 100%;
@@ -24,7 +23,6 @@
   width: fit-content;
 }
 
-/* ── Badge ──────────────────────────────────────── */
 .tracker-badge {
   display: inline-flex;
   align-items: center;
@@ -51,7 +49,6 @@
   align-items: center;
 }
 
-/* ── Header Row ─────────────────────────────────── */
 .tracker-header-row,
 .tracker-row {
   display: flex;
@@ -64,7 +61,6 @@
 .tracker-header-row::-webkit-scrollbar,
 .tracker-row::-webkit-scrollbar { display: none; }
 
-/* ── Activity Label ─────────────────────────────── */
 .activity-label {
   width: 185px;
   min-width: 185px;
@@ -91,7 +87,6 @@
   flex: 1;
 }
 
-/* ── Cadence tag (inline with activity name) ─── */
 .activity-cad-tag {
   font-size: 0.62rem;
   font-weight: 700;
@@ -111,7 +106,6 @@
   border-color: rgba(99, 102, 241, 0.22);
 }
 
-/* ── Activity Color Dot ─────────────────────────── */
 .activity-dot {
   width: 7px;
   height: 7px;
@@ -120,7 +114,6 @@
   display: inline-block;
 }
 
-/* ── Day Header ─────────────────────────────────── */
 .day-header {
   width: 34px;
   min-width: 34px;
@@ -177,7 +170,6 @@
 [data-theme="light"] .day-header-future .day-num,
 [data-theme="light"] .day-header-future .day-label { opacity: 0.7; }
 
-/* ── Week stripe (header only) ───────────────────── */
 .day-header.week-start,
 .day-header.week-mid,
 .day-header.week-end {
@@ -191,7 +183,6 @@
   border-top-color: rgba(99, 102, 241, 0.25);
 }
 
-/* ── Start day square marker ─────────────────────── */
 .day-start-square {
   display: block;
   width: 5px;
@@ -201,7 +192,6 @@
   margin: 0 auto 1px;
 }
 
-/* ── Tracker grid legend ─────────────────────────── */
 .tracker-grid-legend {
   display: flex;
   gap: 16px;
@@ -245,7 +235,6 @@
   background: rgba(99, 102, 241, 0.35);
 }
 
-/* ── Day Cell ────────────────────────────────────── */
 .day-cell {
   width: 26px;
   height: 26px;
@@ -270,7 +259,6 @@
 .day-cell.clickable.day-cell-today:hover { border-color: var(--color-primary); }
 .day-cell.marked    { font-size: 0.8rem; }
 
-/* ── Empty State ────────────────────────────────── */
 .empty-state {
   text-align: center;
   color: var(--text-faint);
@@ -400,7 +388,6 @@
   color: #fff;
 }
 
-/* ── Big 3 stats ─────────────────────────────────── */
 .summary-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -541,7 +528,6 @@
   }
 }
 
-/* ── Calculation note ────────────────────────────── */
 .summary-note {
   margin: 0 18px 14px;
   padding: 9px 12px;
@@ -554,7 +540,6 @@
 
 .summary-note strong { color: var(--text-primary); }
 
-/* ── Top-level insight banner ────────────────────── */
 .top-insight {
   display: flex;
   align-items: center;
@@ -589,7 +574,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Per-habit breakdown ─────────────────────────── */
 .summary-habits {
   padding: 0 18px 16px;
 }
@@ -670,7 +654,6 @@
   text-shadow: 0 0 8px rgba(34, 197, 94, 0.22);
 }
 
-/* ── Per-habit inline streak badge ──────────────── */
 .summary-habit-streak {
   display: inline-flex;
   align-items: center;
@@ -721,7 +704,6 @@
   background: rgba(245, 158, 11, 0.12);
 }
 
-/* ── Full-week calendar block ────────────────────── */
 .fullweek-calendar-wrap {
   position: relative;
 }
@@ -777,7 +759,6 @@
   outline-color: rgba(165, 180, 252, 0.45);
 }
 
-/* ── Day box ─────────────────────────────────────── */
 .fw-day {
   position: relative;
   min-height: 36px;
@@ -930,8 +911,6 @@
 .fw-dot--close { background: #f59e0b; }
 .fw-dot--miss  { background: #ef4444; }
 
-/* ── No-full-weeks empty state overlay ──────────── */
-
 .fw-has-empty-overlay .fullweek-calendar {
   opacity: 0.9;
   pointer-events: none;
@@ -1007,7 +986,6 @@
 
 /* ═══════════════════════════════════════════════
    PACE STATUS ROW
-   Badge + message on one line.
    ═══════════════════════════════════════════════ */
 .summary-habit-sub {
   display: flex;
@@ -1019,7 +997,6 @@
   min-width: 0;
 }
 
-/* Pace badge: prominent coloured pill */
 .pace-badge {
   display: inline-flex;
   align-items: center;
@@ -1064,14 +1041,12 @@
   border-color: rgba(20, 184, 166, 0.40);
 }
 
-/* Dark mode overrides for badge text */
 [data-theme="dark"] .pace-badge--ahead    { color: #4ade80; }
 [data-theme="dark"] .pace-badge--on-track { color: #67e8f9; }
 [data-theme="dark"] .pace-badge--behind   { color: #f87171; }
 [data-theme="dark"] .pace-badge--early    { color: #a5b4fc; }
 [data-theme="dark"] .pace-badge--started  { color: #5eead4; }
 
-/* Pace message: softer, italic, clearly a supporting note */
 .pace-message {
   font-size: 0.68rem;
   font-style: italic;
@@ -1083,7 +1058,6 @@
   min-width: 0;
 }
 
-/* ── Per-habit inline insight message ────────────── */
 .habit-insight {
   margin-top: 5px;
   font-size: 0.68rem;
@@ -1103,7 +1077,7 @@
 }
 
 /* ═══════════════════════════════════════════════
-   CADENCE PICKER (month-setup modal)
+   CADENCE PICKER
    ═══════════════════════════════════════════════ */
 .ms-activity-row {
   margin-bottom: 20px;
@@ -1153,10 +1127,9 @@
 }
 
 /* ═══════════════════════════════════════════════
-   DIARY — Closed notebook, open modal, pages modal
+   DIARY
    ═══════════════════════════════════════════════ */
 
-/* ── Part A: bottom row layout ─────────────────── */
 .mylog-bottom-row {
   display: grid;
   grid-template-columns: 1fr 260px;
@@ -1174,7 +1147,6 @@
   overflow: hidden;
 }
 
-/* ── Part B: closed notebook ───────────────────── */
 .diary-nb-closed {
   width: 100%;
   height: 100%;
@@ -1413,7 +1385,7 @@
   50%       { opacity: 0.6; }
 }
 
-/* ── Part C: open notebook modal ───────────────── */
+/* ── Open notebook modal ────────────────────────────── */
 .diary-modal-overlay,
 .diary-pages-overlay {
   position: fixed;
@@ -1425,7 +1397,6 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  /* Gentler fade — feels like paper, not a snap */
   transition: opacity 0.28s ease;
 }
 
@@ -1440,7 +1411,6 @@
   display: flex;
   position: relative;
   border-radius: 4px 14px 14px 4px;
-  /* Subtler scale: 0.98 → 1.0 */
   transform: scale(0.98);
   transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -1541,10 +1511,11 @@
     #D5C9A8 28px
   );
   background-position: 0 80px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   position: relative;
   border-radius: 0 14px 14px 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .diary-modal-right::before {
@@ -1721,17 +1692,6 @@
   transition: width 0.4s;
 }
 
-.diary-modal-curl {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 28px;
-  height: 28px;
-  background: linear-gradient(225deg, #D5C9A8 50%, transparent 50%);
-  border-radius: 0 0 14px 0;
-  pointer-events: none;
-}
-
 .diary-modal-close {
   position: absolute;
   top: 10px;
@@ -1754,20 +1714,27 @@
   color: #FAF7ED;
 }
 
+/* Right page: flex column, content scrolls, nav stays at bottom */
 .diary-modal-right-content {
-  padding: 12px 20px 36px 60px;
-  min-height: 100%;
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 20px 16px 60px;
   position: relative;
   z-index: 2;
-  /* Gentler content fade — feels like turning a page */
   transition: opacity 0.2s ease;
 }
 
-.diary-modal-pf-row {
+/* Bottom page navigation — outside rightContent so it never fades */
+.diary-modal-page-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  padding: 8px 20px 10px 60px;
+  border-top: 1px solid rgba(197, 185, 156, 0.5);
+  background: rgba(250, 247, 237, 0.92);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 3;
 }
 
 .diary-modal-pf-btn {
@@ -1779,6 +1746,7 @@
   cursor: pointer;
   font-family: inherit;
   transition: color 0.15s;
+  padding: 2px 0;
 }
 
 .diary-modal-pf-btn:disabled {
@@ -1912,7 +1880,7 @@
   display: block;
 }
 
-/* ── Part D: pages modal ────────────────────────── */
+/* ── Pages modal ──────────────────────────────────── */
 .diary-pages-modal {
   width: min(960px, 94vw);
   height: min(600px, 84vh);
@@ -1924,7 +1892,6 @@
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  /* Subtler scale: 0.98 → 1.0 */
   transform: scale(0.98);
   transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -1993,20 +1960,6 @@
   padding: 4px 10px;
   cursor: pointer;
   font-family: inherit;
-}
-
-.diary-pages-fill-bar {
-  width: 80px;
-  height: 4px;
-  border-radius: 99px;
-  background: var(--bg-subtle);
-  overflow: hidden;
-}
-
-.diary-pages-fill-bar-inner {
-  height: 100%;
-  background: linear-gradient(90deg, #C8972A, #8B5E3C);
-  border-radius: 99px;
 }
 
 .diary-pages-grid-wrap {

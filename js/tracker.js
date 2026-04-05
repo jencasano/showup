@@ -11,13 +11,13 @@ import { icon, STICKER_ICONS } from "./icons.js";
 import { getDiaryDays, getDiaryEntry } from "./diary.js";
 
 const MARKER_SYMBOLS = {
-  square:   "■",
-  circle:   "●",
-  star:     "★",
-  heart:    "♥",
-  check:    "✓",
-  x:        "✗",
-  scribble: "〰"
+  square:   "\u25a0",
+  circle:   "\u25cf",
+  star:     "\u2605",
+  heart:    "\u2665",
+  check:    "\u2713",
+  x:        "\u2717",
+  scribble: "\u3030"
 };
 
 export const ACTIVITY_COLORS = [
@@ -46,9 +46,6 @@ function renderSticker(sticker) {
 }
 
 // ─── MODULE-LEVEL DIARY ENTRY CACHE ───────────────────────────
-// Keyed by "userId/yearMonth/day" so entries fetched in the pages modal
-// are immediately available when the diary modal opens, and vice versa.
-// This eliminates the delay on second open.
 const _diaryEntryCache = new Map();
 function _cacheKey(userId, yearMonth, d) { return `${userId}/${yearMonth}/${d}`; }
 async function _getDiaryEntry(userId, yearMonth, d) {
@@ -177,14 +174,12 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
   });
 }
 
-// ─── PATCH: replace status banner node in-place ───────────
 function refreshBannerInPlace(container, entry, todayDate) {
   const existing = container.querySelector(".status-banner");
   if (!existing) return;
   existing.replaceWith(renderStatusBanner(entry, todayDate));
 }
 
-// ─── PATCH: replace summary card node in-place ────────────
 function refreshSummaryInPlace(container, entry, stats, yearMonth, isCurrentMonth) {
   const existing = container.querySelector(".summary-card");
   if (!existing) return;
@@ -202,17 +197,16 @@ function refreshSummaryInPlace(container, entry, stats, yearMonth, isCurrentMont
   existing.replaceWith(renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth));
 }
 
-// ─── TODAY'S STATUS BANNER ────────────────────────────────
 const STATUS_BANNER_MESSAGES = {
   noneLogged: [
-    "Hey, busy is not an excuse — no one's weak here, right?!",
+    "Hey, busy is not an excuse \u2014 no one's weak here, right?!",
     "No logs yet today. Start now and set the tone.",
     "Clock is ticking. Show up and make today count."
   ],
   someLogged: [
     "Good job! Let's get it!",
     "Nice start. Keep stacking wins today.",
-    "You're in motion now — keep going."
+    "You're in motion now \u2014 keep going."
   ],
   allDone: [
     "All habits done. Elite consistency.",
@@ -245,7 +239,7 @@ function renderStatusBanner(entry, todayDate) {
   const banner = document.createElement("div");
   banner.className = `status-banner ${allDone ? "status-banner--done" : "status-banner--pending"}`;
 
-  const statusIcon = allDone ? "🎉" : icon('flame', 22);
+  const statusIcon = allDone ? "\ud83c\udf89" : icon('flame', 22);
   const title = allDone
     ? "Good job, you showed up today!"
     : noneLogged
@@ -265,7 +259,6 @@ function renderStatusBanner(entry, todayDate) {
   return banner;
 }
 
-// ─── PROGRESS SUMMARY CARD ────────────────────────────────
 function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
   const { showUpDays = 0, perfectDays = 0, totalThisMonth, habitStats, monthlyTargetHitRate, fullWeeksCount, joinDay = null } = stats;
   const activities = entry.activities || [];
@@ -282,9 +275,9 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       : displayRate >= 70 ? "var(--color-warning, #F59E0B)"
       : "var(--color-danger, #EF4444)";
     const statusPill = h.extra > 0
-      ? `<span class="summary-habit-streak">✅ Target met (+${h.extra} extra)</span>`
+      ? `<span class="summary-habit-streak">\u2705 Target met (+${h.extra} extra)</span>`
       : h.monthLogged >= h.monthTarget
-        ? `<span class="summary-habit-streak">✅ Target met</span>`
+        ? `<span class="summary-habit-streak">\u2705 Target met</span>`
         : `<span class="summary-habit-streak">${h.monthTarget - h.monthLogged} to go</span>`;
     const pctClass = `summary-habit-pct${h.extra > 0 ? " summary-habit-pct--over" : ""}`;
     const pctStyle = h.extra > 0 ? "" : `style="color:${barColor}"`;
@@ -332,9 +325,9 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
     <div class="summary-card__header">
       <div>
         <div class="summary-card__title">My Progress</div>
-        <div class="summary-card__sub">${activities.length} habit${activities.length !== 1 ? "s" : ""} · ${monthName} ${year}</div>
+        <div class="summary-card__sub">${activities.length} habit${activities.length !== 1 ? "s" : ""} \u00b7 ${monthName} ${year}</div>
       </div>
-      <button class="summary-share-btn" title="Share your stats">↗ Share</button>
+      <button class="summary-share-btn" title="Share your stats">\u2197 Share</button>
     </div>
     <div class="summary-stats">
       <div class="summary-stat">
@@ -394,7 +387,7 @@ function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
   `;
 
   card.querySelector(".summary-share-btn").addEventListener("click", () => {
-    const text = `My showup. stats for ${monthName} ${year}:\n🎯 ${monthlyTargetHitRate}% targeted habits completed\n✨ ${perfectDays}/${totalThisMonth} perfect days\n📅 ${showUpDays}/${totalThisMonth} show-up days\n${habitStats.map(h => `• ${h.name}: ${h.monthLogged}/${h.monthTarget} this month${h.extra > 0 ? ` (+${h.extra} extra)` : ""}`).join("\n")}`;
+    const text = `My showup. stats for ${monthName} ${year}:\n\ud83c\udfaf ${monthlyTargetHitRate}% targeted habits completed\n\u2728 ${perfectDays}/${totalThisMonth} perfect days\n\ud83d\udcc5 ${showUpDays}/${totalThisMonth} show-up days\n${habitStats.map(h => `\u2022 ${h.name}: ${h.monthLogged}/${h.monthTarget} this month${h.extra > 0 ? ` (+${h.extra} extra)` : ""}`).join("\n")}`;
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
     } else {
@@ -571,7 +564,6 @@ function monthName(yearMonth) {
   return new Date(y, m - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
-// ─── LOAD ALL LOGS ────────────────────────────────────────
 export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
   if (!silent) showLoader();
   container.innerHTML = "";
@@ -792,7 +784,6 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
   });
 }
 
-// ─── LOAD FOLLOWING LOGS ─────────────────────────────────
 export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToAll, silent = false) {
   if (!silent) showLoader();
   container.innerHTML = "";
@@ -900,8 +891,8 @@ function renderFollowingEmpty(container, onSwitchToAll) {
     <div class="following-empty">
       <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_jtbfg2nb.json" background="transparent" speed="1" class="following-lottie-icon" loop autoplay></lottie-player>
       <h3 class="following-empty-title">See who shows up</h3>
-      <p class="following-empty-sub">Head to the All tab to find people who show up →</p>
-      <button class="following-browse-btn" id="browse-all-btn">Browse All →</button>
+      <p class="following-empty-sub">Head to the All tab to find people who show up \u2192</p>
+      <button class="following-browse-btn" id="browse-all-btn">Browse All \u2192</button>
     </div>`;
   container.querySelector("#browse-all-btn")?.addEventListener("click", onSwitchToAll);
 }
@@ -932,7 +923,7 @@ function renderFollowingBoard(container, model) {
     board.classList.add("has-pinned");
 
     const pinnedCol = renderFollowingSection(
-      `📌 Always Here (${pinnedActive.length})`,
+      `\ud83d\udccc Always Here (${pinnedActive.length})`,
       "calendar",
       pinnedActive,
       { currentUser, yearMonth }
@@ -948,7 +939,7 @@ function renderFollowingBoard(container, model) {
       { currentUser, yearMonth }
     ));
     sideCol.appendChild(renderFollowingSection(
-      `Crickets... 🦗 (${noTracker.length})`,
+      `Crickets... \ud83e\udd97 (${noTracker.length})`,
       "compact",
       noTracker,
       { currentUser, yearMonth }
@@ -968,7 +959,7 @@ function renderFollowingBoard(container, model) {
       { currentUser, yearMonth }
     ));
     cards.appendChild(renderFollowingSection(
-      `Crickets... 🦗 (${noTracker.length})`,
+      `Crickets... \ud83e\udd97 (${noTracker.length})`,
       "compact",
       noTracker,
       { currentUser, yearMonth }
@@ -1025,7 +1016,7 @@ function renderPinControl(item, currentUser) {
   wrap.className = "following-pin-wrap";
   const btn = document.createElement("button");
   btn.className = `following-pin-btn ${item.isPinned ? "active" : ""}`;
-  btn.textContent = "📌";
+  btn.textContent = "\ud83d\udccc";
   btn.title = item.isPinned ? "Unpin" : "Pin to front row";
   btn.addEventListener("click", async () => {
     await togglePinned(currentUser.uid, item.uid, !item.isPinned);
@@ -1068,7 +1059,7 @@ function renderCompactRow(item, currentUser) {
   const actions = row.querySelector(".following-compact-actions");
   const pinBtn = document.createElement("button");
   pinBtn.className = `following-pin-btn following-pin-btn-small ${item.isPinned ? "active" : ""}`;
-  pinBtn.textContent = "📌";
+  pinBtn.textContent = "\ud83d\udccc";
   pinBtn.title = item.isPinned ? "Unpin" : "Pin to front row";
   pinBtn.addEventListener("click", async () => {
     await togglePinned(currentUser.uid, item.uid, !item.isPinned);
@@ -1086,8 +1077,8 @@ function renderBrowseNudge(onSwitchToAll, opts = {}) {
     <div class="following-nudge-card">
       <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_jtbfg2nb.json" background="transparent" speed="1" class="following-lottie-icon" loop autoplay></lottie-player>
       <p class="following-nudge-title">See who shows up</p>
-      <p class="following-nudge-sub">Head to the All tab to find people who show up →</p>
-      <button class="following-browse-btn" id="nudge-browse-btn">Browse All →</button>
+      <p class="following-nudge-sub">Head to the All tab to find people who show up \u2192</p>
+      <button class="following-browse-btn" id="nudge-browse-btn">Browse All \u2192</button>
     </div>`;
   slot.querySelector("#nudge-browse-btn")?.addEventListener("click", onSwitchToAll);
   return slot;
@@ -1111,9 +1102,6 @@ async function togglePinned(currentUid, targetUid, shouldPin) {
 }
 
 // ─── DIARY CROSSFADE HELPER ────────────────────────────────
-// The new overlay starts immediately opaque so the dark backdrop never
-// disappears. Only the inner modal element scales in. The old overlay
-// fades out on top while the new one is already visible underneath.
 function crossfadeDiaryOverlay(oldOverlay, buildNewOverlay) {
   buildNewOverlay();
 
@@ -1225,7 +1213,6 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   //Migoy taba!
 }
 
-// ─── RENDER ONE ACTIVITY ROW (desktop) ────────────────────
 function renderActivityRow(
   activity, daysInMonth, markedDays, activityColor, marker,
   isOwner, yearMonth, userId, isCurrentMonth, todayDate, cadence,
@@ -1261,7 +1248,7 @@ function renderActivityRow(
       cell.classList.add("marked");
       cell.style.background   = activityColor;
       cell.style.borderColor  = activityColor;
-      cell.textContent        = MARKER_SYMBOLS[marker] || "●";
+      cell.textContent        = MARKER_SYMBOLS[marker] || "\u25cf";
       cell.style.color        = "white";
     }
 
@@ -1276,7 +1263,6 @@ function renderActivityRow(
   return row;
 }
 
-// ─── TOGGLE A DAY (desktop) ───────────────────────────────
 async function toggleDay(
   cell, day, activity, markedDays, activityColor, marker,
   yearMonth, userId, entry, onMarkToggled
@@ -1292,7 +1278,7 @@ async function toggleDay(
     cell.classList.add("marked");
     cell.style.background  = activityColor;
     cell.style.borderColor = activityColor;
-    cell.textContent       = MARKER_SYMBOLS[marker] || "●";
+    cell.textContent       = MARKER_SYMBOLS[marker] || "\u25cf";
     cell.style.color       = "white";
   }
 
@@ -1381,7 +1367,7 @@ async function renderDiaryNotebook(userId, yearMonth) {
   stat.innerHTML = `<strong>${filledCount}</strong><span>pages filled</span>`;
   const hint = document.createElement("span");
   hint.className = "diary-nb-hint";
-  hint.textContent = "open →";
+  hint.textContent = "open \u2192";
   bottom.appendChild(stat);
   bottom.appendChild(hint);
   content.appendChild(bottom);
@@ -1395,7 +1381,6 @@ async function renderDiaryNotebook(userId, yearMonth) {
 }
 
 // ─── PART C: OPEN NOTEBOOK MODAL ─────────────────────────
-// initialDay: optional day number to open directly (skips default startDay logic)
 function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
   const [year, month] = yearMonth.split("-").map(Number);
   const daysInMonth = getDaysInMonth(yearMonth);
@@ -1434,7 +1419,7 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
   leftHead.className = "diary-modal-left-head";
   leftHead.innerHTML = `
     <div class="diary-modal-left-head-title">diary.</div>
-    <div class="diary-modal-left-head-sub">${monthName} ${year} · ${diaryDays.size} pages filled</div>
+    <div class="diary-modal-left-head-sub">${monthName} ${year} \u00b7 ${diaryDays.size} pages filled</div>
   `;
   leftPage.appendChild(leftHead);
 
@@ -1444,7 +1429,7 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
   calBtn.innerHTML = `<img src="/assets/icons/calendar.svg" width="14" height="14" alt="" style="vertical-align:-2px;opacity:0.75;margin-right:4px;"> Calendar`;
   calBtn.className = "active";
   const pagesBtn = document.createElement("button");
-  pagesBtn.textContent = "📄 Pages";
+  pagesBtn.textContent = "\ud83d\udcc4 Pages";
   toggle.appendChild(calBtn);
   toggle.appendChild(pagesBtn);
   leftPage.appendChild(toggle);
@@ -1519,13 +1504,28 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
 
   const closeBtn = document.createElement("button");
   closeBtn.className = "diary-modal-close";
-  closeBtn.textContent = "✕";
+  closeBtn.textContent = "\u2715";
   closeBtn.addEventListener("click", () => overlay.remove());
   rightPage.appendChild(closeBtn);
 
   const rightContent = document.createElement("div");
   rightContent.className = "diary-modal-right-content";
   rightPage.appendChild(rightContent);
+
+  // ── Bottom page nav — lives outside rightContent so it doesn't fade
+  const pageNav = document.createElement("div");
+  pageNav.className = "diary-modal-page-nav";
+  const prevNavBtn = document.createElement("button");
+  prevNavBtn.className = "diary-modal-pf-btn";
+  prevNavBtn.textContent = "\u2190";
+  prevNavBtn.disabled = true;
+  const nextNavBtn = document.createElement("button");
+  nextNavBtn.className = "diary-modal-pf-btn";
+  nextNavBtn.textContent = "\u2192";
+  nextNavBtn.disabled = true;
+  pageNav.appendChild(prevNavBtn);
+  pageNav.appendChild(nextNavBtn);
+  rightPage.appendChild(pageNav);
 
   book.appendChild(rightPage);
   overlay.appendChild(book);
@@ -1535,12 +1535,39 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
   let activeDay = null;
   let selectSeq = 0;
 
+  function updatePageNav(d) {
+    const maxNext = isCurrentMonth ? todayDate : daysInMonth;
+    const prevDay = d - 1;
+    const nextDay = d + 1;
+
+    prevNavBtn.onclick = null;
+    nextNavBtn.onclick = null;
+
+    if (prevDay >= 1) {
+      prevNavBtn.textContent = `\u2190 ${monthName.slice(0,3)} ${prevDay}`;
+      prevNavBtn.disabled = false;
+      prevNavBtn.onclick = () => selectDay(prevDay);
+    } else {
+      prevNavBtn.textContent = "\u2190";
+      prevNavBtn.disabled = true;
+    }
+
+    if (nextDay <= maxNext) {
+      nextNavBtn.textContent = `${monthName.slice(0,3)} ${nextDay} \u2192`;
+      nextNavBtn.disabled = false;
+      nextNavBtn.onclick = () => selectDay(nextDay);
+    } else {
+      nextNavBtn.textContent = "\u2192";
+      nextNavBtn.disabled = true;
+    }
+  }
+
   async function selectDay(d) {
     if (activeDay && dayCells[activeDay]) dayCells[activeDay].classList.remove("active");
     activeDay = d;
     if (dayCells[d]) dayCells[d].classList.add("active");
+    updatePageNav(d);
 
-    // Check module-level cache first
     const cached = _diaryEntryCache.has(_cacheKey(userId, yearMonth, d));
     if (!cached) {
       rightContent.innerHTML = `<div style="color:#B5A88A;font-family:'Caveat',cursive;font-size:1rem;padding-top:20px">loading...</div>`;
@@ -1549,33 +1576,6 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
 
     function renderContent() {
       rightContent.innerHTML = "";
-
-      const pfRow = document.createElement("div");
-      pfRow.className = "diary-modal-pf-row";
-      const prevBtn = document.createElement("button");
-      prevBtn.className = "diary-modal-pf-btn";
-      const prevDay = d - 1;
-      if (prevDay >= 1) {
-        prevBtn.textContent = `← ${monthName.slice(0,3)} ${prevDay}`;
-        prevBtn.addEventListener("click", () => selectDay(prevDay));
-      } else {
-        prevBtn.disabled = true;
-        prevBtn.textContent = "←";
-      }
-      const nextBtn = document.createElement("button");
-      nextBtn.className = "diary-modal-pf-btn";
-      const nextDay = d + 1;
-      const maxNext = isCurrentMonth ? todayDate : daysInMonth;
-      if (nextDay <= maxNext) {
-        nextBtn.textContent = `${monthName.slice(0,3)} ${nextDay} →`;
-        nextBtn.addEventListener("click", () => selectDay(nextDay));
-      } else {
-        nextBtn.disabled = true;
-        nextBtn.textContent = "→";
-      }
-      pfRow.appendChild(prevBtn);
-      pfRow.appendChild(nextBtn);
-      rightContent.appendChild(pfRow);
 
       const date = new Date(year, month - 1, d);
       const dayOfWeek = date.toLocaleDateString("en-US", { weekday: "long" });
@@ -1596,7 +1596,7 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
             const chip = document.createElement("span");
             chip.className = marked ? "diary-modal-entry-chip" : "diary-modal-entry-chip diary-modal-entry-chip--undone";
             if (marked) chip.style.background = getActivityColor(i);
-            chip.textContent = marked ? `✓ ${act}` : act;
+            chip.textContent = marked ? `\u2713 ${act}` : act;
             chipsRow.appendChild(chip);
           });
           rightContent.appendChild(chipsRow);
@@ -1621,10 +1621,9 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
 
         const editBtn = document.createElement("button");
         editBtn.className = "diary-modal-edit-btn";
-        editBtn.textContent = "✏️ Edit entry";
+        editBtn.textContent = "\u270f\ufe0f Edit entry";
         editBtn.addEventListener("click", () => {
           crossfadeDiaryOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, diaryEntry, () => {
-            // Invalidate cache for this day so edits show up fresh
             _diaryEntryCache.delete(_cacheKey(userId, yearMonth, d));
             openDiaryModal(userId, yearMonth, diaryDays);
           }));
@@ -1643,10 +1642,9 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
 
         const writeBtn = document.createElement("button");
         writeBtn.className = "diary-modal-write-btn";
-        writeBtn.textContent = "✏️ Write something";
+        writeBtn.textContent = "\u270f\ufe0f Write something";
         writeBtn.addEventListener("click", () => {
           crossfadeDiaryOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, null, () => {
-            // Invalidate cache so new entry shows up fresh
             _diaryEntryCache.delete(_cacheKey(userId, yearMonth, d));
             openDiaryModal(userId, yearMonth, diaryDays);
           }));
@@ -1707,25 +1705,19 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
   headTextWrap.style.flex = "1";
   const headTitle = document.createElement("div");
   headTitle.className = "diary-pages-head-title";
-  headTitle.textContent = `diary. — All Pages`;
+  headTitle.textContent = `diary. \u2014 All Pages`;
   const headSub = document.createElement("div");
   headSub.className = "diary-pages-head-sub";
-  headSub.textContent = `${monthName} ${year} · ${diaryDays.size} of ${maxDays} filled`;
+  headSub.textContent = `${monthName} ${year} \u00b7 ${diaryDays.size} of ${maxDays} filled`;
   headTextWrap.appendChild(headTitle);
   headTextWrap.appendChild(headSub);
   head.appendChild(headTextWrap);
 
-  const fillBarWrap = document.createElement("div");
-  fillBarWrap.className = "diary-pages-fill-bar";
-  const fillBarInner = document.createElement("div");
-  fillBarInner.className = "diary-pages-fill-bar-inner";
-  fillBarInner.style.width = maxDays > 0 ? `${(diaryDays.size / maxDays) * 100}%` : "0%";
-  fillBarWrap.appendChild(fillBarInner);
-  head.appendChild(fillBarWrap);
+  // No fill bar — subtitle already states the count
 
   const backBtn = document.createElement("button");
   backBtn.className = "diary-pages-back-btn";
-  backBtn.textContent = "← back to diary";
+  backBtn.textContent = "\u2190 back to diary";
   backBtn.addEventListener("click", () => {
     crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays));
   });
@@ -1733,7 +1725,7 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
 
   const closeBtn = document.createElement("button");
   closeBtn.className = "diary-pages-close-btn";
-  closeBtn.textContent = "✕";
+  closeBtn.textContent = "\u2715";
   closeBtn.addEventListener("click", () => overlay.remove());
   head.appendChild(closeBtn);
 
@@ -1747,7 +1739,6 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
   const filledDays = Array.from(diaryDays).sort((a, b) => a - b);
 
   async function loadAndRender() {
-    // Fetch all entries, using module cache — instant on second open
     await Promise.all(filledDays.map(d => _getDiaryEntry(userId, yearMonth, d)));
 
     let staggerIdx = 0;
@@ -1797,8 +1788,6 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
       if (!isFilled) {
         grid.appendChild(mini);
       } else {
-        // Only stagger on first open (when we had to fetch);
-        // on cached opens use a much tighter 20ms max stagger for snappiness
         mini.style.opacity = "0";
         grid.appendChild(mini);
         const delay = Math.min(staggerIdx * 25, 200);
