@@ -656,6 +656,7 @@
 
 /* ── Full-week calendar block ────────────────────── */
 .fullweek-calendar {
+  position: relative;
   background: var(--bg-subtle);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -784,7 +785,7 @@
 
 .fw-day:has(.fw-join-indicator) {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   background: rgba(216, 88, 78, 0.15);
   border-color: rgba(216, 88, 78, 0.5);
 }
@@ -862,9 +863,6 @@
 .fw-dot--miss  { background: #ef4444; }
 
 /* ── No-full-weeks empty state overlay ──────────── */
-.fullweek-calendar-wrap {
-  position: relative;
-}
 
 .fw-has-empty-overlay .fullweek-calendar {
   opacity: 0.9;
