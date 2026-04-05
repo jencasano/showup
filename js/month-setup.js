@@ -253,6 +253,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null, displayName =
           activities,
           cadences,
           marks: {},
+          setupDay: new Date().getDate(),
           decoration: {
             color:     state.color,
             fontColor: state.fontColor,

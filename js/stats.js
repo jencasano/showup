@@ -353,6 +353,10 @@ export function computeStatsFromEntry(entry, yearMonth, joinDate = null) {
       daysAvailable = daysInMonth - (joinDay - 1);
     }
   }
+  if (joinDay == null && entry.setupDay > 3) {
+    joinDay = entry.setupDay;
+    daysAvailable = daysInMonth - (joinDay - 1);
+  }
 
   const fullWeeks = getFullWeeksInMonth(yearMonth, joinDay);
 
@@ -420,6 +424,11 @@ export async function getUserStats(userId, yearMonth) {
           daysAvailable = daysInMonth - (joinDay - 1);
         }
       }
+    }
+    const setupDay = data.setupDay;
+    if (joinDay == null && setupDay > 3) {
+      joinDay = setupDay;
+      daysAvailable = daysInMonth - (joinDay - 1);
     }
 
     const fullWeeks = getFullWeeksInMonth(yearMonth, joinDay);
