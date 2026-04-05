@@ -1521,6 +1521,7 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
   // ── selectDay ──────────────────────────────────
   let activeDay = null;
   let entryCache = {};
+  let selectSeq = 0;
 
   async function selectDay(d) {
     // Update active calendar cell
@@ -1648,14 +1649,20 @@ function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
       });
       rightContent.appendChild(writeBtn);
     }
-    rightContent.style.opacity = "1";
-  }
+      rightContent.style.opacity = "1";
+    }
 
-    if (wasCached) {
+    if (rightContent.children.length > 0) {
+      const seq = ++selectSeq;
       rightContent.style.opacity = "0";
-      setTimeout(() => { renderContent(); }, 130);
+      setTimeout(() => {
+        if (seq !== selectSeq) return;
+        renderContent();
+        requestAnimationFrame(() => { rightContent.style.opacity = "1"; });
+      }, 130);
     } else {
       renderContent();
+      rightContent.style.opacity = "1";
     }
   }
 
@@ -1749,6 +1756,7 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
       allDayEntries[d] = await getDiaryEntry(userId, yearMonth, d);
     }));
 
+    let staggerIdx = 0;
     for (let d = 1; d <= daysInMonth; d++) {
       const isFuture = isCurrentMonth && d > todayDate;
       if (isFuture) continue;
@@ -1794,10 +1802,15 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
         });
       }
 
-      mini.style.opacity = "0";
-      grid.appendChild(mini);
-      const delay = Math.min(d * 30, 300);
-      setTimeout(() => { mini.style.opacity = "1"; }, delay);
+      if (!isFilled) {
+        grid.appendChild(mini);
+      } else {
+        mini.style.opacity = "0";
+        grid.appendChild(mini);
+        const delay = Math.min(staggerIdx * 30, 300);
+        setTimeout(() => { mini.style.opacity = "1"; }, delay);
+        staggerIdx++;
+      }
     }
   }
 
