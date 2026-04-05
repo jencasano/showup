@@ -744,11 +744,12 @@ function showCropUI(file, onConfirm) {
     }
 
     canvas.toBlob((blob) => {
+      console.log("Diary photo compressed:", Math.round(blob.size / 1024) + "KB");
       URL.revokeObjectURL(objectUrl);
       overlay.remove();
       const croppedFile = new File([blob], "diary-photo.jpg", { type: "image/jpeg" });
       onConfirm(croppedFile);
-    }, "image/jpeg", 0.85);
+    }, "image/jpeg", 0.82);
   });
 }
 
