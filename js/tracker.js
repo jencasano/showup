@@ -1370,6 +1370,23 @@ async function renderDiaryNotebook(userId, yearMonth) {
 function openDiaryModal(userId, yearMonth, diaryDays) {
   document.querySelector(".diary-modal-overlay")?.remove();
 
+  function playPageTurn() {
+    try {
+      const ac = new (window.AudioContext || window["webkitAudioContext"])();
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 880;
+      osc.connect(gain);
+      gain.connect(ac.destination);
+      gain.gain.setValueAtTime(0, ac.currentTime);
+      gain.gain.linearRampToValueAtTime(0.06, ac.currentTime + 0.008);
+      gain.gain.linearRampToValueAtTime(0, ac.currentTime + 0.06);
+      osc.start();
+      osc.stop(ac.currentTime + 0.08);
+    } catch (e) {}
+  }
+
   const [year, month] = yearMonth.split("-").map(Number);
   const daysInMonth = getDaysInMonth(yearMonth);
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
@@ -1521,6 +1538,7 @@ function openDiaryModal(userId, yearMonth, diaryDays) {
   let entryCache = {};
 
   async function selectDay(d) {
+    playPageTurn();
     // Update active calendar cell
     if (activeDay && dayCells[activeDay]) dayCells[activeDay].classList.remove("active");
     activeDay = d;
@@ -1755,13 +1773,20 @@ function openDiaryPagesModal(userId, yearMonth, diaryDays) {
         mini.appendChild(noteEl);
       }
       if (entry?.photoUrl) {
+        const polaroidDiv = document.createElement("div");
+        polaroidDiv.className = "diary-mini-polaroid";
+        const polaroidInner = document.createElement("div");
+        polaroidInner.className = "diary-mini-polaroid-inner";
         const thumb = document.createElement("img");
-        thumb.className = "diary-mini-thumb";
         thumb.src = entry.photoUrl;
         thumb.alt = "";
-        thumb.style.height = "auto";
-        thumb.style.aspectRatio = "1 / 1";
-        mini.appendChild(thumb);
+        thumb.style.width = "100%";
+        thumb.style.height = "100%";
+        thumb.style.objectFit = "cover";
+        thumb.style.display = "block";
+        polaroidInner.appendChild(thumb);
+        polaroidDiv.appendChild(polaroidInner);
+        mini.appendChild(polaroidDiv);
       }
 
       if (isFilled) {
