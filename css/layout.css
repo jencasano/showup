@@ -196,11 +196,11 @@ header h1 span { color: var(--color-primary); }
   flex: 1;
   padding: 24px 28px;
   background: var(--bg);
-  animation: contentFadeIn 0.25s ease both;
+  animation: contentFadeIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes contentFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
