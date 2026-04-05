@@ -4,7 +4,7 @@
 
 /* ── Section ─────────────────────────────────────── */
 .mylog-centered-stack {
-  width: 100%;
+  width: fit-content;
   max-width: 100%;
   margin: 0 auto;
 }
@@ -1162,7 +1162,8 @@
   grid-template-columns: 1fr 280px;
   gap: 20px;
   align-items: start;
-  width: 100%;
+  /* Explicit wide width so it breaks out of the fit-content parent */
+  width: min(1100px, calc(100vw - 120px));
 }
 
 .mylog-progress-col { min-width: 0; }
