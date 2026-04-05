@@ -169,11 +169,7 @@
   flex-shrink: 0;
 }
 
-/* ── Follow Button ───────────────────────────────
-   Fixed palette — always legible on any badge color.
-   Unfollow: cream bg + coral border + navy text
-   Following: coral fill + cream text
-   ─────────────────────────────────────────────── */
+/* ── Follow Button ─────────────────────────────── */
 .cal-follow-btn {
   flex-shrink: 0;
   display: inline-flex;
@@ -307,7 +303,7 @@
   flex-shrink: 0;
 }
 
-/* Diary entry dot — warm amber, sits below habit dots */
+/* Diary entry dot */
 .cal-diary-dot {
   display: block;
   width: 4px;
@@ -318,7 +314,7 @@
   flex-shrink: 0;
 }
 
-/* Overflow indicator — tiny pill */
+/* Overflow indicator */
 .cal-day-dot--more {
   width: auto;
   height: auto;
@@ -331,14 +327,8 @@
   line-height: 1.4;
 }
 
-.cal-day-partial {
-  background: var(--bg-subtle);
-}
-
-.cal-day-full {
-  background: var(--bg-subtle);
-  border-radius: var(--radius-md);
-}
+.cal-day-partial { background: var(--bg-subtle); }
+.cal-day-full { background: var(--bg-subtle); border-radius: var(--radius-md); }
 
 .cal-day-today {
   outline: 1.5px solid var(--color-primary);
@@ -430,18 +420,11 @@
   margin: -2px -4px;
   transition: background 0.15s;
 }
-.cal-legend-item--clickable:hover {
-  background: rgba(0,0,0,0.06);
-}
-.cal-legend-item--active {
-  background: rgba(0,0,0,0.06);
-}
-.cal-legend-item--active .cal-legend-name {
-  font-weight: 700;
-  color: var(--text);
-}
+.cal-legend-item--clickable:hover { background: rgba(0,0,0,0.06); }
+.cal-legend-item--active { background: rgba(0,0,0,0.06); }
+.cal-legend-item--active .cal-legend-name { font-weight: 700; color: var(--text); }
 
-/* ── Placeholder Card (no tracker this month) ── */
+/* ── Placeholder Card ── */
 .cal-card-placeholder { opacity: 0.75; }
 
 .cal-card-placeholder-body {
@@ -459,11 +442,8 @@
   text-align: center;
 }
 
-/* ── Following tab — card slot wrappers ───────── */
-.following-card-slot {
-  position: relative;
-  min-width: 0;
-}
+/* ── Following tab ───────────────────────────── */
+.following-card-slot { position: relative; min-width: 0; }
 
 .following-pin-wrap {
   position: absolute;
@@ -487,10 +467,7 @@
   transform: rotate(45deg);
 }
 
-.following-pin-btn:hover {
-  opacity: 0.65;
-  filter: none;
-}
+.following-pin-btn:hover { opacity: 0.65; filter: none; }
 
 .following-pin-btn.active {
   border: none;
@@ -500,21 +477,14 @@
   transform: rotate(0deg);
 }
 
-.following-board {
-  display: grid;
-  gap: 16px;
-}
+.following-board { display: grid; gap: 16px; }
 
 .following-board.has-pinned {
   grid-template-columns: minmax(0, 1.9fr) minmax(320px, 1fr);
   align-items: start;
 }
 
-.following-side-col {
-  display: grid;
-  gap: 12px;
-  align-content: start;
-}
+.following-side-col { display: grid; gap: 12px; align-content: start; }
 
 .following-no-pinned-grid {
   display: grid;
@@ -549,11 +519,7 @@
   margin-top: 10px;
 }
 
-.following-compact-list {
-  display: grid;
-  gap: 8px;
-  margin-top: 10px;
-}
+.following-compact-list { display: grid; gap: 8px; margin-top: 10px; }
 
 .following-compact-row {
   display: flex;
@@ -566,12 +532,7 @@
   padding: 9px 10px;
 }
 
-.following-compact-user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
+.following-compact-user { display: flex; align-items: center; gap: 8px; min-width: 0; }
 
 .following-compact-avatar,
 .following-compact-avatar-initials {
@@ -580,9 +541,7 @@
   border-radius: 50%;
 }
 
-.following-compact-avatar {
-  object-fit: cover;
-}
+.following-compact-avatar { object-fit: cover; }
 
 .following-compact-avatar-initials {
   display: flex;
@@ -606,18 +565,9 @@
   text-overflow: ellipsis;
 }
 
-.following-compact-meta {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
+.following-compact-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
 
-.following-compact-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
+.following-compact-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 
 .following-status-chip {
   border-radius: var(--radius-full);
@@ -627,44 +577,16 @@
   border: 1px solid var(--border);
 }
 
-.following-status-chip.has-tracker {
-  color: #1B7D5A;
-  background: #EAF8F2;
-  border-color: #B9E4D2;
-}
+.following-status-chip.has-tracker { color: #1B7D5A; background: #EAF8F2; border-color: #B9E4D2; }
+.following-status-chip.no-tracker { color: #8A6A1F; background: #FFF6E6; border-color: #F3D69A; }
 
-.following-status-chip.no-tracker {
-  color: #8A6A1F;
-  background: #FFF6E6;
-  border-color: #F3D69A;
-}
+.following-pin-btn-small { font-size: 1rem; padding: 4px 6px; opacity: 0.5; filter: grayscale(0.4); }
+.following-pin-btn-small:hover { opacity: 0.8; }
+.following-pin-btn-small.active { opacity: 1; }
 
-.following-pin-btn-small {
-  font-size: 1rem;
-  padding: 4px 6px;
-  opacity: 0.5;
-  filter: grayscale(0.4);
-}
+.following-nudge-section { display: flex; }
+.following-nudge-slot { min-width: 0; align-self: stretch; display: flex; }
 
-.following-pin-btn-small:hover {
-  opacity: 0.8;
-}
-
-.following-pin-btn-small.active {
-  opacity: 1;
-}
-
-.following-nudge-section {
-  display: flex;
-}
-
-.following-nudge-slot {
-  min-width: 0;
-  align-self: stretch;
-  display: flex;
-}
-
-/* ── Full Empty State (zero follows) ──────────── */
 .following-empty {
   grid-column: 1 / -1;
   display: flex;
@@ -682,30 +604,10 @@
   width: 100%;
 }
 
-.following-lottie-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 4px;
-  display: block;
-}
+.following-lottie-icon { width: 80px; height: 80px; margin: 0 auto 4px; display: block; }
+.following-empty-title { font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; color: var(--text); margin: 0; }
+.following-empty-sub { font-size: 0.8rem; color: var(--text-muted); margin: 0; max-width: 260px; line-height: 1.5; }
 
-.following-empty-title {
-  font-family: var(--font-heading);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0;
-}
-
-.following-empty-sub {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin: 0;
-  max-width: 260px;
-  line-height: 1.5;
-}
-
-/* ── Nudge Card (alongside real cards) ──────────── */
 .following-nudge-card {
   width: 100%;
   height: 100%;
@@ -723,40 +625,13 @@
   transition: border-color var(--transition), background var(--transition);
 }
 
-@media (max-width: 1100px) {
-  .following-board.has-pinned {
-    grid-template-columns: 1fr;
-  }
-}
+@media (max-width: 1100px) { .following-board.has-pinned { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .following-no-pinned-grid { grid-template-columns: 1fr; } }
 
-@media (max-width: 900px) {
-  .following-no-pinned-grid {
-    grid-template-columns: 1fr;
-  }
-}
+.following-nudge-card:hover { border-color: var(--color-primary); background: var(--bg-subtle); }
+.following-nudge-title { font-family: var(--font-heading); font-size: 0.95rem; font-weight: 700; color: var(--text); margin: 0; }
+.following-nudge-sub { font-size: 0.72rem; color: var(--text-muted); margin: 0; max-width: 200px; line-height: 1.5; }
 
-.following-nudge-card:hover {
-  border-color: var(--color-primary);
-  background: var(--bg-subtle);
-}
-
-.following-nudge-title {
-  font-family: var(--font-heading);
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0;
-}
-
-.following-nudge-sub {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  margin: 0;
-  max-width: 200px;
-  line-height: 1.5;
-}
-
-/* ── Shared browse button (empty + nudge states) ── */
 .following-browse-btn {
   margin-top: 4px;
   padding: 7px 18px;
@@ -771,10 +646,7 @@
   transition: all var(--transition);
 }
 
-.following-browse-btn:hover {
-  background: var(--color-primary);
-  color: white;
-}
+.following-browse-btn:hover { background: var(--color-primary); color: white; }
 
 /* ── Day Sheet (Bottom Sheet) ──────────────────── */
 .day-sheet-overlay {
@@ -801,13 +673,7 @@
   to   { transform: translateY(0); }
 }
 
-.day-sheet-handle {
-  width: 32px;
-  height: 4px;
-  background: var(--border);
-  border-radius: 99px;
-  margin: 0 auto 12px;
-}
+.day-sheet-handle { width: 32px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto 12px; }
 
 .day-sheet-date {
   font-family: var(--font-heading);
@@ -842,18 +708,8 @@
   transition: all var(--transition);
 }
 
-.day-sheet-name {
-  font-size: 0.85rem;
-  color: var(--text);
-  flex: 1;
-  font-weight: 500;
-}
-
-.day-sheet-arrow {
-  font-size: 0.75rem;
-  color: var(--text-faint);
-  cursor: pointer;
-}
+.day-sheet-name { font-size: 0.85rem; color: var(--text); flex: 1; font-weight: 500; }
+.day-sheet-arrow { font-size: 0.75rem; color: var(--text-faint); cursor: pointer; }
 
 .day-sheet-hint {
   font-size: 0.65rem;
@@ -865,15 +721,9 @@
 }
 
 /* ── Diary section in day sheet ──────────────── */
-.day-sheet-diary-divider {
-  margin: 12px 0 0;
-  height: 1px;
-  background: var(--border-faint);
-}
+.day-sheet-diary-divider { margin: 12px 0 0; height: 1px; background: var(--border-faint); }
 
-.day-sheet-diary-section {
-  padding: 12px 20px 4px;
-}
+.day-sheet-diary-section { padding: 12px 20px 4px; }
 
 .day-sheet-diary-label {
   font-family: 'Fraunces', serif;
@@ -885,18 +735,9 @@
   margin-bottom: 6px;
 }
 
-.day-sheet-diary-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+.day-sheet-diary-body { display: flex; flex-direction: column; gap: 8px; }
 
-.day-sheet-diary-note {
-  font-family: 'Caveat', cursive;
-  font-size: 1rem;
-  color: var(--text);
-  line-height: 1.5;
-}
+.day-sheet-diary-note { font-family: 'Caveat', cursive; font-size: 1rem; color: var(--text); line-height: 1.5; }
 
 .day-sheet-diary-thumb {
   max-width: 72px;
@@ -980,43 +821,12 @@
   z-index: 2;
 }
 
-.diary-page-nav-back {
-  background: none;
-  border: none;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-primary);
-  cursor: pointer;
-}
+.diary-page-nav-back { background: none; border: none; font-size: 0.85rem; font-weight: 600; color: var(--color-primary); cursor: pointer; }
+.diary-page-nav-title { font-family: 'Fraunces', serif; font-style: italic; font-size: 0.95rem; font-weight: 700; color: #2A2218; }
+.diary-page-nav-save { background: none; border: none; font-size: 0.78rem; font-weight: 700; color: var(--color-primary); cursor: pointer; }
+.diary-page-nav-save:disabled { opacity: 0.3; pointer-events: none; }
 
-.diary-page-nav-title {
-  font-family: 'Fraunces', serif;
-  font-style: italic;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #2A2218;
-}
-
-.diary-page-nav-save {
-  background: none;
-  border: none;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  cursor: pointer;
-}
-
-.diary-page-nav-save:disabled {
-  opacity: 0.3;
-  pointer-events: none;
-}
-
-.diary-page-hero {
-  padding: 20px 20px 14px 52px;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 2;
-}
+.diary-page-hero { padding: 20px 20px 14px 52px; flex-shrink: 0; position: relative; z-index: 2; }
 
 .diary-page-date-big {
   font-family: 'Fraunces', serif;
@@ -1027,24 +837,10 @@
   line-height: 1;
 }
 
-.diary-page-date-big strong {
-  font-weight: 700;
-  font-style: normal;
-  color: var(--color-primary);
-}
+.diary-page-date-big strong { font-weight: 700; font-style: normal; color: var(--color-primary); }
+.diary-page-date-sub { font-size: 0.72rem; color: #7A6F55; margin-top: 4px; }
 
-.diary-page-date-sub {
-  font-size: 0.72rem;
-  color: #7A6F55;
-  margin-top: 4px;
-}
-
-.diary-habit-chips {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
+.diary-habit-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
 
 .diary-habit-chip {
   font-size: 0.62rem;
@@ -1055,19 +851,9 @@
   font-family: 'Sora', sans-serif;
 }
 
-.diary-habit-chip--undone {
-  background: transparent;
-  color: #7A6F55;
-  border: 1px solid #D5C9A8;
-}
+.diary-habit-chip--undone { background: transparent; color: #7A6F55; border: 1px solid #D5C9A8; }
 
-.diary-page-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 20px 32px 52px;
-  position: relative;
-  z-index: 2;
-}
+.diary-page-body { flex: 1; overflow-y: auto; padding: 16px 20px 32px 52px; position: relative; z-index: 2; }
 
 .diary-section-label {
   font-size: 0.6rem;
@@ -1094,14 +880,10 @@
   line-height: 1.6;
   color: #2A2218;
   transition: border-color 0.2s;
+  box-sizing: border-box;
 }
 
-.diary-note-char {
-  font-size: 0.6rem;
-  color: #7A6F55;
-  text-align: right;
-  margin-top: 4px;
-}
+.diary-note-char { font-size: 0.6rem; color: #7A6F55; text-align: right; margin-top: 4px; }
 
 .diary-photo-zone {
   min-height: 120px;
@@ -1116,18 +898,23 @@
   transition: border-color 0.2s;
 }
 
-.diary-photo-zone:hover {
-  border-color: var(--color-primary);
+.diary-photo-zone:hover { border-color: var(--color-primary); }
+
+/* Photo preview: fixed height container, image fills it */
+.diary-photo-preview-wrap {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .diary-photo-preview {
-  max-width: 100%;
-  max-height: 180px;
-  width: auto;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 10px;
   display: block;
-  margin: 0 auto;
+  border-radius: 10px;
 }
 
 .diary-photo-remove-btn {
@@ -1162,9 +949,7 @@
   transition: opacity 0.2s;
 }
 
-.diary-save-btn:disabled {
-  opacity: 0.4;
-}
+.diary-save-btn:disabled { opacity: 0.4; }
 
 /* ── Responsive ──────────────────────────────── */
 @media (max-width: 768px) {
@@ -1175,16 +960,9 @@
   }
 
   #tab-mylog .cal-card { max-width: 100%; }
-
   .following-empty { padding: 36px 16px; max-width: 100%; }
-
-  .following-nudge-slot {
-    align-self: auto;
-  }
-  .following-nudge-card {
-    min-height: 160px;
-    padding: 24px 16px;
-  }
+  .following-nudge-slot { align-self: auto; }
+  .following-nudge-card { min-height: 160px; padding: 24px 16px; }
 }
 
 @media (min-width: 769px) and (max-width: 1100px) {
