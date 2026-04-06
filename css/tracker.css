@@ -2029,12 +2029,6 @@
 .diary-mini-polaroid-inner { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; }
 
 /* ─── Gear button on desktop badge ──────────────────────── */
-/*
-  The gear uses position:absolute inside .tracker-section (which has overflow:hidden).
-  It is clipped at the section boundary so it stays within the visible card area.
-  We place it at top:0 right:0 to sit in the badge strip, then offset with padding
-  so it aligns visually with the badge content.
-*/
 .tracker-badge-gear {
   position: absolute;
   top: 8px;
@@ -2142,11 +2136,14 @@
 
 .ma-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
+/* Input: force transparent bg in all states including browser focus/autofill */
 .ma-name-input {
   flex: 1;
   border: none;
   outline: none;
   background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
   font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
@@ -2156,6 +2153,20 @@
   transition: border-color 0.15s;
   padding-bottom: 1px;
 }
+.ma-name-input:focus {
+  background: transparent !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+/* Suppress Chrome/Safari autofill background injection */
+.ma-name-input:-webkit-autofill,
+.ma-name-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  background-color: transparent !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+.ma-row.is-focused .ma-name-input { border-bottom-color: var(--color-primary); }
 .manage-activities-modal .ma-name-input,
 .manage-activities-modal .ma-name-input:focus { border: none; outline: none; }
 
