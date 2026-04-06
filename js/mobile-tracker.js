@@ -430,19 +430,13 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
     name.className = "day-sheet-name";
     name.textContent = activity;
 
-    const arrow = document.createElement("span");
-    arrow.className = "day-sheet-arrow";
-    arrow.textContent = "→";
-
     row.appendChild(circle);
     row.appendChild(name);
-    row.appendChild(arrow);
     sheet.appendChild(row);
 
     if (isOwner) {
-      circle.style.cursor = "pointer";
-      circle.addEventListener("click", (e) => {
-        e.stopPropagation();
+      row.style.cursor = "pointer";
+      row.addEventListener("click", () => {
         const idx = markedDays.indexOf(day);
         if (idx > -1) {
           markedDays.splice(idx, 1);
@@ -460,20 +454,7 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
         onToggle(activity, markedDays);
       });
     }
-
-    name.style.cursor = "pointer";
-    arrow.style.cursor = "pointer";
-    const filterHandler = () => onFilter(activity);
-    name.addEventListener("click", filterHandler);
-    arrow.addEventListener("click", filterHandler);
   });
-
-  const hint = document.createElement("div");
-  hint.className = "day-sheet-hint";
-  hint.textContent = isOwner
-    ? "tap ○ to mark done · tap name → to filter calendar"
-    : "tap name → to filter calendar";
-  sheet.appendChild(hint);
 
   if (isOwner) {
     const divider = document.createElement("div");
