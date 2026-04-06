@@ -1221,3 +1221,22 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ── Gear button on mobile badge ─────────────── */
+.cal-badge-gear {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+  color: inherit;
+  margin-left: auto;
+}
+.cal-badge-gear:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.2);
+}
+

@@ -9,6 +9,7 @@ import { renderMobileCard, openDiaryPage } from "./mobile-tracker.js";
 import { getUserStats, computeStatsFromEntry, cadenceLabel } from "./stats.js";
 import { icon, STICKER_ICONS } from "./icons.js";
 import { getDiaryDays, getDiaryEntry } from "./diary.js";
+import { openManageActivitiesModal } from "./manage-activities.js";
 
 const MARKER_SYMBOLS = {
   square:   "\u25a0",
@@ -1154,6 +1155,15 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
     : "";
   badge.innerHTML = `${avatarHTML}<span class="badge-name">${entry.displayName}</span><span class="badge-sticker">${renderSticker(sticker)}</span>`;
   section.appendChild(badge);
+
+  if (isOwner && isCurrentMonth) {
+    const gearBtn = document.createElement("button");
+    gearBtn.className = "tracker-badge-gear";
+    gearBtn.title = "Manage activities";
+    gearBtn.textContent = "⚙";
+    gearBtn.addEventListener("click", () => openManageActivitiesModal(entry, yearMonth, currentUser, onMarkToggled));
+    section.appendChild(gearBtn);
+  }
 
   const headerRow = document.createElement("div");
   headerRow.className = "tracker-header-row";

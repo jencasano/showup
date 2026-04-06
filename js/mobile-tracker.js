@@ -6,6 +6,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getDaysInMonth, getCurrentYearMonth } from "./utils.js";
 import { getActivityColor } from "./tracker.js";
+import { openManageActivitiesModal } from "./manage-activities.js";
 import { showToast } from "./ui.js";
 import { computeStatsFromEntry } from "./stats.js";
 import { icon, STICKER_ICONS } from "./icons.js";
@@ -118,6 +119,18 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
     youPill.className = "cal-you-pill";
     youPill.textContent = "you";
     badge.appendChild(youPill);
+  }
+
+  if (isOwner && isCurrentMonth) {
+    const gearBtn = document.createElement("button");
+    gearBtn.className = "cal-badge-gear";
+    gearBtn.title = "Manage activities";
+    gearBtn.textContent = "⚙";
+    gearBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openManageActivitiesModal(entry, yearMonth, currentUser, onMarkToggled);
+    });
+    badge.appendChild(gearBtn);
   }
 
   card.appendChild(badge);
