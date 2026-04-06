@@ -269,26 +269,23 @@ function showEditConfirmModal(changes, onConfirm) {
   const iconWrap = document.createElement("div");
   iconWrap.className = "confirm-icon-wrap";
 
-  let titleText = "";
+  const titleEl = document.createElement("h2");
+  titleEl.className = "confirm-title";
   if (isSingle) {
     if (c0.renamed && c0.recadenced) {
       iconWrap.textContent = "\u270f\ufe0f";
-      titleText = `Renaming \u201c${c0.origName}\u201d to \u201c${c0.newName}\u201d and updating your target from ${cadLabel(c0.origCad)} to ${cadLabel(c0.newCad)}?`;
+      titleEl.innerHTML = `Renaming <span class="confirm-highlight">\u201c${c0.origName}\u201d</span> to <span class="confirm-new">\u201c${c0.newName}\u201d</span> and updating your target from <span class="confirm-highlight">${cadLabel(c0.origCad)}</span> to <span class="confirm-new">${cadLabel(c0.newCad)}</span>?`;
     } else if (c0.renamed) {
       iconWrap.textContent = "\u270f\ufe0f";
-      titleText = `Renaming \u201c${c0.origName}\u201d to \u201c${c0.newName}\u201d?`;
+      titleEl.innerHTML = `Renaming <span class="confirm-highlight">\u201c${c0.origName}\u201d</span> to <span class="confirm-new">\u201c${c0.newName}\u201d</span>?`;
     } else {
       iconWrap.textContent = "\ud83d\udcc5";
-      titleText = `Updating your target for \u201c${c0.origName}\u201d from ${cadLabel(c0.origCad)} to ${cadLabel(c0.newCad)}?`;
+      titleEl.innerHTML = `Updating your target for \u201c${c0.origName}\u201d from <span class="confirm-highlight">${cadLabel(c0.origCad)}</span> to <span class="confirm-new">${cadLabel(c0.newCad)}</span>?`;
     }
   } else {
     iconWrap.textContent = anyRename ? "\u270f\ufe0f" : "\ud83d\udcc5";
-    titleText = `Saving ${changes.length} changes?`;
+    titleEl.textContent = `Saving ${changes.length} changes?`;
   }
-
-  const titleEl = document.createElement("h2");
-  titleEl.className = "confirm-title";
-  titleEl.textContent = titleText;
   titleRow.appendChild(iconWrap);
   titleRow.appendChild(titleEl);
   modal.appendChild(titleRow);
