@@ -278,11 +278,11 @@ function showEditConfirmModal(changes, onConfirm) {
 
   if (isSingle) {
     if (c0.renamed && c0.recadenced) {
-      body.innerHTML = `Your logged days carry over under the new name, and stats will recalculate going forward based on the new target. <span class="confirm-body-emphasis">You're good.</span>`;
+      body.innerHTML = `Your logged days carry over under the new name, and stats will recalculate going forward based on the new target. <span class="confirm-new">You're good.</span>`;
     } else if (c0.renamed) {
-      body.innerHTML = `Your logged days and stats carry over automatically under the new name. <span class="confirm-body-emphasis">Nothing gets lost.</span>`;
+      body.innerHTML = `Your logged days and stats carry over automatically under the new name. <span class="confirm-new">Nothing gets lost.</span>`;
     } else {
-      body.innerHTML = `Your stats will recalculate from here based on the new target. <span class="confirm-body-emphasis">Everything you've already logged stays.</span>`;
+      body.innerHTML = `Your stats will recalculate from here based on the new target. <span class="confirm-new">Everything you've already logged stays.</span>`;
     }
   } else {
     // Multi-change: show a list
@@ -295,11 +295,11 @@ function showEditConfirmModal(changes, onConfirm) {
     changes.forEach(c => {
       const li = document.createElement("li");
       if (c.renamed && c.recadenced) {
-        li.innerHTML = `\u270f\ufe0f\ud83d\udcc5 <span class="confirm-highlight">${c.origName}</span> \u2192 ${c.newName}, ${cadLabel(c.origCad)} \u2192 ${cadLabel(c.newCad)}`;
+        li.innerHTML = `\u270f\ufe0f\ud83d\udcc5 <span class="confirm-highlight">${c.origName}</span> \u2192 <span class="confirm-new">${c.newName}</span>, <span class="confirm-highlight">${cadLabel(c.origCad)}</span> \u2192 <span class="confirm-new">${cadLabel(c.newCad)}</span>`;
       } else if (c.renamed) {
-        li.innerHTML = `\u270f\ufe0f <span class="confirm-highlight">${c.origName}</span> \u2192 ${c.newName}`;
+        li.innerHTML = `\u270f\ufe0f <span class="confirm-highlight">${c.origName}</span> \u2192 <span class="confirm-new">${c.newName}</span>`;
       } else {
-        li.innerHTML = `\ud83d\udcc5 <span class="confirm-highlight">${c.origName}</span>: ${cadLabel(c.origCad)} \u2192 ${cadLabel(c.newCad)}`;
+        li.innerHTML = `\ud83d\udcc5 <span class="confirm-highlight">${c.origName}</span>: <span class="confirm-highlight">${cadLabel(c.origCad)}</span> \u2192 <span class="confirm-new">${cadLabel(c.newCad)}</span>`;
       }
       ul.appendChild(li);
     });

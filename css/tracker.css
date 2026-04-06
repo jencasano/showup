@@ -2156,7 +2156,8 @@
   transition: border-color 0.15s;
   padding-bottom: 1px;
 }
-.ma-row.is-focused .ma-name-input { border-bottom-color: var(--color-primary); }
+.manage-activities-modal .ma-name-input,
+.manage-activities-modal .ma-name-input:focus { border: none; outline: none; }
 
 .ma-delete-btn {
   width: 24px;
@@ -2319,6 +2320,8 @@
 
 .confirm-highlight { font-weight: 700; color: var(--color-amber, #F8C08A); }
 [data-theme="light"] .confirm-highlight { color: #b45309; }
+.confirm-new { font-weight: 700; color: #1DD1A1; }
+[data-theme="light"] .confirm-new { color: #0a7a5c; }
 
 .confirm-body-emphasis { font-weight: 700; color: var(--color-primary); }
 
