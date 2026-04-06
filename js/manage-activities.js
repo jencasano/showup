@@ -97,14 +97,20 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
           const arrowSpan = document.createElement("span");
           arrowSpan.className = "ma-name-arrow";
           arrowSpan.textContent = "\u2192";
+          const newSpan = document.createElement("span");
+          newSpan.className = "ma-name-new";
+          newSpan.textContent = current;
           nameIndicator.appendChild(wasSpan);
           nameIndicator.appendChild(arrowSpan);
-          pencil.before(nameIndicator);
+          nameIndicator.appendChild(newSpan);
+          nameInput.before(nameIndicator);
+          nameInput.style.display = "none";
         } else {
-          nameIndicator.querySelector(".ma-name-was").textContent = original;
+          nameIndicator.querySelector(".ma-name-new").textContent = current;
         }
       } else if (nameIndicator) {
         nameIndicator.remove();
+        nameInput.style.display = "";
       }
     });
 

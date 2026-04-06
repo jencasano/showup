@@ -2228,8 +2228,8 @@
   gap: 4px;
   font-size: 0.65rem;
   font-weight: 600;
-  flex-shrink: 0;
-  max-width: 120px;
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
 }
 .ma-name-was {
@@ -2239,9 +2239,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 [data-theme="light"] .ma-name-was { color: #b45309; }
-.ma-name-arrow { color: var(--text-faint); font-size: 0.6rem; margin: 0 1px; }
+.ma-name-arrow { color: var(--text-faint); font-size: 0.6rem; margin: 0 1px; flex-shrink: 0; }
+.ma-name-new {
+  color: #1DD1A1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+[data-theme="light"] .ma-name-new { color: #0a7a5c; }
 
 .ma-add-btn {
   width: calc(100% - 28px);
