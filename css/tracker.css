@@ -2134,6 +2134,36 @@
 
 .ma-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
+/* name wrap: stacks the was-hint above the live input */
+.ma-name-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+/* was-hint: ~~OldName~~ shown above the input when name has changed */
+.ma-name-was-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 1px;
+}
+.ma-name-was {
+  text-decoration: line-through;
+  color: var(--color-amber);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+[data-theme="light"] .ma-name-was { color: #b45309; }
+.ma-name-arrow { color: var(--text-faint); font-size: 0.6rem; margin: 0 1px; flex-shrink: 0; }
+
 .ma-name-edit {
   flex: 1;
   font-family: 'Inter', sans-serif;
@@ -2208,6 +2238,7 @@
 }
 .ma-cadence-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
 
+/* cadence change indicator: ~~6x~~ → 4x shown inline after the pills */
 .ma-change-indicator {
   align-items: center;
   gap: 4px;
@@ -2221,36 +2252,6 @@
 .ma-inline-arrow { color: var(--text-faint); font-size: 0.6rem; }
 .ma-inline-new { color: #1DD1A1; }
 [data-theme="light"] .ma-inline-new { color: #0a7a5c; }
-
-.ma-name-change-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-}
-.ma-name-was {
-  text-decoration: line-through;
-  color: var(--color-amber);
-  max-width: 80px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-[data-theme="light"] .ma-name-was { color: #b45309; }
-.ma-name-arrow { color: var(--text-faint); font-size: 0.6rem; margin: 0 1px; flex-shrink: 0; }
-.ma-name-new {
-  color: #1DD1A1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
-}
-[data-theme="light"] .ma-name-new { color: #0a7a5c; }
 
 .ma-add-btn {
   width: calc(100% - 28px);
