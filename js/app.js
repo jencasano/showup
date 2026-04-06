@@ -1,6 +1,8 @@
 import { auth } from "./firebase-config.js";
 import { signIn, signOutUser, onAuthReady, hasCompletedSetup } from "./auth.js";
-import { loadMyLog, loadAllLogs, loadFollowingLogs } from "./tracker.js";
+import { loadMyLog } from "./tracker-mylog.js";
+import { loadAllLogs } from "./tracker-all.js";
+import { loadFollowingLogs } from "./tracker-following.js";
 import { getCurrentYearMonth, formatYearMonth, getPrevYearMonth, getNextYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { checkMonthlySetup } from "./month-setup.js";

@@ -4,8 +4,7 @@ import {
   doc, getDoc, setDoc, updateDoc,
   arrayUnion, arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDaysInMonth, getCurrentYearMonth } from "./utils.js";
-import { getActivityColor } from "./tracker.js";
+import { getDaysInMonth, getCurrentYearMonth, getActivityColor } from "./utils.js";
 import { openManageActivitiesModal } from "./manage-activities.js";
 import { showToast } from "./ui.js";
 import { computeStatsFromEntry } from "./stats.js";

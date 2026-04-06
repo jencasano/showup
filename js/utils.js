@@ -72,6 +72,19 @@ function hslToHex(h, s, l) {
   ).join('');
 }
 
+// Activity colors palette (shared across tracker modules)
+export const ACTIVITY_COLORS = [
+  "#D8584E",
+  "#80B9B9",
+  "#F8C08A",
+  "#A29BFE",
+  "#1DD1A1",
+];
+
+export function getActivityColor(index) {
+  return ACTIVITY_COLORS[index % ACTIVITY_COLORS.length];
+}
+
 // Get 4 complementary font color suggestions for a given badge color
 export function getFontColorSuggestions(hex) {
   const [h, s, l] = hexToHsl(hex);
