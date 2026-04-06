@@ -498,7 +498,7 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
       btn.className = "day-sheet-diary-btn";
       btn.textContent = diaryEntry ? "edit entry →" : "add entry →";
       btn.addEventListener("click", () => {
-        overlay.remove();
+        dismissSheet();
         openDiaryPage(day, entry, yearMonth, entry.id, diaryEntry || null);
       });
       diaryBody.appendChild(btn);
@@ -507,10 +507,52 @@ function showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate,
 
   overlay.appendChild(sheet);
   document.body.appendChild(overlay);
+  document.body.style.overscrollBehaviorY = "none";
+
+  function dismissSheet() {
+    sheet.style.transition = "transform 0.22s ease";
+    sheet.style.transform = "translateY(100%)";
+    document.body.style.overscrollBehaviorY = "";
+    setTimeout(() => overlay.remove(), 220);
+  }
 
   overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) overlay.remove();
+    if (e.target === overlay) dismissSheet();
   });
+
+  // Swipe-to-dismiss
+  const handle = sheet.querySelector(".day-sheet-handle");
+  let swipeStartY = 0;
+  let swipeActive = false;
+
+  sheet.addEventListener("touchstart", (e) => {
+    const touch = e.touches[0];
+    const onHandle = handle.contains(e.target) || e.target === handle;
+    if (!onHandle && sheet.scrollTop > 0) return;
+    swipeStartY = touch.clientY;
+    swipeActive = true;
+    sheet.style.transition = "";
+  }, { passive: true });
+
+  sheet.addEventListener("touchmove", (e) => {
+    if (!swipeActive) return;
+    const dy = e.touches[0].clientY - swipeStartY;
+    if (dy <= 0) return;
+    e.preventDefault();
+    sheet.style.transform = `translateY(${dy}px)`;
+  }, { passive: false });
+
+  sheet.addEventListener("touchend", (e) => {
+    if (!swipeActive) return;
+    swipeActive = false;
+    const dy = e.changedTouches[0].clientY - swipeStartY;
+    if (dy > 80) {
+      dismissSheet();
+    } else {
+      sheet.style.transition = "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)";
+      sheet.style.transform = "translateY(0)";
+    }
+  }, { passive: true });
 }
 
 // ─── CROP UI ─────────────────────────────────────────
