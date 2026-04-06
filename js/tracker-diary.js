@@ -159,8 +159,13 @@ export async function renderDiaryNotebook(userId, yearMonth, theme = DEFAULT_DIA
         wrap.classList.remove("diary-nb-palette-open");
         const col = wrap.closest(".mylog-diary-col");
         const newNb = await renderDiaryNotebook(userId, yearMonth, key);
-        col.innerHTML = "";
-        col.appendChild(newNb);
+        col.style.transition = "opacity 0.3s ease";
+        col.style.opacity = "0";
+        setTimeout(() => {
+          col.innerHTML = "";
+          col.appendChild(newNb);
+          requestAnimationFrame(() => { col.style.opacity = "1"; });
+        }, 300);
       });
       popover.appendChild(btn);
     }
@@ -228,14 +233,18 @@ export function openDiaryModal(userId, yearMonth, diaryDays, theme = DEFAULT_DIA
     if (key === theme) btn.classList.add("diary-modal-swatch--active");
     btn.addEventListener("click", async () => {
       await saveDiaryTheme(userId, key);
-      overlay.remove();
+      crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays, key, activeDay));
       const col = document.querySelector(".mylog-diary-col");
       if (col) {
         const newNb = await renderDiaryNotebook(userId, yearMonth, key);
-        col.innerHTML = "";
-        col.appendChild(newNb);
+        col.style.transition = "opacity 0.3s ease";
+        col.style.opacity = "0";
+        setTimeout(() => {
+          col.innerHTML = "";
+          col.appendChild(newNb);
+          requestAnimationFrame(() => { col.style.opacity = "1"; });
+        }, 300);
       }
-      openDiaryModal(userId, yearMonth, diaryDays, key);
     });
     swatchRow.appendChild(btn);
   }
@@ -254,7 +263,7 @@ export function openDiaryModal(userId, yearMonth, diaryDays, theme = DEFAULT_DIA
   leftPage.appendChild(toggle);
 
   pagesBtn.addEventListener("click", () => {
-    crossfadeDiaryOverlay(overlay, () => openDiaryPagesModal(userId, yearMonth, diaryDays));
+    crossfadeDiaryOverlay(overlay, () => openDiaryPagesModal(userId, yearMonth, diaryDays, theme));
   });
 
   const calArea = document.createElement("div");
@@ -495,7 +504,8 @@ export function openDiaryModal(userId, yearMonth, diaryDays, theme = DEFAULT_DIA
 }
 
 // ─── PART D: PAGES MODAL ─────────────────────────────────
-export function openDiaryPagesModal(userId, yearMonth, diaryDays) {
+export function openDiaryPagesModal(userId, yearMonth, diaryDays, theme = DEFAULT_DIARY_THEME) {
+  const t = DIARY_THEMES[theme] || DIARY_THEMES[DEFAULT_DIARY_THEME];
   const [year, month] = yearMonth.split("-").map(Number);
   const daysInMonth = getDaysInMonth(yearMonth);
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
@@ -509,11 +519,13 @@ export function openDiaryPagesModal(userId, yearMonth, diaryDays) {
 
   const modal = document.createElement("div");
   modal.className = "diary-pages-modal";
+  modal.style.borderColor = t.bookBorder;
   modal.addEventListener("click", (e) => e.stopPropagation());
 
   ["tl","tr","bl","br"].forEach(pos => {
     const c = document.createElement("div");
     c.className = `diary-pages-corner diary-pages-corner--${pos}`;
+    c.style.background = t.cornerColor;
     modal.appendChild(c);
   });
 
@@ -538,7 +550,7 @@ export function openDiaryPagesModal(userId, yearMonth, diaryDays) {
   backBtn.className = "diary-pages-back-btn";
   backBtn.textContent = "\u2190 back to diary";
   backBtn.addEventListener("click", () => {
-    crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays));
+    crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays, theme));
   });
   head.appendChild(backBtn);
 
@@ -600,7 +612,7 @@ export function openDiaryPagesModal(userId, yearMonth, diaryDays) {
       if (isFilled) {
         const dayToOpen = d;
         mini.addEventListener("click", () => {
-          crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays, DEFAULT_DIARY_THEME, dayToOpen));
+          crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays, theme, dayToOpen));
         });
       }
 
