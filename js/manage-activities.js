@@ -67,15 +67,29 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     dot.className = "ma-dot";
     dot.style.background = getActivityColor(colorIndex);
 
-    const nameInput = document.createElement("input");
-    nameInput.className = "ma-name-input";
-    nameInput.type = "text";
-    nameInput.value = activityName;
-    nameInput.maxLength = 20;
-    nameInput.autocomplete = "off";
-    nameInput.spellcheck = false;
+    const nameInput = document.createElement("div");
+    nameInput.className = "ma-name-edit";
+    nameInput.setAttribute("contenteditable", "true");
+    nameInput.setAttribute("spellcheck", "false");
+    nameInput.textContent = activityName;
     nameInput.addEventListener("focus", () => row.classList.add("is-focused"));
     nameInput.addEventListener("blur",  () => row.classList.remove("is-focused"));
+    nameInput.addEventListener("input", () => {
+      if (nameInput.textContent.length > 20) {
+        nameInput.textContent = nameInput.textContent.slice(0, 20);
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.selectNodeContents(nameInput);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    });
+
+    row.addEventListener("click", (e) => {
+      if (e.target === deleteBtn || e.target.closest(".ma-cadence-btn")) return;
+      nameInput.focus();
+    });
 
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "ma-delete-btn";
@@ -126,7 +140,7 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     if (newIndex >= 5) return;
     const row = buildRow("", 7, newIndex);
     list.appendChild(row);
-    row.querySelector(".ma-name-input").focus();
+    row.querySelector(".ma-name-edit").focus();
     if (list.children.length >= 5) addBtn.style.display = "none";
   });
   modal.appendChild(addBtn);
@@ -152,7 +166,7 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
   document.body.appendChild(modal);
 
   function handleDelete(row) {
-    const activityName = row.querySelector(".ma-name-input")?.value.trim() || "";
+    const activityName = row.querySelector(".ma-name-edit")?.textContent.trim() || "";
     const lookupName   = row.dataset.originalName || activityName;
     const loggedCount  = (entry.marks?.[lookupName] || []).length;
     showDeleteConfirmModal(activityName || "this activity", loggedCount, () => {
@@ -165,7 +179,7 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     const rows = [...list.children];
     const newActivities = [], newCadences = [], originalNames = [], originalCadences = [];
     rows.forEach(row => {
-      const nameVal = row.querySelector(".ma-name-input")?.value.trim();
+      const nameVal = row.querySelector(".ma-name-edit")?.textContent.trim();
       if (!nameVal) return;
       const activeBtn = row.querySelector(".ma-cadence-btn.active");
       const cad = activeBtn ? parseInt(activeBtn.dataset.value, 10) : 7;

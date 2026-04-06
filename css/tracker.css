@@ -2135,39 +2135,24 @@
 
 .ma-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
-/* Input: force transparent bg in all states including browser focus/autofill */
-.ma-name-input {
+.ma-name-edit {
   flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  -webkit-appearance: none;
-  appearance: none;
   font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--text);
   min-width: 0;
-  border-bottom: 1.5px solid transparent;
-  transition: border-color 0.15s;
-  padding-bottom: 1px;
+  outline: none;
+  background: transparent;
+  cursor: default;
+  white-space: nowrap;
+  overflow: hidden;
+  line-height: 1.4;
 }
-.ma-name-input:focus {
-  background: transparent !important;
-  -webkit-box-shadow: none !important;
-  box-shadow: none !important;
+.ma-name-edit:focus {
+  cursor: text;
+  white-space: normal;
 }
-/* Suppress Chrome/Safari autofill background injection */
-.ma-name-input:-webkit-autofill,
-.ma-name-input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-  box-shadow: 0 0 0 1000px transparent inset !important;
-  background-color: transparent !important;
-  transition: background-color 5000s ease-in-out 0s;
-}
-.ma-row.is-focused .ma-name-input { border-bottom-color: var(--color-primary); }
-.manage-activities-modal .ma-name-input,
-.manage-activities-modal .ma-name-input:focus { border: none; outline: none; }
 
 .ma-delete-btn {
   width: 24px;
