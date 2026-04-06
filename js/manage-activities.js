@@ -2,6 +2,7 @@ import { db } from "./firebase-config.js";
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from "./ui.js";
 
+// Local copy to avoid circular dependency with tracker.js
 const ACTIVITY_COLORS = [
   "#D8584E",
   "#80B9B9",
@@ -9,7 +10,6 @@ const ACTIVITY_COLORS = [
   "#A29BFE",
   "#1DD1A1",
 ];
-
 function getActivityColor(index) {
   return ACTIVITY_COLORS[index % ACTIVITY_COLORS.length];
 }
@@ -19,7 +19,7 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
   const [year, month] = yearMonth.split("-").map(Number);
   const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
 
-  const initialActivities = entry.activities || [];
+  const initialActivities = [...(entry.activities || [])];
 
   const backdrop = document.createElement("div");
   backdrop.className = "manage-activities-backdrop";
@@ -88,9 +88,7 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     deleteBtn.className = "ma-delete-btn";
     deleteBtn.title = "Delete activity";
     deleteBtn.textContent = "×";
-    deleteBtn.addEventListener("click", () => {
-      handleDelete(row);
-    });
+    deleteBtn.addEventListener("click", () => handleDelete(row));
 
     rowTop.appendChild(dot);
     rowTop.appendChild(nameInput);
@@ -122,7 +120,6 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     return row;
   }
 
-  // Populate existing activities
   const cadences = entry.cadences || initialActivities.map(() => 7);
   initialActivities.forEach((act, i) => {
     list.appendChild(buildRow(act, cadences[i] ?? 7, i));
@@ -138,6 +135,7 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
 
   addBtn.addEventListener("click", () => {
     const newIndex = list.children.length;
+    if (newIndex >= 5) return;
     const row = buildRow("", 7, newIndex);
     list.appendChild(row);
     row.querySelector(".ma-name-input").focus();
@@ -164,18 +162,17 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
   footer.appendChild(saveBtn);
   modal.appendChild(footer);
 
-  document.body.appendChild(backdrop);
-  document.body.appendChild(modal);
-
   backdrop.addEventListener("click", (e) => {
     if (e.target === backdrop) { backdrop.remove(); modal.remove(); }
   });
+
+  document.body.appendChild(backdrop);
+  document.body.appendChild(modal);
 
   // ── handleDelete ──────────────────────────────────────
   function handleDelete(row) {
     const activityName = row.querySelector(".ma-name-input")?.value.trim() || "";
     const loggedCount = (entry.marks?.[activityName] || []).length;
-
     showDeleteConfirmModal(activityName || "this activity", loggedCount, () => {
       row.remove();
       if (list.children.length < 5) addBtn.style.display = "";
@@ -187,7 +184,7 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     const rows = [...list.children];
     const newActivities = [];
     const newCadences = [];
-    const originalNames = []; // parallel to newActivities
+    const originalNames = [];
 
     rows.forEach(row => {
       const nameVal = row.querySelector(".ma-name-input")?.value.trim();
@@ -204,17 +201,11 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
       return;
     }
 
-    // Build new marks: carry over by original name → new name mapping
     const oldMarks = entry.marks || {};
     const newMarks = {};
-
     newActivities.forEach((newName, i) => {
       const originalName = originalNames[i];
-      if (originalName && oldMarks[originalName]) {
-        newMarks[newName] = oldMarks[originalName];
-      } else {
-        newMarks[newName] = [];
-      }
+      newMarks[newName] = (originalName && oldMarks[originalName]) ? oldMarks[originalName] : [];
     });
 
     saveBtn.disabled = true;
@@ -228,12 +219,11 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
         marks: newMarks,
       }, { merge: true });
 
-      // Update in-memory entry for immediate re-render
       entry.activities = newActivities;
       entry.cadences = newCadences;
       entry.marks = newMarks;
 
-      onMarkToggled(entry);
+      if (onMarkToggled) onMarkToggled(entry);
       backdrop.remove();
       modal.remove();
       showToast("Activities updated.", "info");
@@ -254,7 +244,6 @@ export function showDeleteConfirmModal(activityName, loggedCount, onConfirm) {
   const modal = document.createElement("div");
   modal.className = "confirm-modal";
 
-  // Title row
   const titleRow = document.createElement("div");
   titleRow.className = "confirm-title-row";
 
@@ -272,25 +261,20 @@ export function showDeleteConfirmModal(activityName, loggedCount, onConfirm) {
   titleRow.appendChild(titleEl);
   modal.appendChild(titleRow);
 
-  // Body
   const body = document.createElement("div");
   body.className = "confirm-body";
-
   if (loggedCount > 0) {
     const s = loggedCount === 1 ? "" : "s";
     body.innerHTML = `You've shown up for <strong>${activityName}</strong> ${loggedCount} time${s} this month. Deleting it removes those wins permanently and adjusts your stats. <span class="confirm-body-emphasis">No undoing this one.</span>`;
   } else {
     body.innerHTML = `No days logged yet, so nothing will be lost. <strong>${activityName}</strong> will be removed from your tracker for this month.<span class="confirm-body-note">You can always add it back later.</span>`;
   }
-
   modal.appendChild(body);
 
-  // Divider
   const divider = document.createElement("div");
   divider.className = "confirm-divider";
   modal.appendChild(divider);
 
-  // Actions
   const actions = document.createElement("div");
   actions.className = "confirm-actions";
 
@@ -300,13 +284,10 @@ export function showDeleteConfirmModal(activityName, loggedCount, onConfirm) {
   cancelBtn.addEventListener("click", () => { backdrop.remove(); modal.remove(); });
 
   const confirmBtn = document.createElement("button");
-  if (loggedCount > 0) {
-    confirmBtn.className = "confirm-btn confirm-btn--danger";
-    confirmBtn.textContent = "Delete anyway";
-  } else {
-    confirmBtn.className = "confirm-btn confirm-btn--danger-soft";
-    confirmBtn.textContent = "Remove";
-  }
+  confirmBtn.className = loggedCount > 0
+    ? "confirm-btn confirm-btn--danger"
+    : "confirm-btn confirm-btn--danger-soft";
+  confirmBtn.textContent = loggedCount > 0 ? "Delete anyway" : "Remove";
   confirmBtn.addEventListener("click", () => {
     backdrop.remove();
     modal.remove();
