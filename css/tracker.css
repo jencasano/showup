@@ -1156,16 +1156,19 @@
   cursor: pointer;
   position: relative;
   display: flex;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   transform-origin: bottom center;
   user-select: none;
+  animation: diary-sway 7s ease-in-out infinite;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .diary-nb-closed:hover {
+  animation: none;
   transform: translateY(-14px) rotate(-2.5deg) scale(1.03);
 }
 
 .diary-nb-closed:hover .diary-nb-shadow {
+  animation: none;
   opacity: 0.9;
   transform: translateY(16px) scaleX(0.72) rotate(2deg);
 }
@@ -1180,7 +1183,24 @@
   filter: blur(10px);
   opacity: 0.45;
   transition: opacity 0.3s ease, transform 0.3s ease;
+  animation: diary-sway-shadow 7s ease-in-out infinite;
   z-index: 0;
+}
+
+@keyframes diary-sway {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(0.4deg); }
+  50%  { transform: rotate(-0.3deg); }
+  80%  { transform: rotate(0.35deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes diary-sway-shadow {
+  0%   { transform: translateX(0px) scaleX(1);     opacity: 0.45; }
+  20%  { transform: translateX(2px) scaleX(0.97);  opacity: 0.48; }
+  50%  { transform: translateX(-2px) scaleX(1.03); opacity: 0.42; }
+  80%  { transform: translateX(1.5px) scaleX(0.98); opacity: 0.47; }
+  100% { transform: translateX(0px) scaleX(1);     opacity: 0.45; }
 }
 
 .diary-nb-book {

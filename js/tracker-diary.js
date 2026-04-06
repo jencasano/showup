@@ -119,7 +119,7 @@ export async function renderDiaryNotebook(userId, yearMonth, theme = DEFAULT_DIA
   stat.querySelector("span").style.color = t.statLabelColor;
   const hint = document.createElement("span");
   hint.className = "diary-nb-hint";
-  hint.textContent = "open \u2192";
+  hint.textContent = "read it \u2192";
   hint.style.color = t.hintColor;
   bottom.appendChild(stat);
   bottom.appendChild(hint);
