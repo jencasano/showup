@@ -155,7 +155,12 @@ export async function renderDiaryNotebook(userId, yearMonth, theme = DEFAULT_DIA
       btn.addEventListener("click", async (ev) => {
         ev.stopPropagation();
         await saveDiaryTheme(userId, key);
-        window.location.reload();
+        wrap.querySelector(".diary-nb-palette-popover").remove();
+        wrap.classList.remove("diary-nb-palette-open");
+        const col = wrap.closest(".mylog-diary-col");
+        const newNb = await renderDiaryNotebook(userId, yearMonth, key);
+        col.innerHTML = "";
+        col.appendChild(newNb);
       });
       popover.appendChild(btn);
     }
@@ -168,6 +173,7 @@ export async function renderDiaryNotebook(userId, yearMonth, theme = DEFAULT_DIA
 
 // ─── PART C: OPEN NOTEBOOK MODAL ─────────────────────────
 export function openDiaryModal(userId, yearMonth, diaryDays, theme = DEFAULT_DIARY_THEME, initialDay = null) {
+  const t = DIARY_THEMES[theme] || DIARY_THEMES[DEFAULT_DIARY_THEME];
   const [year, month] = yearMonth.split("-").map(Number);
   const daysInMonth = getDaysInMonth(yearMonth);
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
@@ -186,14 +192,18 @@ export function openDiaryModal(userId, yearMonth, diaryDays, theme = DEFAULT_DIA
   ["tl","tr","bl","br"].forEach(pos => {
     const c = document.createElement("div");
     c.className = `diary-modal-corner diary-modal-corner--${pos}`;
+    c.style.background = t.cornerColor;
     book.appendChild(c);
   });
 
   const spine = document.createElement("div");
   spine.className = "diary-modal-spine";
+  spine.style.background = t.spineBg;
+  spine.style.borderRight = `2px solid ${t.spineRightBorder}`;
   for (let i = 0; i < 8; i++) {
     const hole = document.createElement("span");
     hole.className = "diary-nb-hole";
+    hole.style.background = t.holeBg;
     spine.appendChild(hole);
   }
   book.appendChild(spine);
@@ -218,7 +228,14 @@ export function openDiaryModal(userId, yearMonth, diaryDays, theme = DEFAULT_DIA
     if (key === theme) btn.classList.add("diary-modal-swatch--active");
     btn.addEventListener("click", async () => {
       await saveDiaryTheme(userId, key);
-      window.location.reload();
+      overlay.remove();
+      const col = document.querySelector(".mylog-diary-col");
+      if (col) {
+        const newNb = await renderDiaryNotebook(userId, yearMonth, key);
+        col.innerHTML = "";
+        col.appendChild(newNb);
+      }
+      openDiaryModal(userId, yearMonth, diaryDays, key);
     });
     swatchRow.appendChild(btn);
   }

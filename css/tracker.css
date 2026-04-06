@@ -1139,7 +1139,7 @@
   gap: 20px;
   align-items: start;
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .mylog-progress-col { min-width: 0; }
@@ -1147,7 +1147,7 @@
 .mylog-diary-col {
   height: 300px;
   display: flex;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .diary-nb-closed {
