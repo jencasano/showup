@@ -12,19 +12,20 @@
   width: 100%;
 }
 
+/* tracker-section: overflow:hidden is required so the badge corner-radius clips correctly */
 .tracker-section {
   position: relative;
   background: var(--bg-surface);
   border: 2px solid var(--border);
   border-radius: var(--radius-lg);
   margin: 0 auto 16px;
+  overflow: hidden;
   box-shadow: var(--shadow-sm);
   padding-bottom: 12px;
   width: fit-content;
 }
 
 .tracker-badge {
-  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -32,6 +33,7 @@
   font-size: 1rem;
   font-weight: 700;
   border-radius: 0 0 var(--radius-md) 0;
+  /* gear btn is positioned relative to tracker-section, not badge */
 }
 
 .badge-avatar {
@@ -1078,7 +1080,7 @@
 }
 
 /* ═══════════════════════════════════════════════
-   CADENCE PICKER
+   CADENCE PICKER (month setup)
    ═══════════════════════════════════════════════ */
 .ms-activity-row {
   margin-bottom: 20px;
@@ -1678,10 +1680,7 @@
   margin-top: 1px;
 }
 
-/* Fill bar hidden — the subtitle text already states the count */
-.diary-modal-cal-fill {
-  display: none;
-}
+.diary-modal-cal-fill { display: none; }
 
 .diary-modal-close {
   position: absolute;
@@ -1705,7 +1704,6 @@
   color: #FAF7ED;
 }
 
-/* Right page: flex column, content scrolls, nav stays at bottom */
 .diary-modal-right-content {
   flex: 1;
   overflow-y: auto;
@@ -1715,7 +1713,6 @@
   transition: opacity 0.2s ease;
 }
 
-/* Bottom page nav — centered with coral square dot as separator */
 .diary-modal-page-nav {
   display: flex;
   justify-content: center;
@@ -1729,7 +1726,6 @@
   z-index: 3;
 }
 
-/* Coral square dot separator between the two buttons */
 .diary-modal-page-nav::before {
   content: "";
   display: block;
@@ -1755,24 +1751,10 @@
   min-width: 80px;
 }
 
-.diary-modal-pf-btn:first-child {
-  order: 1;
-  text-align: right;
-}
-
-.diary-modal-pf-btn:last-child {
-  order: 3;
-  text-align: left;
-}
-
-.diary-modal-pf-btn:disabled {
-  opacity: 0.2;
-  pointer-events: none;
-}
-
-.diary-modal-pf-btn:hover:not(:disabled) {
-  color: #C4473D;
-}
+.diary-modal-pf-btn:first-child { order: 1; text-align: right; }
+.diary-modal-pf-btn:last-child  { order: 3; text-align: left; }
+.diary-modal-pf-btn:disabled { opacity: 0.2; pointer-events: none; }
+.diary-modal-pf-btn:hover:not(:disabled) { color: #C4473D; }
 
 .diary-modal-entry-date {
   font-family: 'Fraunces', serif;
@@ -1835,7 +1817,7 @@
   margin-bottom: 14px;
 }
 
-.diary-modal-write-btn {
+.diary-modal-write-btn, .diary-modal-edit-btn {
   background: var(--color-primary);
   color: white;
   border: none;
@@ -1848,22 +1830,11 @@
 }
 
 .diary-modal-edit-btn {
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 7px 16px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: 'Sora', sans-serif;
   margin-top: 10px;
   display: inline-block;
 }
 
-.diary-modal-edit-btn:hover {
-  background: #C4473D;
-}
+.diary-modal-edit-btn:hover, .diary-modal-write-btn:hover { background: #C4473D; }
 
 .diary-modal-polaroid {
   display: block;
@@ -1896,7 +1867,7 @@
   display: block;
 }
 
-/* ── Pages modal ──────────────────────────────────── */
+/* ── Pages modal ── */
 .diary-pages-modal {
   width: min(960px, 94vw);
   height: min(600px, 84vh);
@@ -1912,9 +1883,7 @@
   transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.diary-pages-overlay.is-open .diary-pages-modal {
-  transform: scale(1);
-}
+.diary-pages-overlay.is-open .diary-pages-modal { transform: scale(1); }
 
 .diary-pages-corner {
   position: absolute;
@@ -1950,11 +1919,7 @@
   flex: 1;
 }
 
-.diary-pages-head-sub {
-  font-size: 0.65rem;
-  color: var(--text-faint);
-  margin-top: 2px;
-}
+.diary-pages-head-sub { font-size: 0.65rem; color: var(--text-faint); margin-top: 2px; }
 
 .diary-pages-back-btn {
   background: none;
@@ -1978,11 +1943,7 @@
   font-family: inherit;
 }
 
-.diary-pages-grid-wrap {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 20px;
-}
+.diary-pages-grid-wrap { flex: 1; overflow-y: auto; padding: 16px 20px; }
 
 .diary-pages-grid {
   display: grid;
@@ -1992,13 +1953,7 @@
 
 .diary-mini-page {
   background: #FAF7ED;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 13px,
-    #D5C9A8 13px,
-    #D5C9A8 14px
-  );
+  background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 13px, #D5C9A8 13px, #D5C9A8 14px);
   background-position: 0 32px;
   aspect-ratio: 3/4;
   border-radius: 6px;
@@ -2022,24 +1977,10 @@
   pointer-events: none;
 }
 
-.diary-mini-page:hover {
-  transform: translateY(-3px) rotate(0.4deg);
-  box-shadow: 3px 5px 14px rgba(0,0,0,.18);
-}
-
-.diary-mini-page.empty {
-  opacity: 0.25;
-  cursor: default;
-}
-
-.diary-mini-page.empty:hover {
-  transform: none;
-  box-shadow: 1px 2px 6px rgba(0,0,0,.12);
-}
-
-.diary-mini-page.today {
-  outline: 2px solid var(--color-primary);
-}
+.diary-mini-page:hover { transform: translateY(-3px) rotate(0.4deg); box-shadow: 3px 5px 14px rgba(0,0,0,.18); }
+.diary-mini-page.empty { opacity: 0.25; cursor: default; }
+.diary-mini-page.empty:hover { transform: none; box-shadow: 1px 2px 6px rgba(0,0,0,.12); }
+.diary-mini-page.today { outline: 2px solid var(--color-primary); }
 
 .diary-mini-day {
   font-family: 'Fraunces', serif;
@@ -2061,15 +2002,6 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   flex: 1;
-}
-
-.diary-mini-thumb {
-  width: 100%;
-  height: 28px;
-  object-fit: cover;
-  border-radius: 3px;
-  margin-top: 4px;
-  display: block;
 }
 
 .diary-mini-polaroid {
@@ -2094,18 +2026,19 @@
   border-radius: 2px;
 }
 
-.diary-mini-polaroid-inner {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-}
+.diary-mini-polaroid-inner { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; }
 
 /* ─── Gear button on desktop badge ──────────────────────── */
+/*
+  The gear uses position:absolute inside .tracker-section (which has overflow:hidden).
+  It is clipped at the section boundary so it stays within the visible card area.
+  We place it at top:0 right:0 to sit in the badge strip, then offset with padding
+  so it aligns visually with the badge content.
+*/
 .tracker-badge-gear {
   position: absolute;
-  top: 50%;
+  top: 8px;
   right: 10px;
-  transform: translateY(-50%);
   background: none;
   border: none;
   font-size: 0.8rem;
@@ -2117,13 +2050,8 @@
   color: inherit;
   z-index: 2;
 }
-.tracker-section:hover .tracker-badge-gear {
-  opacity: 0.7;
-}
-.tracker-badge-gear:hover {
-  opacity: 1 !important;
-  background: rgba(255, 255, 255, 0.2);
-}
+.tracker-section:hover .tracker-badge-gear { opacity: 0.7; }
+.tracker-badge-gear:hover { opacity: 1 !important; background: rgba(255,255,255,0.2); }
 
 /* ─── Manage Activities Modal ────────────────────────────── */
 .manage-activities-backdrop {
@@ -2150,7 +2078,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 32px 72px rgba(0, 0, 0, 0.26);
+  box-shadow: 0 32px 72px rgba(0,0,0,0.26);
   z-index: 9998;
 }
 
@@ -2169,11 +2097,7 @@
   color: var(--text);
 }
 
-.ma-subtitle {
-  font-size: 0.72rem;
-  color: var(--text-faint);
-  margin-top: 2px;
-}
+.ma-subtitle { font-size: 0.72rem; color: var(--text-faint); margin-top: 2px; }
 
 .ma-close {
   width: 28px;
@@ -2189,9 +2113,7 @@
   cursor: pointer;
   flex-shrink: 0;
 }
-.ma-close:hover {
-  background: var(--border);
-}
+.ma-close:hover { background: var(--border); }
 
 .ma-list {
   overflow-y: auto;
@@ -2201,7 +2123,6 @@
   gap: 6px;
 }
 
-/* Row: single thin border only, no double-border effect */
 .ma-row {
   border-radius: 12px;
   padding: 10px 12px;
@@ -2212,24 +2133,14 @@
   background: var(--bg-subtle);
   transition: border-color 0.15s, background 0.15s;
 }
-/* Focused state: swap background, no extra border */
 .ma-row.is-focused {
   border-color: var(--color-primary);
   background: var(--bg-surface);
 }
 
-.ma-row-top {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.ma-row-top { display: flex; align-items: center; gap: 8px; }
 
-.ma-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
+.ma-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
 .ma-name-input {
   flex: 1;
@@ -2245,9 +2156,7 @@
   transition: border-color 0.15s;
   padding-bottom: 1px;
 }
-.ma-row.is-focused .ma-name-input {
-  border-bottom-color: var(--color-primary);
-}
+.ma-row.is-focused .ma-name-input { border-bottom-color: var(--color-primary); }
 
 .ma-delete-btn {
   width: 24px;
@@ -2266,17 +2175,9 @@
   justify-content: center;
   line-height: 1;
 }
-.ma-delete-btn:hover {
-  opacity: 1;
-  color: var(--color-primary);
-}
+.ma-delete-btn:hover { opacity: 1; color: var(--color-primary); }
 
-.ma-cadence-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
+.ma-cadence-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
 .ma-cadence-label {
   font-size: 0.6rem;
@@ -2299,11 +2200,7 @@
   cursor: pointer;
   transition: all 0.15s;
 }
-.ma-cadence-btn.active {
-  background: var(--color-primary);
-  color: white;
-  border-color: var(--color-primary);
-}
+.ma-cadence-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
 
 .ma-add-btn {
   width: calc(100% - 28px);
@@ -2321,11 +2218,7 @@
   gap: 6px;
   transition: all 0.15s;
 }
-.ma-add-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  background: var(--bg-subtle);
-}
+.ma-add-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--bg-subtle); }
 
 .ma-footer {
   display: flex;
@@ -2345,37 +2238,17 @@
   cursor: pointer;
 }
 
-.ma-btn--ghost {
-  background: transparent;
-  border: 1.5px solid var(--border);
-  color: var(--text-muted);
-}
-
-.ma-btn--save {
-  background: var(--color-primary);
-  color: white;
-  border: none;
-}
-.ma-btn--save:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+.ma-btn--ghost { background: transparent; border: 1.5px solid var(--border); color: var(--text-muted); }
+.ma-btn--save  { background: var(--color-primary); color: white; border: none; }
+.ma-btn--save:disabled { opacity: 0.6; cursor: not-allowed; }
 
 @media (max-width: 768px) {
-  .ma-footer {
-    flex-direction: column;
-    gap: 8px;
-  }
-  .ma-btn {
-    width: 100%;
-    padding: 12px;
-  }
-  .ma-btn--save {
-    order: -1;
-  }
+  .ma-footer { flex-direction: column; gap: 8px; }
+  .ma-btn { width: 100%; padding: 12px; }
+  .ma-btn--save { order: -1; }
 }
 
-/* ─── Delete / Edit Confirm Modals ─────────────────────────── */
+/* ─── Confirm Modals (delete + edit) ───────────────────── */
 .confirm-backdrop {
   position: fixed;
   inset: 0;
@@ -2395,30 +2268,27 @@
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 18px;
-  width: min(380px, 90vw);
+  width: min(400px, 92vw);
   padding: 28px 28px 24px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.28);
   z-index: 9999;
 }
 
 .confirm-title-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-.confirm-icon-wrap {
-  font-size: 1.1rem;
-  flex-shrink: 0;
-}
+.confirm-icon-wrap { font-size: 1.1rem; flex-shrink: 0; padding-top: 2px; }
 
 .confirm-title {
   font-family: 'Fraunces', serif;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--text);
-  line-height: 1.25;
+  line-height: 1.3;
   margin: 0;
 }
 
@@ -2429,20 +2299,28 @@
   margin-bottom: 8px;
 }
 
-/* Amber highlight for activity name + logged count in delete prompt */
-.confirm-highlight {
-  font-weight: 700;
-  color: var(--color-amber, #F8C08A);
+/* Change list for multi-activity edits */
+.confirm-change-list {
+  margin: 8px 0 0 4px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.confirm-change-list li {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  background: var(--bg-subtle);
+  border-radius: 6px;
+  line-height: 1.4;
 }
 
-[data-theme="light"] .confirm-highlight {
-  color: #b45309;
-}
+.confirm-highlight { font-weight: 700; color: var(--color-amber, #F8C08A); }
+[data-theme="light"] .confirm-highlight { color: #b45309; }
 
-.confirm-body-emphasis {
-  font-weight: 700;
-  color: var(--color-primary);
-}
+.confirm-body-emphasis { font-weight: 700; color: var(--color-primary); }
 
 .confirm-body-note {
   display: block;
@@ -2452,17 +2330,9 @@
   margin-top: 6px;
 }
 
-.confirm-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 20px 0;
-}
+.confirm-divider { height: 1px; background: var(--border); margin: 20px 0; }
 
-.confirm-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
+.confirm-actions { display: flex; gap: 10px; align-items: center; }
 
 .confirm-btn {
   font-family: 'Sora', sans-serif;
@@ -2473,45 +2343,13 @@
   cursor: pointer;
 }
 
-.confirm-btn--ghost {
-  background: transparent;
-  border: 1.5px solid var(--border);
-  color: var(--text-muted);
-}
-
-.confirm-btn--danger {
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  flex: 1;
-}
-
-.confirm-btn--danger-soft {
-  background: var(--bg-subtle);
-  color: var(--color-primary);
-  border: 1.5px solid var(--border);
-  flex: 1;
-}
-
-/* Save/confirm button for non-destructive confirm (cadence change) */
-.confirm-btn--save {
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  flex: 1;
-}
+.confirm-btn--ghost      { background: transparent; border: 1.5px solid var(--border); color: var(--text-muted); }
+.confirm-btn--danger     { background: var(--color-primary); color: white; border: none; flex: 1; }
+.confirm-btn--danger-soft{ background: var(--bg-subtle); color: var(--color-primary); border: 1.5px solid var(--border); flex: 1; }
+.confirm-btn--save       { background: var(--color-primary); color: white; border: none; flex: 1; }
 
 @media (max-width: 768px) {
-  .confirm-actions {
-    flex-direction: column;
-  }
-  .confirm-btn {
-    width: 100%;
-    padding: 12px;
-  }
-  .confirm-btn--danger,
-  .confirm-btn--danger-soft,
-  .confirm-btn--save {
-    order: -1;
-  }
+  .confirm-actions { flex-direction: column; }
+  .confirm-btn { width: 100%; padding: 12px; }
+  .confirm-btn--danger, .confirm-btn--danger-soft, .confirm-btn--save { order: -1; }
 }
