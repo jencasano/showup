@@ -2201,16 +2201,18 @@
   gap: 6px;
 }
 
+/* Row: single thin border only, no double-border effect */
 .ma-row {
   border-radius: 12px;
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 7px;
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   background: var(--bg-subtle);
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, background 0.15s;
 }
+/* Focused state: swap background, no extra border */
 .ma-row.is-focused {
   border-color: var(--color-primary);
   background: var(--bg-surface);
@@ -2241,6 +2243,7 @@
   min-width: 0;
   border-bottom: 1.5px solid transparent;
   transition: border-color 0.15s;
+  padding-bottom: 1px;
 }
 .ma-row.is-focused .ma-name-input {
   border-bottom-color: var(--color-primary);
@@ -2250,23 +2253,22 @@
   width: 24px;
   height: 24px;
   border-radius: 7px;
-  background: var(--bg-subtle);
-  color: var(--color-primary);
-  font-size: 0.9rem;
+  background: transparent;
+  color: var(--text-faint);
+  font-size: 1rem;
   border: none;
   cursor: pointer;
-  opacity: 0.45;
-  transition: opacity 0.15s;
+  opacity: 0.5;
+  transition: opacity 0.15s, color 0.15s;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-[data-theme="dark"] .ma-delete-btn {
-  background: rgba(216, 88, 78, 0.1);
+  line-height: 1;
 }
 .ma-delete-btn:hover {
   opacity: 1;
+  color: var(--color-primary);
 }
 
 .ma-cadence-row {
@@ -2291,8 +2293,8 @@
   font-weight: 700;
   padding: 3px 8px;
   border-radius: 99px;
-  border: 1.5px solid var(--border);
-  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.15s;
@@ -2373,7 +2375,7 @@
   }
 }
 
-/* ─── Delete Confirm Modal ───────────────────────────────── */
+/* ─── Delete / Edit Confirm Modals ─────────────────────────── */
 .confirm-backdrop {
   position: fixed;
   inset: 0;
@@ -2417,6 +2419,7 @@
   font-size: 1.1rem;
   color: var(--text);
   line-height: 1.25;
+  margin: 0;
 }
 
 .confirm-body {
@@ -2424,6 +2427,16 @@
   line-height: 1.6;
   color: var(--text-muted);
   margin-bottom: 8px;
+}
+
+/* Amber highlight for activity name + logged count in delete prompt */
+.confirm-highlight {
+  font-weight: 700;
+  color: var(--color-amber, #F8C08A);
+}
+
+[data-theme="light"] .confirm-highlight {
+  color: #b45309;
 }
 
 .confirm-body-emphasis {
@@ -2480,6 +2493,14 @@
   flex: 1;
 }
 
+/* Save/confirm button for non-destructive confirm (cadence change) */
+.confirm-btn--save {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  flex: 1;
+}
+
 @media (max-width: 768px) {
   .confirm-actions {
     flex-direction: column;
@@ -2489,7 +2510,8 @@
     padding: 12px;
   }
   .confirm-btn--danger,
-  .confirm-btn--danger-soft {
+  .confirm-btn--danger-soft,
+  .confirm-btn--save {
     order: -1;
   }
 }
