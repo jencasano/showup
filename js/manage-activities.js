@@ -72,6 +72,8 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     nameInput.type = "text";
     nameInput.value = activityName;
     nameInput.maxLength = 20;
+    nameInput.autocomplete = "off";
+    nameInput.spellcheck = false;
     nameInput.addEventListener("focus", () => row.classList.add("is-focused"));
     nameInput.addEventListener("blur",  () => row.classList.remove("is-focused"));
 

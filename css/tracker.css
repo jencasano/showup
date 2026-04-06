@@ -2125,11 +2125,10 @@
   gap: 7px;
   border: 1px solid var(--border);
   background: var(--bg-subtle);
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.15s;
 }
 .ma-row.is-focused {
   border-color: var(--color-primary);
-  background: var(--bg-surface);
 }
 
 .ma-row-top { display: flex; align-items: center; gap: 8px; }
