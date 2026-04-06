@@ -1160,7 +1160,7 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
     const gearBtn = document.createElement("button");
     gearBtn.className = "tracker-badge-gear";
     gearBtn.title = "Manage activities";
-    gearBtn.textContent = "⚙";
+    gearBtn.textContent = "⛯";
     gearBtn.addEventListener("click", () => openManageActivitiesModal(entry, yearMonth, currentUser, onMarkToggled));
     section.appendChild(gearBtn);
   }

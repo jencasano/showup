@@ -125,7 +125,7 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
     const gearBtn = document.createElement("button");
     gearBtn.className = "cal-badge-gear";
     gearBtn.title = "Manage activities";
-    gearBtn.textContent = "⚙";
+    gearBtn.textContent = "⛯";
     gearBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       openManageActivitiesModal(entry, yearMonth, currentUser, onMarkToggled);
