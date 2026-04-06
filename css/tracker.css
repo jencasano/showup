@@ -2154,6 +2154,17 @@
   white-space: normal;
 }
 
+.ma-name-pencil {
+  font-size: 0.72rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+.ma-row:not(.is-focused):hover .ma-name-pencil { opacity: 0.5; }
+.ma-row.is-focused .ma-name-pencil { opacity: 0; }
+
 .ma-delete-btn {
   width: 24px;
   height: 24px;

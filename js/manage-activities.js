@@ -97,8 +97,13 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     deleteBtn.textContent = "\u00d7";
     deleteBtn.addEventListener("click", () => handleDelete(row));
 
+    const pencil = document.createElement("span");
+    pencil.className = "ma-name-pencil";
+    pencil.textContent = "\u270f\ufe0f";
+
     rowTop.appendChild(dot);
     rowTop.appendChild(nameInput);
+    rowTop.appendChild(pencil);
     rowTop.appendChild(deleteBtn);
     row.appendChild(rowTop);
 
