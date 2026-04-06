@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════ */
 
 .mylog-centered-stack {
-  width: fit-content;
+  width: 100%;
   max-width: 100%;
   margin: 0 auto;
 }
@@ -22,7 +22,7 @@
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   padding-bottom: 12px;
-  width: fit-content;
+  width: 100%;
 }
 
 .tracker-badge {
