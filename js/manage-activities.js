@@ -84,6 +84,28 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
         sel.removeAllRanges();
         sel.addRange(range);
       }
+      const current = nameInput.textContent.trim();
+      const original = row.dataset.originalName;
+      let nameIndicator = rowTop.querySelector(".ma-name-change-indicator");
+      if (current !== original && original) {
+        if (!nameIndicator) {
+          nameIndicator = document.createElement("span");
+          nameIndicator.className = "ma-name-change-indicator";
+          const wasSpan = document.createElement("span");
+          wasSpan.className = "ma-name-was";
+          wasSpan.textContent = original;
+          const arrowSpan = document.createElement("span");
+          arrowSpan.className = "ma-name-arrow";
+          arrowSpan.textContent = "\u2192";
+          nameIndicator.appendChild(wasSpan);
+          nameIndicator.appendChild(arrowSpan);
+          pencil.before(nameIndicator);
+        } else {
+          nameIndicator.querySelector(".ma-name-was").textContent = original;
+        }
+      } else if (nameIndicator) {
+        nameIndicator.remove();
+      }
     });
 
     row.addEventListener("click", (e) => {
@@ -114,6 +136,10 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     cadLabel2.textContent = "Per week";
     cadenceRow.appendChild(cadLabel2);
 
+    const changeIndicator = document.createElement("div");
+    changeIndicator.className = "ma-change-indicator";
+    changeIndicator.style.display = "none";
+
     CADENCE_OPTIONS.forEach(opt => {
       const btn = document.createElement("button");
       btn.className = "ma-cadence-btn";
@@ -123,10 +149,31 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
       btn.addEventListener("click", () => {
         cadenceRow.querySelectorAll(".ma-cadence-btn").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
+        const originalCad = parseInt(row.dataset.originalCadence, 10);
+        if (opt.value !== originalCad) {
+          changeIndicator.innerHTML = "";
+          const wasSpan = document.createElement("span");
+          wasSpan.className = "ma-inline-was";
+          wasSpan.textContent = cadLabel(originalCad);
+          const arrowSpan = document.createElement("span");
+          arrowSpan.className = "ma-inline-arrow";
+          arrowSpan.textContent = "\u2192";
+          const newSpan = document.createElement("span");
+          newSpan.className = "ma-inline-new";
+          newSpan.textContent = cadLabel(opt.value);
+          changeIndicator.appendChild(wasSpan);
+          changeIndicator.appendChild(arrowSpan);
+          changeIndicator.appendChild(newSpan);
+          changeIndicator.style.display = "flex";
+        } else {
+          changeIndicator.innerHTML = "";
+          changeIndicator.style.display = "none";
+        }
       });
       cadenceRow.appendChild(btn);
     });
 
+    cadenceRow.appendChild(changeIndicator);
     row.appendChild(cadenceRow);
     return row;
   }

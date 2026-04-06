@@ -83,6 +83,19 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
     const stats = computeStatsFromEntry(entry, yearMonth);
     if (isCurrentMonth) refreshBannerInPlace(container, entry, todayDate);
     refreshSummaryInPlace(container, entry, stats, yearMonth, isCurrentMonth);
+    if (isMobile()) {
+      const existingCard = container.querySelector(".cal-card");
+      if (existingCard) {
+        existingCard.replaceWith(renderMobileCard(entry, yearMonth, currentUser, { onMarkToggled }));
+      }
+    } else {
+      const existingSection = container.querySelector(".tracker-section");
+      if (existingSection) {
+        existingSection.replaceWith(
+          renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayDate, onMarkToggled)
+        );
+      }
+    }
   }
 
   unsubscribe = onSnapshot(entryRef, async (docSnap) => {

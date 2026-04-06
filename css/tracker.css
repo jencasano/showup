@@ -2208,6 +2208,41 @@
 }
 .ma-cadence-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
 
+.ma-change-indicator {
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+.ma-inline-was { text-decoration: line-through; color: var(--color-amber); }
+[data-theme="light"] .ma-inline-was { color: #b45309; }
+.ma-inline-arrow { color: var(--text-faint); font-size: 0.6rem; }
+.ma-inline-new { color: #1DD1A1; }
+[data-theme="light"] .ma-inline-new { color: #0a7a5c; }
+
+.ma-name-change-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  max-width: 120px;
+  overflow: hidden;
+}
+.ma-name-was {
+  text-decoration: line-through;
+  color: var(--color-amber);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+[data-theme="light"] .ma-name-was { color: #b45309; }
+.ma-name-arrow { color: var(--text-faint); font-size: 0.6rem; margin: 0 1px; }
+
 .ma-add-btn {
   width: calc(100% - 28px);
   margin: 0 14px 8px;
