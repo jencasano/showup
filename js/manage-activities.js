@@ -67,6 +67,23 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     dot.className = "ma-dot";
     dot.style.background = getActivityColor(colorIndex);
 
+    // Wrapper holds both the was-hint and the live input stacked vertically
+    const nameWrap = document.createElement("div");
+    nameWrap.className = "ma-name-wrap";
+
+    // The was-hint: "~~OldName~~ →" shown above the input when name differs
+    const nameWasHint = document.createElement("div");
+    nameWasHint.className = "ma-name-was-hint";
+    nameWasHint.style.display = "none";
+    const nameWasSpan = document.createElement("span");
+    nameWasSpan.className = "ma-name-was";
+    nameWasSpan.textContent = activityName;
+    const nameWasArrow = document.createElement("span");
+    nameWasArrow.className = "ma-name-arrow";
+    nameWasArrow.textContent = "\u2192";
+    nameWasHint.appendChild(nameWasSpan);
+    nameWasHint.appendChild(nameWasArrow);
+
     const nameInput = document.createElement("div");
     nameInput.className = "ma-name-edit";
     nameInput.setAttribute("contenteditable", "true");
@@ -86,33 +103,15 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
       }
       const current = nameInput.textContent.trim();
       const original = row.dataset.originalName;
-      let nameIndicator = rowTop.querySelector(".ma-name-change-indicator");
-      if (current !== original && original) {
-        if (!nameIndicator) {
-          nameIndicator = document.createElement("span");
-          nameIndicator.className = "ma-name-change-indicator";
-          const wasSpan = document.createElement("span");
-          wasSpan.className = "ma-name-was";
-          wasSpan.textContent = original;
-          const arrowSpan = document.createElement("span");
-          arrowSpan.className = "ma-name-arrow";
-          arrowSpan.textContent = "\u2192";
-          const newSpan = document.createElement("span");
-          newSpan.className = "ma-name-new";
-          newSpan.textContent = current;
-          nameIndicator.appendChild(wasSpan);
-          nameIndicator.appendChild(arrowSpan);
-          nameIndicator.appendChild(newSpan);
-          nameInput.before(nameIndicator);
-          nameInput.style.display = "none";
-        } else {
-          nameIndicator.querySelector(".ma-name-new").textContent = current;
-        }
-      } else if (nameIndicator) {
-        nameIndicator.remove();
-        nameInput.style.display = "";
+      if (original && current !== original) {
+        nameWasHint.style.display = "flex";
+      } else {
+        nameWasHint.style.display = "none";
       }
     });
+
+    nameWrap.appendChild(nameWasHint);
+    nameWrap.appendChild(nameInput);
 
     row.addEventListener("click", (e) => {
       if (e.target === deleteBtn || e.target.closest(".ma-cadence-btn")) return;
@@ -130,7 +129,7 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     pencil.textContent = "\u270f\ufe0f";
 
     rowTop.appendChild(dot);
-    rowTop.appendChild(nameInput);
+    rowTop.appendChild(nameWrap);
     rowTop.appendChild(pencil);
     rowTop.appendChild(deleteBtn);
     row.appendChild(rowTop);
@@ -253,14 +252,13 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     const { newActivities, newCadences, originalNames, originalCadences } = collectRows();
     if (newActivities.length === 0) { showToast("You need at least one activity.", "error"); return; }
 
-    // Classify each changed activity
     const changes = [];
     newActivities.forEach((newName, i) => {
       const origName = originalNames[i];
       const origCad  = originalCadences[i];
       const isNew    = !origName;
       if (isNew) return;
-      const renamed  = origName && newName !== origName;
+      const renamed    = origName && newName !== origName;
       const recadenced = origCad !== null && newCadences[i] !== origCad;
       if (renamed || recadenced) {
         changes.push({ origName, newName, origCad, newCad: newCadences[i], renamed, recadenced });
@@ -310,13 +308,11 @@ function showEditConfirmModal(changes, onConfirm) {
   const modal = document.createElement("div");
   modal.className = "confirm-modal";
 
-  // Determine overall change type
   const anyRename    = changes.some(c => c.renamed);
   const anyRecadence = changes.some(c => c.recadenced);
   const isSingle     = changes.length === 1;
   const c0           = changes[0];
 
-  // ── Title row
   const titleRow = document.createElement("div");
   titleRow.className = "confirm-title-row";
   const iconWrap = document.createElement("div");
@@ -343,7 +339,6 @@ function showEditConfirmModal(changes, onConfirm) {
   titleRow.appendChild(titleEl);
   modal.appendChild(titleRow);
 
-  // ── Body
   const body = document.createElement("div");
   body.className = "confirm-body";
 
@@ -356,7 +351,6 @@ function showEditConfirmModal(changes, onConfirm) {
       body.innerHTML = `Your stats will recalculate from here based on the new target. <span class="confirm-new">Everything you've already logged stays.</span>`;
     }
   } else {
-    // Multi-change: show a list
     const intro = document.createElement("span");
     intro.textContent = "Here's what you're updating:";
     body.appendChild(intro);
@@ -406,7 +400,6 @@ function showEditConfirmModal(changes, onConfirm) {
 
   const confirmBtn = document.createElement("button");
   confirmBtn.className = "confirm-btn confirm-btn--save";
-  // Button label depends on change type
   if (isSingle && c0.renamed && !c0.recadenced) {
     confirmBtn.textContent = "Yes, rename";
   } else if (isSingle && c0.recadenced && !c0.renamed) {
