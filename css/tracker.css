@@ -18,13 +18,13 @@
   border: 2px solid var(--border);
   border-radius: var(--radius-lg);
   margin: 0 auto 16px;
-  overflow: hidden;
   box-shadow: var(--shadow-sm);
   padding-bottom: 12px;
   width: fit-content;
 }
 
 .tracker-badge {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 8px;
