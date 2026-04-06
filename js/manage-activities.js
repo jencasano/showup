@@ -94,7 +94,7 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "ma-delete-btn";
     deleteBtn.title = "Delete activity";
-    deleteBtn.textContent = "\u00d7";
+    deleteBtn.textContent = "\ud83d\uddd1\ufe0f";
     deleteBtn.addEventListener("click", () => handleDelete(row));
 
     const pencil = document.createElement("span");
