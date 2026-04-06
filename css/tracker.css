@@ -1145,7 +1145,7 @@
 .mylog-progress-col { min-width: 0; }
 
 .mylog-diary-col {
-  height: 420px;
+  height: 300px;
   display: flex;
   overflow: hidden;
 }
@@ -1156,17 +1156,18 @@
   cursor: pointer;
   position: relative;
   display: flex;
-  transition: transform 0.3s cubic-bezier(.22,1,.36,1);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: bottom center;
   user-select: none;
 }
 
 .diary-nb-closed:hover {
-  transform: translateY(-8px) rotate(0.6deg) scale(1.015);
+  transform: translateY(-14px) rotate(-2.5deg) scale(1.03);
 }
 
 .diary-nb-closed:hover .diary-nb-shadow {
-  opacity: 0.8;
-  transform: translateY(14px) scaleX(0.82);
+  opacity: 0.9;
+  transform: translateY(16px) scaleX(0.72) rotate(2deg);
 }
 
 .diary-nb-shadow {
@@ -1175,11 +1176,10 @@
   left: 8%;
   right: 8%;
   height: 18px;
-  background: rgba(0,0,0,0.45);
   border-radius: 50%;
   filter: blur(10px);
-  opacity: 0.5;
-  transition: all 0.3s;
+  opacity: 0.45;
+  transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 0;
 }
 
@@ -1305,7 +1305,7 @@
 .diary-nb-ribbon {
   position: absolute;
   top: -4px;
-  left: 52px;
+  right: 18px;
   width: 13px;
   height: 32px;
   background: linear-gradient(180deg, #C8A832, #b89020);
@@ -1387,6 +1387,108 @@
   0%, 100% { opacity: 0.28; }
   50%       { opacity: 0.6; }
 }
+
+/* ── Theme corner overrides ────────────────────────── */
+.diary-theme-coral .diary-nb-book::before,
+.diary-theme-coral .diary-nb-book::after {
+  background: linear-gradient(135deg, #F8C08A, #ffd4a0);
+}
+
+.diary-theme-cream .diary-nb-book::before,
+.diary-theme-cream .diary-nb-book::after {
+  background: linear-gradient(135deg, #D8584E, #e87870);
+}
+
+.diary-theme-indigo .diary-nb-book::before,
+.diary-theme-indigo .diary-nb-book::after {
+  background: linear-gradient(135deg, #F8C08A, #ffd4a0);
+}
+
+/* ── Tagline ────────────────────────────────────────── */
+.diary-nb-tagline {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 0.52rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  margin-top: 10px;
+  line-height: 1;
+}
+
+/* ── Palette button (closed notebook) ──────────────── */
+.diary-nb-palette-btn {
+  position: absolute;
+  bottom: 10px;
+  left: 32px;
+  z-index: 10;
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+  padding: 2px;
+}
+
+.diary-nb-closed:hover .diary-nb-palette-btn { opacity: 1; }
+
+/* ── Palette popover ────────────────────────────────── */
+.diary-nb-palette-popover {
+  position: absolute;
+  bottom: 34px;
+  left: 28px;
+  z-index: 20;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  padding: 8px 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.diary-nb-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.diary-nb-swatch:hover { transform: scale(1.15); }
+
+.diary-nb-swatch--active {
+  border-color: var(--text);
+  transform: scale(1.1);
+}
+
+/* ── Modal swatch row ───────────────────────────────── */
+.diary-modal-swatch-row {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.diary-modal-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.diary-modal-swatch:hover { transform: scale(1.15); }
+
+.diary-modal-swatch--active {
+  border-color: #2A2218;
+  transform: scale(1.1);
+}
+
+[data-theme="dark"] .diary-modal-swatch--active { border-color: #FBDFCB; }
 
 /* ── Open notebook modal ───────────────────────────── */
 .diary-modal-overlay,

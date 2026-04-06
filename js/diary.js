@@ -44,6 +44,15 @@ export async function deleteDiaryPhoto(userId, yearMonth, day) {
   }
 }
 
+export async function getDiaryTheme(userId) {
+  const snap = await getDoc(doc(db, "users", userId));
+  return snap.exists() ? (snap.data().diaryTheme ?? null) : null;
+}
+
+export async function saveDiaryTheme(userId, theme) {
+  await setDoc(doc(db, "users", userId), { diaryTheme: theme }, { merge: true });
+}
+
 export async function getDiaryDays(userId, yearMonth) {
   // List all docs in the entries subcollection and filter by yearMonth in JS.
   // Avoids __name__ query which requires a Firestore index and causes permission errors.

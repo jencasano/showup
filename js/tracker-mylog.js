@@ -11,6 +11,7 @@ import { icon, STICKER_ICONS } from "./icons.js";
 import { openManageActivitiesModal } from "./manage-activities.js";
 import { renderMonthlySummary } from "./tracker-summary.js";
 import { renderDiaryNotebook } from "./tracker-diary.js";
+import { getDiaryTheme } from "./diary.js";
 
 const MARKER_SYMBOLS = {
   square:   "\u25a0",
@@ -142,7 +143,10 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
         const diaryCol = document.createElement("div");
         diaryCol.className = "mylog-diary-col";
-        renderDiaryNotebook(uid, yearMonth).then(nb => diaryCol.appendChild(nb));
+        getDiaryTheme(uid).then(savedTheme => {
+          const theme = savedTheme || "coral";
+          renderDiaryNotebook(uid, yearMonth, theme).then(nb => diaryCol.appendChild(nb));
+        });
 
         bottomRow.appendChild(progressCol);
         bottomRow.appendChild(diaryCol);

@@ -1,6 +1,7 @@
 import { getDaysInMonth, getCurrentYearMonth, getActivityColor } from "./utils.js";
-import { getDiaryDays, getDiaryEntry } from "./diary.js";
+import { getDiaryDays, getDiaryEntry, getDiaryTheme, saveDiaryTheme } from "./diary.js";
 import { openDiaryPage } from "./mobile-tracker.js";
+import { DIARY_THEMES, DEFAULT_DIARY_THEME } from "./diary-themes.js";
 
 // ─── MODULE-LEVEL DIARY ENTRY CACHE ───────────────────────────
 const _diaryEntryCache = new Map();
@@ -31,7 +32,9 @@ function crossfadeDiaryOverlay(oldOverlay, buildNewOverlay) {
 }
 
 // ─── PART B: CLOSED NOTEBOOK ─────────────────────────────
-export async function renderDiaryNotebook(userId, yearMonth) {
+export async function renderDiaryNotebook(userId, yearMonth, theme = DEFAULT_DIARY_THEME) {
+  const t = DIARY_THEMES[theme] || DIARY_THEMES[DEFAULT_DIARY_THEME];
+
   const diaryDays = await getDiaryDays(userId, yearMonth);
   const filledCount = diaryDays.size;
   const [year, month] = yearMonth.split("-").map(Number);
@@ -42,25 +45,33 @@ export async function renderDiaryNotebook(userId, yearMonth) {
 
   const shadow = document.createElement("div");
   shadow.className = "diary-nb-shadow";
+  shadow.style.background = t.shadowColor;
   wrap.appendChild(shadow);
 
   const book = document.createElement("div");
   book.className = "diary-nb-book";
+  book.classList.add(`diary-theme-${theme}`);
+  book.style.borderColor = t.bookBorder;
 
   const spine = document.createElement("div");
   spine.className = "diary-nb-spine";
+  spine.style.background = t.spineBg;
+  spine.style.borderRight = `2px solid ${t.spineRightBorder}`;
   for (let i = 0; i < 9; i++) {
     const hole = document.createElement("span");
     hole.className = "diary-nb-hole";
+    hole.style.background = t.holeBg;
     spine.appendChild(hole);
   }
   book.appendChild(spine);
 
   const cover = document.createElement("div");
   cover.className = "diary-nb-cover";
+  cover.style.background = t.coverGradient;
 
   const gutter = document.createElement("div");
   gutter.className = "diary-nb-gutter";
+  gutter.style.background = t.gutterBg;
   cover.appendChild(gutter);
 
   const pagesEdge = document.createElement("div");
@@ -69,6 +80,9 @@ export async function renderDiaryNotebook(userId, yearMonth) {
 
   const ribbon = document.createElement("div");
   ribbon.className = "diary-nb-ribbon";
+  ribbon.style.background = t.ribbonBg;
+  ribbon.style.right = "18px";
+  ribbon.style.left = "auto";
   cover.appendChild(ribbon);
 
   const content = document.createElement("div");
@@ -78,13 +92,21 @@ export async function renderDiaryNotebook(userId, yearMonth) {
   const title = document.createElement("h2");
   title.className = "diary-nb-title";
   title.textContent = "diary.";
+  title.style.color = t.titleColor;
   const monthEl = document.createElement("p");
   monthEl.className = "diary-nb-month";
   monthEl.textContent = `${monthName} ${year}`;
+  monthEl.style.color = t.monthColor;
+  const tagline = document.createElement("p");
+  tagline.className = "diary-nb-tagline";
+  tagline.textContent = "i show up. period.";
+  tagline.style.color = t.taglineColor;
   const rule = document.createElement("div");
   rule.className = "diary-nb-rule";
+  rule.style.background = t.ruleColor;
   top.appendChild(title);
   top.appendChild(monthEl);
+  top.appendChild(tagline);
   top.appendChild(rule);
   content.appendChild(top);
 
@@ -92,10 +114,13 @@ export async function renderDiaryNotebook(userId, yearMonth) {
   bottom.className = "diary-nb-bottom";
   const stat = document.createElement("div");
   stat.className = "diary-nb-stat";
-  stat.innerHTML = `<strong>${filledCount}</strong><span>pages filled</span>`;
+  stat.innerHTML = `<strong>${filledCount}</strong><span>entries</span>`;
+  stat.querySelector("strong").style.color = t.statColor;
+  stat.querySelector("span").style.color = t.statLabelColor;
   const hint = document.createElement("span");
   hint.className = "diary-nb-hint";
   hint.textContent = "open \u2192";
+  hint.style.color = t.hintColor;
   bottom.appendChild(stat);
   bottom.appendChild(hint);
   content.appendChild(bottom);
@@ -104,12 +129,45 @@ export async function renderDiaryNotebook(userId, yearMonth) {
   book.appendChild(cover);
   wrap.appendChild(book);
 
-  wrap.addEventListener("click", () => openDiaryModal(userId, yearMonth, diaryDays));
+  // ── Palette button ──────────────────────────────────────
+  const paletteBtn = document.createElement("button");
+  paletteBtn.className = "diary-nb-palette-btn";
+  paletteBtn.innerHTML = "🎨";
+  paletteBtn.title = "Change diary color";
+  wrap.appendChild(paletteBtn);
+
+  const swatchColors = { coral: "#D8584E", cream: "#ede2d0", indigo: "#2A2E45" };
+
+  paletteBtn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    wrap.classList.toggle("diary-nb-palette-open");
+    const existing = wrap.querySelector(".diary-nb-palette-popover");
+    if (existing) { existing.remove(); return; }
+
+    const popover = document.createElement("div");
+    popover.className = "diary-nb-palette-popover";
+
+    for (const key of Object.keys(DIARY_THEMES)) {
+      const btn = document.createElement("button");
+      btn.className = "diary-nb-swatch";
+      btn.style.background = swatchColors[key];
+      if (key === theme) btn.classList.add("diary-nb-swatch--active");
+      btn.addEventListener("click", async (ev) => {
+        ev.stopPropagation();
+        await saveDiaryTheme(userId, key);
+        window.location.reload();
+      });
+      popover.appendChild(btn);
+    }
+    wrap.appendChild(popover);
+  });
+
+  wrap.addEventListener("click", () => openDiaryModal(userId, yearMonth, diaryDays, theme));
   return wrap;
 }
 
 // ─── PART C: OPEN NOTEBOOK MODAL ─────────────────────────
-export function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) {
+export function openDiaryModal(userId, yearMonth, diaryDays, theme = DEFAULT_DIARY_THEME, initialDay = null) {
   const [year, month] = yearMonth.split("-").map(Number);
   const daysInMonth = getDaysInMonth(yearMonth);
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
@@ -149,6 +207,22 @@ export function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) 
     <div class="diary-modal-left-head-title">diary.</div>
     <div class="diary-modal-left-head-sub">${monthName} ${year} \u00b7 ${diaryDays.size} pages filled</div>
   `;
+
+  const swatchColors = { coral: "#D8584E", cream: "#ede2d0", indigo: "#2A2E45" };
+  const swatchRow = document.createElement("div");
+  swatchRow.className = "diary-modal-swatch-row";
+  for (const key of Object.keys(DIARY_THEMES)) {
+    const btn = document.createElement("button");
+    btn.className = "diary-modal-swatch";
+    btn.style.background = swatchColors[key];
+    if (key === theme) btn.classList.add("diary-modal-swatch--active");
+    btn.addEventListener("click", async () => {
+      await saveDiaryTheme(userId, key);
+      window.location.reload();
+    });
+    swatchRow.appendChild(btn);
+  }
+  leftHead.appendChild(swatchRow);
   leftPage.appendChild(leftHead);
 
   const toggle = document.createElement("div");
@@ -353,7 +427,7 @@ export function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) 
         editBtn.addEventListener("click", () => {
           crossfadeDiaryOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, diaryEntry, () => {
             _diaryEntryCache.delete(_cacheKey(userId, yearMonth, d));
-            openDiaryModal(userId, yearMonth, diaryDays);
+            openDiaryModal(userId, yearMonth, diaryDays, theme);
           }));
         });
         rightContent.appendChild(editBtn);
@@ -374,7 +448,7 @@ export function openDiaryModal(userId, yearMonth, diaryDays, initialDay = null) 
         writeBtn.addEventListener("click", () => {
           crossfadeDiaryOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, null, () => {
             _diaryEntryCache.delete(_cacheKey(userId, yearMonth, d));
-            openDiaryModal(userId, yearMonth, diaryDays);
+            openDiaryModal(userId, yearMonth, diaryDays, theme);
           }));
         });
         rightContent.appendChild(writeBtn);
@@ -509,7 +583,7 @@ export function openDiaryPagesModal(userId, yearMonth, diaryDays) {
       if (isFilled) {
         const dayToOpen = d;
         mini.addEventListener("click", () => {
-          crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays, dayToOpen));
+          crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays, DEFAULT_DIARY_THEME, dayToOpen));
         });
       }
 
