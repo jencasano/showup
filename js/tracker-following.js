@@ -1,12 +1,26 @@
 import { db } from "./firebase-config.js";
 import {
-  doc, getDoc, setDoc, onSnapshot, arrayUnion, arrayRemove
+  doc, getDoc, setDoc, onSnapshot, arrayUnion, arrayRemove,
+  collection, getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderPeopleView } from "./following-people.js";
 import { renderFeedView } from "./following-feed.js";
 
 let currentView = "people";
+
+async function fetchLatestDiaryEntry(uid) {
+  const snap = await getDocs(collection(db, "diary", uid, "entries"));
+  if (snap.empty) return null;
+  const sorted = snap.docs
+    .filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d.id))
+    .sort((a, b) => b.id.localeCompare(a.id));
+  for (const d of sorted) {
+    const data = d.data();
+    if (data.note) return { docId: d.id, ...data };
+  }
+  return null;
+}
 
 export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToAll, silent = false) {
   if (!silent) showLoader();
@@ -24,6 +38,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   let logUnsubMap = {};
   let userCache   = {};
   let logsCache   = {};
+  let diaryCache  = {}; // uid -> { docId, note, photoUrl } | null
   let followingIds       = [];
   let pinnedFollowingIds = [];
 
@@ -34,50 +49,33 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     wrap.className = "fw-centered-wrap";
     container.appendChild(wrap);
 
-    // ── Header ──────────────────────────────────────────
     const header = document.createElement("div");
     header.className = "fw-header";
-
     const titleRow = document.createElement("div");
     titleRow.className = "fw-title-row";
-
     const title = document.createElement("h2");
     title.className = "fw-title";
     title.textContent = "Following";
-
     const count = document.createElement("span");
     count.className = "fw-count";
     count.textContent = `${followingIds.length} ${followingIds.length === 1 ? "person" : "people"}`;
-
     const toggle = document.createElement("div");
     toggle.className = "fw-view-toggle";
-
     const pillPeople = document.createElement("button");
     pillPeople.className = `fw-vt-pill${currentView === "people" ? " active" : ""}`;
     pillPeople.textContent = "People";
-    pillPeople.addEventListener("click", () => {
-      currentView = "people";
-      renderBoard();
-    });
-
+    pillPeople.addEventListener("click", () => { currentView = "people"; renderBoard(); });
     const pillFeed = document.createElement("button");
     pillFeed.className = `fw-vt-pill${currentView === "feed" ? " active" : ""}`;
     pillFeed.textContent = "Feed";
-    pillFeed.addEventListener("click", () => {
-      currentView = "feed";
-      renderBoard();
-    });
-
+    pillFeed.addEventListener("click", () => { currentView = "feed"; renderBoard(); });
     toggle.append(pillPeople, pillFeed);
     titleRow.append(title, count, toggle);
     header.appendChild(titleRow);
-
     const divider = document.createElement("hr");
     divider.className = "fw-divider";
-
     wrap.append(header, divider);
 
-    // ── Empty state ──────────────────────────────────────
     if (followingIds.length === 0) {
       const empty = document.createElement("div");
       empty.className = "following-empty";
@@ -96,7 +94,6 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       return;
     }
 
-    // ── Board ────────────────────────────────────────────
     const boardContainer = document.createElement("div");
     boardContainer.className = "fw-board";
     wrap.appendChild(boardContainer);
@@ -111,6 +108,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         pinnedFollowingIds,
         logsCache,
         userCache,
+        diaryCache,
         onSwitchToAll,
       });
     }
@@ -120,18 +118,17 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
 
   const unsubMe = onSnapshot(myRef, async (mySnap) => {
     if (!mySnap.exists()) {
-      followingIds       = [];
+      followingIds = [];
       pinnedFollowingIds = [];
       renderBoard();
       hideLoader();
       return;
     }
 
-    const data   = mySnap.data();
+    const data = mySnap.data();
     followingIds       = data.following        || [];
     pinnedFollowingIds = (data.pinnedFollowing || []).filter(uid => followingIds.includes(uid));
 
-    // Update month-bar-stat
     const statEl = document.getElementById("month-bar-stat");
     if (statEl) {
       statEl.textContent = followingIds.length > 0
@@ -139,13 +136,23 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         : "";
     }
 
-    // Fetch user docs for any new followingIds
+    // Fetch user docs for new followingIds
     await Promise.all(followingIds.map(async (uid) => {
       if (userCache[uid]) return;
       try {
         const snap = await getDoc(doc(db, "users", uid));
         if (snap.exists()) userCache[uid] = snap.data();
       } catch { /* skip */ }
+    }));
+
+    // Fetch diary entries for new followingIds (once per uid, cached)
+    await Promise.all(followingIds.map(async (uid) => {
+      if (Object.prototype.hasOwnProperty.call(diaryCache, uid)) return;
+      try {
+        diaryCache[uid] = await fetchLatestDiaryEntry(uid);
+      } catch {
+        diaryCache[uid] = null;
+      }
     }));
 
     // Remove listeners for uids no longer followed
@@ -156,17 +163,18 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         delete logUnsubMap[uid];
         delete logsCache[uid];
         delete userCache[uid];
+        delete diaryCache[uid];
       }
     }
 
-    // Subscribe to log docs for any new followingIds
+    // Subscribe to log docs for new followingIds
     for (const uid of followingIds) {
       if (logUnsubMap[uid]) continue;
       const logRef = doc(db, "logs", yearMonth, "entries", uid);
       logUnsubMap[uid] = onSnapshot(logRef, (logSnap) => {
-        const data = logSnap.data();
-        logsCache[uid] = logSnap.exists() && data?.activities?.length
-          ? { id: uid, ...data, displayName: userCache[uid]?.displayName || "" }
+        const d = logSnap.data();
+        logsCache[uid] = logSnap.exists() && d?.activities?.length
+          ? { id: uid, ...d, displayName: userCache[uid]?.displayName || "" }
           : null;
         renderBoard();
       }, (err) => {
