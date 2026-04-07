@@ -790,7 +790,7 @@ function showCropUI(file, onConfirm) {
 }
 
 // ─── OPEN DIARY PAGE ────────────────────────────────
-export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry, onSaved = null) {
+export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry, onSaved = null, onBack = null) {
   const [year, month] = yearMonth.split("-").map(Number);
   const date = new Date(year, month - 1, day);
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
@@ -812,17 +812,24 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
   const overlay = document.createElement("div");
   overlay.className = "diary-page-overlay";
 
-  function closeAll() {
+  function closeAll(onDone) {
     document.removeEventListener("keydown", onKeyDown);
-    backdrop.remove();
-    overlay.remove();
+    overlay.style.transition = "opacity 0.35s ease";
+    backdrop.style.transition = "opacity 0.35s ease";
+    overlay.style.opacity = "0";
+    backdrop.style.opacity = "0";
+    setTimeout(() => {
+      backdrop.remove();
+      overlay.remove();
+      onDone?.();
+    }, 350);
   }
 
   function tryClose() {
     const originalNote = existingDiaryEntry?.note || "";
     const isDirty = textarea.value !== originalNote || newPhotoFile !== null || photoToDelete;
     if (isDirty && !confirm("You have unsaved changes. Leave without saving?")) return;
-    closeAll();
+    closeAll(() => onBack?.());
   }
 
   function onKeyDown(e) {
@@ -1068,8 +1075,7 @@ export function openDiaryPage(day, entry, yearMonth, userId, existingDiaryEntry,
       await saveDiaryEntry(userId, yearMonth, day, saveData);
 
       showToast("Diary entry saved.", "info");
-      closeAll();
-      if (onSaved) onSaved();
+      closeAll(() => { if (onSaved) onSaved(); });
     } catch (err) {
       console.error("Diary save error:", err);
       showToast("Couldn't save. Try again.", "error");
@@ -1199,7 +1205,7 @@ export async function renderMobileDiaryCard(userId, yearMonth, theme = DEFAULT_D
   for (const key of Object.keys(DIARY_THEMES)) {
     const sw = document.createElement("button");
     sw.className = "mob-diary-swatch" + (key === theme ? " active" : "");
-    sw.style.background = swatchColors[key];
+    sw.style.setProperty("--swatch-bg", swatchColors[key]);
     sw.addEventListener("click", async (e) => {
       e.stopPropagation();
       await saveDiaryTheme(userId, key);
@@ -1239,7 +1245,7 @@ export async function renderMobileDiaryCard(userId, yearMonth, theme = DEFAULT_D
 }
 
 // ─── MOBILE DIARY SHEET (open notebook) ──────────────────────
-export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAULT_DIARY_THEME, initialDay = null) {
+export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAULT_DIARY_THEME, initialDay = null, fadeIn = false) {
   const t = DIARY_THEMES[theme] || DIARY_THEMES[DEFAULT_DIARY_THEME];
   const swatchColors = { coral: "#D8584E", cream: "#ede2d0", indigo: "#2A2E45" };
   const [year, month] = yearMonth.split("-").map(Number);
@@ -1255,7 +1261,11 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
 
   const sheet = document.createElement("div");
   sheet.className = "mob-diary-sheet";
-  sheet.style.transform = "translateY(100%)";
+  if (fadeIn) {
+    overlay.style.opacity = "0";
+  } else {
+    sheet.style.transform = "translateY(100%)";
+  }
 
   // ── Top spine ─────────────────────────────────────────────
   const sheetSpine = document.createElement("div");
@@ -1302,7 +1312,7 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
   for (const key of Object.keys(DIARY_THEMES)) {
     const sw = document.createElement("button");
     sw.className = "mob-diary-swatch" + (key === theme ? " active" : "");
-    sw.style.background = swatchColors[key];
+    sw.style.setProperty("--swatch-bg", swatchColors[key]);
     sw.addEventListener("click", async () => {
       await saveDiaryTheme(userId, key);
       dismiss();
@@ -1549,9 +1559,8 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
       editBtn.textContent = "\u270f\ufe0f Edit entry";
       editBtn.addEventListener("click", () => {
         dismiss();
-        openDiaryPage(d, window._currentEntry, yearMonth, userId, diaryEntry, () => {
-          openMobileDiarySheet(userId, yearMonth, diaryDays, theme, d);
-        });
+        const reopenSheet = () => openMobileDiarySheet(userId, yearMonth, diaryDays, theme, d, true);
+        openDiaryPage(d, window._currentEntry, yearMonth, userId, diaryEntry, reopenSheet, reopenSheet);
       });
       flipFace.appendChild(editBtn);
     } else {
@@ -1560,9 +1569,8 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
       writeBtn.textContent = "\u270f\ufe0f Write something";
       writeBtn.addEventListener("click", () => {
         dismiss();
-        openDiaryPage(d, window._currentEntry, yearMonth, userId, null, () => {
-          openMobileDiarySheet(userId, yearMonth, diaryDays, theme, d);
-        });
+        const reopenSheet = () => openMobileDiarySheet(userId, yearMonth, diaryDays, theme, d, true);
+        openDiaryPage(d, window._currentEntry, yearMonth, userId, null, reopenSheet, reopenSheet);
       });
       flipFace.appendChild(writeBtn);
     }
@@ -1601,8 +1609,13 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
 
   // ── Animate in ───────────────────────────────────────────
   requestAnimationFrame(() => {
-    sheet.style.transition = "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)";
-    sheet.style.transform = "translateY(0)";
+    if (fadeIn) {
+      overlay.style.transition = "opacity 0.4s ease";
+      overlay.style.opacity = "1";
+    } else {
+      sheet.style.transition = "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)";
+      sheet.style.transform = "translateY(0)";
+    }
   });
 
   // ── Swipe-to-dismiss ─────────────────────────────────────

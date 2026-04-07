@@ -346,7 +346,7 @@
   border-radius: var(--radius-lg);
   overflow: visible;
   box-shadow: var(--shadow-sm);
-  margin-top: 4px;
+  margin-top: 16px;
   margin-bottom: 24px;
 }
 
@@ -2544,6 +2544,7 @@
   position: relative;
   border: 2px solid #A83428;
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  margin-top: 16px;
 }
 
 .mob-diary-card:hover {
@@ -2729,23 +2730,40 @@
 
 .mob-diary-swatch-row {
   display: flex;
-  gap: 5px;
+  gap: 0;
   align-items: center;
 }
 
 .mob-diary-swatch {
-  width: 10px;
-  height: 10px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,0.35);
-  cursor: pointer;
-  transition: transform 0.15s, border-color 0.15s;
+  background: transparent;
+  border: none;
   padding: 0;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.mob-diary-swatch.active {
+.mob-diary-swatch::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--swatch-bg);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.mob-diary-swatch.active::before {
   border-color: white;
-  transform: scale(1.2);
+  transform: translate(-50%, -50%) scale(1.25);
 }
 
 .mob-diary-hint {
@@ -2950,6 +2968,31 @@
 .mob-diary-cal-btn:hover {
   background: var(--color-primary, #D8584E);
   color: white;
+}
+
+/* ── Dark mode: keep notebook paper aesthetic ──── */
+/* The diary is a physical notebook — it stays warm cream in all modes */
+[data-theme="dark"] .mob-diary-sheet,
+[data-theme="dark"] .mob-diary-nb-body {
+  /* Inherit the hardcoded cream values — no override needed */
+  color: #2A2218;
+}
+
+[data-theme="dark"] .mob-diary-strip-row {
+  background: rgba(235,227,206,0.97);
+  border-bottom-color: rgba(139,100,60,0.28);
+}
+
+[data-theme="dark"] .mob-diary-pip {
+  background: #F5EDE0;
+  border-color: rgba(139,100,60,0.45);
+  color: #2A2218;
+}
+
+[data-theme="dark"] .mob-diary-cal-btn {
+  background: #F5EDE0;
+  border-color: rgba(139,100,60,0.45);
+  color: rgba(42,34,24,0.6);
 }
 
 /* ── Entry flip area ───────────────────────────── */
