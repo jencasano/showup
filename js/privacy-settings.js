@@ -3,21 +3,25 @@ import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/
 import { showToast } from "./ui.js";
 
 const TIERS = [
-  { id: "sharing",   name: "Sharing",        desc: "Your tracker and diary are visible to your followers." },
-  { id: "followers", name: "Followers Only",  desc: "Your tracker is visible, diary is private." },
-  { id: "lowkey",    name: "Low Key",         desc: "Followers see your check-in count but not which activities." },
-  { id: "ghost",     name: "Ghost",           desc: "You appear in the list but share nothing." },
-  { id: "private",   name: "Private",         desc: "Completely hidden from all social views." },
+  { id: "sharing",   name: "Sharing",       desc: "Full content visible to followers." },
+  { id: "followers", name: "Followers Only", desc: "Visible only if you follow each other." },
+  { id: "lowkey",    name: "Low Key",        desc: "Others see signals, not details." },
+  { id: "ghost",     name: "Ghost",          desc: "You appear but share nothing." },
+  { id: "private",   name: "Private",        desc: "Completely hidden." },
 ];
 
-export async function getUserPrivacyTier(uid) {
+export async function getUserPrivacy(uid) {
   const snap = await getDoc(doc(db, "users", uid));
-  return snap.exists() ? (snap.data().privacyTier || "sharing") : "sharing";
+  const privacy = snap.exists() ? (snap.data().privacy || {}) : {};
+  return {
+    calendar: privacy.calendar || "sharing",
+    diary:    privacy.diary    || "sharing",
+  };
 }
 
-export async function setUserPrivacyTier(uid, tier) {
+export async function setUserPrivacy(uid, calendarTier, diaryTier) {
   try {
-    await setDoc(doc(db, "users", uid), { privacyTier: tier }, { merge: true });
+    await setDoc(doc(db, "users", uid), { privacy: { calendar: calendarTier, diary: diaryTier } }, { merge: true });
     showToast("Privacy updated.");
   } catch {
     showToast("Couldn't save. Try again.", "error");
@@ -29,7 +33,8 @@ export function openPrivacySettingsModal(currentUser) {
   overlay.id = "privacy-settings-modal";
   document.body.appendChild(overlay);
 
-  let selectedTier = "sharing";
+  let selectedCalendar = "sharing";
+  let selectedDiary    = "sharing";
 
   function close() {
     overlay.remove();
@@ -39,8 +44,9 @@ export function openPrivacySettingsModal(currentUser) {
     if (e.target === overlay) close();
   });
 
-  getUserPrivacyTier(currentUser.uid).then((currentTier) => {
-    selectedTier = currentTier;
+  getUserPrivacy(currentUser.uid).then(({ calendar, diary }) => {
+    selectedCalendar = calendar;
+    selectedDiary    = diary;
 
     const panel = document.createElement("div");
     panel.className = "ps-panel";
@@ -54,32 +60,42 @@ export function openPrivacySettingsModal(currentUser) {
         </div>
         <button class="ps-close" title="Close" aria-label="Close">&times;</button>
       </div>
-      <div class="ps-tiers"></div>
+      <div class="ps-section">
+        <div class="ps-section-label">Calendar</div>
+        <div class="ps-tiers" data-section="calendar"></div>
+      </div>
+      <hr class="ps-divider" />
+      <div class="ps-section">
+        <div class="ps-section-label">Diary</div>
+        <div class="ps-tiers" data-section="diary"></div>
+      </div>
       <button class="ps-save">Save</button>
     `;
 
-    const tiersEl = panel.querySelector(".ps-tiers");
-
-    function renderTiers() {
+    function renderSection(section) {
+      const selected = section === "calendar" ? selectedCalendar : selectedDiary;
+      const tiersEl  = panel.querySelector(`.ps-tiers[data-section="${section}"]`);
       tiersEl.innerHTML = "";
       TIERS.forEach(({ id, name, desc }) => {
         const row = document.createElement("button");
-        row.className = "ps-tier-option" + (id === selectedTier ? " tier-option-active" : "");
+        row.className = "ps-tier-option" + (id === selected ? " tier-option-active" : "");
         row.dataset.tier = id;
         row.innerHTML = `<span class="ps-tier-name">${name}</span><span class="ps-tier-desc">${desc}</span>`;
         row.addEventListener("click", () => {
-          selectedTier = id;
-          renderTiers();
+          if (section === "calendar") selectedCalendar = id;
+          else selectedDiary = id;
+          renderSection(section);
         });
         tiersEl.appendChild(row);
       });
     }
 
-    renderTiers();
+    renderSection("calendar");
+    renderSection("diary");
 
     panel.querySelector(".ps-close").addEventListener("click", close);
     panel.querySelector(".ps-save").addEventListener("click", async () => {
-      await setUserPrivacyTier(currentUser.uid, selectedTier);
+      await setUserPrivacy(currentUser.uid, selectedCalendar, selectedDiary);
       close();
     });
 
