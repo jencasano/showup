@@ -68,12 +68,21 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* ── Centered wrapper ──────────────────────────────── */
+
+.fw-centered-wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
 /* ── Layout ────────────────────────────────────────── */
 
 .fw-people-layout {
   display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 20px;
+  grid-template-columns: 3fr 2fr;
+  gap: 24px;
+  align-items: start;
 }
 
 .fw-people-main {
@@ -85,6 +94,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: sticky;
+  top: 24px;
 }
 
 /* ── Section labels ────────────────────────────────── */
@@ -431,7 +442,7 @@
 /* ── Mini calendar ─────────────────────────────────── */
 
 .fw-mini-cal {
-  padding: 10px 12px 8px;
+  padding: 8px 10px;
 }
 
 .fw-mini-cal--empty {
@@ -444,36 +455,44 @@
 .fw-cal-dow-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .fw-cal-dow {
-  font-size: 0.5rem;
+  font-size: 0.58rem;
   text-align: center;
   color: var(--text-faint);
-  font-weight: 600;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .fw-cal-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
+  gap: 2px;
 }
 
 .fw-cal-day {
-  aspect-ratio: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 2px;
-  border-radius: 3px;
-  font-size: 0.48rem;
+  padding: 4px 3px 4px;
+  border-radius: var(--radius-sm);
+  font-size: 0.58rem;
+  font-weight: 600;
   color: var(--text-muted);
+  min-height: 40px;
+}
+
+.fw-mini-cal--compact .fw-cal-day {
+  min-height: 32px;
+  padding: 3px 2px;
 }
 
 .fw-cal-day--today {
-  border: 1.5px solid var(--color-primary);
+  outline: 1.5px solid var(--color-primary);
   color: var(--color-primary);
   font-weight: 700;
 }
@@ -485,40 +504,183 @@
 
 .fw-cal-dot-row {
   display: flex;
-  gap: 1px;
-  margin-top: 1px;
+  gap: 2px;
+  margin-top: 3px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .fw-cal-dot {
-  width: 3px;
-  height: 3px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   display: block;
   flex-shrink: 0;
 }
 
+.fw-mini-cal--compact .fw-cal-dot {
+  width: 5px;
+  height: 5px;
+}
+
+/* ── Pinned footer (legend, full-width) ────────────── */
+
+.fw-pinned-footer {
+  border-top: 1px solid var(--border);
+  background: var(--bg-subtle);
+  padding: 8px 12px;
+}
+
 .fw-cal-legend {
-  padding: 4px 0 6px;
   display: flex;
-  gap: 8px;
+  flex-direction: row;
   flex-wrap: wrap;
+  gap: 5px 14px;
 }
 
 .fw-cal-legend-item {
   display: flex;
   align-items: center;
-  gap: 3px;
-  font-size: 0.56rem;
-  color: var(--text-muted);
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text);
 }
 
 .fw-cal-legend-dot {
-  width: 5px;
-  height: 5px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+/* ── Signal strip (Mode 2: cal + diary lowkey) ─────── */
+
+.fw-cal-signal-strip {
+  padding: 6px 12px 10px;
+  font-size: 0.68rem;
+  font-style: italic;
+  color: var(--text-faint);
+  border-top: 1px solid var(--border-faint);
+}
+
+/* ── Two-column pinned body (Mode 1: cal + diary) ──── */
+
+.fw-pinned-body--two-col {
+  display: flex;
+  align-items: stretch;
+}
+
+.fw-pinned-cal-col {
+  flex: 3;
+  min-width: 0;
+  border-right: 1px solid var(--border-faint);
+}
+
+.fw-pinned-diary-col {
+  flex: 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Diary panel ───────────────────────────────────── */
+
+.fw-diary-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px 10px;
+  flex: 1;
+}
+
+.fw-diary-panel-lbl {
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 6px;
+}
+
+.fw-diary-panel-text {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.5;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fw-diary-panel-date {
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  margin-top: 6px;
+}
+
+.fw-diary-panel-link {
+  font-size: 0.6rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  margin-top: 6px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+}
+
+.fw-diary-panel-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Signal block (Mode 4/6: cal lowkey or both hidden) */
+
+.fw-signal-block {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.fw-signal-block--with-diary {
+  border-bottom: 1px solid var(--border-faint);
+  padding-bottom: 16px;
+}
+
+.fw-signal-headline {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ── Private message (Mode 7) ──────────────────────── */
+
+.fw-pinned-private {
+  padding: 20px 16px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--text-faint);
+}
+
+/* ── Mobile: stack two-col ─────────────────────────── */
+
+@media (max-width: 600px) {
+  .fw-pinned-body--two-col {
+    flex-direction: column;
+  }
+
+  .fw-pinned-cal-col {
+    border-right: none;
+    border-bottom: 1px solid var(--border-faint);
+  }
 }
 
 /* ── Ghost card opacity ────────────────────────────── */
@@ -536,5 +698,9 @@
 
   .fw-people-side {
     display: none;
+  }
+
+  .fw-people-side {
+    position: static;
   }
 }

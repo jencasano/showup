@@ -46,9 +46,16 @@ function shortMonthLabel(yearMonth) {
   return new Date(year, month - 1, 1).toLocaleString("en-US", { month: "short" });
 }
 
+function formatDay(yearMonth, day) {
+  const [year, month] = yearMonth.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleString("en-US", {
+    month: "long", day: "numeric", year: "numeric"
+  });
+}
+
 // ── Mini Calendar ─────────────────────────────────────
 
-function renderMiniCal(log, yearMonth) {
+function renderMiniCal(log, yearMonth, compact = false) {
   const wrap = document.createElement("div");
 
   if (!log) {
@@ -57,7 +64,7 @@ function renderMiniCal(log, yearMonth) {
     return wrap;
   }
 
-  wrap.className = "fw-mini-cal";
+  wrap.className = compact ? "fw-mini-cal fw-mini-cal--compact" : "fw-mini-cal";
 
   const [year, month] = yearMonth.split("-").map(Number);
   const daysInMonth   = new Date(year, month, 0).getDate();
@@ -105,7 +112,7 @@ function renderMiniCal(log, yearMonth) {
   for (let day = 1; day <= daysInMonth; day++) {
     const cell = document.createElement("div");
     cell.className = "fw-cal-day";
-    if (isThisMonth && day === todayDate)   cell.classList.add("fw-cal-day--today");
+    if (isThisMonth && day === todayDate)    cell.classList.add("fw-cal-day--today");
     else if (isThisMonth && day > todayDate) cell.classList.add("fw-cal-day--future");
 
     const num = document.createElement("span");
@@ -130,25 +137,90 @@ function renderMiniCal(log, yearMonth) {
 
   wrap.appendChild(grid);
 
-  // Legend
-  if (Array.isArray(log.activities) && log.activities.length > 0) {
-    const legend = document.createElement("div");
-    legend.className = "fw-cal-legend";
-    for (const activity of log.activities) {
-      const item = document.createElement("div");
-      item.className = "fw-cal-legend-item";
-      const dot = document.createElement("span");
-      dot.className = "fw-cal-legend-dot";
-      dot.style.background = activity.color;
-      const name = document.createElement("span");
-      name.textContent = activity.name;
-      item.append(dot, name);
-      legend.appendChild(item);
-    }
-    wrap.appendChild(legend);
-  }
-
   return wrap;
+}
+
+// ── Calendar Footer (legend) ──────────────────────────
+
+function renderCalFooter(log) {
+  if (!Array.isArray(log?.activities) || log.activities.length === 0) return null;
+  const footer = document.createElement("div");
+  footer.className = "fw-pinned-footer";
+  const legend = document.createElement("div");
+  legend.className = "fw-cal-legend";
+  for (const activity of log.activities) {
+    const item = document.createElement("div");
+    item.className = "fw-cal-legend-item";
+    const dot = document.createElement("span");
+    dot.className = "fw-cal-legend-dot";
+    dot.style.background = activity.color;
+    const name = document.createElement("span");
+    name.textContent = activity.name;
+    item.append(dot, name);
+    legend.appendChild(item);
+  }
+  footer.appendChild(legend);
+  return footer;
+}
+
+// ── Diary Panel ───────────────────────────────────────
+
+function renderDiaryPanel(uid, yearMonth) {
+  const panel = document.createElement("div");
+  panel.className = "fw-diary-panel";
+
+  const lbl = document.createElement("div");
+  lbl.className = "fw-diary-panel-lbl";
+  lbl.textContent = "Diary.";
+
+  const text = document.createElement("div");
+  text.className = "fw-diary-panel-text";
+  text.textContent = "\u2026";
+
+  const date = document.createElement("div");
+  date.className = "fw-diary-panel-date";
+
+  const link = document.createElement("button");
+  link.className = "fw-diary-panel-link";
+  link.textContent = "View diary \u2192";
+  link.addEventListener("click", (e) => e.stopPropagation());
+
+  panel.append(lbl, text, date, link);
+
+  (async () => {
+    try {
+      const days = await getDiaryDays(uid, yearMonth);
+      if (days.size === 0) { panel.remove(); return; }
+      const latestDay = Math.max(...days);
+      const entry = await getDiaryEntry(uid, yearMonth, latestDay);
+      if (entry?.note) {
+        text.textContent = entry.note;
+        date.textContent = formatDay(yearMonth, latestDay);
+      } else {
+        panel.remove();
+      }
+    } catch {
+      panel.remove();
+    }
+  })();
+
+  return panel;
+}
+
+// ── Signal Block ──────────────────────────────────────
+
+function renderSignalBlock(signal, withDiary = false) {
+  const block = document.createElement("div");
+  block.className = withDiary
+    ? "fw-signal-block fw-signal-block--with-diary"
+    : "fw-signal-block";
+
+  const headline = document.createElement("p");
+  headline.className = "fw-signal-headline";
+  headline.textContent = signal.headline;
+
+  block.appendChild(headline);
+  return block;
 }
 
 // ── Browse Nudge Card ──────────────────────────────────
@@ -187,6 +259,12 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser) {
   const privacy     = getPrivacy(user);
   const signal      = computeSignal(displayName, log);
 
+  // Privacy access booleans
+  const calFull    = ["sharing", "followers"].includes(privacy.calendar);
+  const calSignal  = privacy.calendar === "lowkey";
+  const diaryFull  = ["sharing", "followers"].includes(privacy.diary);
+  const diarySignal = privacy.diary === "lowkey";
+
   const card = document.createElement("div");
   card.className = "fw-pinned-card";
 
@@ -214,107 +292,161 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser) {
   nameEl.className = "fw-pinned-name";
   nameEl.textContent = displayName;
 
-  // Per-card month nav
+  // Per-card month nav (only shown when calendar is visible)
   let cardYearMonth = yearMonth;
 
-  const prevBtn = document.createElement("button");
-  prevBtn.className = "fw-pmn-btn";
-  prevBtn.textContent = "\u2039";
-
-  const monthLbl = document.createElement("span");
-  monthLbl.className = "fw-pmn-lbl";
-  monthLbl.textContent = shortMonthLabel(cardYearMonth);
-
-  const nextBtn = document.createElement("button");
-  nextBtn.className = "fw-pmn-btn";
-  nextBtn.textContent = "\u203A";
-
-  const nav = document.createElement("div");
-  nav.className = "fw-pmn";
-  nav.append(prevBtn, monthLbl, nextBtn);
-
-  badge.append(avatar, nameEl, nav);
-
-  // ── Calendar body ─────────────────────────────────────
   const body = document.createElement("div");
   body.className = "fw-pinned-body";
 
-  function renderCalBody(entryLog) {
-    body.innerHTML = "";
-    body.appendChild(renderMiniCal(entryLog, cardYearMonth));
+  if (calFull) {
+    // Month nav controls
+    const prevBtn = document.createElement("button");
+    prevBtn.className = "fw-pmn-btn";
+    prevBtn.textContent = "\u2039";
+
+    const monthLbl = document.createElement("span");
+    monthLbl.className = "fw-pmn-lbl";
+    monthLbl.textContent = shortMonthLabel(cardYearMonth);
+
+    const nextBtn = document.createElement("button");
+    nextBtn.className = "fw-pmn-btn";
+    nextBtn.textContent = "\u203A";
+
+    const nav = document.createElement("div");
+    nav.className = "fw-pmn";
+    nav.append(prevBtn, monthLbl, nextBtn);
+
+    badge.append(avatar, nameEl, nav);
+
+    // Helper: replace the card-level footer with fresh legend
+    const refreshFooter = (entryLog) => {
+      const old = card.querySelector(".fw-pinned-footer");
+      if (old) old.remove();
+      const newFooter = renderCalFooter(entryLog);
+      if (newFooter) card.appendChild(newFooter);
+    };
+
+    // ── Mode 1: Calendar + Diary both full ─────────────
+    if (diaryFull) {
+      body.classList.add("fw-pinned-body--two-col");
+
+      const calCol = document.createElement("div");
+      calCol.className = "fw-pinned-cal-col";
+      calCol.appendChild(renderMiniCal(log, cardYearMonth, true));
+
+      const diaryCol = document.createElement("div");
+      diaryCol.className = "fw-pinned-diary-col";
+      diaryCol.appendChild(renderDiaryPanel(uid, yearMonth));
+
+      body.append(calCol, diaryCol);
+
+      const refreshCal = async (entryLog) => {
+        calCol.innerHTML = "";
+        calCol.appendChild(renderMiniCal(entryLog, cardYearMonth, true));
+        refreshFooter(entryLog);
+      };
+
+      prevBtn.addEventListener("click", async () => {
+        cardYearMonth = getPrevYearMonth(cardYearMonth);
+        monthLbl.textContent = shortMonthLabel(cardYearMonth);
+        if (cardYearMonth === yearMonth) {
+          refreshCal(log);
+        } else {
+          const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
+          const fetched = snap.exists() && snap.data().activities?.length
+            ? { id: uid, ...snap.data(), displayName } : null;
+          refreshCal(fetched);
+        }
+      });
+
+      nextBtn.addEventListener("click", async () => {
+        cardYearMonth = getNextYearMonth(cardYearMonth);
+        monthLbl.textContent = shortMonthLabel(cardYearMonth);
+        if (cardYearMonth === yearMonth) {
+          refreshCal(log);
+        } else {
+          const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
+          const fetched = snap.exists() && snap.data().activities?.length
+            ? { id: uid, ...snap.data(), displayName } : null;
+          refreshCal(fetched);
+        }
+      });
+
+    } else {
+      // ── Mode 2: Calendar full, diary signal ────────────
+      // ── Mode 3: Calendar full, diary hidden ───────────
+      body.appendChild(renderMiniCal(log, cardYearMonth, false));
+
+      if (diarySignal) {
+        const strip = document.createElement("div");
+        strip.className = "fw-cal-signal-strip";
+        strip.textContent = signal.headline;
+        body.appendChild(strip);
+      }
+
+      const refreshCal = async (entryLog) => {
+        const existing = body.querySelector(".fw-mini-cal");
+        if (existing) existing.remove();
+        body.insertBefore(renderMiniCal(entryLog, cardYearMonth, false), body.firstChild);
+        refreshFooter(entryLog);
+      };
+
+      prevBtn.addEventListener("click", async () => {
+        cardYearMonth = getPrevYearMonth(cardYearMonth);
+        monthLbl.textContent = shortMonthLabel(cardYearMonth);
+        if (cardYearMonth === yearMonth) {
+          refreshCal(log);
+        } else {
+          const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
+          const fetched = snap.exists() && snap.data().activities?.length
+            ? { id: uid, ...snap.data(), displayName } : null;
+          refreshCal(fetched);
+        }
+      });
+
+      nextBtn.addEventListener("click", async () => {
+        cardYearMonth = getNextYearMonth(cardYearMonth);
+        monthLbl.textContent = shortMonthLabel(cardYearMonth);
+        if (cardYearMonth === yearMonth) {
+          refreshCal(log);
+        } else {
+          const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
+          const fetched = snap.exists() && snap.data().activities?.length
+            ? { id: uid, ...snap.data(), displayName } : null;
+          refreshCal(fetched);
+        }
+      });
+    }
+
+  } else {
+    // No month nav for non-calendar modes
+    badge.append(avatar, nameEl);
+
+    if (calSignal) {
+      // ── Mode 4: Calendar signal (lowkey) ──────────────
+      body.appendChild(renderSignalBlock(signal, diaryFull));
+      if (diaryFull) {
+        body.appendChild(renderDiaryPanel(uid, yearMonth));
+      }
+
+    } else if (diaryFull) {
+      // ── Mode 5: Calendar hidden, diary full ───────────
+      body.appendChild(renderDiaryPanel(uid, yearMonth));
+
+    } else {
+      // ── Mode 6/7: Both hidden ─────────────────────────
+      const msg = document.createElement("p");
+      msg.className = "fw-pinned-private";
+      msg.textContent = "Tracking privately.";
+      body.appendChild(msg);
+    }
   }
-
-  renderCalBody(log);
-
-  prevBtn.addEventListener("click", async () => {
-    cardYearMonth = getPrevYearMonth(cardYearMonth);
-    monthLbl.textContent = shortMonthLabel(cardYearMonth);
-    if (cardYearMonth === yearMonth) {
-      renderCalBody(log);
-    } else {
-      const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
-      const fetched = snap.exists() && snap.data().activities?.length
-        ? { id: uid, ...snap.data(), displayName }
-        : null;
-      renderCalBody(fetched);
-    }
-  });
-
-  nextBtn.addEventListener("click", async () => {
-    cardYearMonth = getNextYearMonth(cardYearMonth);
-    monthLbl.textContent = shortMonthLabel(cardYearMonth);
-    if (cardYearMonth === yearMonth) {
-      renderCalBody(log);
-    } else {
-      const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
-      const fetched = snap.exists() && snap.data().activities?.length
-        ? { id: uid, ...snap.data(), displayName }
-        : null;
-      renderCalBody(fetched);
-    }
-  });
 
   card.append(badge, body);
-
-  // ── Diary peek strip ──────────────────────────────────
-  if (privacy.diary !== "ghost" && privacy.diary !== "private") {
-    const peek = document.createElement("div");
-    peek.className = "fw-diary-peek";
-
-    const peekLabel = document.createElement("span");
-    peekLabel.className = "fw-diary-peek-lbl";
-    peekLabel.textContent = "diary.";
-
-    const snippet = document.createElement("span");
-    snippet.className = "fw-diary-peek-text";
-
-    if (privacy.diary === "lowkey") {
-      snippet.textContent = signal.sub;
-      peek.append(peekLabel, snippet);
-      card.appendChild(peek);
-    } else {
-      snippet.textContent = "\u2026";
-      peek.append(peekLabel, snippet);
-      card.appendChild(peek);
-
-      (async () => {
-        try {
-          const days = await getDiaryDays(uid, yearMonth);
-          if (days.size === 0) { peek.remove(); return; }
-          const latestDay = Math.max(...days);
-          const entry = await getDiaryEntry(uid, yearMonth, latestDay);
-          if (entry?.note) {
-            snippet.textContent = entry.note;
-          } else {
-            peek.remove();
-          }
-        } catch {
-          peek.remove();
-        }
-      })();
-    }
+  if (calFull) {
+    const footer = renderCalFooter(log);
+    if (footer) card.appendChild(footer);
   }
-
   return card;
 }
 
@@ -491,14 +623,7 @@ export function renderPeopleView(container, model) {
   // ── Right column (hidden on mobile via CSS) ───────────
   const side = document.createElement("div");
   side.className = "fw-people-side";
-
-  if (pinnedActive.length > 0) {
-    for (const { uid, user, log } of pinnedActive) {
-      side.appendChild(renderPinnedCard(uid, user, log, yearMonth, currentUser));
-    }
-  } else {
-    side.appendChild(renderBrowseNudge(onSwitchToAll));
-  }
+  side.appendChild(renderBrowseNudge(onSwitchToAll));
 
   layout.append(main, side);
   container.appendChild(layout);

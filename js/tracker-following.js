@@ -30,6 +30,10 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   function renderBoard() {
     container.innerHTML = "";
 
+    const wrap = document.createElement("div");
+    wrap.className = "fw-centered-wrap";
+    container.appendChild(wrap);
+
     // ── Header ──────────────────────────────────────────
     const header = document.createElement("div");
     header.className = "fw-header";
@@ -71,7 +75,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     const divider = document.createElement("hr");
     divider.className = "fw-divider";
 
-    container.append(header, divider);
+    wrap.append(header, divider);
 
     // ── Empty state ──────────────────────────────────────
     if (followingIds.length === 0) {
@@ -88,14 +92,14 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       browseBtn.textContent = "Browse All \u2192";
       browseBtn.addEventListener("click", onSwitchToAll);
       empty.appendChild(browseBtn);
-      container.appendChild(empty);
+      wrap.appendChild(empty);
       return;
     }
 
     // ── Board ────────────────────────────────────────────
     const boardContainer = document.createElement("div");
     boardContainer.className = "fw-board";
-    container.appendChild(boardContainer);
+    wrap.appendChild(boardContainer);
 
     if (currentView === "feed") {
       renderFeedView(boardContainer);
