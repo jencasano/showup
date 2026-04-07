@@ -3070,10 +3070,10 @@
 }
 
 .mob-diary-cal-dow {
-  font-size: 0.5rem;
+  font-size: 0.55rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: rgba(42,34,24,0.45);
+  color: #7A6F55;
   text-align: center;
   padding: 2px 0;
 }
@@ -3083,19 +3083,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding-top: 3px;
+  justify-content: center;
   border-radius: 4px;
   cursor: pointer;
   position: relative;
 }
 
 .mob-diary-cal-cell.active {
-  background: var(--color-primary, #D8584E);
+  background: rgba(216,88,78,.12);
+  outline: 1.5px solid var(--color-primary, #D8584E);
 }
 
 .mob-diary-cal-cell.active .mob-diary-cal-num {
-  color: white;
+  color: var(--color-primary, #D8584E);
+  font-weight: 700;
 }
 
 .mob-diary-cal-cell.offset {
@@ -3118,20 +3119,25 @@
 }
 
 .mob-diary-cal-num {
-  font-size: 0.62rem;
+  font-size: 0.65rem;
   font-weight: 500;
   color: #2A2218;
   line-height: 1;
 }
 
+.mob-diary-cal-cell:has(.mob-diary-cal-dot) .mob-diary-cal-num {
+  font-weight: 700;
+  color: #2A2218;
+}
+
 .mob-diary-cal-dot {
-  width: 3px;
-  height: 3px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #C8972A;
-  margin-top: 2px;
+  background: #D97706;
+  margin-top: 1px;
 }
 
 .mob-diary-cal-cell.active .mob-diary-cal-dot {
-  background: rgba(255,255,255,0.7);
+  background: rgba(216,88,78,0.6);
 }

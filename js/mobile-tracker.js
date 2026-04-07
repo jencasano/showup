@@ -1583,10 +1583,13 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
 
     setTimeout(() => { renderFaceContent(d); }, 248);
 
-    flipCard.addEventListener("animationend", () => {
+    const onFlipEnd = (e) => {
+      if (e.target !== flipCard) return;
+      flipCard.removeEventListener("animationend", onFlipEnd);
       flipCard.classList.remove(animClass);
       isFlipping = false;
-    }, { once: true });
+    };
+    flipCard.addEventListener("animationend", onFlipEnd);
   }
 
   // ── Animate in ───────────────────────────────────────────
