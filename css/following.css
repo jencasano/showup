@@ -117,12 +117,6 @@
   padding-top: 0;
 }
 
-.fw-section-lbl::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
 
 .fw-section-count {
   background: var(--bg-subtle);

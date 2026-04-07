@@ -281,7 +281,7 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
 function renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowingIds, diaryEntry) {
   const displayName = user?.displayName || "Unknown";
   const initial     = displayName.charAt(0).toUpperCase();
-  const avatarUrl   = user?.decoration?.avatarUrl;
+  const avatarUrl   = log?.decoration?.avatarUrl || user?.decoration?.avatarUrl;
   const privacy     = getPrivacy(user);
   const hasTracker  = !!log;
   const signal      = computeSignal(displayName, log);
