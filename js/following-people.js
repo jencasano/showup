@@ -1,6 +1,6 @@
 import { computeSignal } from "./following-signals.js";
 import { db } from "./firebase-config.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { doc, getDoc, setDoc, arrayRemove, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getDiaryDays, getDiaryEntry } from "./diary.js";
 import { getPrevYearMonth, getNextYearMonth } from "./utils.js";
 import { renderMobileCard } from "./mobile-tracker.js";
@@ -279,17 +279,26 @@ function renderBrowseNudge(onSwitchToAll) {
 
 // ── Pinned Card ────────────────────────────────────────
 
-function renderPinnedCard(uid, user, log, yearMonth, currentUser) {
+function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowingIds) {
   const displayName = user?.displayName || "Unknown";
   const privacy     = getPrivacy(user);
   const signal      = computeSignal(displayName, log);
 
   let cardYearMonth = yearMonth;
 
-  const card = document.createElement("div");
-  card.className = "fw-pinned-card";
+  // ── Build a safe entry for renderMobileCard ────────────
+  const buildEntry = (entryLog) => {
+    if (entryLog) return entryLog;
+    return {
+      id: uid,
+      displayName,
+      decoration: user?.decoration || { color: "#FF6B6B", fontColor: "#FFFFFF", font: "Inter", sticker: "sunflower2", marker: "square", avatarUrl: "" },
+      marks: {},
+      activities: [],
+    };
+  };
 
-  // ── Month nav row ──────────────────────────────────────
+  // ── Month nav ──────────────────────────────────────────
   const prevBtn = document.createElement("button");
   prevBtn.className = "fw-pmn-btn";
   prevBtn.textContent = "\u2039";
@@ -306,36 +315,105 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser) {
   nav.className = "fw-pmn";
   nav.append(prevBtn, monthLbl, nextBtn);
 
-  // ── Build a safe entry for renderMobileCard ────────────
-  const buildEntry = (entryLog) => {
-    if (entryLog) return entryLog;
-    return {
-      id: uid,
-      displayName,
-      decoration: user?.decoration || { color: "#FF6B6B", fontColor: "#FFFFFF", font: "Inter", sticker: "sunflower2", marker: "square", avatarUrl: "" },
-      marks: {},
-      activities: [],
-    };
+  // ── Actions button + popover ───────────────────────────
+  const actionsBtn = document.createElement("button");
+  actionsBtn.className = "fw-pmn-actions-btn";
+  actionsBtn.textContent = "\u00B7\u00B7\u00B7";
+
+  let popover = null;
+  let dismissHandler = null;
+
+  const closePopover = () => {
+    if (!popover) return;
+    popover.remove();
+    popover = null;
+    if (dismissHandler) {
+      document.removeEventListener("click", dismissHandler);
+      dismissHandler = null;
+    }
   };
 
-  // ── Cal card (renderMobileCard) ────────────────────────
+  actionsBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (popover) { closePopover(); return; }
+
+    popover = document.createElement("div");
+    popover.className = "fw-pmn-popover";
+
+    if (pinnedFollowingIds?.includes(uid)) {
+      const unpinBtn = document.createElement("button");
+      unpinBtn.textContent = "Unpin";
+      unpinBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        closePopover();
+        try {
+          await setDoc(doc(db, "users", currentUser.uid),
+            { pinnedFollowing: arrayRemove(uid) }, { merge: true });
+          showToast("Unpinned.");
+        } catch {
+          showToast("Couldn't unpin. Try again.", "error");
+        }
+      });
+      popover.appendChild(unpinBtn);
+    }
+
+    const unfollowBtn = document.createElement("button");
+    unfollowBtn.className = "unfollow";
+    unfollowBtn.textContent = "Unfollow";
+    unfollowBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      closePopover();
+      try {
+        await setDoc(doc(db, "users", currentUser.uid),
+          { following: arrayRemove(uid), pinnedFollowing: arrayRemove(uid) }, { merge: true });
+        showToast(`Unfollowed ${displayName}.`);
+      } catch {
+        showToast("Couldn't unfollow. Try again.", "error");
+      }
+    });
+    popover.appendChild(unfollowBtn);
+
+    actionsBtn.parentElement.appendChild(popover);
+
+    dismissHandler = (ev) => {
+      if (!popover?.contains(ev.target) && ev.target !== actionsBtn) {
+        closePopover();
+      }
+    };
+    setTimeout(() => {
+      if (popover) document.addEventListener("click", dismissHandler);
+    }, 0);
+  });
+
+  // ── Helper: attach nav+actions to a badge ──────────────
+  const attachControls = (badge) => {
+    badge.append(nav, actionsBtn);
+  };
+
+  // ── Initial cal card ───────────────────────────────────
   let calCard = renderMobileCard(buildEntry(log), cardYearMonth, currentUser, { isFollowing: true, showFollowBtn: false });
+  attachControls(calCard.querySelector(".cal-card-badge"));
 
   // ── Diary strip ────────────────────────────────────────
   let diaryStrip = renderDiaryStrip(uid, yearMonth, privacy, signal);
 
-  card.append(nav, calCard);
-  if (diaryStrip) card.appendChild(diaryStrip);
+  // ── Slot: stable parent for refresh logic ──────────────
+  const slot = document.createElement("div");
+  slot.className = "fw-pinned-slot";
+  slot.appendChild(calCard);
+  if (diaryStrip) slot.appendChild(diaryStrip);
 
-  // ── Month nav logic ────────────────────────────────────
+  // ── Month nav refresh ──────────────────────────────────
   const refreshCard = async (newLog, newYearMonth) => {
+    closePopover();
     const newCalCard = renderMobileCard(buildEntry(newLog), newYearMonth, currentUser, { isFollowing: true, showFollowBtn: false });
+    attachControls(newCalCard.querySelector(".cal-card-badge"));
     calCard.replaceWith(newCalCard);
     calCard = newCalCard;
 
     const newDiaryStrip = renderDiaryStrip(uid, newYearMonth, privacy, signal);
     if (diaryStrip) diaryStrip.remove();
-    if (newDiaryStrip) card.appendChild(newDiaryStrip);
+    if (newDiaryStrip) slot.appendChild(newDiaryStrip);
     diaryStrip = newDiaryStrip;
   };
 
@@ -365,12 +443,12 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser) {
     }
   });
 
-  return card;
+  return slot;
 }
 
 // ── Compact Row ────────────────────────────────────────
 
-function renderCompactRow(uid, user, log, yearMonth, currentUser) {
+function renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowingIds) {
   const displayName = user?.displayName || "Unknown";
   const initial     = displayName.charAt(0).toUpperCase();
   const avatarUrl   = user?.decoration?.avatarUrl;
@@ -445,7 +523,7 @@ function renderCompactRow(uid, user, log, yearMonth, currentUser) {
     chevron.classList.toggle("open", !isOpen);
     if (!isOpen && !built) {
       built = true;
-      expanded.appendChild(renderPinnedCard(uid, user, log, yearMonth, currentUser));
+      expanded.appendChild(renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowingIds));
     }
   });
 
@@ -509,7 +587,7 @@ export function renderPeopleView(container, model) {
     if (pinnedActive.length > 0) {
       main.appendChild(renderSectionLbl("\uD83D\uDCCC Pinned"));
       for (const { uid, user, log } of pinnedActive) {
-        main.appendChild(renderPinnedCard(uid, user, log, yearMonth, currentUser));
+        main.appendChild(renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowingIds));
       }
     }
 
@@ -521,7 +599,7 @@ export function renderPeopleView(container, model) {
       main.appendChild(empty);
     } else {
       for (const { uid, user, log } of activeUnpinned) {
-        main.appendChild(renderCompactRow(uid, user, log, yearMonth, currentUser));
+        main.appendChild(renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowingIds));
       }
     }
 
@@ -533,7 +611,7 @@ export function renderPeopleView(container, model) {
       main.appendChild(empty);
     } else {
       for (const { uid, user } of crickets) {
-        main.appendChild(renderCompactRow(uid, user, null, yearMonth, currentUser));
+        main.appendChild(renderCompactRow(uid, user, null, yearMonth, currentUser, pinnedFollowingIds));
       }
     }
   }

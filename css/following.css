@@ -135,14 +135,17 @@
 /* ── Pinned card ───────────────────────────────────── */
 
 .fw-pinned-card {
-  background: var(--bg-surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
   margin-bottom: 12px;
   position: relative;
-  max-width: 400px;
+}
+
+.fw-pinned-slot {
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.fw-pinned-slot .cal-card-badge {
+  position: relative;
 }
 
 .fw-pinned-badge {
@@ -187,41 +190,94 @@
 .fw-pmn {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 6px;
-  padding: 6px 10px;
-  background: var(--bg-subtle);
-  border-bottom: 1px solid var(--border-faint);
+  margin-left: auto;
 }
 
 .fw-pmn-btn {
-  background: none;
-  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.15);
+  border: none;
   border-radius: 4px;
-  width: 22px;
-  height: 22px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  width: 20px;
+  height: 20px;
+  font-size: 0.8rem;
+  color: inherit;
+  opacity: 0.8;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   line-height: 1;
-  font-family: var(--font-base);
-  transition: color var(--transition), border-color var(--transition);
 }
 
 .fw-pmn-btn:hover {
-  color: var(--text);
-  border-color: var(--text-muted);
+  opacity: 1;
 }
 
 .fw-pmn-lbl {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  color: var(--text);
-  min-width: 28px;
+  color: inherit;
+  opacity: 0.75;
+  min-width: 26px;
   text-align: center;
+}
+
+.fw-pmn-actions-btn {
+  background: rgba(0, 0, 0, 0.15);
+  border: none;
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+  font-size: 0.8rem;
+  color: inherit;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  margin-left: 2px;
+  letter-spacing: 0.1em;
+}
+
+.fw-pmn-actions-btn:hover {
+  opacity: 1;
+}
+
+.fw-pmn-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 99;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.fw-pmn-popover button {
+  padding: 8px 12px;
+  font-size: 0.72rem;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+  width: 100%;
+}
+
+.fw-pmn-popover button:hover {
+  background: var(--bg-subtle);
+}
+
+.fw-pmn-popover .unfollow {
+  color: var(--color-primary);
 }
 
 .fw-compact-expanded .fw-pmn {
@@ -706,13 +762,13 @@
 
 /* ── Cal-card inside pinned card ───────────────────────── */
 
-.fw-pinned-card .cal-card {
+.fw-pinned-slot .cal-card {
   border-radius: 0;
   border: none;
   box-shadow: none;
 }
 
-.fw-pinned-card .cal-card:hover {
+.fw-pinned-slot .cal-card:hover {
   transform: none;
   box-shadow: none;
 }
@@ -819,7 +875,5 @@
     position: static;
   }
 
-  .fw-pinned-card {
-    max-width: 100%;
-  }
 }
+
