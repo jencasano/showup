@@ -235,7 +235,7 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
   inner.appendChild(calCard);
   if (diaryStrip) inner.appendChild(diaryStrip);
   slot.appendChild(inner);
-  slot.appendChild(pinBtn);
+  if (pinnedFollowingIds?.includes(uid)) slot.appendChild(pinBtn);
 
   // ── Month nav refresh (only replaces cal card, diary strip stays)
   const refreshCard = async (newLog, newYearMonth) => {
@@ -381,6 +381,8 @@ export function renderPeopleView(container, model) {
   const layout = document.createElement("div"); layout.className = "fw-people-layout";
   const main   = document.createElement("div"); main.className = "fw-people-main";
 
+  const side = document.createElement("div"); side.className = "fw-people-side";
+
   if (allEmpty) {
     main.appendChild(renderBrowseNudge(onSwitchToAll));
   } else {
@@ -391,31 +393,31 @@ export function renderPeopleView(container, model) {
       }
     }
 
-    main.appendChild(renderSectionLbl("Showing Up", activeUnpinned.length));
+    side.appendChild(renderSectionLbl("Showing Up", activeUnpinned.length));
     if (activeUnpinned.length === 0) {
       const empty = document.createElement("p"); empty.className = "fw-section-empty";
       empty.textContent = "No one else showing up this month.";
-      main.appendChild(empty);
+      side.appendChild(empty);
     } else {
       for (const { uid, user, log, diaryEntry } of activeUnpinned) {
-        main.appendChild(renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
+        side.appendChild(renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
       }
     }
 
-    main.appendChild(renderSectionLbl("Crickets... \uD83E\uDD97", crickets.length));
+    side.appendChild(renderSectionLbl("Crickets... \uD83E\uDD97", crickets.length));
     if (crickets.length === 0) {
       const empty = document.createElement("p"); empty.className = "fw-section-empty";
       empty.textContent = "Everyone\u2019s showing up!";
-      main.appendChild(empty);
+      side.appendChild(empty);
     } else {
       for (const { uid, user, diaryEntry } of crickets) {
-        main.appendChild(renderCompactRow(uid, user, null, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
+        side.appendChild(renderCompactRow(uid, user, null, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
       }
     }
+
+    side.appendChild(renderBrowseNudge(onSwitchToAll));
   }
 
-  const side = document.createElement("div"); side.className = "fw-people-side";
-  side.appendChild(renderBrowseNudge(onSwitchToAll));
   layout.append(main, side);
   container.appendChild(layout);
 }
