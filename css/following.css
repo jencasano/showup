@@ -143,6 +143,9 @@
   margin-bottom: 12px;
   position: relative;
   max-width: 320px;
+}
+
+.fw-pinned-slot-inner {
   border: 2px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -289,10 +292,13 @@
 /* Inside expanded compact row: full-width, no card chrome */
 .fw-compact-expanded .fw-pinned-slot {
   max-width: 100%;
+  margin-bottom: 0;
+}
+
+.fw-compact-expanded .fw-pinned-slot-inner {
   border: none;
   border-radius: 0;
   box-shadow: none;
-  margin-bottom: 0;
 }
 
 .fw-pinned-body { padding: 0; }
@@ -398,13 +404,13 @@
 
 /* ── Cal-card inside pinned slot ──────────────────────── */
 
-.fw-pinned-slot .cal-card {
+.fw-pinned-slot-inner .cal-card {
   border-radius: 0;
   border: none;
   box-shadow: none;
 }
 
-.fw-pinned-slot .cal-card:hover {
+.fw-pinned-slot-inner .cal-card:hover {
   transform: none;
   box-shadow: none;
 }
@@ -442,6 +448,36 @@
 .fw-diary-view-btn:hover { color: var(--color-primary); }
 .fw-diary-strip-signal { font-size: 0.72rem; color: var(--text-muted); font-style: italic; line-height: 1.5; }
 
+/* ── Pin button ────────────────────────────────────────── */
+
+.fw-pin-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 4px;
+  transition: opacity 0.15s;
+}
+
+.fw-pin-btn--pinned {
+  opacity: 0.85;
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  z-index: 10;
+  font-size: 1.3rem;
+}
+
+.fw-pin-btn--pinned:hover { opacity: 1; }
+
+.fw-pin-btn--unpinned {
+  opacity: 0.25;
+  flex-shrink: 0;
+}
+
+.fw-pin-btn--unpinned:hover { opacity: 0.7; }
+
 /* ── Ghost card ───────────────────────────────────────── */
 
 .fw-ghost-card { opacity: 0.55; }
@@ -451,5 +487,6 @@
 @media (max-width: 768px) {
   .fw-people-layout { grid-template-columns: 1fr; }
   .fw-people-side { display: none; position: static; }
-  .fw-pinned-slot { max-width: 100%; }
+  .fw-pinned-slot,
+  .fw-pinned-slot-inner { max-width: 100%; }
 }

@@ -1,6 +1,6 @@
 import { computeSignal } from "./following-signals.js";
 import { db } from "./firebase-config.js";
-import { doc, getDoc, setDoc, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { doc, getDoc, setDoc, arrayRemove, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getPrevYearMonth, getNextYearMonth } from "./utils.js";
 import { renderMobileCard } from "./mobile-tracker.js";
 import { showToast } from "./ui.js";
@@ -187,18 +187,6 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
     if (popover) { closePopover(); return; }
     popover = document.createElement("div");
     popover.className = "fw-pmn-popover";
-    if (pinnedFollowingIds?.includes(uid)) {
-      const unpinBtn = document.createElement("button");
-      unpinBtn.textContent = "Unpin";
-      unpinBtn.addEventListener("click", async (e) => {
-        e.stopPropagation(); closePopover();
-        try {
-          await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: arrayRemove(uid) }, { merge: true });
-          showToast("Unpinned.");
-        } catch { showToast("Couldn't unpin. Try again.", "error"); }
-      });
-      popover.appendChild(unpinBtn);
-    }
     const unfollowBtn = document.createElement("button");
     unfollowBtn.className = "unfollow";
     unfollowBtn.textContent = "Unfollow";
@@ -218,6 +206,18 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
     setTimeout(() => { if (popover) document.addEventListener("click", dismissHandler); }, 0);
   });
 
+  // ── Pin button (unpin action) -- lives in the badge row, rightmost
+  const pinBtn = document.createElement("button");
+  pinBtn.className = "fw-pin-btn fw-pin-btn--pinned";
+  pinBtn.textContent = "📌";
+  pinBtn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    try {
+      await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: arrayRemove(uid) }, { merge: true });
+      showToast("Unpinned.");
+    } catch { showToast("Couldn't unpin. Try again.", "error"); }
+  });
+
   const attachControls = (badge) => { badge.append(nav, actionsBtn); };
 
   // ── Cal card
@@ -230,8 +230,12 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
   // ── Slot
   const slot = document.createElement("div");
   slot.className = "fw-pinned-slot";
-  slot.appendChild(calCard);
-  if (diaryStrip) slot.appendChild(diaryStrip);
+  const inner = document.createElement("div");
+  inner.className = "fw-pinned-slot-inner";
+  inner.appendChild(calCard);
+  if (diaryStrip) inner.appendChild(diaryStrip);
+  slot.appendChild(inner);
+  slot.appendChild(pinBtn);
 
   // ── Month nav refresh (only replaces cal card, diary strip stays)
   const refreshCard = async (newLog, newYearMonth) => {
@@ -240,7 +244,7 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
     attachControls(newCalCard.querySelector(".cal-card-badge"));
     calCard.replaceWith(newCalCard);
     calCard = newCalCard;
-    if (diaryStrip && slot.contains(diaryStrip)) slot.appendChild(diaryStrip);
+    if (diaryStrip && inner.contains(diaryStrip)) inner.appendChild(diaryStrip);
   };
 
   prevBtn.addEventListener("click", async () => {
@@ -306,6 +310,17 @@ function renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowin
 
   const right = document.createElement("div"); right.className = "fw-compact-right";
   right.appendChild(renderTierBadge(privacy.calendar));
+  const compactPinBtn = document.createElement("button");
+  compactPinBtn.className = "fw-pin-btn fw-pin-btn--unpinned";
+  compactPinBtn.textContent = "📌";
+  compactPinBtn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    try {
+      await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: arrayUnion(uid) }, { merge: true });
+      showToast("Pinned!");
+    } catch { showToast("Couldn't pin. Try again.", "error"); }
+  });
+  right.appendChild(compactPinBtn);
   const chevron = document.createElement("span"); chevron.className = "fw-compact-chevron"; chevron.textContent = "\u203A";
   right.appendChild(chevron);
   row.append(avatar, info, right);
