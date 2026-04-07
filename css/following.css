@@ -1,0 +1,426 @@
+/* ── Following header ──────────────────────────────── */
+
+.fw-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.fw-count {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  margin-left: 8px;
+}
+
+.fw-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.fw-view-toggle {
+  display: flex;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  gap: 2px;
+}
+
+.fw-vt-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  color: var(--text-faint);
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.fw-vt-pill.active {
+  background: var(--bg-surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Layout ────────────────────────────────────────── */
+
+.fw-people-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+}
+
+.fw-people-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.fw-people-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Section labels ────────────────────────────────── */
+
+.fw-section-lbl {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  padding-top: 16px;
+}
+
+.fw-section-lbl:first-child {
+  padding-top: 0;
+}
+
+.fw-section-lbl::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.fw-section-count {
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  font-size: 0.58rem;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+}
+
+/* ── Pinned card ───────────────────────────────────── */
+
+.fw-pinned-card {
+  background: var(--bg-surface);
+  border: 2px solid var(--color-amber);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.fw-pinned-badge {
+  background: var(--color-amber);
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fw-pinned-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.fw-pinned-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fw-pinned-name {
+  font-family: 'Caveat', cursive;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #2A2E45;
+  flex: 1;
+}
+
+.fw-pmn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fw-pmn-btn {
+  background: rgba(42, 46, 69, 0.12);
+  border: none;
+  border-radius: 3px;
+  width: 18px;
+  height: 18px;
+  font-size: 0.55rem;
+  color: #2A2E45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.fw-pmn-lbl {
+  font-size: 0.58rem;
+  color: rgba(42, 46, 69, 0.55);
+  font-weight: 600;
+}
+
+.fw-pinned-body {
+  padding: 0;
+}
+
+.fw-pinned-no-tracker {
+  padding: 16px 12px;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  font-style: italic;
+  margin: 0;
+}
+
+.fw-pinned-tier {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+}
+
+/* ── Diary peek ────────────────────────────────────── */
+
+.fw-diary-peek {
+  padding: 6px 12px 9px;
+  border-top: 1px solid var(--border-faint);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fw-diary-peek-lbl {
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  flex-shrink: 0;
+}
+
+.fw-diary-peek-text {
+  font-size: 0.63rem;
+  color: var(--text-muted);
+  font-style: italic;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Compact rows ──────────────────────────────────── */
+
+.fw-compact-row-wrap {
+  margin-bottom: 6px;
+}
+
+.fw-compact-row {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  transition: background var(--transition), box-shadow var(--transition);
+  position: relative;
+}
+
+.fw-compact-row:hover {
+  background: var(--bg-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+.fw-compact-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  background: var(--color-primary);
+  overflow: hidden;
+}
+
+.fw-compact-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fw-compact-avatar.no-tracker {
+  background: var(--bg-subtle);
+  border: 1.5px dashed var(--border);
+  color: var(--text-faint);
+}
+
+.fw-compact-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.fw-compact-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fw-compact-meta {
+  font-size: 0.64rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.fw-compact-meta.faint {
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.fw-compact-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.fw-compact-chevron {
+  font-size: 0.62rem;
+  color: var(--text-faint);
+  transition: transform var(--transition);
+}
+
+.fw-compact-chevron.open {
+  transform: rotate(90deg);
+}
+
+.fw-compact-expanded {
+  padding: 0 0 8px;
+  display: none;
+}
+
+.fw-compact-expanded.open {
+  display: block;
+}
+
+/* ── Tier badges ───────────────────────────────────── */
+
+.fw-tier-badge {
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+}
+
+.fw-tier-sharing {
+  background: rgba(128, 185, 185, 0.18);
+  color: var(--color-teal);
+  border: 1px solid rgba(128, 185, 185, 0.3);
+}
+
+.fw-tier-followers {
+  background: rgba(248, 192, 138, 0.2);
+  color: #a06820;
+  border: 1px solid rgba(248, 192, 138, 0.4);
+}
+
+[data-theme="dark"] .fw-tier-followers {
+  color: var(--color-amber);
+}
+
+.fw-tier-lowkey {
+  background: rgba(90, 96, 136, 0.14);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.fw-tier-ghost {
+  background: rgba(42, 46, 69, 0.08);
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+}
+
+.fw-tier-private {
+  background: rgba(216, 88, 78, 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(216, 88, 78, 0.22);
+}
+
+/* ── Nudge card ────────────────────────────────────── */
+
+.fw-nudge-card {
+  background: var(--bg-surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.fw-nudge-icon {
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+
+.fw-nudge-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.fw-nudge-sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.fw-nudge-btn {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 7px 18px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ── Ghost card opacity ────────────────────────────── */
+
+.fw-ghost-card {
+  opacity: 0.55;
+}
+
+/* ── Mobile overrides ──────────────────────────────── */
+
+@media (max-width: 768px) {
+  .fw-people-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fw-people-side {
+    display: none;
+  }
+}

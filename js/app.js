@@ -94,7 +94,7 @@ todayBtn.addEventListener("click", () => {
 // ── Streak stat ───────────────────────────────
 async function updateStat() {
   if (!currentUser || activeTab !== "mylog") {
-    if (activeTab !== "following") monthBarStat.textContent = "";
+    if (activeTab !== "mylog") monthBarStat.textContent = "";
     return;
   }
   const stats = await getMyLogStatsPromise();
@@ -131,6 +131,9 @@ export function switchTab(tab) {
   }
 
   closeMonthPicker();
+
+  const monthBar = document.getElementById("month-bar");
+  if (monthBar) monthBar.style.display = tab === "following" ? "none" : "";
 
   tabMyLog.style.display     = tab === "mylog"     ? "block" : "none";
   tabFollowing.style.display = tab === "following" ? "grid"  : "none";
