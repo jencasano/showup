@@ -1336,7 +1336,6 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
   strip.className = "mob-diary-strip";
 
   const pipEls = {};
-  const maxPip = isCurrentMonth ? todayDate : daysInMonth;
   for (let d = 1; d <= daysInMonth; d++) {
     const pip = document.createElement("div");
     pip.className = "mob-diary-pip";
@@ -1359,7 +1358,7 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
   stripRow.appendChild(calBtn);
   nbBody.appendChild(stripRow);
 
-  // Entry area (flip card)
+  // Entry area (flip card) — no perspective/transform-style needed for scaleX flip
   const entryArea = document.createElement("div");
   entryArea.className = "mob-diary-entry-area";
 
@@ -1437,7 +1436,7 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
       num.textContent = d;
       cell.appendChild(num);
     }
-    if (!isFuture) cell.addEventListener("click", () => { closeCalSheet(); selectDay(d, true); });
+    if (!isFuture) cell.addEventListener("click", () => { closeCalSheet(); selectDay(d); });
     calCells[d] = cell;
     calGrid.appendChild(cell);
   }
@@ -1455,6 +1454,10 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
   // ── State ─────────────────────────────────────────────────
   let activeDay = null;
   let isFlipping = false;
+
+  // Animation duration must match CSS (0.42s). Swap content at 45% = ~189ms.
+  const FLIP_DURATION = 420;
+  const FLIP_SWAP_AT  = Math.round(FLIP_DURATION * 0.45);
 
   function openCalSheet() {
     calOverlay.classList.add("open");
@@ -1497,7 +1500,7 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
     // Loading placeholder
     const loadEl = document.createElement("div");
     loadEl.style.cssText = "color:#B5A88A;font-family:'Caveat',cursive;font-size:1rem;padding-top:8px";
-    loadEl.textContent = "loading…";
+    loadEl.textContent = "loading\u2026";
     flipFace.appendChild(loadEl);
 
     const diaryEntry = await getDiaryEntry(userId, yearMonth, d);
@@ -1565,31 +1568,35 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
     }
   }
 
-  async function selectDay(d, fromCal = false) {
+  function selectDay(d) {
     if (isFlipping) return;
     const prev = activeDay;
     activeDay = d;
     updateActivePip(d);
 
+    // First load — no animation
     if (prev === null) {
-      await renderFaceContent(d);
+      renderFaceContent(d);
       return;
     }
 
-    const dir = fromCal ? (d >= prev ? "next" : "prev") : (d > prev ? "next" : "prev");
+    // Determine direction
+    const dir = d > prev ? "next" : "prev";
     const animClass = dir === "next" ? "flipping-next" : "flipping-prev";
+
     isFlipping = true;
     flipCard.classList.add(animClass);
 
-    setTimeout(() => { renderFaceContent(d); }, 248);
+    // Swap content at the midpoint (card is edge-on, invisible)
+    setTimeout(() => {
+      renderFaceContent(d);
+    }, FLIP_SWAP_AT);
 
-    const onFlipEnd = (e) => {
-      if (e.target !== flipCard) return;
-      flipCard.removeEventListener("animationend", onFlipEnd);
+    // Release lock when animation ends
+    flipCard.addEventListener("animationend", () => {
       flipCard.classList.remove(animClass);
       isFlipping = false;
-    };
-    flipCard.addEventListener("animationend", onFlipEnd);
+    }, { once: true });
   }
 
   // ── Animate in ───────────────────────────────────────────
