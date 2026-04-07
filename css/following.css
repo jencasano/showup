@@ -1,5 +1,26 @@
 /* ── Following header ──────────────────────────────── */
 
+.fw-header {
+  margin-bottom: 0;
+}
+
+.fw-title-row {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+
+.fw-title-row .fw-view-toggle {
+  margin-left: auto;
+  align-self: center;
+}
+
+.fw-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 0 16px;
+}
+
 .fw-title {
   font-family: 'Fraunces', serif;
   font-size: 1.3rem;
@@ -405,6 +426,99 @@
   font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* ── Mini calendar ─────────────────────────────────── */
+
+.fw-mini-cal {
+  padding: 10px 12px 8px;
+}
+
+.fw-mini-cal--empty {
+  padding: 16px 12px;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.fw-cal-dow-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 2px;
+}
+
+.fw-cal-dow {
+  font-size: 0.5rem;
+  text-align: center;
+  color: var(--text-faint);
+  font-weight: 600;
+}
+
+.fw-cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+}
+
+.fw-cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 2px;
+  border-radius: 3px;
+  font-size: 0.48rem;
+  color: var(--text-muted);
+}
+
+.fw-cal-day--today {
+  border: 1.5px solid var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.fw-cal-day--future {
+  color: var(--text-faint);
+  opacity: 0.45;
+}
+
+.fw-cal-dot-row {
+  display: flex;
+  gap: 1px;
+  margin-top: 1px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.fw-cal-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  display: block;
+  flex-shrink: 0;
+}
+
+.fw-cal-legend {
+  padding: 4px 0 6px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fw-cal-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.56rem;
+  color: var(--text-muted);
+}
+
+.fw-cal-legend-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 /* ── Ghost card opacity ────────────────────────────── */

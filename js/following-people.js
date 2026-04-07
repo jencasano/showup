@@ -1,7 +1,6 @@
 import { computeSignal } from "./following-signals.js";
 import { db } from "./firebase-config.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { renderMobileCard } from "./mobile-tracker.js";
 import { getDiaryDays, getDiaryEntry } from "./diary.js";
 import { getPrevYearMonth, getNextYearMonth } from "./utils.js";
 
@@ -45,6 +44,111 @@ function countUniqueDays(log) {
 function shortMonthLabel(yearMonth) {
   const [year, month] = yearMonth.split("-").map(Number);
   return new Date(year, month - 1, 1).toLocaleString("en-US", { month: "short" });
+}
+
+// ── Mini Calendar ─────────────────────────────────────
+
+function renderMiniCal(log, yearMonth) {
+  const wrap = document.createElement("div");
+
+  if (!log) {
+    wrap.className = "fw-mini-cal fw-mini-cal--empty";
+    wrap.textContent = "No tracker this month.";
+    return wrap;
+  }
+
+  wrap.className = "fw-mini-cal";
+
+  const [year, month] = yearMonth.split("-").map(Number);
+  const daysInMonth   = new Date(year, month, 0).getDate();
+  const firstDow      = new Date(year, month - 1, 1).getDay(); // 0=Sun
+  const now           = new Date();
+  const isThisMonth   = now.getFullYear() === year && now.getMonth() + 1 === month;
+  const todayDate     = now.getDate();
+
+  // Build day → [color, …] map from marks + activities
+  const dayColors = new Map();
+  if (log.marks && Array.isArray(log.activities)) {
+    for (const activity of log.activities) {
+      const days = log.marks[activity.name];
+      if (!Array.isArray(days)) continue;
+      for (const day of days) {
+        if (!dayColors.has(day)) dayColors.set(day, []);
+        dayColors.get(day).push(activity.color);
+      }
+    }
+  }
+
+  // Day-of-week header row
+  const dowRow = document.createElement("div");
+  dowRow.className = "fw-cal-dow-row";
+  for (const lbl of ["S", "M", "T", "W", "T", "F", "S"]) {
+    const cell = document.createElement("div");
+    cell.className = "fw-cal-dow";
+    cell.textContent = lbl;
+    dowRow.appendChild(cell);
+  }
+  wrap.appendChild(dowRow);
+
+  // Day grid
+  const grid = document.createElement("div");
+  grid.className = "fw-cal-days";
+
+  // Leading spacers
+  for (let i = 0; i < firstDow; i++) {
+    const spacer = document.createElement("div");
+    spacer.className = "fw-cal-day";
+    grid.appendChild(spacer);
+  }
+
+  // Day cells
+  for (let day = 1; day <= daysInMonth; day++) {
+    const cell = document.createElement("div");
+    cell.className = "fw-cal-day";
+    if (isThisMonth && day === todayDate)   cell.classList.add("fw-cal-day--today");
+    else if (isThisMonth && day > todayDate) cell.classList.add("fw-cal-day--future");
+
+    const num = document.createElement("span");
+    num.textContent = day;
+    cell.appendChild(num);
+
+    const colors = dayColors.get(day);
+    if (colors?.length) {
+      const dotRow = document.createElement("div");
+      dotRow.className = "fw-cal-dot-row";
+      for (const color of colors) {
+        const dot = document.createElement("span");
+        dot.className = "fw-cal-dot";
+        dot.style.background = color;
+        dotRow.appendChild(dot);
+      }
+      cell.appendChild(dotRow);
+    }
+
+    grid.appendChild(cell);
+  }
+
+  wrap.appendChild(grid);
+
+  // Legend
+  if (Array.isArray(log.activities) && log.activities.length > 0) {
+    const legend = document.createElement("div");
+    legend.className = "fw-cal-legend";
+    for (const activity of log.activities) {
+      const item = document.createElement("div");
+      item.className = "fw-cal-legend-item";
+      const dot = document.createElement("span");
+      dot.className = "fw-cal-legend-dot";
+      dot.style.background = activity.color;
+      const name = document.createElement("span");
+      name.textContent = activity.name;
+      item.append(dot, name);
+      legend.appendChild(item);
+    }
+    wrap.appendChild(legend);
+  }
+
+  return wrap;
 }
 
 // ── Browse Nudge Card ──────────────────────────────────
@@ -137,16 +241,7 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser) {
 
   function renderCalBody(entryLog) {
     body.innerHTML = "";
-    if (entryLog) {
-      body.appendChild(
-        renderMobileCard(entryLog, cardYearMonth, currentUser, { isFollowing: true, showFollowBtn: false })
-      );
-    } else {
-      const msg = document.createElement("p");
-      msg.className = "fw-pinned-no-tracker";
-      msg.textContent = "No tracker for this month.";
-      body.appendChild(msg);
-    }
+    body.appendChild(renderMiniCal(entryLog, cardYearMonth));
   }
 
   renderCalBody(log);
@@ -296,6 +391,7 @@ function renderCompactRow(uid, user, log, yearMonth, currentUser) {
   row.addEventListener("click", () => {
     const isOpen = !expanded.hidden;
     expanded.hidden = isOpen;
+    expanded.classList.toggle("open", !isOpen);
     chevron.classList.toggle("open", !isOpen);
     if (!isOpen && !built) {
       built = true;
