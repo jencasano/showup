@@ -113,16 +113,16 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
         container.appendChild(
           renderMobileCard(entry, yearMonth, user, { onMarkToggled })
         );
+        window._currentEntry = entry;
+        const savedTheme = await getDiaryTheme(uid);
+        const theme = savedTheme || "coral";
+        const diaryCard = await renderMobileDiaryCard(uid, yearMonth, theme);
+        container.appendChild(diaryCard);
         const stats = (!hasUsedInitialStats && initialStatsPromise)
           ? await initialStatsPromise
           : await getUserStats(uid, yearMonth);
         hasUsedInitialStats = true;
         container.appendChild(renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth));
-        window._currentEntry = entry;
-        getDiaryTheme(uid).then(savedTheme => {
-          const theme = savedTheme || "coral";
-          renderMobileDiaryCard(uid, yearMonth, theme).then(card => container.appendChild(card));
-        });
       } else {
         const centeredStack = document.createElement("div");
         centeredStack.className = "mylog-centered-stack";

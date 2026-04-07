@@ -1581,14 +1581,12 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAU
     isFlipping = true;
     flipCard.classList.add(animClass);
 
-    setTimeout(async () => {
-      await renderFaceContent(d);
-    }, Math.round(0.62 * 1000 * 0.4)); // swap at 40% mark
+    setTimeout(() => { renderFaceContent(d); }, 248);
 
-    setTimeout(() => {
+    flipCard.addEventListener("animationend", () => {
       flipCard.classList.remove(animClass);
       isFlipping = false;
-    }, Math.round(0.62 * 1000));
+    }, { once: true });
   }
 
   // ── Animate in ───────────────────────────────────────────
