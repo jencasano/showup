@@ -3,6 +3,8 @@ import { db } from "./firebase-config.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getDiaryDays, getDiaryEntry } from "./diary.js";
 import { getPrevYearMonth, getNextYearMonth } from "./utils.js";
+import { renderMobileCard } from "./mobile-tracker.js";
+import { showToast } from "./ui.js";
 
 // ── Privacy helpers ────────────────────────────────────
 
@@ -163,64 +165,89 @@ function renderCalFooter(log) {
   return footer;
 }
 
-// ── Diary Panel ───────────────────────────────────────
+// ── Diary Strip ───────────────────────────────────────
 
-function renderDiaryPanel(uid, yearMonth) {
-  const panel = document.createElement("div");
-  panel.className = "fw-diary-panel";
+function renderDiaryStrip(uid, yearMonth, privacy, signal) {
+  if (privacy.diary === "ghost" || privacy.diary === "private") return null;
 
-  const lbl = document.createElement("div");
-  lbl.className = "fw-diary-panel-lbl";
-  lbl.textContent = "Diary.";
+  const strip = document.createElement("div");
+  strip.className = "fw-diary-strip";
 
-  const text = document.createElement("div");
-  text.className = "fw-diary-panel-text";
-  text.textContent = "\u2026";
+  if (privacy.diary === "lowkey") {
+    const lbl = document.createElement("span");
+    lbl.className = "fw-diary-strip-label";
+    lbl.textContent = "diary.";
 
-  const date = document.createElement("div");
-  date.className = "fw-diary-panel-date";
+    const sig = document.createElement("span");
+    sig.className = "fw-diary-strip-signal";
+    sig.textContent = signal.headline;
 
-  const link = document.createElement("button");
-  link.className = "fw-diary-panel-link";
-  link.textContent = "View diary \u2192";
-  link.addEventListener("click", (e) => e.stopPropagation());
+    strip.append(lbl, sig);
+    return strip;
+  }
 
-  panel.append(lbl, text, date, link);
+  // "sharing" or "followers" — full strip
+  const header = document.createElement("div");
+  header.className = "fw-diary-strip-header";
+
+  const lbl = document.createElement("span");
+  lbl.className = "fw-diary-strip-label";
+  lbl.textContent = "diary.";
+
+  const date = document.createElement("span");
+  date.className = "fw-diary-strip-date";
+
+  header.append(lbl, date);
+
+  const body = document.createElement("div");
+  body.className = "fw-diary-strip-body";
+
+  const note = document.createElement("div");
+  note.className = "fw-diary-strip-note";
+
+  body.appendChild(note);
+
+  const footer = document.createElement("div");
+  footer.className = "fw-diary-strip-footer";
+
+  const viewBtn = document.createElement("button");
+  viewBtn.className = "fw-diary-view-btn";
+  viewBtn.textContent = "view full diary \u2192";
+  viewBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    showToast("Coming soon!");
+  });
+
+  footer.appendChild(viewBtn);
+  strip.append(header, body, footer);
 
   (async () => {
     try {
       const days = await getDiaryDays(uid, yearMonth);
-      if (days.size === 0) { panel.remove(); return; }
+      if (days.size === 0) { strip.remove(); return; }
       const latestDay = Math.max(...days);
       const entry = await getDiaryEntry(uid, yearMonth, latestDay);
       if (entry?.note) {
-        text.textContent = entry.note;
+        note.textContent = entry.note;
         date.textContent = formatDay(yearMonth, latestDay);
+        if (entry.photoUrl) {
+          const photo = document.createElement("img");
+          photo.className = "fw-diary-strip-photo";
+          photo.src = entry.photoUrl;
+          photo.alt = "";
+          photo.width = 44;
+          photo.height = 44;
+          body.appendChild(photo);
+        }
       } else {
-        panel.remove();
+        strip.remove();
       }
     } catch {
-      panel.remove();
+      strip.remove();
     }
   })();
 
-  return panel;
-}
-
-// ── Signal Block ──────────────────────────────────────
-
-function renderSignalBlock(signal, withDiary = false) {
-  const block = document.createElement("div");
-  block.className = withDiary
-    ? "fw-signal-block fw-signal-block--with-diary"
-    : "fw-signal-block";
-
-  const headline = document.createElement("p");
-  headline.className = "fw-signal-headline";
-  headline.textContent = signal.headline;
-
-  block.appendChild(headline);
-  return block;
+  return strip;
 }
 
 // ── Browse Nudge Card ──────────────────────────────────
@@ -254,199 +281,90 @@ function renderBrowseNudge(onSwitchToAll) {
 
 function renderPinnedCard(uid, user, log, yearMonth, currentUser) {
   const displayName = user?.displayName || "Unknown";
-  const initial     = displayName.charAt(0).toUpperCase();
-  const avatarUrl   = user?.decoration?.avatarUrl;
   const privacy     = getPrivacy(user);
   const signal      = computeSignal(displayName, log);
 
-  // Privacy access booleans
-  const calFull    = ["sharing", "followers"].includes(privacy.calendar);
-  const calSignal  = privacy.calendar === "lowkey";
-  const diaryFull  = ["sharing", "followers"].includes(privacy.diary);
-  const diarySignal = privacy.diary === "lowkey";
+  let cardYearMonth = yearMonth;
 
   const card = document.createElement("div");
   card.className = "fw-pinned-card";
 
-  // ── Privacy tier badge (absolute, top-right) ──────────
-  const tierBadge = renderTierBadge(privacy.calendar);
-  tierBadge.classList.add("fw-pinned-tier");
-  card.appendChild(tierBadge);
+  // ── Month nav row ──────────────────────────────────────
+  const prevBtn = document.createElement("button");
+  prevBtn.className = "fw-pmn-btn";
+  prevBtn.textContent = "\u2039";
 
-  // ── Badge row ─────────────────────────────────────────
-  const badge = document.createElement("div");
-  badge.className = "fw-pinned-badge";
+  const monthLbl = document.createElement("span");
+  monthLbl.className = "fw-pmn-lbl";
+  monthLbl.textContent = shortMonthLabel(cardYearMonth);
 
-  const avatar = document.createElement("div");
-  avatar.className = "fw-pinned-avatar";
-  if (avatarUrl) {
-    const img = document.createElement("img");
-    img.src = avatarUrl;
-    img.alt = "avatar";
-    avatar.appendChild(img);
-  } else {
-    avatar.textContent = initial;
-  }
+  const nextBtn = document.createElement("button");
+  nextBtn.className = "fw-pmn-btn";
+  nextBtn.textContent = "\u203A";
 
-  const nameEl = document.createElement("span");
-  nameEl.className = "fw-pinned-name";
-  nameEl.textContent = displayName;
+  const nav = document.createElement("div");
+  nav.className = "fw-pmn";
+  nav.append(prevBtn, monthLbl, nextBtn);
 
-  // Per-card month nav (only shown when calendar is visible)
-  let cardYearMonth = yearMonth;
-
-  const body = document.createElement("div");
-  body.className = "fw-pinned-body";
-
-  if (calFull) {
-    // Month nav controls
-    const prevBtn = document.createElement("button");
-    prevBtn.className = "fw-pmn-btn";
-    prevBtn.textContent = "\u2039";
-
-    const monthLbl = document.createElement("span");
-    monthLbl.className = "fw-pmn-lbl";
-    monthLbl.textContent = shortMonthLabel(cardYearMonth);
-
-    const nextBtn = document.createElement("button");
-    nextBtn.className = "fw-pmn-btn";
-    nextBtn.textContent = "\u203A";
-
-    const nav = document.createElement("div");
-    nav.className = "fw-pmn";
-    nav.append(prevBtn, monthLbl, nextBtn);
-
-    badge.append(avatar, nameEl, nav);
-
-    // Helper: replace the card-level footer with fresh legend
-    const refreshFooter = (entryLog) => {
-      const old = card.querySelector(".fw-pinned-footer");
-      if (old) old.remove();
-      const newFooter = renderCalFooter(entryLog);
-      if (newFooter) card.appendChild(newFooter);
+  // ── Build a safe entry for renderMobileCard ────────────
+  const buildEntry = (entryLog) => {
+    if (entryLog) return entryLog;
+    return {
+      id: uid,
+      displayName,
+      decoration: user?.decoration || { color: "#FF6B6B", fontColor: "#FFFFFF", font: "Inter", sticker: "sunflower2", marker: "square", avatarUrl: "" },
+      marks: {},
+      activities: [],
     };
+  };
 
-    // ── Mode 1: Calendar + Diary both full ─────────────
-    if (diaryFull) {
-      body.classList.add("fw-pinned-body--two-col");
+  // ── Cal card (renderMobileCard) ────────────────────────
+  let calCard = renderMobileCard(buildEntry(log), cardYearMonth, currentUser, { isFollowing: true, showFollowBtn: false });
 
-      const calCol = document.createElement("div");
-      calCol.className = "fw-pinned-cal-col";
-      calCol.appendChild(renderMiniCal(log, cardYearMonth, true));
+  // ── Diary strip ────────────────────────────────────────
+  let diaryStrip = renderDiaryStrip(uid, yearMonth, privacy, signal);
 
-      const diaryCol = document.createElement("div");
-      diaryCol.className = "fw-pinned-diary-col";
-      diaryCol.appendChild(renderDiaryPanel(uid, yearMonth));
+  card.append(nav, calCard);
+  if (diaryStrip) card.appendChild(diaryStrip);
 
-      body.append(calCol, diaryCol);
+  // ── Month nav logic ────────────────────────────────────
+  const refreshCard = async (newLog, newYearMonth) => {
+    const newCalCard = renderMobileCard(buildEntry(newLog), newYearMonth, currentUser, { isFollowing: true, showFollowBtn: false });
+    calCard.replaceWith(newCalCard);
+    calCard = newCalCard;
 
-      const refreshCal = async (entryLog) => {
-        calCol.innerHTML = "";
-        calCol.appendChild(renderMiniCal(entryLog, cardYearMonth, true));
-        refreshFooter(entryLog);
-      };
+    const newDiaryStrip = renderDiaryStrip(uid, newYearMonth, privacy, signal);
+    if (diaryStrip) diaryStrip.remove();
+    if (newDiaryStrip) card.appendChild(newDiaryStrip);
+    diaryStrip = newDiaryStrip;
+  };
 
-      prevBtn.addEventListener("click", async () => {
-        cardYearMonth = getPrevYearMonth(cardYearMonth);
-        monthLbl.textContent = shortMonthLabel(cardYearMonth);
-        if (cardYearMonth === yearMonth) {
-          refreshCal(log);
-        } else {
-          const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
-          const fetched = snap.exists() && snap.data().activities?.length
-            ? { id: uid, ...snap.data(), displayName } : null;
-          refreshCal(fetched);
-        }
-      });
-
-      nextBtn.addEventListener("click", async () => {
-        cardYearMonth = getNextYearMonth(cardYearMonth);
-        monthLbl.textContent = shortMonthLabel(cardYearMonth);
-        if (cardYearMonth === yearMonth) {
-          refreshCal(log);
-        } else {
-          const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
-          const fetched = snap.exists() && snap.data().activities?.length
-            ? { id: uid, ...snap.data(), displayName } : null;
-          refreshCal(fetched);
-        }
-      });
-
+  prevBtn.addEventListener("click", async () => {
+    cardYearMonth = getPrevYearMonth(cardYearMonth);
+    monthLbl.textContent = shortMonthLabel(cardYearMonth);
+    if (cardYearMonth === yearMonth) {
+      await refreshCard(log, cardYearMonth);
     } else {
-      // ── Mode 2: Calendar full, diary signal ────────────
-      // ── Mode 3: Calendar full, diary hidden ───────────
-      body.appendChild(renderMiniCal(log, cardYearMonth, false));
-
-      if (diarySignal) {
-        const strip = document.createElement("div");
-        strip.className = "fw-cal-signal-strip";
-        strip.textContent = signal.headline;
-        body.appendChild(strip);
-      }
-
-      const refreshCal = async (entryLog) => {
-        const existing = body.querySelector(".fw-mini-cal");
-        if (existing) existing.remove();
-        body.insertBefore(renderMiniCal(entryLog, cardYearMonth, false), body.firstChild);
-        refreshFooter(entryLog);
-      };
-
-      prevBtn.addEventListener("click", async () => {
-        cardYearMonth = getPrevYearMonth(cardYearMonth);
-        monthLbl.textContent = shortMonthLabel(cardYearMonth);
-        if (cardYearMonth === yearMonth) {
-          refreshCal(log);
-        } else {
-          const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
-          const fetched = snap.exists() && snap.data().activities?.length
-            ? { id: uid, ...snap.data(), displayName } : null;
-          refreshCal(fetched);
-        }
-      });
-
-      nextBtn.addEventListener("click", async () => {
-        cardYearMonth = getNextYearMonth(cardYearMonth);
-        monthLbl.textContent = shortMonthLabel(cardYearMonth);
-        if (cardYearMonth === yearMonth) {
-          refreshCal(log);
-        } else {
-          const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
-          const fetched = snap.exists() && snap.data().activities?.length
-            ? { id: uid, ...snap.data(), displayName } : null;
-          refreshCal(fetched);
-        }
-      });
+      const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
+      const fetched = snap.exists() && snap.data().activities?.length
+        ? { id: uid, ...snap.data(), displayName } : null;
+      await refreshCard(fetched, cardYearMonth);
     }
+  });
 
-  } else {
-    // No month nav for non-calendar modes
-    badge.append(avatar, nameEl);
-
-    if (calSignal) {
-      // ── Mode 4: Calendar signal (lowkey) ──────────────
-      body.appendChild(renderSignalBlock(signal, diaryFull));
-      if (diaryFull) {
-        body.appendChild(renderDiaryPanel(uid, yearMonth));
-      }
-
-    } else if (diaryFull) {
-      // ── Mode 5: Calendar hidden, diary full ───────────
-      body.appendChild(renderDiaryPanel(uid, yearMonth));
-
+  nextBtn.addEventListener("click", async () => {
+    cardYearMonth = getNextYearMonth(cardYearMonth);
+    monthLbl.textContent = shortMonthLabel(cardYearMonth);
+    if (cardYearMonth === yearMonth) {
+      await refreshCard(log, cardYearMonth);
     } else {
-      // ── Mode 6/7: Both hidden ─────────────────────────
-      const msg = document.createElement("p");
-      msg.className = "fw-pinned-private";
-      msg.textContent = "Tracking privately.";
-      body.appendChild(msg);
+      const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
+      const fetched = snap.exists() && snap.data().activities?.length
+        ? { id: uid, ...snap.data(), displayName } : null;
+      await refreshCard(fetched, cardYearMonth);
     }
-  }
+  });
 
-  card.append(badge, body);
-  if (calFull) {
-    const footer = renderCalFooter(log);
-    if (footer) card.appendChild(footer);
-  }
   return card;
 }
 
