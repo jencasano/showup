@@ -5,7 +5,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getDaysInMonth, getDayLabel, getCurrentYearMonth, getActivityColor } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
-import { renderMobileCard } from "./mobile-tracker.js";
+import { renderMobileCard, renderMobileDiaryCard } from "./mobile-tracker.js";
 import { getUserStats, computeStatsFromEntry, cadenceLabel } from "./stats.js";
 import { icon, STICKER_ICONS } from "./icons.js";
 import { openManageActivitiesModal } from "./manage-activities.js";
@@ -118,6 +118,11 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
           : await getUserStats(uid, yearMonth);
         hasUsedInitialStats = true;
         container.appendChild(renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth));
+        window._currentEntry = entry;
+        getDiaryTheme(uid).then(savedTheme => {
+          const theme = savedTheme || "coral";
+          renderMobileDiaryCard(uid, yearMonth, theme).then(card => container.appendChild(card));
+        });
       } else {
         const centeredStack = document.createElement("div");
         centeredStack.className = "mylog-centered-stack";

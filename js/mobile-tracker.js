@@ -1,5 +1,6 @@
 import { db } from "./firebase-config.js";
-import { getDiaryDays, getDiaryEntry, saveDiaryEntry, uploadDiaryPhoto, deleteDiaryPhoto } from "./diary.js";
+import { getDiaryDays, getDiaryEntry, saveDiaryEntry, saveDiaryTheme, uploadDiaryPhoto, deleteDiaryPhoto } from "./diary.js";
+import { DIARY_THEMES, DEFAULT_DIARY_THEME } from "./diary-themes.js";
 import {
   doc, getDoc, setDoc, updateDoc,
   arrayUnion, arrayRemove
@@ -1089,4 +1090,545 @@ function hexWithOpacity(hex, opacity) {
   const g = parseInt(hex.slice(3,5), 16);
   const b = parseInt(hex.slice(5,7), 16);
   return `rgba(${r},${g},${b},${opacity})`;
+}
+
+// ─── MOBILE DIARY CARD (closed notebook) ─────────────────────
+export async function renderMobileDiaryCard(userId, yearMonth, theme = DEFAULT_DIARY_THEME) {
+  const t = DIARY_THEMES[theme] || DIARY_THEMES[DEFAULT_DIARY_THEME];
+  const [year, month] = yearMonth.split("-").map(Number);
+  const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
+  const swatchColors = { coral: "#D8584E", cream: "#ede2d0", indigo: "#2A2E45" };
+
+  const card = document.createElement("div");
+  card.className = "mob-diary-card";
+  card.style.borderColor = t.bookBorder;
+
+  // ── Spine ──────────────────────────────────────────────────
+  const spine = document.createElement("div");
+  spine.className = "mob-diary-spine";
+  spine.style.background = t.spineBg;
+  for (let i = 0; i < 10; i++) {
+    const outer = document.createElement("span");
+    outer.className = "mob-diary-hole-outer";
+    outer.style.background = t.holeBg;
+    spine.appendChild(outer);
+  }
+  card.appendChild(spine);
+
+  // ── Cover ─────────────────────────────────────────────────
+  const cover = document.createElement("div");
+  cover.className = "mob-diary-cover";
+  cover.style.background = t.coverGradient;
+
+  // Pages edge
+  const pagesEdge = document.createElement("div");
+  pagesEdge.className = "mob-diary-pages-edge";
+  cover.appendChild(pagesEdge);
+
+  // Ribbon
+  const ribbon = document.createElement("div");
+  ribbon.className = "mob-diary-ribbon";
+  ribbon.style.background = t.ribbonBg;
+  cover.appendChild(ribbon);
+
+  // Gutter
+  const gutter = document.createElement("div");
+  gutter.className = "mob-diary-gutter";
+  gutter.style.background = t.gutterBg;
+  cover.appendChild(gutter);
+
+  // Corner triangles
+  const cornerBL = document.createElement("div");
+  cornerBL.className = "mob-diary-corner--bl";
+  cornerBL.style.background = t.cornerColor;
+  const cornerBR = document.createElement("div");
+  cornerBR.className = "mob-diary-corner--br";
+  cornerBR.style.background = t.cornerColor;
+  cover.appendChild(cornerBL);
+  cover.appendChild(cornerBR);
+
+  // Content
+  const content = document.createElement("div");
+  content.className = "mob-diary-content";
+
+  // Top block
+  const top = document.createElement("div");
+  const titleEl = document.createElement("div");
+  titleEl.className = "mob-diary-title";
+  titleEl.textContent = "diary.";
+  titleEl.style.color = t.titleColor;
+  const monthEl = document.createElement("div");
+  monthEl.className = "mob-diary-month";
+  monthEl.textContent = `${monthName} ${year}`;
+  monthEl.style.color = t.monthColor;
+  const taglineEl = document.createElement("div");
+  taglineEl.className = "mob-diary-tagline";
+  taglineEl.textContent = "i show up. period.";
+  taglineEl.style.color = t.taglineColor;
+  top.appendChild(titleEl);
+  top.appendChild(monthEl);
+  top.appendChild(taglineEl);
+  content.appendChild(top);
+
+  const rule = document.createElement("div");
+  rule.className = "mob-diary-rule";
+  rule.style.background = t.ruleColor;
+  content.appendChild(rule);
+
+  // Bottom block
+  const bottom = document.createElement("div");
+  bottom.className = "mob-diary-bottom";
+
+  const stat = document.createElement("div");
+  stat.className = "mob-diary-stat";
+  const statNum = document.createElement("strong");
+  statNum.style.color = t.statColor;
+  statNum.textContent = "…";
+  const statLabel = document.createElement("span");
+  statLabel.style.color = t.statLabelColor;
+  statLabel.textContent = "entries";
+  stat.appendChild(statNum);
+  stat.appendChild(statLabel);
+
+  const rightGroup = document.createElement("div");
+  rightGroup.className = "mob-diary-bottom-right";
+
+  // Palette swatches
+  const swatchRow = document.createElement("div");
+  swatchRow.className = "mob-diary-swatch-row";
+  for (const key of Object.keys(DIARY_THEMES)) {
+    const sw = document.createElement("button");
+    sw.className = "mob-diary-swatch" + (key === theme ? " active" : "");
+    sw.style.background = swatchColors[key];
+    sw.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      await saveDiaryTheme(userId, key);
+      const col = card.closest(".mob-diary-col") || card.parentElement;
+      const newCard = await renderMobileDiaryCard(userId, yearMonth, key);
+      col.style.transition = "opacity 0.3s ease";
+      col.style.opacity = "0";
+      setTimeout(() => {
+        card.replaceWith(newCard);
+        col.style.opacity = "1";
+      }, 300);
+    });
+    swatchRow.appendChild(sw);
+  }
+
+  const hint = document.createElement("span");
+  hint.className = "mob-diary-hint";
+  hint.textContent = "read it \u2192";
+  hint.style.color = t.hintColor;
+
+  rightGroup.appendChild(swatchRow);
+  rightGroup.appendChild(hint);
+  bottom.appendChild(stat);
+  bottom.appendChild(rightGroup);
+  content.appendChild(bottom);
+
+  cover.appendChild(content);
+  card.appendChild(cover);
+
+  // Load diary days async and update count
+  getDiaryDays(userId, yearMonth).then(diaryDays => {
+    statNum.textContent = diaryDays.size;
+    card.addEventListener("click", () => openMobileDiarySheet(userId, yearMonth, diaryDays, theme));
+  });
+
+  return card;
+}
+
+// ─── MOBILE DIARY SHEET (open notebook) ──────────────────────
+export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAULT_DIARY_THEME, initialDay = null) {
+  const t = DIARY_THEMES[theme] || DIARY_THEMES[DEFAULT_DIARY_THEME];
+  const swatchColors = { coral: "#D8584E", cream: "#ede2d0", indigo: "#2A2E45" };
+  const [year, month] = yearMonth.split("-").map(Number);
+  const daysInMonth = getDaysInMonth(yearMonth);
+  const isCurrentMonth = yearMonth === getCurrentYearMonth();
+  const todayDate = new Date().getDate();
+  const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
+  const firstDayOfWeek = new Date(year, month - 1, 1).getDay();
+
+  // ── Overlay ───────────────────────────────────────────────
+  const overlay = document.createElement("div");
+  overlay.className = "mob-diary-overlay";
+
+  const sheet = document.createElement("div");
+  sheet.className = "mob-diary-sheet";
+  sheet.style.transform = "translateY(100%)";
+
+  // ── Top spine ─────────────────────────────────────────────
+  const sheetSpine = document.createElement("div");
+  sheetSpine.className = "mob-diary-sheet-spine";
+  sheetSpine.style.background = t.spineBg;
+  for (let i = 0; i < 10; i++) {
+    const h = document.createElement("span");
+    h.className = "mob-diary-hole-outer";
+    h.style.background = t.holeBg;
+    sheetSpine.appendChild(h);
+  }
+  sheet.appendChild(sheetSpine);
+
+  // ── Top bar ───────────────────────────────────────────────
+  const topbar = document.createElement("div");
+  topbar.className = "mob-diary-sheet-topbar";
+  topbar.style.background = t.coverGradient;
+
+  const topbarLeft = document.createElement("div");
+  const topbarTitle = document.createElement("div");
+  topbarTitle.className = "mob-diary-sheet-topbar-title";
+  topbarTitle.textContent = "diary.";
+  topbarTitle.style.color = t.titleColor;
+  const topbarSub = document.createElement("div");
+  topbarSub.className = "mob-diary-sheet-topbar-sub";
+  topbarSub.textContent = `${monthName} ${year} \u00b7 ${diaryDays.size} entries`;
+  topbarSub.style.color = t.monthColor;
+  topbarLeft.appendChild(topbarTitle);
+  topbarLeft.appendChild(topbarSub);
+
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "mob-diary-sheet-close";
+  closeBtn.textContent = "\u2715";
+  closeBtn.addEventListener("click", dismiss);
+
+  topbar.appendChild(topbarLeft);
+  topbar.appendChild(closeBtn);
+  sheet.appendChild(topbar);
+
+  // ── Palette bar ───────────────────────────────────────────
+  const paletteBar = document.createElement("div");
+  paletteBar.className = "mob-diary-sheet-palette";
+  paletteBar.style.background = t.coverGradient;
+  for (const key of Object.keys(DIARY_THEMES)) {
+    const sw = document.createElement("button");
+    sw.className = "mob-diary-swatch" + (key === theme ? " active" : "");
+    sw.style.background = swatchColors[key];
+    sw.addEventListener("click", async () => {
+      await saveDiaryTheme(userId, key);
+      dismiss();
+      // Re-render closed card
+      const col = document.querySelector(".mob-diary-col") || document.querySelector(".mob-diary-card")?.parentElement;
+      if (col) {
+        const newCard = await renderMobileDiaryCard(userId, yearMonth, key);
+        col.style.transition = "opacity 0.3s ease";
+        col.style.opacity = "0";
+        setTimeout(() => {
+          const oldCard = col.querySelector(".mob-diary-card");
+          if (oldCard) oldCard.replaceWith(newCard);
+          col.style.opacity = "1";
+        }, 300);
+      }
+      openMobileDiarySheet(userId, yearMonth, diaryDays, key, activeDay);
+    });
+    paletteBar.appendChild(sw);
+  }
+  sheet.appendChild(paletteBar);
+
+  // ── Notebook body ─────────────────────────────────────────
+  const nbBody = document.createElement("div");
+  nbBody.className = "mob-diary-nb-body";
+
+  // Strip row (pips + cal button)
+  const stripRow = document.createElement("div");
+  stripRow.className = "mob-diary-strip-row";
+
+  const strip = document.createElement("div");
+  strip.className = "mob-diary-strip";
+
+  const pipEls = {};
+  const maxPip = isCurrentMonth ? todayDate : daysInMonth;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const pip = document.createElement("div");
+    pip.className = "mob-diary-pip";
+    const isFuture = isCurrentMonth && d > todayDate;
+    if (isFuture) pip.classList.add("future");
+    if (diaryDays.has(d)) pip.classList.add("has-entry");
+    const dow = new Date(year, month - 1, d).toLocaleDateString("en-US", { weekday: "narrow" });
+    pip.innerHTML = `<span class="mob-diary-pip-num">${d}</span><span class="mob-diary-pip-dow">${dow}</span>`;
+    if (!isFuture) pip.addEventListener("click", () => selectDay(d));
+    pipEls[d] = pip;
+    strip.appendChild(pip);
+  }
+
+  const calBtn = document.createElement("button");
+  calBtn.className = "mob-diary-cal-btn";
+  calBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><line x1="1" y1="5" x2="12" y2="5" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="1" x2="4" y2="3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="9" y1="1" x2="9" y2="3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+  calBtn.addEventListener("click", () => openCalSheet());
+
+  stripRow.appendChild(strip);
+  stripRow.appendChild(calBtn);
+  nbBody.appendChild(stripRow);
+
+  // Entry area (flip card)
+  const entryArea = document.createElement("div");
+  entryArea.className = "mob-diary-entry-area";
+
+  const flipCard = document.createElement("div");
+  flipCard.className = "mob-diary-flip-card";
+
+  const flipFace = document.createElement("div");
+  flipFace.className = "mob-diary-flip-face";
+  flipCard.appendChild(flipFace);
+  entryArea.appendChild(flipCard);
+
+  // Calendar overlay
+  const calOverlay = document.createElement("div");
+  calOverlay.className = "mob-diary-cal-overlay";
+
+  const calSheet = document.createElement("div");
+  calSheet.className = "mob-diary-cal-sheet";
+
+  const calHandle = document.createElement("div");
+  calHandle.className = "mob-diary-cal-handle";
+  calSheet.appendChild(calHandle);
+
+  const calHeadRow = document.createElement("div");
+  calHeadRow.className = "mob-diary-cal-head-row";
+  const calTitle = document.createElement("div");
+  calTitle.className = "mob-diary-cal-title";
+  calTitle.textContent = `${monthName} ${year}`;
+  const calClose = document.createElement("button");
+  calClose.className = "mob-diary-cal-close";
+  calClose.textContent = "\u2715";
+  calClose.addEventListener("click", closeCalSheet);
+  calHeadRow.appendChild(calTitle);
+  calHeadRow.appendChild(calClose);
+  calSheet.appendChild(calHeadRow);
+
+  const calGridWrap = document.createElement("div");
+  calGridWrap.className = "mob-diary-cal-grid-wrap";
+
+  const dowRow = document.createElement("div");
+  dowRow.className = "mob-diary-cal-dow-row";
+  ["S","M","T","W","T","F","S"].forEach(d => {
+    const cell = document.createElement("div");
+    cell.className = "mob-diary-cal-dow";
+    cell.textContent = d;
+    dowRow.appendChild(cell);
+  });
+  calGridWrap.appendChild(dowRow);
+
+  const calGrid = document.createElement("div");
+  calGrid.className = "mob-diary-cal-grid";
+  const calCells = {};
+
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    const off = document.createElement("div");
+    off.className = "mob-diary-cal-cell offset";
+    calGrid.appendChild(off);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cell = document.createElement("div");
+    cell.className = "mob-diary-cal-cell";
+    const isFuture = isCurrentMonth && d > todayDate;
+    if (isFuture) cell.classList.add("future");
+    if (isCurrentMonth && d === todayDate) cell.classList.add("today");
+    if (diaryDays.has(d)) {
+      const dot = document.createElement("div");
+      dot.className = "mob-diary-cal-dot";
+      const num = document.createElement("div");
+      num.className = "mob-diary-cal-num";
+      num.textContent = d;
+      cell.appendChild(num);
+      cell.appendChild(dot);
+    } else {
+      const num = document.createElement("div");
+      num.className = "mob-diary-cal-num";
+      num.textContent = d;
+      cell.appendChild(num);
+    }
+    if (!isFuture) cell.addEventListener("click", () => { closeCalSheet(); selectDay(d, true); });
+    calCells[d] = cell;
+    calGrid.appendChild(cell);
+  }
+
+  calGridWrap.appendChild(calGrid);
+  calSheet.appendChild(calGridWrap);
+  calOverlay.appendChild(calSheet);
+  entryArea.appendChild(calOverlay);
+
+  nbBody.appendChild(entryArea);
+  sheet.appendChild(nbBody);
+  overlay.appendChild(sheet);
+  document.body.appendChild(overlay);
+
+  // ── State ─────────────────────────────────────────────────
+  let activeDay = null;
+  let isFlipping = false;
+
+  function openCalSheet() {
+    calOverlay.classList.add("open");
+  }
+  function closeCalSheet() {
+    calOverlay.classList.remove("open");
+  }
+
+  function updateActivePip(d) {
+    Object.values(pipEls).forEach(p => p.classList.remove("active"));
+    if (pipEls[d]) {
+      pipEls[d].classList.add("active");
+      pipEls[d].scrollIntoView({ inline: "center", behavior: "smooth", block: "nearest" });
+    }
+    Object.values(calCells).forEach(c => c.classList.remove("active"));
+    if (calCells[d]) calCells[d].classList.add("active");
+  }
+
+  async function renderFaceContent(d) {
+    flipFace.innerHTML = "";
+    const isFuture = isCurrentMonth && d > todayDate;
+    if (isFuture) return;
+
+    const date = new Date(year, month - 1, d);
+    const dayOfWeek = date.toLocaleDateString("en-US", { weekday: "long" });
+    const isToday = isCurrentMonth && d === todayDate;
+
+    const dateEl = document.createElement("div");
+    dateEl.className = "diary-modal-entry-date";
+    dateEl.innerHTML = `${dayOfWeek}, <strong style="color:var(--color-primary)">${d}</strong>`;
+    flipFace.appendChild(dateEl);
+
+    if (isToday) {
+      const sub = document.createElement("div");
+      sub.style.cssText = "font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(139,100,60,0.6);margin-bottom:6px;";
+      sub.textContent = `${monthName.toUpperCase()} ${year} \u00b7 today \u2728`;
+      flipFace.appendChild(sub);
+    }
+
+    // Loading placeholder
+    const loadEl = document.createElement("div");
+    loadEl.style.cssText = "color:#B5A88A;font-family:'Caveat',cursive;font-size:1rem;padding-top:8px";
+    loadEl.textContent = "loading…";
+    flipFace.appendChild(loadEl);
+
+    const diaryEntry = await getDiaryEntry(userId, yearMonth, d);
+    loadEl.remove();
+
+    const activities = window._currentEntry?.activities || [];
+    if (activities.length > 0) {
+      const chipsRow = document.createElement("div");
+      chipsRow.className = "diary-modal-entry-chips";
+      const marks = window._currentEntry?.marks || {};
+      activities.forEach((act, i) => {
+        const marked = (marks[act] || []).includes(d);
+        const chip = document.createElement("span");
+        chip.className = marked ? "diary-modal-entry-chip" : "diary-modal-entry-chip diary-modal-entry-chip--undone";
+        if (marked) chip.style.background = getActivityColor(i);
+        chip.textContent = marked ? `\u2713 ${act}` : act;
+        chipsRow.appendChild(chip);
+      });
+      flipFace.appendChild(chipsRow);
+    }
+
+    const divider = document.createElement("div");
+    divider.style.cssText = "height:1px;background:rgba(139,100,60,0.15);margin:8px 0;";
+    flipFace.appendChild(divider);
+
+    if (diaryEntry?.note) {
+      const noteEl = document.createElement("div");
+      noteEl.className = "diary-modal-entry-note";
+      noteEl.textContent = diaryEntry.note;
+      flipFace.appendChild(noteEl);
+    }
+
+    if (diaryEntry?.photoUrl) {
+      const polaroid = document.createElement("div");
+      polaroid.className = "diary-modal-polaroid";
+      const img = document.createElement("img");
+      img.src = diaryEntry.photoUrl;
+      img.alt = "";
+      polaroid.appendChild(img);
+      flipFace.appendChild(polaroid);
+    }
+
+    if (diaryEntry) {
+      const editBtn = document.createElement("button");
+      editBtn.className = "diary-modal-edit-btn";
+      editBtn.textContent = "\u270f\ufe0f Edit entry";
+      editBtn.addEventListener("click", () => {
+        dismiss();
+        openDiaryPage(d, window._currentEntry, yearMonth, userId, diaryEntry, () => {
+          openMobileDiarySheet(userId, yearMonth, diaryDays, theme, d);
+        });
+      });
+      flipFace.appendChild(editBtn);
+    } else {
+      const writeBtn = document.createElement("button");
+      writeBtn.className = "diary-modal-write-btn";
+      writeBtn.textContent = "\u270f\ufe0f Write something";
+      writeBtn.addEventListener("click", () => {
+        dismiss();
+        openDiaryPage(d, window._currentEntry, yearMonth, userId, null, () => {
+          openMobileDiarySheet(userId, yearMonth, diaryDays, theme, d);
+        });
+      });
+      flipFace.appendChild(writeBtn);
+    }
+  }
+
+  async function selectDay(d, fromCal = false) {
+    if (isFlipping) return;
+    const prev = activeDay;
+    activeDay = d;
+    updateActivePip(d);
+
+    if (prev === null) {
+      await renderFaceContent(d);
+      return;
+    }
+
+    const dir = fromCal ? (d >= prev ? "next" : "prev") : (d > prev ? "next" : "prev");
+    const animClass = dir === "next" ? "flipping-next" : "flipping-prev";
+    isFlipping = true;
+    flipCard.classList.add(animClass);
+
+    setTimeout(async () => {
+      await renderFaceContent(d);
+    }, Math.round(0.62 * 1000 * 0.4)); // swap at 40% mark
+
+    setTimeout(() => {
+      flipCard.classList.remove(animClass);
+      isFlipping = false;
+    }, Math.round(0.62 * 1000));
+  }
+
+  // ── Animate in ───────────────────────────────────────────
+  requestAnimationFrame(() => {
+    sheet.style.transition = "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)";
+    sheet.style.transform = "translateY(0)";
+  });
+
+  // ── Swipe-to-dismiss ─────────────────────────────────────
+  let touchStartY = 0;
+  let touchCurY = 0;
+  sheet.addEventListener("touchstart", (e) => { touchStartY = e.touches[0].clientY; }, { passive: true });
+  sheet.addEventListener("touchmove", (e) => {
+    touchCurY = e.touches[0].clientY;
+    const dy = touchCurY - touchStartY;
+    if (dy > 0) sheet.style.transform = `translateY(${dy}px)`;
+  }, { passive: true });
+  sheet.addEventListener("touchend", () => {
+    const dy = touchCurY - touchStartY;
+    if (dy > 80) {
+      dismiss();
+    } else {
+      sheet.style.transition = "transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)";
+      sheet.style.transform = "translateY(0)";
+    }
+    touchStartY = 0;
+    touchCurY = 0;
+  });
+
+  function dismiss() {
+    sheet.style.transition = "transform 0.35s cubic-bezier(0.4, 0, 1, 1)";
+    sheet.style.transform = "translateY(100%)";
+    setTimeout(() => overlay.remove(), 370);
+  }
+
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
+
+  // ── Initial day ──────────────────────────────────────────
+  const startDay = initialDay !== null
+    ? initialDay
+    : (isCurrentMonth ? todayDate : (diaryDays.size > 0 ? Math.max(...diaryDays) : daysInMonth));
+  selectDay(startDay);
 }
