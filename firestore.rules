@@ -19,12 +19,14 @@ service cloud.firestore {
     }
 
     // DIARY
-    // Only you can read and write your own diary entries
-    // Parent doc + nested entries both need rules for collection listing to work
+    // Any logged-in user can read diary entries (privacy enforced client-side)
+    // Only you can write your own diary entries
     match /diary/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
       match /entries/{entryId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read: if request.auth != null;
+        allow write: if request.auth != null && request.auth.uid == userId;
       }
     }
 
