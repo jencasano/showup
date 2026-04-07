@@ -9,6 +9,7 @@ import { checkMonthlySetup } from "./month-setup.js";
 import { getUserStats } from "./stats.js";
 import { toggleMonthPicker, closeMonthPicker } from "./month-picker.js";
 import { icon } from "./icons.js";
+import { openPrivacySettingsModal } from "./privacy-settings.js";
 
 // ── Elements ──────────────────────────────────
 const loginScreen  = document.getElementById("login-screen");
@@ -180,6 +181,11 @@ document.getElementById("google-signin-btn").addEventListener("click", signIn);
 document.getElementById("signout-btn").addEventListener("click", async () => {
   await signOutUser();
   showToast("Signed out!", "info");
+});
+
+// ── Privacy settings ──────────────────────────
+document.getElementById("privacy-settings-btn").addEventListener("click", () => {
+  if (currentUser) openPrivacySettingsModal(currentUser);
 });
 
 // ── Dark mode toggle ──────────────────────────
