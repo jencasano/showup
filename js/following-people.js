@@ -1,7 +1,7 @@
 import { computeSignal } from "./following-signals.js";
 import { db } from "./firebase-config.js";
-import { doc, getDoc, setDoc, arrayRemove, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDiaryDays, getDiaryEntry } from "./diary.js";
+import { doc, getDoc, setDoc, arrayRemove, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getDiaryEntry } from "./diary.js";
 import { getPrevYearMonth, getNextYearMonth } from "./utils.js";
 import { renderMobileCard } from "./mobile-tracker.js";
 import { showToast } from "./ui.js";
@@ -48,126 +48,36 @@ function shortMonthLabel(yearMonth) {
   return new Date(year, month - 1, 1).toLocaleString("en-US", { month: "short" });
 }
 
-function formatDay(yearMonth, day) {
-  const [year, month] = yearMonth.split("-").map(Number);
+function formatDocId(docId) {
+  // docId is like "2026-04-05" -> "April 5, 2026"
+  const [year, month, day] = docId.split("-").map(Number);
   return new Date(year, month - 1, day).toLocaleString("en-US", {
     month: "long", day: "numeric", year: "numeric"
   });
 }
 
-// ── Mini Calendar ─────────────────────────────────────
+// ── Fetch most recent diary entry across ALL months ─────────
 
-function renderMiniCal(log, yearMonth, compact = false) {
-  const wrap = document.createElement("div");
+async function fetchLatestDiaryEntry(uid) {
+  // Fetch all entry doc IDs (format: YYYY-MM-DD), sort descending, get the latest with a note.
+  const snap = await getDocs(collection(db, "diary", uid, "entries"));
+  if (snap.empty) return null;
 
-  if (!log) {
-    wrap.className = "fw-mini-cal fw-mini-cal--empty";
-    wrap.textContent = "No tracker this month.";
-    return wrap;
+  // Sort doc IDs descending (lexicographic sort works for YYYY-MM-DD)
+  const sortedDocs = snap.docs
+    .filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d.id))
+    .sort((a, b) => b.id.localeCompare(a.id));
+
+  for (const d of sortedDocs) {
+    const data = d.data();
+    if (data.note) return { docId: d.id, ...data };
   }
-
-  wrap.className = compact ? "fw-mini-cal fw-mini-cal--compact" : "fw-mini-cal";
-
-  const [year, month] = yearMonth.split("-").map(Number);
-  const daysInMonth   = new Date(year, month, 0).getDate();
-  const firstDow      = new Date(year, month - 1, 1).getDay(); // 0=Sun
-  const now           = new Date();
-  const isThisMonth   = now.getFullYear() === year && now.getMonth() + 1 === month;
-  const todayDate     = now.getDate();
-
-  // Build day → [color, …] map from marks + activities
-  const dayColors = new Map();
-  if (log.marks && Array.isArray(log.activities)) {
-    for (const activity of log.activities) {
-      const days = log.marks[activity.name];
-      if (!Array.isArray(days)) continue;
-      for (const day of days) {
-        if (!dayColors.has(day)) dayColors.set(day, []);
-        dayColors.get(day).push(activity.color);
-      }
-    }
-  }
-
-  // Day-of-week header row
-  const dowRow = document.createElement("div");
-  dowRow.className = "fw-cal-dow-row";
-  for (const lbl of ["S", "M", "T", "W", "T", "F", "S"]) {
-    const cell = document.createElement("div");
-    cell.className = "fw-cal-dow";
-    cell.textContent = lbl;
-    dowRow.appendChild(cell);
-  }
-  wrap.appendChild(dowRow);
-
-  // Day grid
-  const grid = document.createElement("div");
-  grid.className = "fw-cal-days";
-
-  // Leading spacers
-  for (let i = 0; i < firstDow; i++) {
-    const spacer = document.createElement("div");
-    spacer.className = "fw-cal-day";
-    grid.appendChild(spacer);
-  }
-
-  // Day cells
-  for (let day = 1; day <= daysInMonth; day++) {
-    const cell = document.createElement("div");
-    cell.className = "fw-cal-day";
-    if (isThisMonth && day === todayDate)    cell.classList.add("fw-cal-day--today");
-    else if (isThisMonth && day > todayDate) cell.classList.add("fw-cal-day--future");
-
-    const num = document.createElement("span");
-    num.textContent = day;
-    cell.appendChild(num);
-
-    const colors = dayColors.get(day);
-    if (colors?.length) {
-      const dotRow = document.createElement("div");
-      dotRow.className = "fw-cal-dot-row";
-      for (const color of colors) {
-        const dot = document.createElement("span");
-        dot.className = "fw-cal-dot";
-        dot.style.background = color;
-        dotRow.appendChild(dot);
-      }
-      cell.appendChild(dotRow);
-    }
-
-    grid.appendChild(cell);
-  }
-
-  wrap.appendChild(grid);
-
-  return wrap;
+  return null;
 }
 
-// ── Calendar Footer (legend) ──────────────────────────
+// ── Diary Strip ─────────────────────────────────────────
 
-function renderCalFooter(log) {
-  if (!Array.isArray(log?.activities) || log.activities.length === 0) return null;
-  const footer = document.createElement("div");
-  footer.className = "fw-pinned-footer";
-  const legend = document.createElement("div");
-  legend.className = "fw-cal-legend";
-  for (const activity of log.activities) {
-    const item = document.createElement("div");
-    item.className = "fw-cal-legend-item";
-    const dot = document.createElement("span");
-    dot.className = "fw-cal-legend-dot";
-    dot.style.background = activity.color;
-    const name = document.createElement("span");
-    name.textContent = activity.name;
-    item.append(dot, name);
-    legend.appendChild(item);
-  }
-  footer.appendChild(legend);
-  return footer;
-}
-
-// ── Diary Strip ───────────────────────────────────────
-
-function renderDiaryStrip(uid, yearMonth, privacy, signal) {
+function renderDiaryStrip(uid, privacy, signal) {
   if (privacy.diary === "ghost" || privacy.diary === "private") return null;
 
   const strip = document.createElement("div");
@@ -177,39 +87,31 @@ function renderDiaryStrip(uid, yearMonth, privacy, signal) {
     const lbl = document.createElement("span");
     lbl.className = "fw-diary-strip-label";
     lbl.textContent = "diary.";
-
     const sig = document.createElement("span");
     sig.className = "fw-diary-strip-signal";
     sig.textContent = signal.headline;
-
     strip.append(lbl, sig);
     return strip;
   }
 
-  // "sharing" or "followers" — full strip
+  // "sharing" or "followers" -- full strip with async fetch
   const header = document.createElement("div");
   header.className = "fw-diary-strip-header";
-
   const lbl = document.createElement("span");
   lbl.className = "fw-diary-strip-label";
   lbl.textContent = "diary.";
-
   const date = document.createElement("span");
   date.className = "fw-diary-strip-date";
-
   header.append(lbl, date);
 
   const body = document.createElement("div");
   body.className = "fw-diary-strip-body";
-
   const note = document.createElement("div");
   note.className = "fw-diary-strip-note";
-
   body.appendChild(note);
 
   const footer = document.createElement("div");
   footer.className = "fw-diary-strip-footer";
-
   const viewBtn = document.createElement("button");
   viewBtn.className = "fw-diary-view-btn";
   viewBtn.textContent = "view full diary \u2192";
@@ -217,30 +119,21 @@ function renderDiaryStrip(uid, yearMonth, privacy, signal) {
     e.stopPropagation();
     showToast("Coming soon!");
   });
-
   footer.appendChild(viewBtn);
   strip.append(header, body, footer);
 
   (async () => {
     try {
-      const days = await getDiaryDays(uid, yearMonth);
-      if (days.size === 0) { strip.remove(); return; }
-      const latestDay = Math.max(...days);
-      const entry = await getDiaryEntry(uid, yearMonth, latestDay);
-      if (entry?.note) {
-        note.textContent = entry.note;
-        date.textContent = formatDay(yearMonth, latestDay);
-        if (entry.photoUrl) {
-          const photo = document.createElement("img");
-          photo.className = "fw-diary-strip-photo";
-          photo.src = entry.photoUrl;
-          photo.alt = "";
-          photo.width = 44;
-          photo.height = 44;
-          body.appendChild(photo);
-        }
-      } else {
-        strip.remove();
+      const entry = await fetchLatestDiaryEntry(uid);
+      if (!entry?.note) { strip.remove(); return; }
+      note.textContent = entry.note;
+      date.textContent = formatDocId(entry.docId);
+      if (entry.photoUrl) {
+        const photo = document.createElement("img");
+        photo.className = "fw-diary-strip-photo";
+        photo.src = entry.photoUrl;
+        photo.alt = "";
+        body.appendChild(photo);
       }
     } catch {
       strip.remove();
@@ -250,34 +143,29 @@ function renderDiaryStrip(uid, yearMonth, privacy, signal) {
   return strip;
 }
 
-// ── Browse Nudge Card ──────────────────────────────────
+// ── Browse Nudge Card ────────────────────────────────────
 
 function renderBrowseNudge(onSwitchToAll) {
   const card = document.createElement("div");
   card.className = "fw-nudge-card";
-
   const iconEl = document.createElement("div");
   iconEl.className = "fw-nudge-icon";
   iconEl.textContent = "\uD83D\uDC65";
-
   const title = document.createElement("div");
   title.className = "fw-nudge-title";
   title.textContent = "Find people to follow";
-
   const sub = document.createElement("div");
   sub.className = "fw-nudge-sub";
   sub.textContent = "Head to the All tab to discover who else is showing up.";
-
   const btn = document.createElement("button");
   btn.className = "fw-nudge-btn";
   btn.textContent = "Browse All";
   btn.addEventListener("click", onSwitchToAll);
-
   card.append(iconEl, title, sub, btn);
   return card;
 }
 
-// ── Pinned Card ────────────────────────────────────────
+// ── Pinned Card ──────────────────────────────────────────
 
 function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowingIds) {
   const displayName = user?.displayName || "Unknown";
@@ -286,36 +174,32 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
 
   let cardYearMonth = yearMonth;
 
-  // ── Build a safe entry for renderMobileCard ────────────
   const buildEntry = (entryLog) => {
     if (entryLog) return entryLog;
     return {
       id: uid,
       displayName,
-      decoration: user?.decoration || { color: "#FF6B6B", fontColor: "#FFFFFF", font: "Inter", sticker: "sunflower2", marker: "square", avatarUrl: "" },
+      decoration: user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF", font: "Inter", sticker: "", marker: "circle", avatarUrl: "" },
       marks: {},
       activities: [],
     };
   };
 
-  // ── Month nav ──────────────────────────────────────────
+  // ── Month nav
   const prevBtn = document.createElement("button");
   prevBtn.className = "fw-pmn-btn";
   prevBtn.textContent = "\u2039";
-
   const monthLbl = document.createElement("span");
   monthLbl.className = "fw-pmn-lbl";
   monthLbl.textContent = shortMonthLabel(cardYearMonth);
-
   const nextBtn = document.createElement("button");
   nextBtn.className = "fw-pmn-btn";
   nextBtn.textContent = "\u203A";
-
   const nav = document.createElement("div");
   nav.className = "fw-pmn";
   nav.append(prevBtn, monthLbl, nextBtn);
 
-  // ── Actions button + popover ───────────────────────────
+  // ── Actions btn + popover
   const actionsBtn = document.createElement("button");
   actionsBtn.className = "fw-pmn-actions-btn";
   actionsBtn.textContent = "\u00B7\u00B7\u00B7";
@@ -327,16 +211,12 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
     if (!popover) return;
     popover.remove();
     popover = null;
-    if (dismissHandler) {
-      document.removeEventListener("click", dismissHandler);
-      dismissHandler = null;
-    }
+    if (dismissHandler) { document.removeEventListener("click", dismissHandler); dismissHandler = null; }
   };
 
   actionsBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     if (popover) { closePopover(); return; }
-
     popover = document.createElement("div");
     popover.className = "fw-pmn-popover";
 
@@ -344,15 +224,11 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
       const unpinBtn = document.createElement("button");
       unpinBtn.textContent = "Unpin";
       unpinBtn.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        closePopover();
+        e.stopPropagation(); closePopover();
         try {
-          await setDoc(doc(db, "users", currentUser.uid),
-            { pinnedFollowing: arrayRemove(uid) }, { merge: true });
+          await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: arrayRemove(uid) }, { merge: true });
           showToast("Unpinned.");
-        } catch {
-          showToast("Couldn't unpin. Try again.", "error");
-        }
+        } catch { showToast("Couldn't unpin. Try again.", "error"); }
       });
       popover.appendChild(unpinBtn);
     }
@@ -361,60 +237,46 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
     unfollowBtn.className = "unfollow";
     unfollowBtn.textContent = "Unfollow";
     unfollowBtn.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      closePopover();
+      e.stopPropagation(); closePopover();
       try {
         await setDoc(doc(db, "users", currentUser.uid),
           { following: arrayRemove(uid), pinnedFollowing: arrayRemove(uid) }, { merge: true });
         showToast(`Unfollowed ${displayName}.`);
-      } catch {
-        showToast("Couldn't unfollow. Try again.", "error");
-      }
+      } catch { showToast("Couldn't unfollow. Try again.", "error"); }
     });
     popover.appendChild(unfollowBtn);
-
     actionsBtn.parentElement.appendChild(popover);
 
     dismissHandler = (ev) => {
-      if (!popover?.contains(ev.target) && ev.target !== actionsBtn) {
-        closePopover();
-      }
+      if (!popover?.contains(ev.target) && ev.target !== actionsBtn) closePopover();
     };
-    setTimeout(() => {
-      if (popover) document.addEventListener("click", dismissHandler);
-    }, 0);
+    setTimeout(() => { if (popover) document.addEventListener("click", dismissHandler); }, 0);
   });
 
-  // ── Helper: attach nav+actions to a badge ──────────────
-  const attachControls = (badge) => {
-    badge.append(nav, actionsBtn);
-  };
+  const attachControls = (badge) => { badge.append(nav, actionsBtn); };
 
-  // ── Initial cal card ───────────────────────────────────
+  // ── Cal card
   let calCard = renderMobileCard(buildEntry(log), cardYearMonth, currentUser, { isFollowing: true, showFollowBtn: false });
   attachControls(calCard.querySelector(".cal-card-badge"));
 
-  // ── Diary strip ────────────────────────────────────────
-  let diaryStrip = renderDiaryStrip(uid, yearMonth, privacy, signal);
+  // ── Diary strip (always fetches latest across all months)
+  let diaryStrip = renderDiaryStrip(uid, privacy, signal);
 
-  // ── Slot: stable parent for refresh logic ──────────────
+  // ── Slot
   const slot = document.createElement("div");
   slot.className = "fw-pinned-slot";
   slot.appendChild(calCard);
   if (diaryStrip) slot.appendChild(diaryStrip);
 
-  // ── Month nav refresh ──────────────────────────────────
+  // ── Month nav refresh (only replaces cal card, diary strip stays)
   const refreshCard = async (newLog, newYearMonth) => {
     closePopover();
     const newCalCard = renderMobileCard(buildEntry(newLog), newYearMonth, currentUser, { isFollowing: true, showFollowBtn: false });
     attachControls(newCalCard.querySelector(".cal-card-badge"));
     calCard.replaceWith(newCalCard);
     calCard = newCalCard;
-
-    const newDiaryStrip = renderDiaryStrip(uid, newYearMonth, privacy, signal);
-    if (diaryStrip) diaryStrip.remove();
-    if (newDiaryStrip) slot.appendChild(newDiaryStrip);
-    diaryStrip = newDiaryStrip;
+    // Move diary strip to end after new cal card
+    if (diaryStrip && slot.contains(diaryStrip)) slot.appendChild(diaryStrip);
   };
 
   prevBtn.addEventListener("click", async () => {
@@ -446,7 +308,7 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
   return slot;
 }
 
-// ── Compact Row ────────────────────────────────────────
+// ── Compact Row ──────────────────────────────────────────
 
 function renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowingIds) {
   const displayName = user?.displayName || "Unknown";
@@ -458,51 +320,39 @@ function renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowin
 
   const wrap = document.createElement("div");
   wrap.className = "fw-compact-row-wrap";
-
   const row = document.createElement("div");
   row.className = "fw-compact-row";
 
-  // Avatar
   const avatar = document.createElement("div");
   const trackerClass = hasTracker && privacy.calendar !== "ghost" ? "has-tracker" : "no-tracker";
   avatar.className = `fw-compact-avatar ${trackerClass}`;
   if (avatarUrl) {
     const img = document.createElement("img");
-    img.src = avatarUrl;
-    img.alt = "avatar";
+    img.src = avatarUrl; img.alt = "avatar";
     avatar.appendChild(img);
   } else {
     avatar.textContent = initial;
   }
 
-  // Name + meta
   const info = document.createElement("div");
   info.className = "fw-compact-info";
-
   const name = document.createElement("div");
   name.className = "fw-compact-name";
   name.textContent = displayName;
-
   const meta = document.createElement("div");
   meta.className = "fw-compact-meta";
-  if (!hasTracker) {
-    meta.textContent = "No tracker this month";
-  } else if (privacy.calendar === "ghost") {
-    meta.textContent = "Tracking quietly";
-  } else if (privacy.calendar === "lowkey") {
-    meta.textContent = signal.headline;
-  } else {
+  if (!hasTracker)                       meta.textContent = "No tracker this month";
+  else if (privacy.calendar === "ghost") meta.textContent = "Tracking quietly";
+  else if (privacy.calendar === "lowkey") meta.textContent = signal.headline;
+  else {
     const days = countUniqueDays(log);
     meta.textContent = `${days} check-in${days === 1 ? "" : "s"} this month`;
   }
-
   info.append(name, meta);
 
-  // Right: tier badge + chevron
   const right = document.createElement("div");
   right.className = "fw-compact-right";
   right.appendChild(renderTierBadge(privacy.calendar));
-
   const chevron = document.createElement("span");
   chevron.className = "fw-compact-chevron";
   chevron.textContent = "\u203A";
@@ -510,7 +360,6 @@ function renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowin
 
   row.append(avatar, info, right);
 
-  // Inline expanded section
   const expanded = document.createElement("div");
   expanded.className = "fw-compact-expanded";
   expanded.hidden = true;
@@ -531,27 +380,24 @@ function renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowin
   return wrap;
 }
 
-// ── Section Label ──────────────────────────────────────
+// ── Section Label ──────────────────────────────────────────
 
 function renderSectionLbl(text, count) {
   const lbl = document.createElement("div");
   lbl.className = "fw-section-lbl";
-
   const t = document.createElement("span");
   t.textContent = text;
   lbl.appendChild(t);
-
   if (count !== undefined) {
     const badge = document.createElement("span");
     badge.className = "fw-section-count";
     badge.textContent = count;
     lbl.appendChild(badge);
   }
-
   return lbl;
 }
 
-// ── Main export ────────────────────────────────────────
+// ── Main export ──────────────────────────────────────────
 
 export function renderPeopleView(container, model) {
   const {
@@ -577,7 +423,6 @@ export function renderPeopleView(container, model) {
   const layout = document.createElement("div");
   layout.className = "fw-people-layout";
 
-  // ── Left column ───────────────────────────────────────
   const main = document.createElement("div");
   main.className = "fw-people-main";
 
@@ -616,7 +461,6 @@ export function renderPeopleView(container, model) {
     }
   }
 
-  // ── Right column (hidden on mobile via CSS) ───────────
   const side = document.createElement("div");
   side.className = "fw-people-side";
   side.appendChild(renderBrowseNudge(onSwitchToAll));
