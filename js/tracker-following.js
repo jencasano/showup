@@ -38,11 +38,14 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   let logUnsubMap = {};
   let userCache   = {};
   let logsCache   = {};
-  let diaryCache  = {}; // uid -> { docId, note, photoUrl } | null
+  let diaryCache  = {};
   let followingIds       = [];
   let pinnedFollowingIds = [];
+  let diaryReady = false; // gate: don't renderBoard until diary fetch is done
 
   function renderBoard() {
+    if (!diaryReady) return; // diary cache not ready yet -- skip
+
     container.innerHTML = "";
 
     const wrap = document.createElement("div");
@@ -117,9 +120,12 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   const myRef = doc(db, "users", currentUser.uid);
 
   const unsubMe = onSnapshot(myRef, async (mySnap) => {
+    diaryReady = false; // reset gate while we re-fetch
+
     if (!mySnap.exists()) {
       followingIds = [];
       pinnedFollowingIds = [];
+      diaryReady = true;
       renderBoard();
       hideLoader();
       return;
@@ -176,12 +182,14 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         logsCache[uid] = logSnap.exists() && d?.activities?.length
           ? { id: uid, ...d, displayName: userCache[uid]?.displayName || "" }
           : null;
-        renderBoard();
+        renderBoard(); // safe -- diaryReady gates this
       }, (err) => {
         console.error("Log snapshot error:", err);
       });
     }
 
+    // All data ready -- open the gate and render
+    diaryReady = true;
     renderBoard();
     hideLoader();
 
