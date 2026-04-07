@@ -179,15 +179,8 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       return;
     }
 
-    const needsUserFetch = validDocs.map(d => !d.data().displayName);
     const [userSnaps, myUserSnap] = await Promise.all([
-      Promise.all(
-        validDocs.map((docSnap, i) =>
-          needsUserFetch[i]
-            ? getDoc(doc(db, "users", docSnap.id))
-            : Promise.resolve(null)
-        )
-      ),
+      Promise.all(validDocs.map(docSnap => getDoc(doc(db, "users", docSnap.id)))),
       currentUser?.uid
         ? getDoc(doc(db, "users", currentUser.uid))
         : Promise.resolve(null)
@@ -200,15 +193,16 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
     const entries = validDocs
       .map((docSnap, i) => {
         const data = docSnap.data();
-        let displayName = data.displayName;
-        let username    = data.username;
-        if (needsUserFetch[i]) {
-          const userSnap = userSnaps[i];
-          if (!userSnap?.exists()) return null;
-          const userData = userSnap.data();
-          displayName = userData.displayName;
-          username    = userData.username || userData.displayName;
-        }
+        const userSnap = userSnaps[i];
+        if (!userSnap?.exists()) return null;
+        const userData = userSnap.data();
+
+        // Enforce followers-only tier: hide from non-followers
+        const calTier = userData?.privacy?.calendar || "sharing";
+        if (calTier === "followers" && !myFollows.has(docSnap.id)) return null;
+
+        const displayName = data.displayName || userData.displayName;
+        const username    = data.username    || userData.username || displayName;
         return { id: docSnap.id, ...data, displayName, username: username || displayName };
       })
       .filter(Boolean);

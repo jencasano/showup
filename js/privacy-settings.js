@@ -4,7 +4,7 @@ import { showToast } from "./ui.js";
 
 const TIERS = [
   { id: "sharing",   name: "Sharing",       desc: "Full content visible to followers." },
-  { id: "followers", name: "Followers Only", desc: "Visible only if you follow each other." },
+  { id: "followers", name: "Followers Only", desc: "Visible only to your followers." },
   { id: "lowkey",    name: "Low Key",        desc: "Others see signals, not details." },
   { id: "ghost",     name: "Ghost",          desc: "You appear but share nothing." },
   { id: "private",   name: "Private",        desc: "Completely hidden." },
