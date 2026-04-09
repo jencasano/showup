@@ -1,6 +1,6 @@
 import { db } from "./firebase-config.js";
 import {
-  collection, doc, getDoc, getDocs, onSnapshot, query, orderBy, limit
+  collection, doc, getDoc, getDocs, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard } from "./cal-card.js";
@@ -241,11 +241,13 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       if (!meta || meta.calTier !== "sharing") return;
       const uid = meta.docSnap.id;
       try {
-        const diaryRef = collection(db, "users", uid, "diary", yearMonth, "entries");
-        const q = query(diaryRef, orderBy("__name__", "desc"), limit(1));
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          const d = snap.docs[0];
+        const diaryRef = collection(db, "diary", uid, "entries");
+        const snap = await getDocs(diaryRef);
+        const matching = snap.docs
+          .filter(d => d.id.startsWith(yearMonth))
+          .sort((a, b) => b.id.localeCompare(a.id));
+        if (matching.length > 0) {
+          const d = matching[0];
           diaryCache[uid] = { docId: d.id, ...d.data() };
         }
       } catch (_) { /* diary fetch is best-effort */ }
