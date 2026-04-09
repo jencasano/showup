@@ -435,12 +435,72 @@
 
     .looks-like-strip::-webkit-scrollbar { display: none; }
 
-    .looks-like-strip img {
-      height: 160px;
+    .looks-like-strip img,
+    .looks-like-strip video {
+      height: 120px;
       width: auto;
       border-radius: var(--radius-md);
       object-fit: cover;
       flex-shrink: 0;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .looks-like-strip img:hover,
+    .looks-like-strip video:hover { opacity: 0.8; }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(10, 12, 28, 0.92);
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    .lightbox.open { display: flex; }
+
+    .lightbox-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: var(--text-faint);
+      font-size: 1.6rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px 8px;
+      transition: color 0.15s;
+    }
+
+    .lightbox-close:hover { color: var(--text); }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-faint);
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 12px;
+      transition: color 0.15s;
+    }
+
+    .lightbox-nav:hover { color: var(--text); }
+    .lightbox-prev { left: 12px; }
+    .lightbox-next { right: 12px; }
+
+    .lightbox-content {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: var(--radius-md);
+      object-fit: contain;
     }
 
     /* ── Mobile ── */
@@ -456,7 +516,11 @@
       .item-spec { display: none; }
       .deck-list { columns: 1; }
       .site-footer { flex-direction: column; gap: 8px; }
-      .looks-like-strip img { height: 120px; }
+      .looks-like-strip img,
+      .looks-like-strip video { height: 90px; }
+      .lightbox { padding: 16px; }
+      .lightbox-prev { left: 4px; }
+      .lightbox-next { right: 4px; }
     }
   </style>
 </head>
@@ -560,6 +624,16 @@
       <div class="looks-like-label">Looks like</div>
       <div class="looks-like-strip">
         <img src="assets/build-log/AL01/01.png" alt="All Tab — Discovery Directory" onerror="this.style.display='none'">
+        <img src="assets/build-log/AL01/02.png" alt="All Tab — Discovery Directory" onerror="this.style.display='none'">
+        <img src="assets/build-log/AL01/03.png" alt="All Tab — Discovery Directory" onerror="this.style.display='none'">
+        <img src="assets/build-log/AL01/04.png" alt="All Tab — Discovery Directory" onerror="this.style.display='none'">
+        <img src="assets/build-log/AL01/05.png" alt="All Tab — Discovery Directory" onerror="this.style.display='none'">
+        <img src="assets/build-log/AL01/06.png" alt="All Tab — Discovery Directory" onerror="this.style.display='none'">
+        <img src="assets/build-log/AL01/07.png" alt="All Tab — Discovery Directory" onerror="this.style.display='none'">
+        <img src="assets/build-log/AL01/08.png" alt="All Tab — Discovery Directory" onerror="this.style.display='none'">
+        <img src="assets/build-log/AL01/09.png" alt="All Tab — Discovery Directory" onerror="this.style.display='none'">
+        <img src="assets/build-log/AL01/10.png" alt="All Tab — Discovery Directory" onerror="this.style.display='none'">
+        <video src="assets/build-log/AL01/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
       </div>
     </div>
   </div>
@@ -609,6 +683,16 @@
       <div class="looks-like-label">Looks like</div>
       <div class="looks-like-strip">
         <img src="assets/build-log/FO01/01.png" alt="Following Tab + Privacy System" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO01/02.png" alt="Following Tab + Privacy System" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO01/03.png" alt="Following Tab + Privacy System" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO01/04.png" alt="Following Tab + Privacy System" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO01/05.png" alt="Following Tab + Privacy System" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO01/06.png" alt="Following Tab + Privacy System" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO01/07.png" alt="Following Tab + Privacy System" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO01/08.png" alt="Following Tab + Privacy System" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO01/09.png" alt="Following Tab + Privacy System" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO01/10.png" alt="Following Tab + Privacy System" onerror="this.style.display='none'">
+        <video src="assets/build-log/FO01/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
       </div>
     </div>
   </div>
@@ -658,6 +742,16 @@
       <div class="looks-like-label">Looks like</div>
       <div class="looks-like-strip">
         <img src="assets/build-log/TR03/01.png" alt="Mobile Diary Notebook + Following Tab Foundation" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR03/02.png" alt="Mobile Diary Notebook + Following Tab Foundation" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR03/03.png" alt="Mobile Diary Notebook + Following Tab Foundation" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR03/04.png" alt="Mobile Diary Notebook + Following Tab Foundation" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR03/05.png" alt="Mobile Diary Notebook + Following Tab Foundation" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR03/06.png" alt="Mobile Diary Notebook + Following Tab Foundation" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR03/07.png" alt="Mobile Diary Notebook + Following Tab Foundation" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR03/08.png" alt="Mobile Diary Notebook + Following Tab Foundation" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR03/09.png" alt="Mobile Diary Notebook + Following Tab Foundation" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR03/10.png" alt="Mobile Diary Notebook + Following Tab Foundation" onerror="this.style.display='none'">
+        <video src="assets/build-log/TR03/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
       </div>
     </div>
   </div>
@@ -697,6 +791,16 @@
       <div class="looks-like-label">Looks like</div>
       <div class="looks-like-strip">
         <img src="assets/build-log/TR02/01.png" alt="Manage Activities + Tracker Refactor" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR02/02.png" alt="Manage Activities + Tracker Refactor" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR02/03.png" alt="Manage Activities + Tracker Refactor" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR02/04.png" alt="Manage Activities + Tracker Refactor" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR02/05.png" alt="Manage Activities + Tracker Refactor" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR02/06.png" alt="Manage Activities + Tracker Refactor" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR02/07.png" alt="Manage Activities + Tracker Refactor" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR02/08.png" alt="Manage Activities + Tracker Refactor" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR02/09.png" alt="Manage Activities + Tracker Refactor" onerror="this.style.display='none'">
+        <img src="assets/build-log/TR02/10.png" alt="Manage Activities + Tracker Refactor" onerror="this.style.display='none'">
+        <video src="assets/build-log/TR02/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
       </div>
     </div>
   </div>
@@ -746,6 +850,16 @@
       <div class="looks-like-label">Looks like</div>
       <div class="looks-like-strip">
         <img src="assets/build-log/DI01/01.png" alt="Diary Phase A" onerror="this.style.display='none'">
+        <img src="assets/build-log/DI01/02.png" alt="Diary Phase A" onerror="this.style.display='none'">
+        <img src="assets/build-log/DI01/03.png" alt="Diary Phase A" onerror="this.style.display='none'">
+        <img src="assets/build-log/DI01/04.png" alt="Diary Phase A" onerror="this.style.display='none'">
+        <img src="assets/build-log/DI01/05.png" alt="Diary Phase A" onerror="this.style.display='none'">
+        <img src="assets/build-log/DI01/06.png" alt="Diary Phase A" onerror="this.style.display='none'">
+        <img src="assets/build-log/DI01/07.png" alt="Diary Phase A" onerror="this.style.display='none'">
+        <img src="assets/build-log/DI01/08.png" alt="Diary Phase A" onerror="this.style.display='none'">
+        <img src="assets/build-log/DI01/09.png" alt="Diary Phase A" onerror="this.style.display='none'">
+        <img src="assets/build-log/DI01/10.png" alt="Diary Phase A" onerror="this.style.display='none'">
+        <video src="assets/build-log/DI01/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
       </div>
     </div>
   </div>
@@ -756,6 +870,96 @@
   <span>showup. — built by Jen &amp; Cii 🪨</span>
   <a href="/">← back to app</a>
 </footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close">✕</button>
+  <button class="lightbox-nav lightbox-prev" id="lightbox-prev">‹</button>
+  <button class="lightbox-nav lightbox-next" id="lightbox-next">›</button>
+</div>
+
+<script>
+(function() {
+  const box = document.getElementById('lightbox');
+  const btnClose = document.getElementById('lightbox-close');
+  const btnPrev = document.getElementById('lightbox-prev');
+  const btnNext = document.getElementById('lightbox-next');
+  let items = [];
+  let idx = 0;
+  let activeEl = null;
+
+  function show(el) {
+    // collect visible siblings in this strip
+    const strip = el.closest('.looks-like-strip');
+    items = Array.from(strip.querySelectorAll('img, video')).filter(
+      e => e.style.display !== 'none' && e.offsetParent !== null
+    );
+    idx = items.indexOf(el);
+    if (idx === -1) return;
+    render();
+    box.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function render() {
+    // remove old content
+    const old = box.querySelector('.lightbox-content');
+    if (old) old.remove();
+
+    const src = items[idx];
+    let node;
+    if (src.tagName === 'VIDEO') {
+      node = document.createElement('video');
+      node.src = src.src;
+      node.controls = true;
+      node.autoplay = true;
+      node.playsInline = true;
+    } else {
+      node = document.createElement('img');
+      node.src = src.src;
+      node.alt = src.alt;
+    }
+    node.className = 'lightbox-content';
+    box.appendChild(node);
+
+    btnPrev.style.display = idx > 0 ? '' : 'none';
+    btnNext.style.display = idx < items.length - 1 ? '' : 'none';
+  }
+
+  function close() {
+    box.classList.remove('open');
+    document.body.style.overflow = '';
+    const vid = box.querySelector('video.lightbox-content');
+    if (vid) vid.pause();
+    const old = box.querySelector('.lightbox-content');
+    if (old) old.remove();
+    items = [];
+  }
+
+  // click on thumbnails
+  document.addEventListener('click', function(e) {
+    const thumb = e.target.closest('.looks-like-strip img, .looks-like-strip video');
+    if (thumb) show(thumb);
+  });
+
+  btnClose.addEventListener('click', close);
+  btnPrev.addEventListener('click', function() { if (idx > 0) { idx--; render(); } });
+  btnNext.addEventListener('click', function() { if (idx < items.length - 1) { idx++; render(); } });
+
+  // close on backdrop click
+  box.addEventListener('click', function(e) {
+    if (e.target === box) close();
+  });
+
+  // keyboard nav
+  document.addEventListener('keydown', function(e) {
+    if (!box.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft' && idx > 0) { idx--; render(); }
+    if (e.key === 'ArrowRight' && idx < items.length - 1) { idx++; render(); }
+  });
+})();
+</script>
 
 </body>
 </html>
