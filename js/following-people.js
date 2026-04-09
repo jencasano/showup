@@ -229,7 +229,33 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
   const inner = document.createElement("div");
   inner.className = "fw-pinned-slot-inner";
 
-  if (privacy.calendar === "lowkey") {
+  if (privacy.calendar === "ghost") {
+    inner.classList.add("fw-ghost-card");
+
+    // ── Ghost header bar (actions only, no month nav)
+    const deco = user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
+    const header = document.createElement("div");
+    header.className = "fw-lowkey-header";
+    header.style.background = deco.color;
+    header.style.color = deco.fontColor || "#FFFFFF";
+    const nameEl = document.createElement("span");
+    nameEl.className = "fw-lowkey-header-name";
+    nameEl.textContent = displayName;
+    header.append(nameEl, actionsBtn);
+    inner.appendChild(header);
+
+    // ── Ghost quiet zone
+    const zone = document.createElement("div");
+    zone.className = "fw-ghost-quiet-zone";
+    const icon = document.createElement("div");
+    icon.className = "fw-ghost-icon";
+    icon.textContent = "\uD83C\uDF19";
+    const text = document.createElement("div");
+    text.className = "fw-ghost-quiet-text";
+    text.textContent = "Gone quiet for now.";
+    zone.append(icon, text);
+    inner.appendChild(zone);
+  } else if (privacy.calendar === "lowkey") {
     // ── Lowkey header bar (mirrors cal-card-badge visually)
     const deco = user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
     const header = document.createElement("div");
@@ -296,7 +322,7 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
     });
   }
 
-  if (diaryStrip) inner.appendChild(diaryStrip);
+  if (privacy.calendar !== "ghost" && diaryStrip) inner.appendChild(diaryStrip);
   slot.appendChild(inner);
   if (pinnedFollowingIds?.includes(uid)) slot.appendChild(pinBtn);
 
@@ -313,13 +339,15 @@ function renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowin
   const hasTracker  = !!log;
   const signal      = computeSignal(displayName, log);
 
+  const isGhost = privacy.calendar === "ghost";
+
   const wrap = document.createElement("div");
   wrap.className = "fw-compact-row-wrap";
   const row = document.createElement("div");
-  row.className = "fw-compact-row";
+  row.className = isGhost ? "fw-compact-row fw-ghost-compact" : "fw-compact-row";
 
   const avatar = document.createElement("div");
-  const trackerClass = hasTracker && privacy.calendar !== "ghost" ? "has-tracker" : "no-tracker";
+  const trackerClass = hasTracker && !isGhost ? "has-tracker" : "no-tracker";
   avatar.className = `fw-compact-avatar ${trackerClass}`;
   if (avatarUrl) {
     const img = document.createElement("img"); img.src = avatarUrl; img.alt = "avatar";
@@ -327,27 +355,31 @@ function renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowin
   } else { avatar.textContent = initial; }
 
   const info = document.createElement("div"); info.className = "fw-compact-info";
-  const name = document.createElement("div"); name.className = "fw-compact-name"; name.textContent = displayName;
+  const name = document.createElement("div");
+  name.className = isGhost ? "fw-compact-name fw-ghost-name" : "fw-compact-name";
+  name.textContent = displayName;
   const meta = document.createElement("div"); meta.className = "fw-compact-meta";
   if (!hasTracker)                        meta.textContent = "No tracker this month";
-  else if (privacy.calendar === "ghost")  meta.textContent = "Tracking quietly";
+  else if (isGhost)                       meta.textContent = "Gone quiet for now.";
   else if (privacy.calendar === "lowkey") meta.textContent = signal.calendarHeadline;
   else { const days = countUniqueDays(log); meta.textContent = `${days} check-in${days === 1 ? "" : "s"} this month`; }
   info.append(name, meta);
 
   const right = document.createElement("div"); right.className = "fw-compact-right";
-  right.appendChild(renderTierBadge(privacy.calendar));
-  const compactPinBtn = document.createElement("button");
-  compactPinBtn.className = "fw-pin-btn fw-pin-btn--unpinned";
-  compactPinBtn.textContent = "📌";
-  compactPinBtn.addEventListener("click", async (e) => {
-    e.stopPropagation();
-    try {
-      await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: arrayUnion(uid) }, { merge: true });
-      showToast("Pinned!");
-    } catch { showToast("Couldn't pin. Try again.", "error"); }
-  });
-  right.appendChild(compactPinBtn);
+  if (!isGhost) {
+    right.appendChild(renderTierBadge(privacy.calendar));
+    const compactPinBtn = document.createElement("button");
+    compactPinBtn.className = "fw-pin-btn fw-pin-btn--unpinned";
+    compactPinBtn.textContent = "\uD83D\uDCCC";
+    compactPinBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      try {
+        await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: arrayUnion(uid) }, { merge: true });
+        showToast("Pinned!");
+      } catch { showToast("Couldn't pin. Try again.", "error"); }
+    });
+    right.appendChild(compactPinBtn);
+  }
   const chevron = document.createElement("span"); chevron.className = "fw-compact-chevron"; chevron.textContent = "\u203A";
   right.appendChild(chevron);
   row.append(avatar, info, right);

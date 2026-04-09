@@ -500,7 +500,45 @@
 
 /* ── Ghost card ───────────────────────────────────────── */
 
-.fw-ghost-card { opacity: 0.55; }
+.fw-ghost-card {
+  opacity: 0.72;
+  border-color: transparent;
+  box-shadow: 0 0 18px rgba(245,200,66,0.15), 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.fw-ghost-quiet-zone {
+  padding: 28px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 90px;
+}
+
+.fw-ghost-icon {
+  font-size: 1.1rem;
+  opacity: 0.45;
+  line-height: 1;
+}
+
+.fw-ghost-quiet-text {
+  font-size: 0.7rem;
+  font-style: italic;
+  color: var(--text-faint);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.fw-ghost-name {
+  opacity: 0.55;
+}
+
+.fw-ghost-compact {
+  opacity: 0.72;
+  box-shadow: 0 0 12px rgba(245,200,66,0.12), 0 2px 8px rgba(0,0,0,0.1);
+  border-color: transparent;
+}
 
 /* ── Mobile overrides ──────────────────────────────── */
 
