@@ -220,10 +220,6 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
 
   const attachControls = (badge) => { badge.append(nav, actionsBtn); };
 
-  // ── Cal card
-  let calCard = renderMobileCard(buildEntry(log), cardYearMonth, currentUser, { isFollowing: true, showFollowBtn: false });
-  attachControls(calCard.querySelector(".cal-card-badge"));
-
   // ── Diary strip (synchronous, uses cached entry)
   const diaryStrip = renderDiaryStrip(diaryEntry, privacy, signal);
 
@@ -232,46 +228,77 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
   slot.className = "fw-pinned-slot";
   const inner = document.createElement("div");
   inner.className = "fw-pinned-slot-inner";
-  inner.appendChild(calCard);
+
+  if (privacy.calendar === "lowkey") {
+    // ── Lowkey header bar (mirrors cal-card-badge visually)
+    const deco = user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
+    const header = document.createElement("div");
+    header.className = "fw-lowkey-header";
+    header.style.background = deco.color;
+    header.style.color = deco.fontColor || "#FFFFFF";
+    const nameEl = document.createElement("span");
+    nameEl.className = "fw-lowkey-header-name";
+    nameEl.textContent = displayName;
+    header.append(nameEl, nav, actionsBtn);
+    inner.appendChild(header);
+
+    // ── Signal block
+    const signalBlock = document.createElement("div");
+    signalBlock.className = "fw-signal-block" + (diaryStrip ? " fw-signal-block--with-diary" : "");
+    const headlineEl = document.createElement("div");
+    headlineEl.className = "fw-signal-headline";
+    headlineEl.textContent = signal.headline;
+    const whisper = document.createElement("div");
+    whisper.className = "fw-lowkey-whisper";
+    whisper.textContent = "low key";
+    signalBlock.append(headlineEl, whisper);
+    inner.appendChild(signalBlock);
+  } else {
+    // ── Sharing / Followers: full calendar card
+    let calCard = renderMobileCard(buildEntry(log), cardYearMonth, currentUser, { isFollowing: true, showFollowBtn: false });
+    attachControls(calCard.querySelector(".cal-card-badge"));
+    inner.appendChild(calCard);
+
+    // ── Month nav refresh (only replaces cal card, diary strip stays)
+    const refreshCard = async (newLog, newYearMonth) => {
+      closePopover();
+      const newCalCard = renderMobileCard(buildEntry(newLog), newYearMonth, currentUser, { isFollowing: true, showFollowBtn: false });
+      attachControls(newCalCard.querySelector(".cal-card-badge"));
+      calCard.replaceWith(newCalCard);
+      calCard = newCalCard;
+      if (diaryStrip && inner.contains(diaryStrip)) inner.appendChild(diaryStrip);
+    };
+
+    prevBtn.addEventListener("click", async () => {
+      cardYearMonth = getPrevYearMonth(cardYearMonth);
+      monthLbl.textContent = shortMonthLabel(cardYearMonth);
+      if (cardYearMonth === yearMonth) {
+        await refreshCard(log, cardYearMonth);
+      } else {
+        const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
+        const fetched = snap.exists() && snap.data().activities?.length
+          ? { id: uid, ...snap.data(), displayName } : null;
+        await refreshCard(fetched, cardYearMonth);
+      }
+    });
+
+    nextBtn.addEventListener("click", async () => {
+      cardYearMonth = getNextYearMonth(cardYearMonth);
+      monthLbl.textContent = shortMonthLabel(cardYearMonth);
+      if (cardYearMonth === yearMonth) {
+        await refreshCard(log, cardYearMonth);
+      } else {
+        const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
+        const fetched = snap.exists() && snap.data().activities?.length
+          ? { id: uid, ...snap.data(), displayName } : null;
+        await refreshCard(fetched, cardYearMonth);
+      }
+    });
+  }
+
   if (diaryStrip) inner.appendChild(diaryStrip);
   slot.appendChild(inner);
   if (pinnedFollowingIds?.includes(uid)) slot.appendChild(pinBtn);
-
-  // ── Month nav refresh (only replaces cal card, diary strip stays)
-  const refreshCard = async (newLog, newYearMonth) => {
-    closePopover();
-    const newCalCard = renderMobileCard(buildEntry(newLog), newYearMonth, currentUser, { isFollowing: true, showFollowBtn: false });
-    attachControls(newCalCard.querySelector(".cal-card-badge"));
-    calCard.replaceWith(newCalCard);
-    calCard = newCalCard;
-    if (diaryStrip && inner.contains(diaryStrip)) inner.appendChild(diaryStrip);
-  };
-
-  prevBtn.addEventListener("click", async () => {
-    cardYearMonth = getPrevYearMonth(cardYearMonth);
-    monthLbl.textContent = shortMonthLabel(cardYearMonth);
-    if (cardYearMonth === yearMonth) {
-      await refreshCard(log, cardYearMonth);
-    } else {
-      const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
-      const fetched = snap.exists() && snap.data().activities?.length
-        ? { id: uid, ...snap.data(), displayName } : null;
-      await refreshCard(fetched, cardYearMonth);
-    }
-  });
-
-  nextBtn.addEventListener("click", async () => {
-    cardYearMonth = getNextYearMonth(cardYearMonth);
-    monthLbl.textContent = shortMonthLabel(cardYearMonth);
-    if (cardYearMonth === yearMonth) {
-      await refreshCard(log, cardYearMonth);
-    } else {
-      const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", uid));
-      const fetched = snap.exists() && snap.data().activities?.length
-        ? { id: uid, ...snap.data(), displayName } : null;
-      await refreshCard(fetched, cardYearMonth);
-    }
-  });
 
   return slot;
 }
