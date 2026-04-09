@@ -398,6 +398,51 @@
     .site-footer a { color: var(--text-faint); text-decoration: none; }
     .site-footer a:hover { color: var(--primary); }
 
+    /* ── Entry code badge ── */
+    .entry-code {
+      font-family: monospace;
+      font-size: 0.56rem;
+      font-weight: 600;
+      color: var(--text-faint);
+      background: rgba(59, 65, 100, 0.4);
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Looks like photo strip ── */
+    .looks-like {
+      margin-top: 20px;
+    }
+
+    .looks-like-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 8px;
+    }
+
+    .looks-like-strip {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .looks-like-strip::-webkit-scrollbar { display: none; }
+
+    .looks-like-strip img {
+      height: 160px;
+      width: auto;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
     /* ── Mobile ── */
     @media (max-width: 600px) {
       .site-header { padding: 0 20px; }
@@ -411,6 +456,7 @@
       .item-spec { display: none; }
       .deck-list { columns: 1; }
       .site-footer { flex-direction: column; gap: 8px; }
+      .looks-like-strip img { height: 120px; }
     }
   </style>
 </head>
@@ -474,6 +520,7 @@
     <div class="entry-meta">
       <span class="entry-date">Apr 9, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">AL01</span>
     </div>
     <div class="entry-title">All Tab — Discovery Directory</div>
     <p class="entry-desc">A fully tier-aware discovery directory. Browse everyone showing up, respecting each user's calendar and diary privacy independently. Per-card month nav, four card types, shared diary strip component.</p>
@@ -509,6 +556,12 @@
         <div class="item-spec"></div>
       </div>
     </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/AL01/01.png" alt="All Tab — Discovery Directory" onerror="this.style.display='none'">
+      </div>
+    </div>
   </div>
 
   <!-- ── Apr 9, 2026 — Following Tab ── -->
@@ -516,6 +569,7 @@
     <div class="entry-meta">
       <span class="entry-date">Apr 9, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">FO01</span>
     </div>
     <div class="entry-title">Following Tab + Privacy System</div>
     <p class="entry-desc">A full social layer built on one principle: privacy of content, not of presence. One-way following, five tiers, two-tone signal copy, ghost cards, and a masonry pinned grid.</p>
@@ -551,6 +605,12 @@
         <div class="item-spec"></div>
       </div>
     </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/FO01/01.png" alt="Following Tab + Privacy System" onerror="this.style.display='none'">
+      </div>
+    </div>
   </div>
 
   <!-- ── Apr 7, 2026 ── -->
@@ -558,6 +618,7 @@
     <div class="entry-meta">
       <span class="entry-date">Apr 7, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">TR03</span>
     </div>
     <div class="entry-title">Mobile Diary Notebook + Following Tab Foundation</div>
     <p class="entry-desc">Rebuilt the mobile diary card from scratch, fixed the double-flip animation bug, and laid the structural foundation for the Following tab.</p>
@@ -593,6 +654,12 @@
         <div class="item-spec"></div>
       </div>
     </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/TR03/01.png" alt="Mobile Diary Notebook + Following Tab Foundation" onerror="this.style.display='none'">
+      </div>
+    </div>
   </div>
 
   <!-- ── Apr 6, 2026 ── -->
@@ -600,6 +667,7 @@
     <div class="entry-meta">
       <span class="entry-date">Apr 6, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">TR02</span>
     </div>
     <div class="entry-title">Manage Activities + Tracker Refactor</div>
     <p class="entry-desc">Gear icon on the card badge opens a modal to rename, reorder, add, and delete activities for the current month. tracker.js split into 5 focused modules.</p>
@@ -625,6 +693,12 @@
         <div class="item-spec"></div>
       </div>
     </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/TR02/01.png" alt="Manage Activities + Tracker Refactor" onerror="this.style.display='none'">
+      </div>
+    </div>
   </div>
 
   <!-- ── Apr 5, 2026 ── -->
@@ -632,6 +706,7 @@
     <div class="entry-meta">
       <span class="entry-date">Apr 5, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">DI01</span>
     </div>
     <div class="entry-title">Diary Phase A</div>
     <p class="entry-desc">The full diary feature — data layer, photo cropper, two-column overlay, pages modal, premium transitions, and the diary notebook widget. The most complex feature shipped so far.</p>
@@ -665,6 +740,12 @@
         <div class="item-name">Diary notebook widget</div>
         <div class="item-desc">Color themes (coral/cream/indigo) with palette picker. Tilt animation, idle sway, "read it" hint copy. No-reload theme swap, modal spine/corner theming. Amber dot indicator on days with entries.</div>
         <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/DI01/01.png" alt="Diary Phase A" onerror="this.style.display='none'">
       </div>
     </div>
   </div>
