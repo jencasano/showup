@@ -501,7 +501,7 @@
 /* ── Ghost card ───────────────────────────────────────── */
 
 .fw-ghost-card {
-  opacity: 0.72;
+  opacity: 0.58;
   border-color: transparent;
   box-shadow: 0 0 18px rgba(245,200,66,0.15), 0 4px 16px rgba(0,0,0,0.15);
 }
