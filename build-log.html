@@ -260,10 +260,12 @@
     }
 
     .entry-item {
-      display: flex;
+      display: grid;
+      grid-template-columns: 180px 1fr auto;
       gap: 12px;
       padding: 11px 0;
       border-bottom: 1px solid var(--border-faint);
+      align-items: start;
     }
 
     .entry-item:last-child { border-bottom: none; }
@@ -272,7 +274,6 @@
       font-size: 0.74rem;
       font-weight: 600;
       color: var(--text);
-      min-width: 180px;
       flex-shrink: 0;
     }
 
@@ -280,6 +281,31 @@
       font-size: 0.74rem;
       color: var(--text-muted);
       line-height: 1.6;
+    }
+
+    .item-spec {
+      flex-shrink: 0;
+      align-self: start;
+      padding-top: 2px;
+    }
+
+    .spec-link {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      padding: 2px 8px;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .spec-link:hover {
+      color: var(--primary);
+      border-color: var(--primary);
     }
 
     /* ── On Deck (collapsible) ── */
@@ -381,7 +407,8 @@
       .hero-meta-item { border-right: none; padding-right: 0; margin-right: 0; }
       .timeline { padding: 0 20px 64px; }
       .tl-section { padding-left: 28px; }
-      .item-name { min-width: 120px; }
+      .entry-item { grid-template-columns: 1fr; gap: 4px; }
+      .item-spec { display: none; }
       .deck-list { columns: 1; }
       .site-footer { flex-direction: column; gap: 8px; }
     }
@@ -411,7 +438,7 @@
   <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Up next</span>
-      <span class="entry-badge badge-deck">15 items</span>
+      <span class="entry-badge badge-deck">16 items</span>
     </div>
     <details class="on-deck-details">
       <summary class="on-deck-summary">
@@ -423,56 +450,105 @@
         <ul class="deck-list">
           <li class="deck-item"><span class="deck-num">1</span>Tab spinners — shows unnecessarily on instant tab switches</li>
           <li class="deck-item"><span class="deck-num">2</span>Past-month lock — logging becomes read-only after the month passes</li>
-          <li class="deck-item"><span class="deck-num">3</span>Manage Activities — needs gear icon on card badge</li>
+          <li class="deck-item"><span class="deck-num">3</span>Manage Activities — rename/delete/add activities for current month</li>
           <li class="deck-item"><span class="deck-num">4</span>Pinned cards L-to-R order — revisit when CSS Masonry has wider browser support</li>
           <li class="deck-item"><span class="deck-num">5</span>Optimistic upload UX — close diary modal instantly, upload in background, Saving/Saved toast</li>
           <li class="deck-item"><span class="deck-num">6</span>Safari Fit mode blur — canvas downscale/upscale tuning on iOS</li>
           <li class="deck-item"><span class="deck-num">7</span>Diary polaroid — square in desktop modal read view</li>
           <li class="deck-item"><span class="deck-num">8</span>Storage migration to asia-southeast1 for faster uploads from the Philippines</li>
-          <li class="deck-item"><span class="deck-num">9</span>All tab redesign — Followers locked card, Private tier, full card states</li>
+          <li class="deck-item"><span class="deck-num">9</span>All tab card tap — no-op placeholder, activates when user profiles are built</li>
           <li class="deck-item"><span class="deck-num">10</span>Following Feed — chronological diary stream + system events</li>
           <li class="deck-item"><span class="deck-num">11</span>Diary Phase B — swipe between pages, per-habit photo reel</li>
           <li class="deck-item"><span class="deck-num">12</span>Diary Phase C — diary pages visible to followers</li>
-          <li class="deck-item"><span class="deck-num">13</span>Custom spinner / loader</li>
-          <li class="deck-item"><span class="deck-num">14</span>Month picker popover</li>
-          <li class="deck-item"><span class="deck-num">15</span>Polish + landing screen</li>
+          <li class="deck-item"><span class="deck-num">13</span>Allow 2-3 photos per diary entry</li>
+          <li class="deck-item"><span class="deck-num">14</span>Custom spinner / loader</li>
+          <li class="deck-item"><span class="deck-num">15</span>Month picker popover</li>
+          <li class="deck-item"><span class="deck-num">16</span>Polish + landing screen</li>
         </ul>
       </div>
     </details>
   </div>
 
-  <!-- ── Apr 9, 2026 ── -->
+  <!-- ── Apr 9, 2026 — All Tab ── -->
   <div class="tl-section active">
     <div class="entry-meta">
       <span class="entry-date">Apr 9, 2026</span>
-      <span class="entry-badge badge-ongoing">In progress</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+    </div>
+    <div class="entry-title">All Tab — Discovery Directory</div>
+    <p class="entry-desc">A fully tier-aware discovery directory. Browse everyone showing up, respecting each user's calendar and diary privacy independently. Per-card month nav, four card types, shared diary strip component.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Four card types</div>
+        <div class="item-desc">Sharing (full calendar + diary strip), Locked (Followers tier, stranger view), Low key (signal copy), Ghost (moon treatment, gold glow). Private users excluded entirely.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/ALL_TAB_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Per-card month nav</div>
+        <div class="item-desc">Each Sharing card browses its own month independently. Global month bar hidden on All tab. Browsing one person's history doesn't affect other cards.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Tier-aware diary strip</div>
+        <div class="item-desc">Diary zone renders for all visible card types (not just Sharing). Diary privacy is independent of calendar privacy. Ghost diary shows moon treatment. Low key diary shows signal copy. Followers diary respects follow status.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/FOLLOWING_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Search</div>
+        <div class="item-desc">Smart multi-token scoring by name and activities. Sharing tier users searchable by activity name. All other tiers searchable by name only.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Module refactor</div>
+        <div class="item-desc">mobile-tracker.js (61KB) split into cal-card.js and diary-mobile.js. renderDiaryStrip extracted to shared diary-strip.js used by both Following and All tabs. mobile-tracker.js reduced to 146-byte re-export shim.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Private cascade</div>
+        <div class="item-desc">If either calendarPrivacy or diaryPrivacy is private, user is excluded from All tab entirely. Enforced at render time as a safety net.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 9, 2026 — Following Tab ── -->
+  <div class="tl-section">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 9, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
     </div>
     <div class="entry-title">Following Tab + Privacy System</div>
     <p class="entry-desc">A full social layer built on one principle: privacy of content, not of presence. One-way following, five tiers, two-tone signal copy, ghost cards, and a masonry pinned grid.</p>
     <div class="entry-items">
       <div class="entry-item">
         <div class="item-name">Five privacy tiers</div>
-        <div class="item-desc">Sharing, Followers, Low key, Ghost, Private — set independently for Calendar and Diary. Private cascades both. Ghost doesn't cascade.</div>
+        <div class="item-desc">Sharing, Followers, Low key, Ghost, Private — set independently for Calendar and Diary. Private cascades both. Ghost is per-zone and doesn't cascade.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/FOLLOWING_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Ghost cards</div>
-        <div class="item-desc">Presence without content. Header color kept, moon icon, "Gone quiet for now." text, gold glow border at 0.72 opacity. No calendar, no diary, no month nav.</div>
+        <div class="item-desc">Presence without content. Header color kept, moon icon, "Gone quiet for now." Ghost is per-zone — calendar and diary can be Ghost independently. Gold glow border.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Low key signal copy</div>
-        <div class="item-desc">Two-tone copy replaces raw data. Calendar copy is data-flavored ("Neithan has been incredibly consistent"). Diary copy is feeling-flavored. Nine conditions, 18 copy keys, loaded from signal-copy.json.</div>
+        <div class="item-desc">Two-tone copy replaces raw data. Calendar copy is data-flavored. Diary copy is feeling-flavored. Nine conditions, 18 copy keys, loaded from signal-copy.json.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">People view</div>
         <div class="item-desc">Three sections: Pinned (masonry grid, per-card month nav), Showing Up (compact tap-to-expand rows), Crickets (no tracker this month). Unpin / Unfollow / Unpin all with "Sure?" confirm.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Pinned grid (masonry)</div>
         <div class="item-desc">CSS column-count:2 with break-inside:avoid. Pin order preserved via Firestore arrayUnion insertion order. L-to-R order backlogged — revisit when CSS Masonry has wider browser support.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Feed view</div>
         <div class="item-desc">"Feed coming soon." stub. Full implementation — chronological diary stream and system events — planned next.</div>
+        <div class="item-spec"></div>
       </div>
     </div>
   </div>
@@ -489,26 +565,32 @@
       <div class="entry-item">
         <div class="item-name">Mobile notebook card</div>
         <div class="item-desc">Steno/flip-pad closed state. Full-screen sheet opens with scaleX card-flip transition (not rotateY — that caused a double-flip artifact). Compact date strip with mini calendar bottom sheet.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Diary card ordering</div>
         <div class="item-desc">Diary section now renders above progress in tracker-mylog.js. Diary strip fetches most recent entry across all months.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Diary race condition fix</div>
         <div class="item-desc">renderBoard gated behind diaryReady flag. Diary entries cached in tracker-following, rendered synchronously — no more flicker on tab load.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Privacy data layer</div>
         <div class="item-desc">privacy.calendar and privacy.diary fields on user doc in Firestore. Settings modal lets users set each independently. Firestore rules updated.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Following tab F1</div>
         <div class="item-desc">People view shell, Feed placeholder, modular JS structure (following-people.js, following-signals.js, following-feed.js). Real cal-card + diary strip in pinned cards.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Pin / unfollow actions</div>
         <div class="item-desc">Pushpin button on each card. Unfollow / Unpin menu in card badge. Per-card month nav. Diary strip width fixed at 320px for pinned slot.</div>
+        <div class="item-spec"></div>
       </div>
     </div>
   </div>
@@ -525,18 +607,22 @@
       <div class="entry-item">
         <div class="item-name">Manage Activities modal</div>
         <div class="item-desc">Rename, change cadence, add, delete — all with a custom confirm dialog. Contenteditable rows with pencil hover affordance. Real-time inline change indicators (was → new). Activities scoped per month.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Amber / green highlights</div>
         <div class="item-desc">Value changes shown in amber (old) and green (new) in the confirm modal title.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Tracker refactor</div>
         <div class="item-desc">tracker.js broken into tracker-mylog.js, tracker-all.js, tracker-following.js, tracker-diary.js, mobile-tracker.js. Circular dependency resolved.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Day sheet UX</div>
         <div class="item-desc">Rows are fully tappable. Swipe-to-dismiss drag handle. Pull-to-refresh suppressed. Day sheet overlay blur and opacity reduced so calendar stays visible behind it.</div>
+        <div class="item-spec"></div>
       </div>
     </div>
   </div>
@@ -553,26 +639,32 @@
       <div class="entry-item">
         <div class="item-name">Diary data layer</div>
         <div class="item-desc">Firestore subcollection per user per date. Firebase Storage for photos. CORS configured via gsutil in Cloud Shell. Cloud Functions deployed to asia-southeast1.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Photo cropper</div>
         <div class="item-desc">Interactive drag/pinch/zoom with Fill and Fit toggle. Canvas-based. JPEG export at 0.82 quality. Known issue: Safari Fit mode blur needs tuning (canvas downscale/upscale workaround in place).</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Diary overlay</div>
         <div class="item-desc">Two-column layout: note left, polaroid photo right. Blurred backdrop. Esc/outside close with dirty check. Opens with opacity + scale spring animation.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Pages modal</div>
         <div class="item-desc">Mini polaroid thumbnails per diary day. Fade transition between days. Page nav moved to bottom footer, coral dot separator.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Transitions</div>
         <div class="item-desc">True crossfade between diary modals — no gap frame flicker. Module-level diary entry cache. Sequential stagger index (not day number) for correct timing.</div>
+        <div class="item-spec"></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Diary notebook widget</div>
         <div class="item-desc">Color themes (coral/cream/indigo) with palette picker. Tilt animation, idle sway, "read it" hint copy. No-reload theme swap, modal spine/corner theming. Amber dot indicator on days with entries.</div>
+        <div class="item-spec"></div>
       </div>
     </div>
   </div>
