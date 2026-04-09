@@ -1269,6 +1269,7 @@
 .cal-pmn-lbl {
   font-size: 0.68rem;
   font-weight: 700;
+  font-family: var(--font-base);
   color: inherit;
   opacity: 0.75;
   min-width: 26px;
@@ -1345,19 +1346,20 @@
 }
 
 .all-lowkey-body {
-  padding: 20px 16px 24px;
+  padding: 24px 16px 28px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: var(--bg-subtle);
   text-align: center;
 }
 
 .all-lowkey-headline {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  line-height: 1.4;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.5;
   font-style: italic;
 }
 

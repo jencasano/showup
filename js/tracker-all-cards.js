@@ -1,9 +1,8 @@
 import { db } from "./firebase-config.js";
 import {
-  doc, getDoc, setDoc, arrayUnion, arrayRemove
+  doc, setDoc, arrayUnion, arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from "./ui.js";
-import { getPrevYearMonth, getNextYearMonth } from "./utils.js";
 import { computeSignal } from "./following-signals.js";
 
 export function renderLockedCard(entry, isFollowing, currentUser) {
@@ -105,12 +104,6 @@ export function renderLowKeyCard(entry, yearMonth, isFollowing, currentUser) {
   const { color, fontColor, font, avatarUrl } = entry.decoration;
   let following = isFollowing;
   let followLoading = false;
-  let cardYearMonth = yearMonth;
-
-  const shortLabel = (ym) => {
-    const [y, m] = ym.split("-").map(Number);
-    return new Date(y, m - 1).toLocaleString("en", { month: "short" });
-  };
 
   const card = document.createElement("div");
   card.className = "all-lowkey-card";
@@ -137,26 +130,15 @@ export function renderLowKeyCard(entry, yearMonth, isFollowing, currentUser) {
   nameSpan.title = entry.displayName;
   nameSpan.textContent = entry.displayName;
 
-  badge.append(avatarEl, nameSpan);
-
-  // ── Month nav ──────────────────────────────────────
+  const [y, m] = yearMonth.split("-").map(Number);
   const nav = document.createElement("div");
   nav.className = "cal-pmn";
-
-  const prevBtn = document.createElement("button");
-  prevBtn.className = "cal-pmn-btn";
-  prevBtn.textContent = "\u2039";
-
   const monthLbl = document.createElement("span");
   monthLbl.className = "cal-pmn-lbl";
-  monthLbl.textContent = shortLabel(cardYearMonth);
+  monthLbl.textContent = new Date(y, m - 1).toLocaleString("en", { month: "short" });
+  nav.appendChild(monthLbl);
 
-  const nextBtn = document.createElement("button");
-  nextBtn.className = "cal-pmn-btn";
-  nextBtn.textContent = "\u203a";
-
-  nav.append(prevBtn, monthLbl, nextBtn);
-  badge.appendChild(nav);
+  badge.append(avatarEl, nameSpan, nav);
 
   // ── Follow / Unfollow button ───────────────────────
   if (currentUser) {
@@ -218,37 +200,6 @@ export function renderLowKeyCard(entry, yearMonth, isFollowing, currentUser) {
 
   body.append(headlineEl, whisperEl);
   card.appendChild(body);
-
-  // ── Month nav handlers ─────────────────────────────
-  const navigateMonth = async (newYM) => {
-    cardYearMonth = newYM;
-    monthLbl.textContent = shortLabel(cardYearMonth);
-
-    if (cardYearMonth === yearMonth) {
-      const sig = computeSignal(entry.displayName, entry);
-      headlineEl.textContent = sig.calendarHeadline;
-      return;
-    }
-
-    const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", entry.id));
-    if (snap.exists() && snap.data().marks) {
-      const sig = computeSignal(entry.displayName, snap.data());
-      headlineEl.textContent = sig.calendarHeadline;
-    } else {
-      const sig = computeSignal(entry.displayName, null);
-      headlineEl.textContent = sig.calendarHeadline;
-    }
-  };
-
-  prevBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    navigateMonth(getPrevYearMonth(cardYearMonth));
-  });
-
-  nextBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    navigateMonth(getNextYearMonth(cardYearMonth));
-  });
 
   card.addEventListener("click", () => {});
 
