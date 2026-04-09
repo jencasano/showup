@@ -233,7 +233,7 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
     inner.classList.add("fw-ghost-card");
 
     // ── Ghost header bar (actions only, no month nav)
-    const deco = user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
+    const deco = log?.decoration || user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
     const header = document.createElement("div");
     header.className = "fw-lowkey-header";
     header.style.background = deco.color;
@@ -257,7 +257,7 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
     inner.appendChild(zone);
   } else if (privacy.calendar === "lowkey") {
     // ── Lowkey header bar (mirrors cal-card-badge visually)
-    const deco = user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
+    const deco = log?.decoration || user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
     const header = document.createElement("div");
     header.className = "fw-lowkey-header";
     header.style.background = deco.color;
