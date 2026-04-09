@@ -72,48 +72,6 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   badge.appendChild(avatarEl);
   badge.appendChild(nameWrap);
 
-  // ── Follow / Unfollow button ────────────────────────
-  if (showFollowBtn && !isOwner && currentUser) {
-    const followBtn = document.createElement("button");
-    followBtn.className = `cal-follow-btn ${following ? "following" : ""}`;
-    followBtn.innerHTML = following
-      ? `<span class="follow-btn-check">\u2713</span> Following`
-      : `<span class="follow-btn-plus">+</span> Follow`;
-
-    followBtn.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      if (followLoading) return;
-      followLoading = true;
-      followBtn.disabled = true;
-      followBtn.classList.add("loading");
-      try {
-        const myRef = doc(db, "users", currentUser.uid);
-        if (following) {
-          await setDoc(myRef, {
-            following: arrayRemove(entry.id),
-            pinnedFollowing: arrayRemove(entry.id)
-          }, { merge: true });
-          following = false;
-          followBtn.innerHTML = `<span class="follow-btn-plus">+</span> Follow`;
-          followBtn.classList.remove("following");
-        } else {
-          await setDoc(myRef, { following: arrayUnion(entry.id) }, { merge: true });
-          following = true;
-          followBtn.innerHTML = `<span class="follow-btn-check">\u2713</span> Following`;
-          followBtn.classList.add("following");
-        }
-      } catch (err) {
-        console.error("Follow error:", err);
-        showToast("Couldn't update follow. Try again.", "error");
-      } finally {
-        followLoading = false;
-        followBtn.disabled = false;
-        followBtn.classList.remove("loading");
-      }
-    });
-    badge.appendChild(followBtn);
-  }
-
   // ── Per-card month nav ──────────────────────────────
   if (showMonthNav && !isOwner) {
     const nav = document.createElement("div");
@@ -171,6 +129,48 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
 
     nav.append(prevBtn, monthLbl, nextBtn);
     badge.appendChild(nav);
+  }
+
+  // ── Follow / Unfollow button ────────────────────────
+  if (showFollowBtn && !isOwner && currentUser) {
+    const followBtn = document.createElement("button");
+    followBtn.className = `cal-follow-btn ${following ? "following" : ""}`;
+    followBtn.innerHTML = following
+      ? `<span class="follow-btn-check">\u2713</span> Following`
+      : `<span class="follow-btn-plus">+</span> Follow`;
+
+    followBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      if (followLoading) return;
+      followLoading = true;
+      followBtn.disabled = true;
+      followBtn.classList.add("loading");
+      try {
+        const myRef = doc(db, "users", currentUser.uid);
+        if (following) {
+          await setDoc(myRef, {
+            following: arrayRemove(entry.id),
+            pinnedFollowing: arrayRemove(entry.id)
+          }, { merge: true });
+          following = false;
+          followBtn.innerHTML = `<span class="follow-btn-plus">+</span> Follow`;
+          followBtn.classList.remove("following");
+        } else {
+          await setDoc(myRef, { following: arrayUnion(entry.id) }, { merge: true });
+          following = true;
+          followBtn.innerHTML = `<span class="follow-btn-check">\u2713</span> Following`;
+          followBtn.classList.add("following");
+        }
+      } catch (err) {
+        console.error("Follow error:", err);
+        showToast("Couldn't update follow. Try again.", "error");
+      } finally {
+        followLoading = false;
+        followBtn.disabled = false;
+        followBtn.classList.remove("loading");
+      }
+    });
+    badge.appendChild(followBtn);
   }
 
   if (isOwner) {
