@@ -135,6 +135,7 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   if (showFollowBtn && !isOwner && currentUser) {
     const followBtn = document.createElement("button");
     followBtn.className = `cal-follow-btn ${following ? "following" : ""}`;
+    followBtn.style.marginLeft = "auto";
     followBtn.innerHTML = following
       ? `<span class="follow-btn-check">\u2713</span> Following`
       : `<span class="follow-btn-plus">+</span> Follow`;

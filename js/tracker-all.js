@@ -4,6 +4,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard } from "./cal-card.js";
+import { renderLockedCard } from "./tracker-all-cards.js";
 
 export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
   if (!silent) showLoader();
@@ -172,7 +173,18 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
 
     for (const entry of visibleEntries) {
       const isFollowing = latestFollows.has(entry.id);
-      const card = renderMobileCard(entry, yearMonth, currentUser, { isFollowing, showFollowBtn: true, showMonthNav: true });
+      let card;
+      switch (entry._tier) {
+        case "followers":
+          card = renderLockedCard(entry, isFollowing, currentUser);
+          break;
+        case "lowkey":
+        case "ghost":
+        case "sharing":
+        default:
+          card = renderMobileCard(entry, yearMonth, currentUser, { isFollowing, showFollowBtn: true, showMonthNav: true });
+          break;
+      }
       const slot = document.createElement("div");
       slot.className = "all-result-card-slot";
       slot.appendChild(card);
@@ -210,12 +222,13 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
         // Private: exclude entirely
         if (calTier === "private") return null;
 
-        // Followers tier: only show to followers, exclude from non-followers for now
-        // (locked card UI comes in pass 2)
-        if (calTier === "followers" && !myFollows.has(docSnap.id)) return null;
-
         const displayName = data.displayName || userData.displayName;
         const username = data.username || userData.username || displayName;
+
+        // Decoration fallback: log doc may lack decoration for some tiers
+        const decoration = (data.decoration?.color)
+          ? data.decoration
+          : (userData.decoration || { color: "#D8584E", fontColor: "#FFFFFF", font: "Inter", sticker: "", marker: "circle", avatarUrl: "" });
 
         // _searchActivities: only expose for Sharing tier searches
         const searchActivities = (calTier === "sharing")
@@ -227,6 +240,8 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
           ...data,
           displayName,
           username: username || displayName,
+          decoration,
+          _tier: calTier,
           _searchActivities: searchActivities
         };
       })

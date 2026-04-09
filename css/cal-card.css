@@ -1275,6 +1275,60 @@
   text-align: center;
 }
 
+/* ── Locked card (Followers tier) ─────────── */
+.all-locked-card {
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition);
+  cursor: pointer;
+}
+
+.all-locked-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.all-locked-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.all-locked-badge .cal-follow-btn {
+  margin-left: auto;
+}
+
+.all-locked-icon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.all-locked-body {
+  padding: 28px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-subtle);
+}
+
+.all-locked-symbol {
+  font-size: 1.6rem;
+  opacity: 0.4;
+}
+
+.all-locked-copy {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 @media (max-width: 1024px) {
   .all-card-grid { grid-template-columns: repeat(2, 1fr); }
 }
