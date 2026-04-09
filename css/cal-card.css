@@ -1329,6 +1329,47 @@
   text-align: center;
 }
 
+/* ── Low key card ────────────────────────── */
+.all-lowkey-card {
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition);
+  cursor: pointer;
+}
+
+.all-lowkey-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.all-lowkey-body {
+  padding: 20px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-subtle);
+  text-align: center;
+}
+
+.all-lowkey-headline {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.all-lowkey-whisper {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+
 @media (max-width: 1024px) {
   .all-card-grid { grid-template-columns: repeat(2, 1fr); }
 }
