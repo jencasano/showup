@@ -133,11 +133,11 @@ export function switchTab(tab) {
   closeMonthPicker();
 
   const monthBar = document.getElementById("month-bar");
-  if (monthBar) monthBar.style.display = tab === "following" ? "none" : "";
+  if (monthBar) monthBar.style.display = (tab === "following" || tab === "all") ? "none" : "";
 
   tabMyLog.style.display     = tab === "mylog"     ? "block" : "none";
   tabFollowing.style.display = tab === "following" ? "grid"  : "none";
-  tabAll.style.display       = tab === "all"       ? "grid"  : "none";
+  tabAll.style.display       = tab === "all"       ? "block" : "none";
 
   const activePanel = tab === "mylog" ? tabMyLog
     : tab === "following" ? tabFollowing : tabAll;
