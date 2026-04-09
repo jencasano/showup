@@ -2,7 +2,7 @@
 
 ## Overview
 
-The All tab is a **discovery directory** -- a place to find anyone tracking this month, see their status, and follow them. It is not a feed. It is not a social timeline. It is a clean, searchable list of everyone showing up this month, filtered and styled by their privacy tier.
+The All tab is a **discovery directory** -- a place to find anyone tracking this month, see their status, and follow them. It is not a feed. It is not a social timeline. It is a clean, searchable list of everyone showing up, filtered and styled by their privacy tier.
 
 ---
 
@@ -14,6 +14,18 @@ The All tab is a **discovery directory** -- a place to find anyone tracking this
 
 ---
 
+## Month Navigation
+
+The All tab does **not** use the global month bar. Instead, each card has its own per-card month nav (prev/next arrows + month label), identical in behavior to the pinned cards in the Following tab.
+
+**Rationale:** The All tab is a discovery directory. Per-card month nav lets you browse one person's history without forcing all other cards to change month simultaneously. This makes comparison and exploration natural -- the same reason Following tab adopted per-card nav for pinned cards.
+
+**Default month:** Each card defaults to the current month on load.
+
+**Global month bar behavior:** The global month bar (shared with Mine tab) no longer affects the All tab. Mine tab remains the only tab controlled by the global bar.
+
+---
+
 ## Tab Structure (top to bottom)
 
 ### 1. Stat line
@@ -22,6 +34,7 @@ A single quiet line above the search bar:
 > "X people tracking this month"
 
 - Count includes only users visible in the All tab (Sharing, Followers, Low key, Ghost -- excludes Private)
+- Always reads "this month" (refers to the current calendar month, regardless of what month individual cards are browsing)
 - Small font, muted color, no icon
 - Updates reactively with the snapshot
 
@@ -41,8 +54,9 @@ Alphabetical order, A-Z by display name. No followed-first priority -- the Follo
 ## Card States by Privacy Tier
 
 ### Tier 1 -- Sharing
-Full calendar card. Same as current behavior.
+Full calendar card.
 - Full cal grid + activity dots
+- Per-card month nav (prev/next + month label) in the badge row
 - Activity legend footer
 - Follow / Following button
 - Entire card is tappable (future: navigates to profile)
@@ -54,6 +68,7 @@ Locked card. Shown to everyone in the All tab regardless of follow status.
 - Copy: "Follow to see their tracker."
 - Follow / Following button (this is the CTA)
 - No calendar grid, no activity data
+- No per-card month nav (nothing to browse)
 - Entire card is tappable (future: navigates to profile)
 
 ### Tier 3 -- Low key
@@ -61,6 +76,7 @@ Signal copy card. Same copy for all audiences -- Low key is about how they want 
 - Avatar + display name
 - Signal copy text (calendar variant), computed from log data via `following-signals.js`
 - No calendar grid, no activity chips, no raw data
+- Per-card month nav (signal copy updates per month)
 - Follow / Following button
 - Entire card is tappable (future: navigates to profile)
 
@@ -69,6 +85,7 @@ Name-only pill. Minimal presence.
 - Avatar + display name
 - Copy: "Gone quiet for now."
 - No follow button on the card (Ghost users are followable, but the All tab card is not the right place for that CTA -- future profile page handles it)
+- No per-card month nav (nothing to browse)
 - Subtle gold glow treatment to signal Ghost status
 - Entire card is tappable (future: navigates to profile)
 
@@ -79,7 +96,7 @@ Not shown. Excluded entirely from queries and rendering.
 
 ## Card Tap Behavior
 
-All cards are tappable containers. The follow button uses `e.stopPropagation()` so it does not trigger the card tap.
+All cards are tappable containers. The follow button and month nav arrows use `e.stopPropagation()` so they do not trigger the card tap.
 
 Current behavior: card tap is a no-op placeholder. Do not show a toast or any feedback. Just wire the tap handler and leave it empty -- profile navigation activates it when user profiles are built.
 
@@ -93,6 +110,17 @@ Current behavior: card tap is a no-op placeholder. Do not show a toast or any fe
 
 ---
 
+## Per-Card Month Nav -- Implementation Notes
+
+Each Sharing and Low key card manages its own `cardYearMonth` state, independent of every other card. Pattern is identical to `renderPinnedCard` in `following-people.js`:
+
+- Prev/next buttons update `cardYearMonth` and fetch the new log doc from Firestore
+- Month label updates to reflect the browsed month (e.g. "Mar", "Apr")
+- If the fetched month has no log, render an empty state within the card (not a full card removal)
+- Nav arrows live in the card badge row, right-aligned, same as Following pinned cards
+
+---
+
 ## Data / Firestore Notes
 
 - Privacy tier is read from `userData.calendarPrivacy` (already fetched via user doc in `tracker-all.js`)
@@ -100,6 +128,7 @@ Current behavior: card tap is a no-op placeholder. Do not show a toast or any fe
 - Private users are excluded before rendering -- not fetched into the entries array
 - Low key signal copy is computed client-side from log data using `following-signals.js` (same logic as Following tab)
 - The "Include followed" toggle and its `includeFollowed` state variable are removed entirely from `tracker-all.js`
+- Per-card month nav fetches individual log docs on demand: `logs/{yearMonth}/entries/{uid}`
 
 ---
 
@@ -107,11 +136,12 @@ Current behavior: card tap is a no-op placeholder. Do not show a toast or any fe
 
 | File | Action | Notes |
 |---|---|---|
-| `js/tracker-all.js` | Modify | Remove `includeFollowed` toggle; add tier branching; update ordering; add stat line |
-| `js/tracker-all-cards.js` | Create (new) | `renderLockedCard`, `renderLowKeyCard`, `renderGhostCard` |
-| `css/tracker.css` or `css/all-cards.css` | Modify or create | Styles for `.all-locked-card`, `.all-lowkey-card`, `.all-ghost-pill` |
+| `js/tracker-all.js` | Modify | Tier branching; per-card month nav wiring; stat line |
+| `js/tracker-all-cards.js` | Create (new) | `renderLockedCard`, `renderLowKeyCard`, `renderGhostCard` -- new card types for non-Sharing tiers |
+| `js/cal-card.js` | Modify | Add per-card month nav to `renderMobileCard` (Sharing cards) |
+| `css/tracker.css` | Modify | Styles for `.all-locked-card`, `.all-lowkey-card`, `.all-ghost-pill` |
 
-Modularizing the new card types into `tracker-all-cards.js` keeps `tracker-all.js` lean and follows the project's aggressive modularization principle.
+The new card types live in `tracker-all-cards.js` to keep `tracker-all.js` lean. `cal-card.js` handles the full Sharing card (already exists, just needs month nav added).
 
 ---
 
