@@ -366,20 +366,18 @@ function renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowin
   info.append(name, meta);
 
   const right = document.createElement("div"); right.className = "fw-compact-right";
-  if (!isGhost) {
-    right.appendChild(renderTierBadge(privacy.calendar));
-    const compactPinBtn = document.createElement("button");
-    compactPinBtn.className = "fw-pin-btn fw-pin-btn--unpinned";
-    compactPinBtn.textContent = "\uD83D\uDCCC";
-    compactPinBtn.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      try {
-        await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: arrayUnion(uid) }, { merge: true });
-        showToast("Pinned!");
-      } catch { showToast("Couldn't pin. Try again.", "error"); }
-    });
-    right.appendChild(compactPinBtn);
-  }
+  if (!isGhost) right.appendChild(renderTierBadge(privacy.calendar));
+  const compactPinBtn = document.createElement("button");
+  compactPinBtn.className = "fw-pin-btn fw-pin-btn--unpinned";
+  compactPinBtn.textContent = "\uD83D\uDCCC";
+  compactPinBtn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    try {
+      await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: arrayUnion(uid) }, { merge: true });
+      showToast("Pinned!");
+    } catch { showToast("Couldn't pin. Try again.", "error"); }
+  });
+  right.appendChild(compactPinBtn);
   const chevron = document.createElement("span"); chevron.className = "fw-compact-chevron"; chevron.textContent = "\u203A";
   right.appendChild(chevron);
   row.append(avatar, info, right);
