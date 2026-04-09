@@ -28,19 +28,19 @@ Privacy settings apply to **Calendar** and **Diary independently**. A user can b
 
 **Exception: Private cascades.** If either Calendar or Diary is set to Private, the other automatically becomes Private too. Private is all-or-nothing -- it makes no sense to be invisible on one and visible on the other. Ghost does not cascade; it is a per-setting choice.
 
-| Tier | Label | Calendar: what it shows | Diary: what it shows | Visible in All tab | Visible to anyone who follows you |
-|------|-------|--------------------------|----------------------|---------------------|-----------------------------------|
-| 1 | **Sharing** | Full 7-day strip + habit chips | Full note + photo | Yes -- full card | Yes -- full card |
-| 2 | **Followers** | Full 7-day strip + habit chips | Full note + photo | Locked card (lock icon, no hints) | Yes -- full card |
-| 3 | **Low key** | Signal copy only, no strip or chips | Signal copy only, no note or photo | Yes -- signal copy card | Yes -- signal copy card |
-| 4 | **Ghost** | Name only, no content | Name only, no content | Yes -- name in People list, nothing in Feed | Yes -- name in People list, nothing in Feed |
-| 5 | **Private** | Not shown | Not shown | Not discoverable, not shown anywhere | Not shown; follow relationship cannot be initiated |
+| Tier | Label | Calendar zone | Diary zone |
+|------|-------|---------------|------------|
+| 1 | **Sharing** | Full 7-day strip + habit chips | Full note + photo |
+| 2 | **Followers** | Full 7-day strip + habit chips (followers only; strangers see locked) | Full note + photo (followers only; strangers see locked) |
+| 3 | **Low key** | Signal copy only -- data-flavored, no strip or chips | Signal copy only -- feeling-flavored, no note or photo |
+| 4 | **Ghost** | "Gone quiet for now." moon treatment, no data | "Gone quiet for now." moon treatment, no content |
+| 5 | **Private** | Not shown | Not shown |
 
 ### Who can be followed
 
 There is no separate "allow following" toggle. The privacy tier determines followability implicitly:
 
-- **Tiers 1-4 (Sharing, Followers, Low key, Ghost)** -- user is followable and discoverable (except Ghost, which is present but content-hidden).
+- **Tiers 1-4 (Sharing, Followers, Low key, Ghost)** -- user is followable and discoverable.
 - **Tier 5 (Private)** -- user is completely undiscoverable. They cannot be found in the All tab, cannot be followed, and do not appear anywhere in anyone else's UI.
 
 ### Privacy cascade rules
@@ -54,9 +54,9 @@ There is no separate "allow following" toggle. The privacy tier determines follo
 
 ### The Ghost vs. Private distinction
 
-**Ghost** = I'm here, I'm just quiet. You can follow me. You'll see my name. Nothing more. Think: social media detox. They didn't delete their account. They're just not posting.
+**Ghost** = I'm here, I'm just quiet. You can follow me. You'll see my name and "Gone quiet for now." on both zones. Think: social media detox. The follow relationship persists, it just goes quiet. If Lulu goes Ghost, her followers shouldn't lose the connection entirely -- she might come back someday.
 
-Ghost mode means your content is invisible, but your presence isn't. People can still follow you -- you just never appear in their Feed, and your calendar and diary are completely hidden. You're in their People list as a name, nothing more. The follow relationship persists, it just goes quiet. If Lulu goes Ghost, her followers shouldn't lose the connection entirely -- she might come back someday.
+Ghost applies per-zone. If only the diary is Ghost, the calendar renders normally and the diary zone shows "Gone quiet for now." If both are Ghost, both zones show that treatment.
 
 **Private** = I don't exist to you. You can't find me, you can't follow me, I don't appear anywhere. Think: witness protection.
 
@@ -79,6 +79,69 @@ Signal copy is computed client-side from log data without exposing raw details. 
 | Fallback | "{firstName} is showing up quietly." | "{firstName} is keeping this one close." |
 
 Templates live in `data/signal-copy.json` with keys like `streak_7_calendar` and `streak_7_diary`. Logic stays in `js/following-signals.js`.
+
+---
+
+## All Privacy Combinations -- Display Reference
+
+**Key:**
+- **Full cal** = 7-day strip + habit chips
+- **Full diary** = note + photo
+- **Signal cal** = calendar-flavored signal copy
+- **Signal diary** = diary-flavored signal copy
+- **Ghost cal** = "Gone quiet for now." moon treatment on calendar zone
+- **Ghost diary** = "Gone quiet for now." moon treatment on diary zone
+- **Locked** = lock icon, no content, no hints (Followers tier, stranger only)
+- **Hidden** = not shown anywhere
+
+**Three rules that hold across every combination:**
+1. A follower always sees the same card in the Following tab and the All tab. Following-tab and All-tab-follower columns are identical every time.
+2. Low key and Ghost are audience-agnostic -- signal copy and ghost treatment show the same to followers and strangers.
+3. Only the Followers tier discriminates by audience -- strangers get Locked, followers get Full.
+
+### Calendar = Sharing
+
+| Diary tier | Following tab (follower) | All tab - follower | All tab - stranger |
+|---|---|---|---|
+| Sharing | Full cal + Full diary | Full cal + Full diary | Full cal + Full diary |
+| Followers | Full cal + Full diary | Full cal + Full diary | Full cal + Locked diary |
+| Low key | Full cal + Signal diary | Full cal + Signal diary | Full cal + Signal diary |
+| Ghost | Full cal + Ghost diary | Full cal + Ghost diary | Full cal + Ghost diary |
+| Private | Hidden | Hidden | Hidden |
+
+### Calendar = Followers
+
+| Diary tier | Following tab (follower) | All tab - follower | All tab - stranger |
+|---|---|---|---|
+| Sharing | Full cal + Full diary | Full cal + Full diary | Locked cal + Full diary |
+| Followers | Full cal + Full diary | Full cal + Full diary | Locked cal + Locked diary |
+| Low key | Full cal + Signal diary | Full cal + Signal diary | Locked cal + Signal diary |
+| Ghost | Full cal + Ghost diary | Full cal + Ghost diary | Locked cal + Ghost diary |
+| Private | Hidden | Hidden | Hidden |
+
+### Calendar = Low key
+
+| Diary tier | Following tab (follower) | All tab - follower | All tab - stranger |
+|---|---|---|---|
+| Sharing | Signal cal + Full diary | Signal cal + Full diary | Signal cal + Full diary |
+| Followers | Signal cal + Full diary | Signal cal + Full diary | Signal cal + Locked diary |
+| Low key | Signal cal + Signal diary | Signal cal + Signal diary | Signal cal + Signal diary |
+| Ghost | Signal cal + Ghost diary | Signal cal + Ghost diary | Signal cal + Ghost diary |
+| Private | Hidden | Hidden | Hidden |
+
+### Calendar = Ghost
+
+| Diary tier | Following tab (follower) | All tab - follower | All tab - stranger |
+|---|---|---|---|
+| Sharing | Ghost cal + Full diary | Ghost cal + Full diary | Ghost cal + Full diary |
+| Followers | Ghost cal + Full diary | Ghost cal + Full diary | Ghost cal + Locked diary |
+| Low key | Ghost cal + Signal diary | Ghost cal + Signal diary | Ghost cal + Signal diary |
+| Ghost | Ghost cal + Ghost diary | Ghost cal + Ghost diary | Ghost cal + Ghost diary |
+| Private | Hidden | Hidden | Hidden |
+
+### Calendar = Private
+
+All diary tier combinations are Hidden everywhere for everyone.
 
 ---
 
@@ -125,3 +188,4 @@ Rules:
 - System feed events stored in a subcollection on the follower's user doc (e.g. `users/{followerUid}/feedEvents/{eventId}`).
 - Private users are excluded from All tab queries entirely at the query/render level -- they are not discoverable.
 - Dormant follows (where followed user is Private) are tracked but suppressed in UI rendering.
+- **All tab rendering must check the viewer's following list.** If the viewer follows a person, that person's card in the All tab renders at follower-level access -- identical to what the viewer sees in the Following tab. Only non-followers get stranger-level access (Followers tier locked, etc.).
