@@ -15,6 +15,8 @@ No global month bar on Following. The tab always defaults to the current month. 
 
 Privacy settings apply to **Calendar** and **Diary independently**. A user can be Sharing their calendar but Ghost on diary, for example. Two separate settings, one card.
 
+**Exception: Private cascades.** If either Calendar or Diary is set to Private, the other automatically becomes Private too. Private is all-or-nothing -- it makes no sense to be invisible on one and visible on the other. Ghost does not cascade; it is a per-setting choice.
+
 | Tier | Label | Calendar: what it shows | Diary: what it shows | Visible in All tab (non-followers) | Visible to Followers |
 |------|-------|--------------------------|----------------------|-------------------------------------|----------------------|
 | 1 | **Sharing** | Full 7-day strip + habit chips | Full note + photo | Yes -- full card | Yes -- full card |
@@ -23,11 +25,27 @@ Privacy settings apply to **Calendar** and **Diary independently**. A user can b
 | 4 | **Ghost** | Name only, no content | Name only, no content | Yes -- name in People list, nothing in Feed | Yes -- name in People list, nothing in Feed |
 | 5 | **Private** | Not shown | Not shown | Not discoverable, not shown anywhere | Not shown; follow relationship cannot be initiated |
 
+### Who can be followed
+
+There is no separate "allow following" toggle. The privacy tier determines followability implicitly:
+
+- **Tiers 1-4 (Sharing, Followers, Low key, Ghost)** -- user is followable and discoverable (except Ghost, which is present but content-hidden).
+- **Tier 5 (Private)** -- user is completely undiscoverable. They cannot be found in the All tab, cannot be followed, and do not appear anywhere in anyone else's UI.
+
+### Privacy cascade rules
+
+| Action | Result |
+|--------|--------|
+| User sets Calendar to Private | Diary auto-sets to Private |
+| User sets Diary to Private | Calendar auto-sets to Private |
+| User sets Calendar to Ghost | Diary stays unchanged |
+| User sets Diary to Ghost | Calendar stays unchanged |
+
 ### The Ghost vs. Private distinction
 
 **Ghost** = I'm here, I'm just quiet. You can follow me. You'll see my name. Nothing more. Think: social media detox. They didn't delete their account. They're just not posting.
 
-**Ghost mode** means your content is invisible, but your presence isn't. People can still follow you -- you just never appear in their Feed, and your calendar and diary are completely hidden. You're in their People list as a name, nothing more. The follow relationship persists, it just goes quiet. If Lulu goes Ghost, her followers shouldn't lose the connection entirely -- she might come back someday. Think of it like someone going on a social media detox.
+Ghost mode means your content is invisible, but your presence isn't. People can still follow you -- you just never appear in their Feed, and your calendar and diary are completely hidden. You're in their People list as a name, nothing more. The follow relationship persists, it just goes quiet. If Lulu goes Ghost, her followers shouldn't lose the connection entirely -- she might come back someday.
 
 **Private** = I don't exist to you. You can't find me, you can't follow me, I don't appear anywhere. Think: witness protection.
 
@@ -89,6 +107,7 @@ Rules:
 ## Data / Firestore Notes
 
 - Privacy settings stored on the user doc: `calendarPrivacy` and `diaryPrivacy` fields, each with values: `sharing`, `followers`, `lowkey`, `ghost`, `private`.
+- Private cascade is enforced at the UI settings level -- when either field is set to `private`, both are written as `private` in the same Firestore update.
 - System feed events stored in a subcollection on the follower's user doc (e.g. `users/{followerUid}/feedEvents/{eventId}`).
 - Private users are excluded from All tab queries entirely at the query/render level -- they are not discoverable.
 - Dormant follows (where followed user is Private) are tracked but suppressed in UI rendering.
