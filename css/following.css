@@ -580,7 +580,7 @@
 
 @media (max-width: 768px) {
   .fw-people-layout { grid-template-columns: 1fr; }
-  .fw-people-side { display: none; position: static; }
+  .fw-people-side { position: static; }
   .fw-pinned-grid { column-count: 1; }
   .fw-pinned-slot,
   .fw-pinned-slot-inner { max-width: 100%; }
