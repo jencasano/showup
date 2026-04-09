@@ -1235,6 +1235,15 @@
   width: 100%;
 }
 
+.all-tab-container .cal-card {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.all-tab-container .all-search-input {
+  max-width: 480px;
+}
+
 .all-stat-line {
   font-size: 0.75rem;
   color: var(--text-faint);
