@@ -4,7 +4,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard } from "./cal-card.js";
-import { renderLockedCard, renderLowKeyCard } from "./tracker-all-cards.js";
+import { renderLockedCard, renderLowKeyCard, renderGhostCard } from "./tracker-all-cards.js";
 
 export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
   if (!silent) showLoader();
@@ -182,6 +182,8 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
           card = renderLowKeyCard(entry, isFollowing, currentUser);
           break;
         case "ghost":
+          card = renderGhostCard(entry, isFollowing, currentUser);
+          break;
         case "sharing":
         default:
           card = renderMobileCard(entry, yearMonth, currentUser, { isFollowing, showFollowBtn: true, showMonthNav: true });
