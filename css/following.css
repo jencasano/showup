@@ -129,11 +129,9 @@
 /* ── Pinned grid ───────────────────────────────────── */
 
 .fw-pinned-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
+  column-count: 2;
+  column-gap: 24px;
   margin-bottom: 24px;
-  align-items: start;
 }
 
 /* ── Pinned slot ────────────────────────────────────── */
@@ -144,9 +142,11 @@
 }
 
 .fw-pinned-slot {
-  margin-bottom: 0;
+  margin-bottom: 24px;
   position: relative;
-  align-self: start;
+  break-inside: avoid;
+  display: inline-block;
+  width: 100%;
 }
 
 .fw-pinned-slot-inner {
@@ -555,7 +555,7 @@
 @media (max-width: 768px) {
   .fw-people-layout { grid-template-columns: 1fr; }
   .fw-people-side { display: none; position: static; }
-  .fw-pinned-grid { grid-template-columns: 1fr; }
+  .fw-pinned-grid { column-count: 1; }
   .fw-pinned-slot,
   .fw-pinned-slot-inner { max-width: 100%; }
 }

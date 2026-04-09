@@ -446,9 +446,19 @@ export function renderPeopleView(container, model) {
   } else {
     if (pinnedActive.length > 0) {
       main.appendChild(renderSectionLbl("\uD83D\uDCCC Pinned"));
+      // Interleave for CSS columns: column-count fills top-to-bottom per column,
+      // so reorder so that visual left-to-right reading matches pin order.
+      const n = pinnedActive.length;
+      const half = Math.ceil(n / 2);
+      const interleaved = new Array(n);
+      for (let i = 0; i < n; i++) {
+        const col = i % 2;
+        const row = Math.floor(i / 2);
+        interleaved[col * half + row] = pinnedActive[i];
+      }
       const pinnedGrid = document.createElement("div");
       pinnedGrid.className = "fw-pinned-grid";
-      for (const { uid, user, log, diaryEntry } of pinnedActive) {
+      for (const { uid, user, log, diaryEntry } of interleaved) {
         pinnedGrid.appendChild(renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
       }
       main.appendChild(pinnedGrid);
