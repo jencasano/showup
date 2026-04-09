@@ -126,6 +126,16 @@
   border-radius: var(--radius-full);
 }
 
+/* ── Pinned grid ───────────────────────────────────── */
+
+.fw-pinned-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+  align-items: start;
+}
+
 /* ── Pinned slot ────────────────────────────────────── */
 
 .fw-pinned-card {
@@ -134,9 +144,8 @@
 }
 
 .fw-pinned-slot {
-  margin-bottom: 12px;
+  margin-bottom: 0;
   position: relative;
-  max-width: 320px;
 }
 
 .fw-pinned-slot-inner {
@@ -545,6 +554,7 @@
 @media (max-width: 768px) {
   .fw-people-layout { grid-template-columns: 1fr; }
   .fw-people-side { display: none; position: static; }
+  .fw-pinned-grid { grid-template-columns: 1fr; }
   .fw-pinned-slot,
   .fw-pinned-slot-inner { max-width: 100%; }
 }

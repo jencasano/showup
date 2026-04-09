@@ -445,9 +445,12 @@ export function renderPeopleView(container, model) {
   } else {
     if (pinnedActive.length > 0) {
       main.appendChild(renderSectionLbl("\uD83D\uDCCC Pinned"));
+      const pinnedGrid = document.createElement("div");
+      pinnedGrid.className = "fw-pinned-grid";
       for (const { uid, user, log, diaryEntry } of pinnedActive) {
-        main.appendChild(renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
+        pinnedGrid.appendChild(renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
       }
+      main.appendChild(pinnedGrid);
     }
 
     side.appendChild(renderSectionLbl("Showing Up", activeUnpinned.length));
