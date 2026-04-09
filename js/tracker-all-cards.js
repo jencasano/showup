@@ -100,7 +100,7 @@ export function renderLockedCard(entry, isFollowing, currentUser) {
 }
 
 // ─── LOW KEY CARD ──────────────────────────────────
-export function renderLowKeyCard(entry, yearMonth, isFollowing, currentUser) {
+export function renderLowKeyCard(entry, isFollowing, currentUser) {
   const { color, fontColor, font, avatarUrl } = entry.decoration;
   let following = isFollowing;
   let followLoading = false;
@@ -130,15 +130,7 @@ export function renderLowKeyCard(entry, yearMonth, isFollowing, currentUser) {
   nameSpan.title = entry.displayName;
   nameSpan.textContent = entry.displayName;
 
-  const [y, m] = yearMonth.split("-").map(Number);
-  const nav = document.createElement("div");
-  nav.className = "cal-pmn";
-  const monthLbl = document.createElement("span");
-  monthLbl.className = "cal-pmn-lbl";
-  monthLbl.textContent = new Date(y, m - 1).toLocaleString("en", { month: "short" });
-  nav.appendChild(monthLbl);
-
-  badge.append(avatarEl, nameSpan, nav);
+  badge.append(avatarEl, nameSpan);
 
   // ── Follow / Unfollow button ───────────────────────
   if (currentUser) {

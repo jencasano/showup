@@ -179,7 +179,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
           card = renderLockedCard(entry, isFollowing, currentUser);
           break;
         case "lowkey":
-          card = renderLowKeyCard(entry, yearMonth, isFollowing, currentUser);
+          card = renderLowKeyCard(entry, isFollowing, currentUser);
           break;
         case "ghost":
         case "sharing":
