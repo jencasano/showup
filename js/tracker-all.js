@@ -3,7 +3,7 @@ import {
   collection, doc, getDoc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
-import { renderMobileCard } from "./mobile-tracker.js";
+import { renderMobileCard } from "./cal-card.js";
 
 export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
   if (!silent) showLoader();
@@ -172,7 +172,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
 
     for (const entry of visibleEntries) {
       const isFollowing = latestFollows.has(entry.id);
-      const card = renderMobileCard(entry, yearMonth, currentUser, { isFollowing, showFollowBtn: true });
+      const card = renderMobileCard(entry, yearMonth, currentUser, { isFollowing, showFollowBtn: true, showMonthNav: true });
       const slot = document.createElement("div");
       slot.className = "all-result-card-slot";
       slot.appendChild(card);

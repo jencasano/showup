@@ -1239,6 +1239,42 @@
   padding: 0 2px;
 }
 
+/* ── Per-card month nav ────────────────────── */
+.cal-pmn {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.cal-pmn-btn {
+  background: rgba(0, 0, 0, 0.15);
+  border: none;
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+  font-size: 0.8rem;
+  color: inherit;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  font-family: var(--font-base);
+}
+
+.cal-pmn-btn:hover { opacity: 1; }
+
+.cal-pmn-lbl {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: inherit;
+  opacity: 0.75;
+  min-width: 26px;
+  text-align: center;
+}
+
 @media (max-width: 1024px) {
   .all-card-grid { grid-template-columns: repeat(2, 1fr); }
 }

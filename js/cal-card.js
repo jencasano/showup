@@ -4,7 +4,7 @@ import {
   doc, getDoc, setDoc, updateDoc,
   arrayUnion, arrayRemove
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDaysInMonth, getCurrentYearMonth, getActivityColor } from "./utils.js";
+import { getDaysInMonth, getCurrentYearMonth, getActivityColor, getPrevYearMonth, getNextYearMonth } from "./utils.js";
 import { openManageActivitiesModal } from "./manage-activities.js";
 import { showToast } from "./ui.js";
 import { icon, STICKER_ICONS } from "./icons.js";
@@ -31,9 +31,10 @@ function renderSticker(sticker) {
 
 // ─── RENDER MOBILE CALENDAR CARD ────────────────────
 export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
-  const { isFollowing = false, showFollowBtn = false, onMarkToggled = null } = opts;
+  const { isFollowing = false, showFollowBtn = false, onMarkToggled = null, showMonthNav = false } = opts;
   const isOwner = currentUser && currentUser.uid === entry.id;
-  const isCurrentMonth = yearMonth === getCurrentYearMonth();
+  let cardYearMonth = yearMonth;
+  let isCurrentMonth = cardYearMonth === getCurrentYearMonth();
   const todayDate = new Date().getDate();
   const { color, fontColor, font, sticker, marker, avatarUrl } = entry.decoration;
 
@@ -113,6 +114,65 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
     badge.appendChild(followBtn);
   }
 
+  // ── Per-card month nav ──────────────────────────────
+  if (showMonthNav && !isOwner) {
+    const nav = document.createElement("div");
+    nav.className = "cal-pmn";
+
+    const prevBtn = document.createElement("button");
+    prevBtn.className = "cal-pmn-btn";
+    prevBtn.textContent = "\u2039";
+
+    const monthLbl = document.createElement("span");
+    monthLbl.className = "cal-pmn-lbl";
+    const shortLabel = (ym) => {
+      const [y, m] = ym.split("-").map(Number);
+      return new Date(y, m - 1).toLocaleString("en", { month: "short" });
+    };
+    monthLbl.textContent = shortLabel(cardYearMonth);
+
+    const nextBtn = document.createElement("button");
+    nextBtn.className = "cal-pmn-btn";
+    nextBtn.textContent = "\u203a";
+
+    const navigateMonth = async (newYM) => {
+      cardYearMonth = newYM;
+      isCurrentMonth = cardYearMonth === getCurrentYearMonth();
+      monthLbl.textContent = shortLabel(cardYearMonth);
+
+      if (cardYearMonth === yearMonth) {
+        render();
+        return;
+      }
+
+      const snap = await getDoc(doc(db, "logs", cardYearMonth, "entries", entry.id));
+      if (snap.exists() && snap.data().activities?.length) {
+        const data = snap.data();
+        entry.marks = data.marks || {};
+        entry.activities = data.activities;
+        render();
+      } else {
+        calBody.innerHTML = `<p style="text-align:center;color:var(--text-faint);font-size:0.85rem;padding:24px 0;">Nothing logged for this month.</p>`;
+        footer.innerHTML = "";
+        filterBar.style.display = "none";
+        filterBar.innerHTML = "";
+      }
+    };
+
+    prevBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      navigateMonth(getPrevYearMonth(cardYearMonth));
+    });
+
+    nextBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      navigateMonth(getNextYearMonth(cardYearMonth));
+    });
+
+    nav.append(prevBtn, monthLbl, nextBtn);
+    badge.appendChild(nav);
+  }
+
   if (isOwner) {
     const youPill = document.createElement("span");
     youPill.className = "cal-you-pill";
@@ -160,7 +220,7 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
 
   function render() {
     calBody.innerHTML = "";
-    renderCalGrid(calBody, entry, yearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap, diaryDays);
+    renderCalGrid(calBody, entry, cardYearMonth, isCurrentMonth, todayDate, activeFilter, isOwner, color, marker, onDayTap, diaryDays);
     renderFilterBar(filterBar, activeFilter, entry.activities, onFilterClear);
     renderLegend(footer, entry, (activityName) => {
       activeFilter = activeFilter === activityName ? null : activityName;
