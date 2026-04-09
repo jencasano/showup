@@ -503,6 +503,7 @@
 .fw-diary-view-btn { font-size: 0.62rem; font-weight: 600; color: var(--text-faint); border: none; background: none; cursor: pointer; padding: 0; font-family: var(--font-base); }
 .fw-diary-view-btn:hover { color: var(--color-primary); }
 .fw-diary-strip-signal { font-size: 0.72rem; color: var(--text-muted); font-style: italic; line-height: 1.5; }
+.fw-diary-strip-ghost { font-size: 0.78rem; color: var(--text-faint); font-style: italic; display: flex; align-items: center; gap: 5px; }
 
 /* ── Pin button ────────────────────────────────────────── */
 

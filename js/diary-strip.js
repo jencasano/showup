@@ -10,7 +10,20 @@ function formatDocId(docId) {
 // ── Diary Strip (synchronous -- entry already fetched and cached) ──
 
 export function renderDiaryStrip(entry, privacy, signal, { isFollowing = true } = {}) {
-  if (privacy.diary === "ghost" || privacy.diary === "private") return null;
+  if (privacy.diary === "private") return null;
+
+  if (privacy.diary === "ghost") {
+    const strip = document.createElement("div");
+    strip.className = "fw-diary-strip";
+    const lbl = document.createElement("span");
+    lbl.className = "fw-diary-strip-label";
+    lbl.textContent = "diary.";
+    const ghost = document.createElement("span");
+    ghost.className = "fw-diary-strip-ghost";
+    ghost.textContent = "\u{1F319} Gone quiet for now.";
+    strip.append(lbl, ghost);
+    return strip;
+  }
 
   if (privacy.diary === "followers" && !isFollowing) {
     const strip = document.createElement("div");
