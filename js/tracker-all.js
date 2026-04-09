@@ -1,10 +1,12 @@
 import { db } from "./firebase-config.js";
 import {
-  collection, doc, getDoc, onSnapshot
+  collection, doc, getDoc, getDocs, onSnapshot, query, orderBy, limit
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard } from "./cal-card.js";
 import { renderLockedCard, renderLowKeyCard, renderGhostCard } from "./tracker-all-cards.js";
+import { renderDiaryStrip } from "./diary-strip.js";
+import { computeSignal } from "./following-signals.js";
 
 export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
   if (!silent) showLoader();
@@ -192,6 +194,15 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       const slot = document.createElement("div");
       slot.className = "all-result-card-slot";
       slot.appendChild(card);
+
+      // Diary strip for Sharing tier cards
+      if (entry._tier === "sharing" || !entry._tier) {
+        const privacy = { calendar: entry._tier || "sharing", diary: entry._diaryTier || "sharing" };
+        const signal = computeSignal(entry.displayName, entry);
+        const strip = renderDiaryStrip(entry._diaryEntry, privacy, signal, { isFollowing });
+        if (strip) slot.appendChild(strip);
+      }
+
       grid.appendChild(slot);
     }
   }
@@ -214,17 +225,37 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       myUserSnap?.exists() ? (myUserSnap.data().following || []) : []
     );
 
-    const entries = validDocs
-      .map((docSnap, i) => {
+    // Pre-compute tiers so we know which users need diary fetches
+    const entryMetas = validDocs.map((docSnap, i) => {
+      const userSnap = userSnaps[i];
+      if (!userSnap?.exists()) return null;
+      const userData = userSnap.data();
+      const calTier = userData?.calendarPrivacy || userData?.privacy?.calendar || "sharing";
+      if (calTier === "private") return null;
+      return { docSnap, userData, calTier };
+    });
+
+    // Fetch diary entries for Sharing tier users
+    const diaryCache = {};
+    await Promise.all(entryMetas.map(async (meta) => {
+      if (!meta || meta.calTier !== "sharing") return;
+      const uid = meta.docSnap.id;
+      try {
+        const diaryRef = collection(db, "users", uid, "diary", yearMonth, "entries");
+        const q = query(diaryRef, orderBy("__name__", "desc"), limit(1));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          const d = snap.docs[0];
+          diaryCache[uid] = { docId: d.id, ...d.data() };
+        }
+      } catch (_) { /* diary fetch is best-effort */ }
+    }));
+
+    const entries = entryMetas
+      .map((meta) => {
+        if (!meta) return null;
+        const { docSnap, userData, calTier } = meta;
         const data = docSnap.data();
-        const userSnap = userSnaps[i];
-        if (!userSnap?.exists()) return null;
-        const userData = userSnap.data();
-
-        const calTier = userData?.calendarPrivacy || userData?.privacy?.calendar || "sharing";
-
-        // Private: exclude entirely
-        if (calTier === "private") return null;
 
         const displayName = data.displayName || userData.displayName;
         const username = data.username || userData.username || displayName;
@@ -239,6 +270,8 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
           ? (data.activities || []).map(a => a.toLowerCase().trim())
           : [];
 
+        const diaryTier = userData?.diaryPrivacy || userData?.privacy?.diary || "sharing";
+
         return {
           id: docSnap.id,
           ...data,
@@ -246,6 +279,8 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
           username: username || displayName,
           decoration,
           _tier: calTier,
+          _diaryTier: diaryTier,
+          _diaryEntry: diaryCache[docSnap.id] || null,
           _searchActivities: searchActivities
         };
       })
