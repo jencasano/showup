@@ -9,26 +9,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400&family=Sora:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary:    #D8584E;
-      --teal:       #80B9B9;
-      --amber:      #F8C08A;
-      --bg:         #1D2142;
-      --bg-surface: #2A2E45;
-      --bg-subtle:  #353B5C;
-      --border:     #3D4468;
+      --primary:      #D8584E;
+      --teal:         #80B9B9;
+      --amber:        #F8C08A;
+      --bg:           #1D2142;
+      --bg-surface:   #2A2E45;
+      --bg-subtle:    #353B5C;
+      --border:       #3D4468;
       --border-faint: #2F3456;
-      --text:       #FBDFCB;
-      --text-muted: #B3A1B4;
-      --text-faint: #596088;
-      --font-logo:  'Sora', sans-serif;
-      --font-head:  'Fraunces', serif;
-      --font-base:  'Inter', sans-serif;
-      --radius-sm:  6px;
-      --radius-md:  10px;
-      --radius-lg:  16px;
-      --radius-full: 99px;
-      --line-color: #3D4468;
-      --dot-size:   10px;
+      --text:         #FBDFCB;
+      --text-muted:   #B3A1B4;
+      --text-faint:   #596088;
+      --font-logo:    'Sora', sans-serif;
+      --font-head:    'Fraunces', serif;
+      --font-base:    'Inter', sans-serif;
+      --radius-sm:    6px;
+      --radius-md:    10px;
+      --radius-lg:    16px;
+      --radius-full:  99px;
+      --line-color:   #3D4468;
+      --dot-size:     10px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -76,7 +76,7 @@
     .hero {
       max-width: 760px;
       margin: 0 auto;
-      padding: 64px 32px 56px;
+      padding: 64px 32px 48px;
     }
 
     .hero-eyebrow {
@@ -102,7 +102,48 @@
       font-size: 1rem;
       font-style: italic;
       color: var(--text-muted);
+      margin-bottom: 28px;
     }
+
+    /* ── Hero meta strip ── */
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border-faint);
+      padding-top: 20px;
+    }
+
+    .hero-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 20px 0 0;
+      margin-right: 20px;
+      border-right: 1px solid var(--border-faint);
+      font-size: 0.68rem;
+      color: var(--text-faint);
+    }
+
+    .hero-meta-item:last-child {
+      border-right: none;
+      margin-right: 0;
+      padding-right: 0;
+    }
+
+    .hero-meta-item strong {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .hero-meta-item a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .hero-meta-item a:hover { color: var(--primary); }
 
     /* ── Timeline ── */
     .timeline {
@@ -111,14 +152,12 @@
       padding: 0 32px 96px;
     }
 
-    /* The vertical line container */
     .tl-section {
       position: relative;
       padding-left: 40px;
       padding-bottom: 56px;
     }
 
-    /* The continuous vertical line */
     .tl-section::before {
       content: '';
       position: absolute;
@@ -134,7 +173,6 @@
       height: 28px;
     }
 
-    /* The dot */
     .tl-section::after {
       content: '';
       position: absolute;
@@ -191,6 +229,12 @@
       border: 1px solid rgba(128,185,185,0.25);
     }
 
+    .badge-deck {
+      background: rgba(248,192,138,0.1);
+      color: var(--amber);
+      border: 1px solid rgba(248,192,138,0.2);
+    }
+
     .entry-title {
       font-family: var(--font-head);
       font-size: 1.25rem;
@@ -222,9 +266,7 @@
       border-bottom: 1px solid var(--border-faint);
     }
 
-    .entry-item:last-child {
-      border-bottom: none;
-    }
+    .entry-item:last-child { border-bottom: none; }
 
     .item-name {
       font-size: 0.74rem;
@@ -240,34 +282,61 @@
       line-height: 1.6;
     }
 
-    /* ── On Deck ── */
-    .on-deck {
-      margin-top: 8px;
-      padding: 28px;
+    /* ── On Deck (collapsible) ── */
+    .on-deck-details {
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
+      overflow: hidden;
     }
 
-    .on-deck-title {
+    .on-deck-summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 24px;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .on-deck-summary::-webkit-details-marker { display: none; }
+
+    .on-deck-summary:hover { background: var(--bg-subtle); }
+
+    .on-deck-summary-title {
       font-family: var(--font-head);
       font-size: 1rem;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 4px;
+      flex: 1;
     }
 
-    .on-deck-sub {
+    .on-deck-summary-sub {
       font-size: 0.65rem;
-      font-style: italic;
       color: var(--text-faint);
-      margin-bottom: 20px;
+    }
+
+    .on-deck-chevron {
+      color: var(--text-faint);
+      font-size: 0.7rem;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    details[open] .on-deck-chevron { transform: rotate(180deg); }
+
+    .on-deck-body {
+      padding: 0 24px 24px;
+      border-top: 1px solid var(--border-faint);
     }
 
     .deck-list {
       list-style: none;
       columns: 2;
       column-gap: 24px;
+      padding-top: 20px;
     }
 
     .deck-item {
@@ -300,17 +369,16 @@
       color: var(--text-faint);
     }
 
-    .site-footer a {
-      color: var(--text-faint);
-      text-decoration: none;
-    }
+    .site-footer a { color: var(--text-faint); text-decoration: none; }
     .site-footer a:hover { color: var(--primary); }
 
     /* ── Mobile ── */
     @media (max-width: 600px) {
       .site-header { padding: 0 20px; }
-      .hero { padding: 40px 20px 40px; }
+      .hero { padding: 40px 20px 36px; }
       .hero-title { font-size: 2rem; }
+      .hero-meta { gap: 12px; }
+      .hero-meta-item { border-right: none; padding-right: 0; margin-right: 0; }
       .timeline { padding: 0 20px 64px; }
       .tl-section { padding-left: 28px; }
       .item-name { min-width: 120px; }
@@ -330,9 +398,48 @@
   <div class="hero-eyebrow">showup. / changelog</div>
   <h1 class="hero-title">Build Log</h1>
   <p class="hero-sub">patch notes, if you will.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">Built by <strong>Jen &amp; Cii</strong></div>
+    <div class="hero-meta-item">Stack <strong>Vanilla HTML/CSS/JS + Firebase</strong></div>
+    <div class="hero-meta-item">Live at <a href="https://showup.jeni.rocks">showup.jeni.rocks</a></div>
+  </div>
 </div>
 
 <div class="timeline">
+
+  <!-- ── On Deck (collapsible, top of timeline) ── -->
+  <div class="tl-section">
+    <div class="entry-meta">
+      <span class="entry-date">Up next</span>
+      <span class="entry-badge badge-deck">15 items</span>
+    </div>
+    <details class="on-deck-details">
+      <summary class="on-deck-summary">
+        <span class="on-deck-summary-title">On Deck</span>
+        <span class="on-deck-summary-sub">Known issues &amp; planned work</span>
+        <span class="on-deck-chevron">▾</span>
+      </summary>
+      <div class="on-deck-body">
+        <ul class="deck-list">
+          <li class="deck-item"><span class="deck-num">1</span>Tab spinners — shows unnecessarily on instant tab switches</li>
+          <li class="deck-item"><span class="deck-num">2</span>Past-month lock — logging becomes read-only after the month passes</li>
+          <li class="deck-item"><span class="deck-num">3</span>Manage Activities — needs gear icon on card badge</li>
+          <li class="deck-item"><span class="deck-num">4</span>Pinned cards L-to-R order — revisit when CSS Masonry has wider browser support</li>
+          <li class="deck-item"><span class="deck-num">5</span>Optimistic upload UX — close diary modal instantly, upload in background, Saving/Saved toast</li>
+          <li class="deck-item"><span class="deck-num">6</span>Safari Fit mode blur — canvas downscale/upscale tuning on iOS</li>
+          <li class="deck-item"><span class="deck-num">7</span>Diary polaroid — square in desktop modal read view</li>
+          <li class="deck-item"><span class="deck-num">8</span>Storage migration to asia-southeast1 for faster uploads from the Philippines</li>
+          <li class="deck-item"><span class="deck-num">9</span>All tab redesign — Followers locked card, Private tier, full card states</li>
+          <li class="deck-item"><span class="deck-num">10</span>Following Feed — chronological diary stream + system events</li>
+          <li class="deck-item"><span class="deck-num">11</span>Diary Phase B — swipe between pages, per-habit photo reel</li>
+          <li class="deck-item"><span class="deck-num">12</span>Diary Phase C — diary pages visible to followers</li>
+          <li class="deck-item"><span class="deck-num">13</span>Custom spinner / loader</li>
+          <li class="deck-item"><span class="deck-num">14</span>Month picker popover</li>
+          <li class="deck-item"><span class="deck-num">15</span>Polish + landing screen</li>
+        </ul>
+      </div>
+    </details>
+  </div>
 
   <!-- ── Apr 9, 2026 ── -->
   <div class="tl-section active">
@@ -467,34 +574,6 @@
         <div class="item-name">Diary notebook widget</div>
         <div class="item-desc">Color themes (coral/cream/indigo) with palette picker. Tilt animation, idle sway, "read it" hint copy. No-reload theme swap, modal spine/corner theming. Amber dot indicator on days with entries.</div>
       </div>
-    </div>
-  </div>
-
-  <!-- ── On Deck ── -->
-  <div class="tl-section">
-    <div class="entry-meta">
-      <span class="entry-date">Up next</span>
-    </div>
-    <div class="on-deck">
-      <div class="on-deck-title">On Deck</div>
-      <p class="on-deck-sub">Known issues and planned work, in rough priority order.</p>
-      <ul class="deck-list">
-        <li class="deck-item"><span class="deck-num">1</span>Tab spinners — shows unnecessarily on instant tab switches</li>
-        <li class="deck-item"><span class="deck-num">2</span>Past-month lock — logging becomes read-only after the month passes</li>
-        <li class="deck-item"><span class="deck-num">3</span>Manage Activities — already shipped, needs gear icon on card badge (currently opened elsewhere)</li>
-        <li class="deck-item"><span class="deck-num">4</span>Pinned cards L-to-R order — revisit when CSS Masonry has wider browser support</li>
-        <li class="deck-item"><span class="deck-num">5</span>Optimistic upload UX — close diary modal instantly, upload in background, Saving/Saved toast</li>
-        <li class="deck-item"><span class="deck-num">6</span>Safari Fit mode blur — canvas downscale/upscale tuning on iOS</li>
-        <li class="deck-item"><span class="deck-num">7</span>Diary polaroid — square in desktop modal read view</li>
-        <li class="deck-item"><span class="deck-num">8</span>Storage migration to asia-southeast1 for faster uploads from the Philippines</li>
-        <li class="deck-item"><span class="deck-num">9</span>All tab redesign — Followers locked card, Private tier, full card states</li>
-        <li class="deck-item"><span class="deck-num">10</span>Following Feed — chronological diary stream + system events</li>
-        <li class="deck-item"><span class="deck-num">11</span>Diary Phase B — swipe between pages, per-habit photo reel</li>
-        <li class="deck-item"><span class="deck-num">12</span>Diary Phase C — diary pages visible to followers</li>
-        <li class="deck-item"><span class="deck-num">13</span>Custom spinner / loader</li>
-        <li class="deck-item"><span class="deck-num">14</span>Month picker popover</li>
-        <li class="deck-item"><span class="deck-num">15</span>Polish + landing screen</li>
-      </ul>
     </div>
   </div>
 
