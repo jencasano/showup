@@ -1223,13 +1223,15 @@
 }
 
 .all-card-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  column-count: 3;
+  column-gap: 24px;
 }
 
 .all-result-card-slot {
-  min-width: 0;
+  break-inside: avoid;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 24px;
 }
 
 .all-stat-line {
@@ -1411,9 +1413,9 @@
 }
 
 @media (max-width: 1024px) {
-  .all-card-grid { grid-template-columns: repeat(2, 1fr); }
+  .all-card-grid { column-count: 2; }
 }
 
 @media (max-width: 768px) {
-  .all-card-grid { grid-template-columns: 1fr; }
+  .all-card-grid { column-count: 1; }
 }
