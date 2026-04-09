@@ -11,14 +11,25 @@ No global month bar on Following. The tab always defaults to the current month. 
 
 ---
 
+## Follow Model
+
+showup. uses **one-way following**, like Twitter/X. You follow someone; they do not need to follow you back. There is no "mutual follow" requirement anywhere in the app.
+
+- If you follow Lulu, she appears in your Following tab.
+- Lulu does not need to follow you back for you to see her content.
+- The Followers privacy tier means "visible to anyone who follows me" -- not "visible to mutual followers".
+- Following someone is always a unilateral action. Unfollowing is also unilateral and silent.
+
+---
+
 ## Privacy Tiers
 
 Privacy settings apply to **Calendar** and **Diary independently**. A user can be Sharing their calendar but Ghost on diary, for example. Two separate settings, one card.
 
 **Exception: Private cascades.** If either Calendar or Diary is set to Private, the other automatically becomes Private too. Private is all-or-nothing -- it makes no sense to be invisible on one and visible on the other. Ghost does not cascade; it is a per-setting choice.
 
-| Tier | Label | Calendar: what it shows | Diary: what it shows | Visible in All tab (non-followers) | Visible to Followers |
-|------|-------|--------------------------|----------------------|-------------------------------------|----------------------|
+| Tier | Label | Calendar: what it shows | Diary: what it shows | Visible in All tab | Visible to anyone who follows you |
+|------|-------|--------------------------|----------------------|---------------------|-----------------------------------|
 | 1 | **Sharing** | Full 7-day strip + habit chips | Full note + photo | Yes -- full card | Yes -- full card |
 | 2 | **Followers** | Full 7-day strip + habit chips | Full note + photo | Locked card (lock icon, no hints) | Yes -- full card |
 | 3 | **Low key** | Signal copy only, no strip or chips | Signal copy only, no note or photo | Yes -- signal copy card | Yes -- signal copy card |
@@ -53,19 +64,21 @@ Ghost mode means your content is invisible, but your presence isn't. People can 
 
 Low key is the same for all audiences (followers and non-followers alike). Low key is about *how you want to be seen*, not *who you want to see you*. The signal copy is the curated version of you.
 
-Signal copy is computed client-side from log data without exposing raw details:
+Signal copy is computed client-side from log data without exposing raw details. Each condition has two variants -- one for the calendar zone (data-flavored) and one for the diary zone (feeling-flavored):
 
-| Condition | Copy |
-|-----------|------|
-| Day one ever | "Sofia just started. Day one." |
-| Comeback after 30+ days | "Dan is back. Something's stirring." |
-| Comeback after 7-29 days | "Dan is finding his rhythm again." |
-| 25+ day streak | "Lulu has been incredibly consistent this month." |
-| 15+ day streak | "Lulu has been showing up a lot lately." |
-| 7+ day streak | "Lulu is building something." |
-| 3+ day streak | "Lulu showed up again today." |
-| 1-2 days | "Lulu just checked in." |
-| Fallback | "Lulu is showing up quietly." |
+| Condition | Calendar copy | Diary copy |
+|-----------|--------------|------------|
+| Day one ever | "{firstName} just started. Day one." | "Something's beginning for {firstName}." |
+| Comeback after 30+ days | "{firstName} is back. Something's stirring." | "{firstName} went quiet for a while. Now they're back." |
+| Comeback after 7-29 days | "{firstName} is finding their rhythm again." | "Feels like {firstName} is working something out." |
+| 25+ day streak | "{firstName} has been incredibly consistent this month." | "There's a lot going on in {firstName}'s world right now." |
+| 15+ day streak | "{firstName} has been showing up a lot lately." | "{firstName} has been in their head lately. In a good way." |
+| 7+ day streak | "{firstName} is building something." | "Something's taking shape for {firstName}." |
+| 3+ day streak | "{firstName} showed up again today." | "{firstName} has been showing up." |
+| 1-2 days | "{firstName} just checked in." | "{firstName} stopped by." |
+| Fallback | "{firstName} is showing up quietly." | "{firstName} is keeping this one close." |
+
+Templates live in `data/signal-copy.json` with keys like `streak_7_calendar` and `streak_7_diary`. Logic stays in `js/following-signals.js`.
 
 ---
 
@@ -108,6 +121,7 @@ Rules:
 
 - Privacy settings stored on the user doc: `calendarPrivacy` and `diaryPrivacy` fields, each with values: `sharing`, `followers`, `lowkey`, `ghost`, `private`.
 - Private cascade is enforced at the UI settings level -- when either field is set to `private`, both are written as `private` in the same Firestore update.
+- Follow relationships are stored as a `following` array on the follower's user doc. One-way -- no mirroring required.
 - System feed events stored in a subcollection on the follower's user doc (e.g. `users/{followerUid}/feedEvents/{eventId}`).
 - Private users are excluded from All tab queries entirely at the query/render level -- they are not discoverable.
 - Dormant follows (where followed user is Private) are tracked but suppressed in UI rendering.
