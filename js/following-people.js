@@ -430,7 +430,8 @@ export function renderPeopleView(container, model) {
     isPinned:   pinnedSet.has(uid),
   }));
 
-  const pinnedActive   = items.filter(i => i.log  && i.isPinned);
+  const pinnedActive   = items.filter(i => i.log && i.isPinned)
+    .sort((a, b) => pinnedFollowingIds.indexOf(a.uid) - pinnedFollowingIds.indexOf(b.uid));
   const activeUnpinned = items.filter(i => i.log  && !i.isPinned);
   const crickets       = items.filter(i => i.log === null);
   const allEmpty       = items.length === 0;
