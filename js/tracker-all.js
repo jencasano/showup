@@ -16,6 +16,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
   let controlsMounted = false;
   let wrapperEl = null;
   let statLineEl = null;
+  let gridEl = null;
 
   function normalizeText(value) {
     return String(value || "").toLowerCase().trim();
@@ -93,9 +94,19 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       .map(item => item.entry);
   }
 
+  function ensureGrid() {
+    if (!gridEl) {
+      gridEl = document.createElement("div");
+      gridEl.className = "all-card-grid";
+      ensureWrapper().appendChild(gridEl);
+    }
+    return gridEl;
+  }
+
   function clearRenderedResults() {
+    if (gridEl) gridEl.innerHTML = "";
     const target = wrapperEl || container;
-    target.querySelectorAll(".all-result-card-slot, .all-search-empty, .empty-state").forEach(node => node.remove());
+    target.querySelectorAll(".all-search-empty, .empty-state").forEach(node => node.remove());
   }
 
   function ensureWrapper() {
@@ -147,7 +158,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
     ensureControls();
     clearRenderedResults();
 
-    const wrapper = ensureWrapper();
+    const grid = ensureGrid();
 
     if (visibleEntries.length === 0) {
       const empty = document.createElement("p");
@@ -155,7 +166,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       empty.textContent = normalizeText(searchQuery)
         ? `No matches for "${searchQuery.trim()}".`
         : "No other trackers yet for this month.";
-      wrapper.appendChild(empty);
+      ensureWrapper().appendChild(empty);
       return;
     }
 
@@ -165,7 +176,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       const slot = document.createElement("div");
       slot.className = "all-result-card-slot";
       slot.appendChild(card);
-      wrapper.appendChild(slot);
+      grid.appendChild(slot);
     }
   }
 

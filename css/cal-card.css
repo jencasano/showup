@@ -22,33 +22,24 @@
 }
 
 .all-search-row {
-  grid-column: 1 / -1;
   position: sticky;
   top: 0;
   z-index: 4;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
-  width: min(760px, 100%);
-  justify-self: start;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--bg-surface);
-  backdrop-filter: blur(6px);
-  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
 }
 
 .all-search-input {
   flex: 1;
-  min-width: 180px;
-  height: 36px;
+  height: 40px;
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 0 12px;
+  padding: 0 14px;
   font: inherit;
   color: var(--text);
-  background: var(--bg);
+  background: var(--bg-surface);
+  backdrop-filter: blur(6px);
 }
 
 .all-search-input:focus {
@@ -60,10 +51,6 @@
   color: var(--text-faint);
 }
 
-
-.all-result-card-slot {
-  min-width: 0;
-}
 
 [data-theme="dark"] .all-search-input::-webkit-search-cancel-button {
   filter: invert(75%);
@@ -1235,13 +1222,14 @@
   width: 100%;
 }
 
-.all-tab-container .cal-card {
-  max-width: 480px;
-  margin: 0 auto;
+.all-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
 }
 
-.all-tab-container .all-search-input {
-  max-width: 480px;
+.all-result-card-slot {
+  min-width: 0;
 }
 
 .all-stat-line {
@@ -1249,4 +1237,12 @@
   color: var(--text-faint);
   margin-bottom: 12px;
   padding: 0 2px;
+}
+
+@media (max-width: 1024px) {
+  .all-card-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .all-card-grid { grid-template-columns: 1fr; }
 }
