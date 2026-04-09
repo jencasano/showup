@@ -1,0 +1,13 @@
+{
+  "_note": "Signal copy templates for the Low key privacy tier. {firstName} is replaced at runtime. Conditions and logic stay in following-signals.js -- only the copy strings live here.",
+
+  "first_ever":   "{firstName} just started. Day one.",
+  "comeback_30":  "{firstName} is back. Something's stirring.",
+  "comeback_7":   "{firstName} is finding their rhythm again.",
+  "streak_25":    "{firstName} has been incredibly consistent this month.",
+  "streak_15":    "{firstName} has been showing up a lot lately.",
+  "streak_7":     "{firstName} is building something.",
+  "streak_3":     "{firstName} showed up again today.",
+  "checked_in":   "{firstName} just checked in.",
+  "fallback":     "{firstName} is showing up quietly."
+}
