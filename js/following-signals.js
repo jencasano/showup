@@ -1,6 +1,33 @@
+// --- Load signal copy from JSON (once, at module load) -------------------
+
+const HARDCODED_COPY = {
+  first_ever:  "{firstName} just started. Day one.",
+  comeback_30: "{firstName} is back. Something's stirring.",
+  comeback_7:  "{firstName} is finding their rhythm again.",
+  streak_25:   "{firstName} has been incredibly consistent this month.",
+  streak_15:   "{firstName} has been showing up a lot lately.",
+  streak_7:    "{firstName} is building something.",
+  streak_3:    "{firstName} showed up again today.",
+  checked_in:  "{firstName} just checked in.",
+  fallback:    "{firstName} is showing up quietly.",
+};
+
+let signalCopy = HARDCODED_COPY;
+
+const copyReady = fetch("data/signal-copy.json")
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(json => { signalCopy = json; })
+  .catch(() => { /* keep HARDCODED_COPY */ });
+
+function fillName(template, firstName) {
+  return template.replace("{firstName}", firstName);
+}
+
+// -------------------------------------------------------------------------
+
 export function computeSignal(displayName, logEntry) {
   const firstName = (displayName || "").split(" ")[0] || displayName;
-  const fallback  = { headline: `${firstName} is showing up quietly.`, sub: "Showing up quietly." };
+  const fallback  = { headline: fillName(signalCopy.fallback, firstName), sub: "Showing up quietly." };
 
   if (!logEntry || !logEntry.marks || Object.keys(logEntry.marks).length === 0) {
     return fallback;
@@ -36,15 +63,17 @@ export function computeSignal(displayName, logEntry) {
   const isComeback7   = daysSinceLastActive >= 7 && daysSinceLastActive < 30;
 
   let headline;
-  if      (isFirstEver)      headline = `${firstName} just started. Day one.`;
-  else if (isComeback30)     headline = `${firstName} is back. Something's stirring.`;
-  else if (isComeback7)      headline = `${firstName} is finding their rhythm again.`;
-  else if (streak >= 25)     headline = `${firstName} has been incredibly consistent this month.`;
-  else if (streak >= 15)     headline = `${firstName} has been showing up a lot lately.`;
-  else if (streak >= 7)      headline = `${firstName} is building something.`;
-  else if (streak >= 3)      headline = `${firstName} showed up again today.`;
-  else if (totalDaysActive >= 1) headline = `${firstName} just checked in.`;
-  else                       return fallback;
+  if      (isFirstEver)          headline = fillName(signalCopy.first_ever,  firstName);
+  else if (isComeback30)         headline = fillName(signalCopy.comeback_30, firstName);
+  else if (isComeback7)          headline = fillName(signalCopy.comeback_7,  firstName);
+  else if (streak >= 25)         headline = fillName(signalCopy.streak_25,   firstName);
+  else if (streak >= 15)         headline = fillName(signalCopy.streak_15,   firstName);
+  else if (streak >= 7)          headline = fillName(signalCopy.streak_7,    firstName);
+  else if (streak >= 3)          headline = fillName(signalCopy.streak_3,    firstName);
+  else if (totalDaysActive >= 1) headline = fillName(signalCopy.checked_in,  firstName);
+  else                           return fallback;
 
   return { headline, sub: "Showing up quietly." };
 }
+
+export { copyReady };
