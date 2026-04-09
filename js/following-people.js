@@ -68,7 +68,7 @@ function renderDiaryStrip(entry, privacy, signal) {
     lbl.textContent = "diary.";
     const sig = document.createElement("span");
     sig.className = "fw-diary-strip-signal";
-    sig.textContent = signal.headline;
+    sig.textContent = signal.diaryHeadline;
     strip.append(lbl, sig);
     return strip;
   }
@@ -247,7 +247,7 @@ function renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowin
     signalBlock.className = "fw-signal-block" + (diaryStrip ? " fw-signal-block--with-diary" : "");
     const headlineEl = document.createElement("div");
     headlineEl.className = "fw-signal-headline";
-    headlineEl.textContent = signal.headline;
+    headlineEl.textContent = signal.calendarHeadline;
     const whisper = document.createElement("div");
     whisper.className = "fw-lowkey-whisper";
     whisper.textContent = "low key";
@@ -331,7 +331,7 @@ function renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowin
   const meta = document.createElement("div"); meta.className = "fw-compact-meta";
   if (!hasTracker)                        meta.textContent = "No tracker this month";
   else if (privacy.calendar === "ghost")  meta.textContent = "Tracking quietly";
-  else if (privacy.calendar === "lowkey") meta.textContent = signal.headline;
+  else if (privacy.calendar === "lowkey") meta.textContent = signal.calendarHeadline;
   else { const days = countUniqueDays(log); meta.textContent = `${days} check-in${days === 1 ? "" : "s"} this month`; }
   info.append(name, meta);
 

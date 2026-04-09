@@ -1,15 +1,24 @@
 // --- Load signal copy from JSON (once, at module load) -------------------
 
 const HARDCODED_COPY = {
-  first_ever:  "{firstName} just started. Day one.",
-  comeback_30: "{firstName} is back. Something's stirring.",
-  comeback_7:  "{firstName} is finding their rhythm again.",
-  streak_25:   "{firstName} has been incredibly consistent this month.",
-  streak_15:   "{firstName} has been showing up a lot lately.",
-  streak_7:    "{firstName} is building something.",
-  streak_3:    "{firstName} showed up again today.",
-  checked_in:  "{firstName} just checked in.",
-  fallback:    "{firstName} is showing up quietly.",
+  first_ever_calendar:  "{firstName} just started. Day one.",
+  first_ever_diary:     "Something's beginning for {firstName}.",
+  comeback_30_calendar: "{firstName} is back. Something's stirring.",
+  comeback_30_diary:    "{firstName} went quiet for a while. Now they're back.",
+  comeback_7_calendar:  "{firstName} is finding their rhythm again.",
+  comeback_7_diary:     "Feels like {firstName} is working something out.",
+  streak_25_calendar:   "{firstName} has been incredibly consistent this month.",
+  streak_25_diary:      "There's a lot going on in {firstName}'s world right now.",
+  streak_15_calendar:   "{firstName} has been showing up a lot lately.",
+  streak_15_diary:      "{firstName} has been in their head lately. In a good way.",
+  streak_7_calendar:    "{firstName} is building something.",
+  streak_7_diary:       "Something's taking shape for {firstName}.",
+  streak_3_calendar:    "{firstName} showed up again today.",
+  streak_3_diary:       "{firstName} has been showing up.",
+  checked_in_calendar:  "{firstName} just checked in.",
+  checked_in_diary:     "{firstName} stopped by.",
+  fallback_calendar:    "{firstName} is showing up quietly.",
+  fallback_diary:       "{firstName} is keeping this one close.",
 };
 
 let signalCopy = HARDCODED_COPY;
@@ -27,7 +36,11 @@ function fillName(template, firstName) {
 
 export function computeSignal(displayName, logEntry) {
   const firstName = (displayName || "").split(" ")[0] || displayName;
-  const fallback  = { headline: fillName(signalCopy.fallback, firstName), sub: "Showing up quietly." };
+  const fallback  = {
+    calendarHeadline: fillName(signalCopy.fallback_calendar, firstName),
+    diaryHeadline:    fillName(signalCopy.fallback_diary,    firstName),
+    sub: "Showing up quietly.",
+  };
 
   if (!logEntry || !logEntry.marks || Object.keys(logEntry.marks).length === 0) {
     return fallback;
@@ -62,18 +75,22 @@ export function computeSignal(displayName, logEntry) {
   const isComeback30  = daysSinceLastActive >= 30;
   const isComeback7   = daysSinceLastActive >= 7 && daysSinceLastActive < 30;
 
-  let headline;
-  if      (isFirstEver)          headline = fillName(signalCopy.first_ever,  firstName);
-  else if (isComeback30)         headline = fillName(signalCopy.comeback_30, firstName);
-  else if (isComeback7)          headline = fillName(signalCopy.comeback_7,  firstName);
-  else if (streak >= 25)         headline = fillName(signalCopy.streak_25,   firstName);
-  else if (streak >= 15)         headline = fillName(signalCopy.streak_15,   firstName);
-  else if (streak >= 7)          headline = fillName(signalCopy.streak_7,    firstName);
-  else if (streak >= 3)          headline = fillName(signalCopy.streak_3,    firstName);
-  else if (totalDaysActive >= 1) headline = fillName(signalCopy.checked_in,  firstName);
+  let key;
+  if      (isFirstEver)          key = "first_ever";
+  else if (isComeback30)         key = "comeback_30";
+  else if (isComeback7)          key = "comeback_7";
+  else if (streak >= 25)         key = "streak_25";
+  else if (streak >= 15)         key = "streak_15";
+  else if (streak >= 7)          key = "streak_7";
+  else if (streak >= 3)          key = "streak_3";
+  else if (totalDaysActive >= 1) key = "checked_in";
   else                           return fallback;
 
-  return { headline, sub: "Showing up quietly." };
+  return {
+    calendarHeadline: fillName(signalCopy[key + "_calendar"], firstName),
+    diaryHeadline:    fillName(signalCopy[key + "_diary"],    firstName),
+    sub: "Showing up quietly.",
+  };
 }
 
 export { copyReady };
