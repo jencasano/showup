@@ -1,13 +1,30 @@
 {
-  "_note": "Signal copy templates for the Low key privacy tier. {firstName} is replaced at runtime. Conditions and logic stay in following-signals.js -- only the copy strings live here.",
+  "_note": "Signal copy templates for the Low key privacy tier. {firstName} is replaced at runtime. Conditions and logic stay in following-signals.js -- only the copy strings live here. Each condition has two variants: 'calendar' (data-flavored) and 'diary' (feeling-flavored).",
 
-  "first_ever":   "{firstName} just started. Day one.",
-  "comeback_30":  "{firstName} is back. Something's stirring.",
-  "comeback_7":   "{firstName} is finding their rhythm again.",
-  "streak_25":    "{firstName} has been incredibly consistent this month.",
-  "streak_15":    "{firstName} has been showing up a lot lately.",
-  "streak_7":     "{firstName} is building something.",
-  "streak_3":     "{firstName} showed up again today.",
-  "checked_in":   "{firstName} just checked in.",
-  "fallback":     "{firstName} is showing up quietly."
+  "first_ever_calendar":   "{firstName} just started. Day one.",
+  "first_ever_diary":      "Something's beginning for {firstName}.",
+
+  "comeback_30_calendar":  "{firstName} is back. Something's stirring.",
+  "comeback_30_diary":     "{firstName} went quiet for a while. Now they're back.",
+
+  "comeback_7_calendar":   "{firstName} is finding their rhythm again.",
+  "comeback_7_diary":      "Feels like {firstName} is working something out.",
+
+  "streak_25_calendar":    "{firstName} has been incredibly consistent this month.",
+  "streak_25_diary":       "There's a lot going on in {firstName}'s world right now.",
+
+  "streak_15_calendar":    "{firstName} has been showing up a lot lately.",
+  "streak_15_diary":       "{firstName} has been in their head lately. In a good way.",
+
+  "streak_7_calendar":     "{firstName} is building something.",
+  "streak_7_diary":        "Something's taking shape for {firstName}.",
+
+  "streak_3_calendar":     "{firstName} showed up again today.",
+  "streak_3_diary":        "{firstName} has been showing up.",
+
+  "checked_in_calendar":   "{firstName} just checked in.",
+  "checked_in_diary":      "{firstName} stopped by.",
+
+  "fallback_calendar":     "{firstName} is showing up quietly.",
+  "fallback_diary":        "{firstName} is keeping this one close."
 }
