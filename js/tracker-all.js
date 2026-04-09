@@ -195,12 +195,12 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       slot.className = "all-result-card-slot";
       slot.appendChild(card);
 
-      // Diary strip for Sharing tier cards
-      if (entry._tier === "sharing" || !entry._tier) {
+      // Diary strip for all tiers except Followers (locked card)
+      if (entry._tier !== "followers") {
         const privacy = { calendar: entry._tier || "sharing", diary: entry._diaryTier || "sharing" };
         const signal = computeSignal(entry.displayName, entry);
         const strip = renderDiaryStrip(entry._diaryEntry, privacy, signal, { isFollowing });
-        if (strip) slot.appendChild(strip);
+        if (strip) card.appendChild(strip);
       }
 
       grid.appendChild(slot);
@@ -231,14 +231,16 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       if (!userSnap?.exists()) return null;
       const userData = userSnap.data();
       const calTier = userData?.calendarPrivacy || userData?.privacy?.calendar || "sharing";
-      if (calTier === "private") return null;
-      return { docSnap, userData, calTier };
+      const diaryTier = userData?.diaryPrivacy || userData?.privacy?.diary || "sharing";
+      if (calTier === "private" || diaryTier === "private") return null;
+      return { docSnap, userData, calTier, diaryTier };
     });
 
-    // Fetch diary entries for Sharing tier users
+    // Fetch diary entries for users with Sharing or Followers diary tier
     const diaryCache = {};
     await Promise.all(entryMetas.map(async (meta) => {
-      if (!meta || meta.calTier !== "sharing") return;
+      if (!meta) return;
+      if (meta.diaryTier === "lowkey" || meta.diaryTier === "ghost" || meta.diaryTier === "private") return;
       const uid = meta.docSnap.id;
       try {
         const diaryRef = collection(db, "diary", uid, "entries");
