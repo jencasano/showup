@@ -11,10 +11,11 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
 
   const entriesRef = collection(db, "logs", yearMonth, "entries");
   let searchQuery = "";
-  let includeFollowed = true;
   let latestEntries = [];
   let latestFollows = new Set();
   let controlsMounted = false;
+  let wrapperEl = null;
+  let statLineEl = null;
 
   function normalizeText(value) {
     return String(value || "").toLowerCase().trim();
@@ -82,17 +83,11 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
     const entries = [...latestEntries];
 
     if (!searchQuery) {
-      entries.sort((a, b) => {
-        const aF = latestFollows.has(a.id), bF = latestFollows.has(b.id);
-        if (aF && !bF) return -1;
-        if (!aF && bF) return 1;
-        return (a.displayName || "").localeCompare(b.displayName || "");
-      });
+      entries.sort((a, b) => (a.displayName || "").localeCompare(b.displayName || ""));
       return entries;
     }
 
     const filtered = entries
-      .filter(entry => includeFollowed || !latestFollows.has(entry.id))
       .map(entry => ({ entry, score: scoreEntry(entry, latestFollows, searchQuery) }))
       .filter(item => item.score > 0)
       .sort((a, b) => b.score - a.score || (a.entry.displayName || "").localeCompare(b.entry.displayName || ""))
@@ -102,7 +97,27 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
   }
 
   function clearRenderedResults() {
-    container.querySelectorAll(".all-result-card-slot, .all-search-empty, .empty-state").forEach(node => node.remove());
+    const target = wrapperEl || container;
+    target.querySelectorAll(".all-result-card-slot, .all-search-empty, .empty-state").forEach(node => node.remove());
+  }
+
+  function ensureWrapper() {
+    if (!wrapperEl) {
+      wrapperEl = document.createElement("div");
+      wrapperEl.className = "all-tab-container";
+      container.appendChild(wrapperEl);
+    }
+    return wrapperEl;
+  }
+
+  function updateStatLine(count) {
+    if (!statLineEl) {
+      statLineEl = document.createElement("div");
+      statLineEl.className = "all-stat-line";
+      const wrapper = ensureWrapper();
+      wrapper.prepend(statLineEl);
+    }
+    statLineEl.textContent = `${count} people tracking this month`;
   }
 
   function ensureControls() {
@@ -119,31 +134,24 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
         placeholder="Search people or activities"
         autocomplete="off"
       />
-      <label class="all-search-toggle">
-        <input id="all-search-include-followed" type="checkbox" ${includeFollowed ? "checked" : ""} />
-        <span>Include followed</span>
-      </label>
     `;
-    container.appendChild(controls);
+    ensureWrapper().appendChild(controls);
 
     const input = controls.querySelector("#all-search-input");
-    const includeToggle = controls.querySelector("#all-search-include-followed");
 
     input?.addEventListener("input", () => {
       searchQuery = input.value;
-      renderAllList();
-    });
-
-    includeToggle?.addEventListener("change", () => {
-      includeFollowed = includeToggle.checked;
       renderAllList();
     });
   }
 
   function renderAllList() {
     const visibleEntries = getVisibleEntries();
+    updateStatLine(latestEntries.length);
     ensureControls();
     clearRenderedResults();
+
+    const wrapper = ensureWrapper();
 
     if (visibleEntries.length === 0) {
       const queryLabel = normalizeText(searchQuery);
@@ -152,7 +160,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       empty.textContent = queryLabel
         ? `No matches for "${searchQuery.trim()}".`
         : "No other trackers yet for this month.";
-      container.appendChild(empty);
+      wrapper.appendChild(empty);
       return;
     }
 
@@ -162,7 +170,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       const slot = document.createElement("div");
       slot.className = "all-result-card-slot";
       slot.appendChild(card);
-      container.appendChild(slot);
+      wrapper.appendChild(slot);
     }
   }
 
