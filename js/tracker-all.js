@@ -25,7 +25,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
     return normalizeText(query).split(/\s+/).filter(Boolean);
   }
 
-  function scoreEntry(entry, myFollows, query) {
+  function scoreEntry(entry, query) {
     const queryNorm = normalizeText(query);
     if (!queryNorm) return 0;
 
@@ -34,7 +34,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
 
     const name = normalizeText(entry.displayName);
     const username = normalizeText(entry.username);
-    const activities = (entry.activities || []).map(normalizeText);
+    const activities = entry._searchActivities || [];
 
     let score = 0;
     let matchedTokens = 0;
@@ -62,11 +62,11 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
         tokenMatched = true;
       }
 
-      const exactActivity = activities.some(activity => activity === token);
+      const exactActivity = activities.some(a => a === token);
       if (exactActivity) {
         score += 60;
         tokenMatched = true;
-      } else if (activities.some(activity => activity.includes(token))) {
+      } else if (activities.some(a => a.includes(token))) {
         score += 35;
         tokenMatched = true;
       }
@@ -75,7 +75,6 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
     }
 
     if (matchedTokens !== tokens.length) return 0;
-    if (myFollows.has(entry.id)) score += 8;
     return score;
   }
 
@@ -87,13 +86,11 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       return entries;
     }
 
-    const filtered = entries
-      .map(entry => ({ entry, score: scoreEntry(entry, latestFollows, searchQuery) }))
+    return entries
+      .map(entry => ({ entry, score: scoreEntry(entry, searchQuery) }))
       .filter(item => item.score > 0)
       .sort((a, b) => b.score - a.score || (a.entry.displayName || "").localeCompare(b.entry.displayName || ""))
       .map(item => item.entry);
-
-    return filtered;
   }
 
   function clearRenderedResults() {
@@ -111,13 +108,13 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
   }
 
   function updateStatLine(count) {
+    const wrapper = ensureWrapper();
     if (!statLineEl) {
       statLineEl = document.createElement("div");
       statLineEl.className = "all-stat-line";
-      const wrapper = ensureWrapper();
       wrapper.prepend(statLineEl);
     }
-    statLineEl.textContent = `${count} people tracking this month`;
+    statLineEl.textContent = `${count} ${count === 1 ? "person" : "people"} tracking this month`;
   }
 
   function ensureControls() {
@@ -138,7 +135,6 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
     ensureWrapper().appendChild(controls);
 
     const input = controls.querySelector("#all-search-input");
-
     input?.addEventListener("input", () => {
       searchQuery = input.value;
       renderAllList();
@@ -154,10 +150,9 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
     const wrapper = ensureWrapper();
 
     if (visibleEntries.length === 0) {
-      const queryLabel = normalizeText(searchQuery);
       const empty = document.createElement("p");
       empty.className = "empty-state all-search-empty";
-      empty.textContent = queryLabel
+      empty.textContent = normalizeText(searchQuery)
         ? `No matches for "${searchQuery.trim()}".`
         : "No other trackers yet for this month.";
       wrapper.appendChild(empty);
@@ -181,12 +176,6 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       return data.activities && data.activities.length > 0;
     });
 
-    if (validDocs.length === 0) {
-      hideLoader();
-      container.innerHTML = `<p class="empty-state">No other trackers yet for this month.</p>`;
-      return;
-    }
-
     const [userSnaps, myUserSnap] = await Promise.all([
       Promise.all(validDocs.map(docSnap => getDoc(doc(db, "users", docSnap.id)))),
       currentUser?.uid
@@ -205,13 +194,30 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
         if (!userSnap?.exists()) return null;
         const userData = userSnap.data();
 
-        // Enforce followers-only tier: hide from non-followers
-        const calTier = userData?.privacy?.calendar || "sharing";
+        const calTier = userData?.calendarPrivacy || userData?.privacy?.calendar || "sharing";
+
+        // Private: exclude entirely
+        if (calTier === "private") return null;
+
+        // Followers tier: only show to followers, exclude from non-followers for now
+        // (locked card UI comes in pass 2)
         if (calTier === "followers" && !myFollows.has(docSnap.id)) return null;
 
         const displayName = data.displayName || userData.displayName;
-        const username    = data.username    || userData.username || displayName;
-        return { id: docSnap.id, ...data, displayName, username: username || displayName };
+        const username = data.username || userData.username || displayName;
+
+        // _searchActivities: only expose for Sharing tier searches
+        const searchActivities = (calTier === "sharing")
+          ? (data.activities || []).map(a => a.toLowerCase().trim())
+          : [];
+
+        return {
+          id: docSnap.id,
+          ...data,
+          displayName,
+          username: username || displayName,
+          _searchActivities: searchActivities
+        };
       })
       .filter(Boolean);
 
