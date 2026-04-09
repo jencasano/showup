@@ -361,7 +361,12 @@ export function renderPeopleView(container, model) {
     log:        Object.prototype.hasOwnProperty.call(logsCache, uid) ? logsCache[uid] : undefined,
     diaryEntry: diaryCache?.[uid] ?? null,
     isPinned:   pinnedSet.has(uid),
-  }));
+  })).filter(({ user }) => {
+    const p = user?.privacy || {};
+    const calTier = p.calendar || "sharing";
+    const diaryTier = p.diary || "sharing";
+    return calTier !== "private" && diaryTier !== "private";
+  });
 
   const pinnedActive   = items.filter(i => i.log && i.isPinned)
     .sort((a, b) => pinnedFollowingIds.indexOf(a.uid) - pinnedFollowingIds.indexOf(b.uid));
