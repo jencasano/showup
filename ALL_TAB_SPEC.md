@@ -1,16 +1,12 @@
 # All Tab -- Implementation Spec
 
-## Overview
-
-The All tab is a **discovery directory** -- a place to find anyone tracking this month, see their status, and follow them. It is not a feed. It is not a social timeline. It is a clean, searchable list of everyone showing up, filtered and styled by their privacy tier.
+## Status: COMPLETE (April 2026)
 
 ---
 
-## Layout
+## Overview
 
-- Centered container, max-width 960px, consistent with Mine and Following tabs
-- Full-bleed on mobile (standard app padding)
-- No tab-level header or pill switcher -- the All tab has one view only
+The All tab is a **discovery directory** -- a place to find anyone tracking this month, see their status, and follow them. It is not a feed. It is not a social timeline. It is a clean, searchable, alphabetical list of everyone showing up, filtered and styled by their privacy tier.
 
 ---
 
@@ -23,141 +19,116 @@ The All tab uses **the same display rules as the Following tab**, with one diffe
 | Sharing | Full card (calendar + diary) | Full card (calendar + diary) |
 | Followers | Full card (you follow them, so you qualify) | Locked card (random browser doesn't qualify) |
 | Low key | Signal copy card | Signal copy card |
-| Ghost | Name only | Name only |
+| Ghost | Name only + ghost diary zone | Name only + ghost diary zone |
 | Private | Not shown | Not shown |
 
-The signal copy logic, ghost card design, diary strip, and private exclusion are all identical between tabs. Only the Followers tier diverges.
+**Three rules that hold across every combination:**
+1. A follower always sees the same card in the Following tab and the All tab -- identical every time.
+2. Low key and Ghost are audience-agnostic -- signal copy and ghost treatment show the same to followers and strangers.
+3. Only the Followers tier discriminates by audience -- strangers get Locked, followers get Full.
 
 ---
 
 ## Month Navigation
 
-The All tab does **not** use the global month bar. Instead, each Sharing card has its own per-card month nav (prev/next arrows + month label), identical in behavior to the pinned cards in the Following tab.
+The All tab does **not** use the global month bar. Each Sharing card has its own per-card month nav (prev/next + month label), identical to the Following tab pinned cards.
 
-**Rationale:** The All tab is a discovery directory. Per-card month nav lets you browse one person's history without forcing all other cards to change month simultaneously.
+Low key, Locked, and Ghost cards have no month nav -- Low key users chose to show a curated signal, not historical data; Locked and Ghost have nothing to browse.
 
-**Default month:** Each card defaults to the current month on load.
-
-**Global month bar behavior:** The global month bar (shared with Mine tab) no longer affects the All tab.
-
-**Low key, Locked, Ghost cards:** No month nav. Low key users chose to present a curated signal -- browsing their month-by-month history would expose more than they intended. Locked and Ghost have nothing to browse.
+The global month bar (shared with Mine) is hidden when the All tab is active.
 
 ---
 
-## Tab Structure (top to bottom)
+## Tab Structure
 
-### 1. Stat line
+### Stat line
 > "X people tracking this month"
-
 - Count includes Sharing, Followers, Low key, Ghost -- excludes Private
 - Always refers to current calendar month
-- Small font, muted color, no icon
+- Small font, muted color
 
-### 2. Search bar
+### Search bar
 - Placeholder: "Search people or activities"
-- Sharing users: searchable by name and activities
+- Sharing: searchable by name and activities
 - All other tiers: searchable by name only
 - No toggle, no filter chips, no sort controls
 
-### 3. Cards
-Alphabetical A-Z by display name. No tier-based grouping.
+### Cards
+Alphabetical A-Z by display name. No tier-based grouping. Masonry layout fills top-to-bottom per column.
 
 ---
 
 ## Card States by Privacy Tier
 
-### Tier 1 -- Sharing
-Full card -- same as Following tab pinned cards.
+### Sharing
+Full card. Same as Following tab pinned cards.
 - Badge: avatar, display name, per-card month nav, follow button (pinned right)
 - Calendar grid + activity dots
 - Activity legend footer
-- Diary strip below calendar, respecting `diaryPrivacy` independently (see Diary Strip section)
-- Card is tappable (future: profile nav)
+- Diary strip below calendar (see Diary Strip section)
 
-### Tier 2 -- Followers
+### Followers
 Locked card. All tab always shows locked regardless of follow status.
 - Badge: avatar, display name, lock icon, follow button (pinned right)
 - Body: lock symbol + "Follow to see their tracker."
 - No calendar, no diary, no month nav
-- Card is tappable (future: profile nav)
 
-### Tier 3 -- Low key
-Signal copy card.
-- Badge: avatar, display name, follow button (pinned right). No month nav.
+### Low key
+Signal copy card. No month nav.
+- Badge: avatar, display name, follow button (pinned right)
 - Body: calendar signal copy headline + "low key" whisper label
-- No calendar grid, no diary content
-- Card is tappable (future: profile nav)
+- No calendar grid
+- Diary strip below (see Diary Strip section)
 
-### Tier 4 -- Ghost
-Name-only pill.
-- Badge: avatar, display name, "Gone quiet for now." copy
-- No follow button, no month nav, no content
-- Subtle gold glow
-- Card is tappable (future: profile nav)
+### Ghost
+Ghost card. Gold glow border.
+- Badge: avatar, display name, follow button
+- Body: moon emoji + "Gone quiet for now."
+- No calendar, no month nav
+- Diary strip below (see Diary Strip section)
 
-### Tier 5 -- Private
-Not shown. Private cascades: if either `calendarPrivacy` or `diaryPrivacy` is private, the user is excluded entirely.
+### Private
+Not shown. Private cascades: if either `calendarPrivacy` or `diaryPrivacy` is private, user is excluded entirely.
 
 ---
 
-## Diary Strip (Sharing tier only)
+## Diary Strip
 
-When calendar tier is Sharing, a diary strip appears below the calendar card. The diary strip respects `diaryPrivacy` independently:
+The diary zone is **independent of the calendar zone**. It renders for Sharing, Low key, and Ghost calendar tiers. Only Locked (Followers calendar, stranger) gets no diary zone.
 
-| Diary tier | Diary strip shows |
+The diary strip renders based solely on `diaryPrivacy`:
+
+| Diary tier | Strip shows |
 |---|---|
-| Sharing | Full note + photo (most recent entry for the browsed month) |
-| Followers | Full note + photo if viewer follows them; locked diary zone if not |
-| Low key | Diary signal copy only (no note, no photo) |
-| Ghost | No diary strip |
-| Private | Cascades -- whole card hidden (private cascade rule) |
+| Sharing | Full note + photo (most recent entry for browsed month). Returns null if no entry. |
+| Followers | Full note + photo if viewer follows them. "Follow to see their diary." if not. |
+| Low key | Diary-flavored signal copy. Always shows regardless of diary entry existence. |
+| Ghost | Moon emoji + "Gone quiet for now." |
+| Private | Cascades -- user excluded entirely before reaching diary strip. |
 
-The diary strip is the same component used in Following tab pinned cards (`renderDiaryStrip` in `following-people.js`). Reuse it directly.
+Implemented in `js/diary-strip.js` -- shared module used by both Following and All tabs.
 
 ---
 
 ## Private Cascade Rule
 
-If either `calendarPrivacy` or `diaryPrivacy` is `private`, treat the user as fully private -- exclude from All tab entirely. This is enforced at render time in `tracker-all.js` as a safety net (in addition to being enforced at write time in `privacy-settings.js`).
+If either `calendarPrivacy` or `diaryPrivacy` is `private`, user is excluded from All tab entirely. Enforced at render time in `tracker-all.js` and at write time in `privacy-settings.js`.
+
+Default for users with no privacy fields set: `sharing` for both calendar and diary.
 
 ---
 
-## Card Tap Behavior
+## Privacy field storage
 
-All cards are tappable containers. Follow button and month nav use `e.stopPropagation()`.
+Stored on user doc as nested object:
+```
+privacy: {
+  calendar: "sharing" | "followers" | "lowkey" | "ghost" | "private"
+  diary:    "sharing" | "followers" | "lowkey" | "ghost" | "private"
+}
+```
 
-Current: card tap is a no-op placeholder. Profile navigation activates it when user profiles are built.
-
----
-
-## Ordering
-
-- Alphabetical A-Z by display name
-- No tier-based grouping -- Ghost pills sit in alphabetical position alongside full cards
-
----
-
-## Data / Firestore Notes
-
-- `calendarPrivacy` and `diaryPrivacy` both read from user doc in `tracker-all.js`
-- Tier values: `sharing`, `followers`, `lowkey`, `ghost`, `private`
-- Private cascade: if either field is `private`, return null (exclude)
-- Per-card month nav fetches: `logs/{yearMonth}/entries/{uid}`
-- Diary strip fetches: most recent diary entry for the browsed month
-
----
-
-## Pass Plan
-
-| Pass | What it builds |
-|---|---|
-| ✅ Pass 1 | Layout, stat line, search bar, alphabetical order |
-| ✅ Pass 2 | Per-card month nav on Sharing cards; global month bar hidden |
-| ✅ Pass 3 | Locked card (Followers tier) |
-| ✅ Pass 4 | Low key signal copy card |
-| Pass 5 | Ghost pill |
-| Pass 6 | Diary strip on Sharing cards (tier-aware, reusing Following tab component) |
-| Pass 7 | Final wiring -- private cascade, diaryPrivacy enforcement, full tier branching end-to-end |
+Read in code as: `userData?.calendarPrivacy || userData?.privacy?.calendar || "sharing"`
 
 ---
 
@@ -165,20 +136,20 @@ Current: card tap is a no-op placeholder. Profile navigation activates it when u
 
 | File | Role |
 |---|---|
-| `js/tracker-all.js` | Orchestrator -- snapshot, tier branching, stat line, search |
+| `js/tracker-all.js` | Orchestrator -- snapshot, tier branching, diary fetch, stat line, search |
 | `js/tracker-all-cards.js` | `renderLockedCard`, `renderLowKeyCard`, `renderGhostCard` |
 | `js/cal-card.js` | `renderMobileCard` -- Sharing full card with per-card month nav |
-| `js/following-people.js` | `renderDiaryStrip` -- reused directly for diary strip in Pass 6 |
+| `js/diary-strip.js` | `renderDiaryStrip` -- shared module used by Following and All tabs |
+| `js/following-signals.js` | `computeSignal` -- signal copy computation |
 | `css/cal-card.css` | All card styles |
 
 ---
 
-## Relationship to User Profiles
+## What's next
 
-When profiles land:
-- Card taps navigate to `/profile/{userId}`
-- Locked card CTA evolves to "View profile" -- follow action moves inside profile
-- Ghost cards link to profiles showing presence (bio, join date) without content
+- All tab card tap -- currently no-op. Activates when user profiles are built.
+- Locked card CTA may evolve to "View profile" when profiles land.
+- Diary strip "view full diary" button -- currently shows "Coming soon!" toast.
 
 ---
 
