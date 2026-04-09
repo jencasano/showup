@@ -445,7 +445,31 @@ export function renderPeopleView(container, model) {
     main.appendChild(renderBrowseNudge(onSwitchToAll));
   } else {
     if (pinnedActive.length > 0) {
-      main.appendChild(renderSectionLbl("\uD83D\uDCCC Pinned"));
+      const pinnedLbl = renderSectionLbl("\uD83D\uDCCC Pinned");
+      const unpinAllBtn = document.createElement("button");
+      unpinAllBtn.className = "fw-unpin-all-btn";
+      const pinnedCount = pinnedActive.length;
+      const unpinLabel = pinnedCount === 1 ? "Unpin" : pinnedCount === 2 ? "Unpin both" : `Unpin all ${pinnedCount}`;
+      unpinAllBtn.textContent = unpinLabel;
+      let confirmTimer = null;
+      unpinAllBtn.addEventListener("click", async () => {
+        if (!unpinAllBtn.classList.contains("fw-unpin-all-btn--confirm")) {
+          unpinAllBtn.textContent = "Sure?";
+          unpinAllBtn.classList.add("fw-unpin-all-btn--confirm");
+          confirmTimer = setTimeout(() => {
+            unpinAllBtn.textContent = unpinLabel;
+            unpinAllBtn.classList.remove("fw-unpin-all-btn--confirm");
+          }, 2500);
+          return;
+        }
+        clearTimeout(confirmTimer);
+        try {
+          await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: [] }, { merge: true });
+          showToast("All unpinned.");
+        } catch { showToast("Couldn't unpin. Try again.", "error"); }
+      });
+      pinnedLbl.appendChild(unpinAllBtn);
+      main.appendChild(pinnedLbl);
       // Interleave for CSS columns: column-count fills top-to-bottom per column,
       // so reorder so that visual left-to-right reading matches pin order.
       const n = pinnedActive.length;
@@ -490,5 +514,8 @@ export function renderPeopleView(container, model) {
   }
 
   layout.append(main, side);
-  container.appendChild(layout);
+  const card = document.createElement("div");
+  card.className = "fw-container";
+  card.appendChild(layout);
+  container.appendChild(card);
 }
