@@ -220,22 +220,24 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
 
     card.appendChild(calZone);
 
-    // Divider + diary zone (only if diary strip has content)
+    // Divider + diary zone
+    const divider = document.createElement("div");
+    divider.className = "fw-feed-zone-divider";
+    card.appendChild(divider);
+
+    const diaryZone = document.createElement("div");
+    diaryZone.className = "fw-feed-diary-zone";
+    if (privacy.diary === "ghost") {
+      diaryZone.classList.add("fw-feed-zone-ghost");
+    }
+    diaryZone.appendChild(buildZoneLblRow("diary.", "fw-feed-diary-lbl", renderTierBadge(privacy.diary)));
     const diary = renderDiaryStrip(diaryEntry, privacy, signal, { isFollowing: true });
     if (diary) {
-      const divider = document.createElement("div");
-      divider.className = "fw-feed-zone-divider";
-      card.appendChild(divider);
-
-      const diaryZone = document.createElement("div");
-      diaryZone.className = "fw-feed-diary-zone";
-      if (privacy.diary === "ghost") {
-        diaryZone.classList.add("fw-feed-zone-ghost");
-      }
-      diaryZone.appendChild(buildZoneLblRow("diary.", "fw-feed-diary-lbl", renderTierBadge(privacy.diary)));
+      const innerLbl = diary.querySelector(".fw-diary-strip-label");
+      if (innerLbl) innerLbl.remove();
       diaryZone.appendChild(diary);
-      card.appendChild(diaryZone);
     }
+    card.appendChild(diaryZone);
   }
 
   // ── Footer ──
