@@ -3276,8 +3276,8 @@
 }
 
 .fw-feed-card-when {
-  font-size: 0.72rem;
-  color: var(--text-faint);
+  font-size: 0.65rem;
+  color: var(--text-muted);
   margin-top: 1px;
 }
 
