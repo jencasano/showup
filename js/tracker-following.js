@@ -102,7 +102,16 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     wrap.appendChild(boardContainer);
 
     if (currentView === "feed") {
-      renderFeedView(boardContainer);
+      renderFeedView(boardContainer, {
+        currentUser,
+        yearMonth,
+        followingIds,
+        pinnedFollowingIds,
+        logsCache,
+        userCache,
+        diaryCache,
+        onSwitchToAll,
+      });
     } else {
       renderPeopleView(boardContainer, {
         currentUser,
