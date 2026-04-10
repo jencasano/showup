@@ -348,6 +348,7 @@
           if ((d - streakStart) % 2 === 0) strengthDays.push(d);
         }
 
+        const lastUpdatedDate = new Date(today.getFullYear(), today.getMonth(), lastActiveDay, 12, 0, 0);
         log = {
           activities: [
             { name: "Running", color: "#E07A5F" },
@@ -358,6 +359,7 @@
             Strength: strengthDays,
           },
           decoration: user.decoration,
+          lastUpdated: { toMillis: () => lastUpdatedDate.getTime() },
         };
       }
 

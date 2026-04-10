@@ -2,7 +2,7 @@ import { db } from "./firebase-config.js";
 import { getDiaryDays, getDiaryEntry } from "./diary.js";
 import {
   doc, getDoc, setDoc, updateDoc,
-  arrayUnion, arrayRemove
+  arrayUnion, arrayRemove, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getDaysInMonth, getCurrentYearMonth, getActivityColor, getPrevYearMonth, getNextYearMonth } from "./utils.js";
 import { openManageActivitiesModal } from "./manage-activities.js";
@@ -250,9 +250,9 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
           const logRef = doc(db, "logs", yearMonth, "entries", entry.id);
           const logSnap = await getDoc(logRef);
           if (logSnap.exists()) {
-            await updateDoc(logRef, { [`marks.${activity}`]: newMarkedDays });
+            await updateDoc(logRef, { [`marks.${activity}`]: newMarkedDays, lastUpdated: serverTimestamp() });
           } else {
-            await setDoc(logRef, { userId: entry.id, yearMonth, marks: { [activity]: newMarkedDays } });
+            await setDoc(logRef, { userId: entry.id, yearMonth, marks: { [activity]: newMarkedDays }, lastUpdated: serverTimestamp() });
           }
         } catch (err) {
           console.error("Toggle error:", err);

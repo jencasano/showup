@@ -37,20 +37,18 @@ export function renderFeedView(container, model) {
     return;
   }
 
-  // Sort: most recent active day first, no-log users at end alphabetically
+  // Sort: most recently updated first, no-signal users at end alphabetically
   const sorted = [...filtered].sort((aUid, bUid) => {
-    const aLog = logsCache[aUid];
-    const bLog = logsCache[bUid];
-    const aMax = maxActiveDay(aLog);
-    const bMax = maxActiveDay(bLog);
-    if (aMax === 0 && bMax === 0) {
+    const aTs = lastSignalMs(logsCache[aUid], diaryCache?.[aUid]);
+    const bTs = lastSignalMs(logsCache[bUid], diaryCache?.[bUid]);
+    if (aTs === 0 && bTs === 0) {
       const aName = (userCache[aUid]?.displayName || "").toLowerCase();
       const bName = (userCache[bUid]?.displayName || "").toLowerCase();
       return aName.localeCompare(bName);
     }
-    if (aMax === 0) return 1;
-    if (bMax === 0) return -1;
-    return bMax - aMax;
+    if (aTs === 0) return 1;
+    if (bTs === 0) return -1;
+    return bTs - aTs;
   });
 
   const stream = document.createElement("div");
@@ -66,13 +64,14 @@ export function renderFeedView(container, model) {
   container.appendChild(stream);
 }
 
-function maxActiveDay(log) {
-  if (!log?.marks) return 0;
-  let max = 0;
-  for (const arr of Object.values(log.marks)) {
-    if (Array.isArray(arr)) {
-      for (const d of arr) { if (d > max) max = d; }
-    }
+function lastSignalMs(log, diary) {
+  let ms = 0;
+  if (log?.lastUpdated?.toMillis) {
+    ms = log.lastUpdated.toMillis();
   }
-  return max;
+  if (diary?.docId) {
+    const dMs = new Date(diary.docId + "T23:59:59").getTime();
+    if (dMs > ms) ms = dMs;
+  }
+  return ms;
 }

@@ -1,7 +1,7 @@
 import { db, auth } from "./firebase-config.js";
 import {
   doc, getDoc, setDoc,
-  updateDoc, onSnapshot
+  updateDoc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getDaysInMonth, getDayLabel, getCurrentYearMonth, getActivityColor } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
@@ -443,9 +443,9 @@ async function toggleDay(
     const logRef  = doc(db, "logs", yearMonth, "entries", userId);
     const logSnap = await getDoc(logRef);
     if (logSnap.exists()) {
-      await updateDoc(logRef, { [`marks.${activity}`]: markedDays });
+      await updateDoc(logRef, { [`marks.${activity}`]: markedDays, lastUpdated: serverTimestamp() });
     } else {
-      await setDoc(logRef, { userId, yearMonth, marks: { [activity]: markedDays } });
+      await setDoc(logRef, { userId, yearMonth, marks: { [activity]: markedDays }, lastUpdated: serverTimestamp() });
     }
   } catch (error) {
     console.error("Error saving log:", error);
