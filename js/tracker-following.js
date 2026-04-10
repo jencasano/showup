@@ -46,7 +46,8 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     return () => {};
   }
 
-  let logUnsubMap = {};
+  let logUnsubMap   = {};
+  let diaryUnsubMap = {};
   let userCache   = {};
   let logsCache   = {};
   let diaryCache  = {};
@@ -171,15 +172,23 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       } catch { /* skip */ }
     }));
 
-    // Fetch diary entries for new followingIds (once per uid, cached)
-    await Promise.all(followingIds.map(async (uid) => {
-      if (Object.prototype.hasOwnProperty.call(diaryCache, uid)) return;
-      try {
-        diaryCache[uid] = await fetchTodayDiaryEntry(uid);
-      } catch {
+    // Subscribe to diary entries for new followingIds (reactive)
+    const today = new Date().toISOString().slice(0, 10);
+    for (const uid of followingIds) {
+      if (diaryUnsubMap[uid]) continue;
+      const diaryRef = doc(db, "diary", uid, "entries", today);
+      diaryUnsubMap[uid] = onSnapshot(diaryRef, (snap) => {
+        if (snap.exists() && snap.data().note) {
+          diaryCache[uid] = { docId: today, ...snap.data() };
+        } else {
+          diaryCache[uid] = null;
+        }
+        renderBoard();
+      }, (err) => {
+        console.error("Diary snapshot error:", err);
         diaryCache[uid] = null;
-      }
-    }));
+      });
+    }
 
     // Remove listeners for uids no longer followed
     const newSet = new Set(followingIds);
@@ -187,6 +196,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       if (!newSet.has(uid)) {
         logUnsubMap[uid]();
         delete logUnsubMap[uid];
+        if (diaryUnsubMap[uid]) { diaryUnsubMap[uid](); delete diaryUnsubMap[uid]; }
         delete logsCache[uid];
         delete userCache[uid];
         delete diaryCache[uid];
@@ -222,6 +232,8 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   return () => {
     unsubMe();
     Object.values(logUnsubMap).forEach(u => u());
+    Object.values(diaryUnsubMap).forEach(u => u());
     logUnsubMap = {};
+    diaryUnsubMap = {};
   };
 }
