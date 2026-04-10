@@ -7,6 +7,17 @@ function toLocalDateStr(d) {
   return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
 }
 
+function formatDateLabel(dateStr) {
+  const d = new Date(dateStr + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (d.getTime() === today.getTime()) return "Today";
+  if (d.getTime() === yesterday.getTime()) return "Yesterday";
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
 export function renderFeedView(container, model) {
   const {
     currentUser, yearMonth, followingIds, logsCache, userCache, diaryCache, onSwitchToAll,
@@ -96,14 +107,64 @@ export function renderFeedView(container, model) {
     return b.ms - a.ms;
   });
 
+  // Group cards by date (preserve sort order within each group)
+  const groups = new Map();
+  for (const card of cards) {
+    if (!groups.has(card.dateStr)) groups.set(card.dateStr, []);
+    groups.get(card.dateStr).push(card);
+  }
+
+  const todayStr = toLocalDateStr(new Date());
   const stream = document.createElement("div");
   stream.className = "fw-feed-stream";
 
-  for (const card of cards) {
-    stream.appendChild(
-      renderFeedCard(card.uid, card.user, card.log, card.diaryEntry, yearMonth, currentUser, { dateStr: card.dateStr })
-    );
+  let isFirst = true;
+  for (const [dateStr, groupCards] of groups) {
+    const section = document.createElement("div");
+    section.className = "fw-feed-date-section";
+
+    const dot = document.createElement("div");
+    dot.className = "fw-feed-date-dot" + (isFirst ? " today" : "");
+
+    const label = document.createElement("div");
+    label.className = "fw-feed-date-label";
+    label.textContent = formatDateLabel(dateStr);
+
+    const cardsWrap = document.createElement("div");
+    cardsWrap.className = "fw-feed-date-cards";
+    let cardIdx = 0;
+    for (const card of groupCards) {
+      const el = renderFeedCard(card.uid, card.user, card.log, card.diaryEntry, yearMonth, currentUser, { dateStr: card.dateStr });
+      el.style.animationDelay = `${cardIdx * 80}ms`;
+      cardsWrap.appendChild(el);
+      cardIdx++;
+    }
+
+    section.append(dot, label, cardsWrap);
+    stream.appendChild(section);
+    isFirst = false;
   }
 
   container.appendChild(stream);
+
+  // Scroll-driven timeline glow
+  function updateTimeline() {
+    const streamRect = stream.getBoundingClientRect();
+    const viewMid = window.innerHeight * 0.6;
+    const fill = Math.max(0, Math.min(viewMid - streamRect.top, stream.scrollHeight));
+    stream.style.setProperty("--tl-fill", fill + "px");
+
+    const dots = stream.querySelectorAll(".fw-feed-date-dot");
+    dots.forEach(dot => {
+      const dotRect = dot.getBoundingClientRect();
+      if (dotRect.top < viewMid) {
+        dot.classList.add("reached");
+      } else {
+        dot.classList.remove("reached");
+      }
+    });
+  }
+
+  window.addEventListener("scroll", updateTimeline, { passive: true });
+  requestAnimationFrame(updateTimeline);
 }
