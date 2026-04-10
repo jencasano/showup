@@ -12,7 +12,7 @@ export function renderFeedView(container, model) {
   const filtered = followingIds.filter(uid => {
     const user = userCache[uid];
     const p = getPrivacy(user);
-    return p.calendar !== "private" || p.diary !== "private";
+    return p.calendar !== "private" && p.diary !== "private";
   });
 
   // Empty state
