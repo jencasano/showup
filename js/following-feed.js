@@ -64,6 +64,7 @@ export function renderFeedView(container, model) {
         (log.marks?.[actName(act)] || []).includes(dayNum)
       );
 
+      console.log("[feed]", uid, dateStr, "dayNum:", dayNum, "hasLog:", hasLogMarks, "diary:", !!diaryEntry, "log marks:", log?.marks);
       if (!hasLogMarks && !diaryEntry) continue;
 
       // Compute sort key: most recent lastUpdated between log and diary
