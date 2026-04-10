@@ -74,11 +74,16 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
   const tier = privacy.calendar;
 
   if (tier === "ghost") {
-    card.style.opacity = "0.55";
+    if (privacy.diary === "ghost") {
+      card.style.opacity = "0.55";
+    }
 
     // Cal zone -- ghost
     const calZone = document.createElement("div");
     calZone.className = "fw-feed-cal-zone";
+    if (privacy.diary !== "ghost") {
+      calZone.style.opacity = "0.55";
+    }
     calZone.appendChild(buildZoneLblRow("ACTIVITY", "fw-feed-section-lbl", renderTierBadge(privacy.calendar)));
     const ghostCal = document.createElement("div");
     ghostCal.style.textAlign = "center";
@@ -224,6 +229,9 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
 
       const diaryZone = document.createElement("div");
       diaryZone.className = "fw-feed-diary-zone";
+      if (privacy.diary === "ghost") {
+        diaryZone.style.opacity = "0.55";
+      }
       diaryZone.appendChild(buildZoneLblRow("diary.", "fw-feed-diary-lbl", renderTierBadge(privacy.diary)));
       diaryZone.appendChild(diary);
       card.appendChild(diaryZone);
