@@ -73,7 +73,7 @@ function lastSignalMs(log, diary) {
     const dMs = diary.lastUpdated.toMillis();
     if (dMs > ms) ms = dMs;
   } else if (diary?.docId) {
-    const dMs = new Date(diary.docId + "T23:59:59").getTime();
+    const dMs = new Date(diary.docId + "T00:00:00").getTime();
     if (dMs > ms) ms = dMs;
   }
   return ms;
