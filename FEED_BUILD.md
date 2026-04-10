@@ -47,6 +47,10 @@ The harness passes a no-op `pinHandler` via the options param on `renderFeedCard
 - Per-day diary fetch: feed now fetches `diary/{uid}/entries/YYYY-MM-DD` for today specifically, not latest-ever (Phase 1b fix -- done)
   - `fetchLatestDiaryEntry` still used by People view (pinned cards) -- do not change it
   - `fetchTodayDiaryEntry` used by feed only
+- Feed sort by last updated timestamp (Phase 2 -- done)
+  - `lastUpdated: serverTimestamp()` added to log writes in `tracker-mylog.js` and `cal-card.js`
+  - Sort uses `lastSignalMs()` comparing log timestamp and diary docId, most recent wins
+  - Old docs without `lastUpdated` gracefully sort to end
 
 ### Known remaining bugs (fix before adding features)
 1. Empty diary zone not omitting silently in log-only state (sharing/followers branch).

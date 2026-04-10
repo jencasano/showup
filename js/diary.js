@@ -1,6 +1,6 @@
 import { db, storage } from "./firebase-config.js";
 import {
-  collection, doc, getDoc, getDocs, setDoc
+  collection, doc, getDoc, getDocs, setDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   ref, uploadBytes, getDownloadURL, deleteObject
@@ -27,6 +27,7 @@ export async function saveDiaryEntry(userId, yearMonth, day, { note, photoUrl })
   const data = {};
   if (note !== undefined)     data.note     = note;
   if (photoUrl !== undefined) data.photoUrl = photoUrl;
+  data.lastUpdated = serverTimestamp();
   await setDoc(entryRef(userId, yearMonth, day), data, { merge: true });
 }
 

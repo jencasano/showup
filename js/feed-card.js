@@ -65,7 +65,13 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
   const whenEl = document.createElement("div");
   whenEl.className = "fw-feed-card-when";
   whenEl.textContent = formatYearMonth(yearMonth);
-  nameCol.append(nameEl, whenEl);
+  // DEBUG: show lastUpdated timestamp for troubleshooting sort
+  const debugTs = document.createElement("div");
+  debugTs.style.cssText = "font-size:10px;color:#999;font-family:monospace;";
+  const logMs = log?.lastUpdated?.toMillis ? new Date(log.lastUpdated.toMillis()).toLocaleTimeString() : "none";
+  const diaryMs = diaryEntry?.lastUpdated?.toMillis ? new Date(diaryEntry.lastUpdated.toMillis()).toLocaleTimeString() : "none";
+  debugTs.textContent = `log: ${logMs} | diary: ${diaryMs}`;
+  nameCol.append(nameEl, whenEl, debugTs);
 
   head.append(avatar, nameCol);
   card.appendChild(head);
