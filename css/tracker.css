@@ -3281,43 +3281,69 @@
   margin-top: 1px;
 }
 
+.fw-feed-cal-zone {
+  padding: 10px 16px 12px;
+}
+
+.fw-feed-diary-zone {
+  padding: 10px 16px 12px;
+}
+
+.fw-feed-zone-divider {
+  height: 1px;
+  background: var(--border-faint);
+  margin: 0 16px;
+}
+
+.fw-feed-diary-lbl {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: lowercase;
+  margin-bottom: 6px;
+}
+
 .fw-feed-chips {
   display: flex;
+  gap: 5px;
   flex-wrap: wrap;
-  gap: 6px;
-  padding: 4px 16px 10px;
+  margin-bottom: 10px;
 }
 
 .fw-feed-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.62rem;
+  font-weight: 600;
   padding: 3px 10px;
   border-radius: var(--radius-full);
-  font-size: 0.72rem;
-  font-weight: 600;
+  color: #fff;
   white-space: nowrap;
 }
 
 .fw-feed-chip-off {
   background: var(--bg-subtle);
   color: var(--text-faint);
+  border: 1px solid var(--border);
 }
 
 .fw-feed-strip {
   display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  gap: 8px;
-  padding: 0 16px 12px;
+  gap: 0;
+  margin-top: 4px;
 }
 
 .fw-feed-strip-day {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 3px;
+  padding: 2px 0;
 }
 
 .fw-feed-strip-daynum {
-  font-size: 0.6rem;
+  font-size: 0.52rem;
   color: var(--text-faint);
   font-weight: 600;
 }
@@ -3330,10 +3356,10 @@
 }
 
 .fw-feed-signal-block {
-  padding: 12px 16px;
+  padding: 11px 14px;
   background: var(--bg-subtle);
   border-radius: var(--radius-md);
-  margin: 0 16px 12px;
+  margin-bottom: 10px;
   font-size: 0.82rem;
   color: var(--text);
 }

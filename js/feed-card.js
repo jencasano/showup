@@ -63,20 +63,51 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
 
   if (tier === "ghost") {
     card.style.opacity = "0.55";
-    const zone = document.createElement("div");
-    zone.className = "fw-feed-signal-block";
-    zone.style.textAlign = "center";
-    const moon = document.createElement("div");
-    moon.style.fontSize = "1.4rem";
-    moon.textContent = "\uD83C\uDF19";
-    const txt = document.createElement("div");
-    txt.style.color = "var(--text-faint)";
-    txt.style.fontStyle = "italic";
-    txt.style.fontSize = "0.82rem";
-    txt.textContent = "Gone quiet for now.";
-    zone.append(moon, txt);
-    card.appendChild(zone);
+
+    // Cal zone -- ghost
+    const calZone = document.createElement("div");
+    calZone.className = "fw-feed-cal-zone";
+    calZone.style.textAlign = "center";
+    const moon1 = document.createElement("div");
+    moon1.style.fontSize = "1.4rem";
+    moon1.textContent = "\uD83C\uDF19";
+    const txt1 = document.createElement("div");
+    txt1.style.color = "var(--text-faint)";
+    txt1.style.fontStyle = "italic";
+    txt1.style.fontSize = "0.82rem";
+    txt1.textContent = "Gone quiet for now.";
+    calZone.append(moon1, txt1);
+    card.appendChild(calZone);
+
+    // Divider
+    const div1 = document.createElement("div");
+    div1.className = "fw-feed-zone-divider";
+    card.appendChild(div1);
+
+    // Diary zone -- ghost
+    const diaryZone = document.createElement("div");
+    diaryZone.className = "fw-feed-diary-zone";
+    const diaryLbl = document.createElement("div");
+    diaryLbl.className = "fw-feed-diary-lbl";
+    diaryLbl.textContent = "diary.";
+    diaryZone.appendChild(diaryLbl);
+    const moon2 = document.createElement("div");
+    moon2.style.fontSize = "1.4rem";
+    moon2.style.textAlign = "center";
+    moon2.textContent = "\uD83C\uDF19";
+    const txt2 = document.createElement("div");
+    txt2.style.color = "var(--text-faint)";
+    txt2.style.fontStyle = "italic";
+    txt2.style.fontSize = "0.82rem";
+    txt2.style.textAlign = "center";
+    txt2.textContent = "Gone quiet for now.";
+    diaryZone.append(moon2, txt2);
+    card.appendChild(diaryZone);
+
   } else if (tier === "lowkey") {
+    // Cal zone
+    const calZone = document.createElement("div");
+    calZone.className = "fw-feed-cal-zone";
     const block = document.createElement("div");
     block.className = "fw-feed-signal-block";
     const headline = document.createElement("div");
@@ -88,12 +119,31 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     whisper.style.marginTop = "4px";
     whisper.textContent = "low key";
     block.append(headline, whisper);
-    card.appendChild(block);
+    calZone.appendChild(block);
+    card.appendChild(calZone);
 
+    // Divider + diary zone
+    const divider = document.createElement("div");
+    divider.className = "fw-feed-zone-divider";
+    card.appendChild(divider);
+
+    const diaryZone = document.createElement("div");
+    diaryZone.className = "fw-feed-diary-zone";
+    const diaryLbl = document.createElement("div");
+    diaryLbl.className = "fw-feed-diary-lbl";
+    diaryLbl.textContent = "diary.";
+    diaryZone.appendChild(diaryLbl);
     const diary = renderDiaryStrip(diaryEntry, privacy, signal, { isFollowing: true });
-    if (diary) card.appendChild(diary);
+    if (diary) diaryZone.appendChild(diary);
+    card.appendChild(diaryZone);
+
   } else {
     // sharing or followers
+
+    // Cal zone
+    const calZone = document.createElement("div");
+    calZone.className = "fw-feed-cal-zone";
+
     if (log?.activities?.length) {
       const chips = document.createElement("div");
       chips.className = "fw-feed-chips";
@@ -104,21 +154,15 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
         if (hasMarks) {
           chip.className = "fw-feed-chip";
           chip.style.background = act.color || "var(--color-primary)";
-          chip.style.color = "#fff";
         } else {
           chip.className = "fw-feed-chip fw-feed-chip-off";
         }
         chip.textContent = act.name;
         chips.appendChild(chip);
       }
-      card.appendChild(chips);
-    }
+      calZone.appendChild(chips);
 
-    const diary = renderDiaryStrip(diaryEntry, privacy, signal, { isFollowing: true });
-    if (diary) card.appendChild(diary);
-
-    // 7-day activity strip
-    if (log?.activities?.length) {
+      // 7-day activity strip
       const strip = document.createElement("div");
       strip.className = "fw-feed-strip";
 
@@ -149,8 +193,25 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
         }
         strip.appendChild(col);
       }
-      card.appendChild(strip);
+      calZone.appendChild(strip);
     }
+
+    card.appendChild(calZone);
+
+    // Divider + diary zone
+    const divider = document.createElement("div");
+    divider.className = "fw-feed-zone-divider";
+    card.appendChild(divider);
+
+    const diaryZone = document.createElement("div");
+    diaryZone.className = "fw-feed-diary-zone";
+    const diaryLbl = document.createElement("div");
+    diaryLbl.className = "fw-feed-diary-lbl";
+    diaryLbl.textContent = "diary.";
+    diaryZone.appendChild(diaryLbl);
+    const diary = renderDiaryStrip(diaryEntry, privacy, signal, { isFollowing: true });
+    if (diary) diaryZone.appendChild(diary);
+    card.appendChild(diaryZone);
   }
 
   // ── Footer ──
