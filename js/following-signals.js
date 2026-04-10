@@ -93,4 +93,10 @@ export function computeSignal(displayName, logEntry) {
   };
 }
 
+export function pickCopy(keys, uid, date) {
+  const seed = (uid + date).split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+  const key = keys[seed % keys.length];
+  return signalCopy[key] || key;
+}
+
 export { copyReady };

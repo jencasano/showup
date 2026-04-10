@@ -1,5 +1,5 @@
 import { getPrivacy, renderTierBadge } from "./following-utils.js";
-import { computeSignal } from "./following-signals.js";
+import { computeSignal, pickCopy } from "./following-signals.js";
 import { renderDiaryStrip } from "./diary-strip.js";
 import { db } from "./firebase-config.js";
 import { doc, setDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -31,6 +31,8 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
   const signal = computeSignal(displayName, log);
   const deco = log?.decoration || user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
   const initial = displayName.charAt(0).toUpperCase();
+
+  const dateStr = new Date().toISOString().slice(0, 10);
 
   const card = document.createElement("div");
   card.className = "fw-feed-card";
@@ -87,7 +89,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     txt1.style.color = "var(--text-faint)";
     txt1.style.fontStyle = "italic";
     txt1.style.fontSize = "0.82rem";
-    txt1.textContent = "Gone quiet for now.";
+    txt1.textContent = pickCopy(["ghost_cal_1","ghost_cal_2","ghost_cal_3","ghost_cal_4"], uid, dateStr);
     ghostCal.append(moon1, txt1);
     calZone.appendChild(ghostCal);
     card.appendChild(calZone);
@@ -111,7 +113,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
       txt2.style.fontStyle = "italic";
       txt2.style.fontSize = "0.82rem";
       txt2.style.textAlign = "center";
-      txt2.textContent = "Gone quiet for now.";
+      txt2.textContent = pickCopy(["ghost_diary_1","ghost_diary_2","ghost_diary_3","ghost_diary_4"], uid, dateStr);
       diaryZone.append(moon2, txt2);
     } else {
       const diary = renderDiaryStrip(diaryEntry, privacy, signal, { isFollowing: true });

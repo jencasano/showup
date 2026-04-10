@@ -26,5 +26,24 @@
   "checked_in_diary":      "{firstName} stopped by.",
 
   "fallback_calendar":     "{firstName} is showing up quietly.",
-  "fallback_diary":        "{firstName} is keeping this one close."
+  "fallback_diary":        "{firstName} is keeping this one close.",
+
+  "ghost_cal_1":           "Showed up today. Keeping it close.",
+  "ghost_cal_2":           "Something got done. That's all we know.",
+  "ghost_cal_3":           "They were here. The details are theirs.",
+  "ghost_cal_4":           "Checked in quietly.",
+
+  "ghost_diary_1":         "Wrote something. Not for sharing.",
+  "ghost_diary_2":         "Something's on their mind. They're keeping it.",
+  "ghost_diary_3":         "There's an entry. It stays private.",
+  "ghost_diary_4":         "Words happened. They're not ours to read.",
+
+  "changed_cal_1":         "Plans shifted. The day's still happening.",
+  "changed_cal_2":         "Something changed. The rest remains.",
+  "changed_cal_3":         "Logged something earlier. It's gone now.",
+  "changed_cal_4":         "The day looked different this morning.",
+
+  "changed_diary_1":       "Wrote something earlier. It's gone now.",
+  "changed_diary_2":       "Had something to say. Changed their mind.",
+  "changed_diary_3":       "There was an entry. It didn't stay."
 }
