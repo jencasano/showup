@@ -3295,12 +3295,26 @@
   margin: 0 16px;
 }
 
+.fw-feed-zone-lbl-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.fw-feed-section-lbl {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
 .fw-feed-diary-lbl {
   font-size: 0.68rem;
   font-weight: 700;
   color: var(--text-faint);
   text-transform: lowercase;
-  margin-bottom: 6px;
 }
 
 .fw-feed-chips {
@@ -3308,16 +3322,6 @@
   gap: 5px;
   flex-wrap: wrap;
   margin-bottom: 10px;
-}
-
-.fw-feed-section-lbl {
-  font-size: 0.62rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 6px;
-  font-family: 'Sora', sans-serif;
 }
 
 .fw-feed-chip {
@@ -3398,23 +3402,3 @@
   color: var(--color-primary);
 }
 
-.fw-feed-footer-sep {
-  color: var(--border);
-  margin: 0 8px;
-  font-size: 0.72rem;
-}
-
-.fw-feed-view-btn {
-  background: none;
-  border: none;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 2px 0;
-  transition: color 0.15s;
-}
-
-.fw-feed-view-btn:hover {
-  color: var(--color-primary);
-}

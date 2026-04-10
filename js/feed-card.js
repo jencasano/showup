@@ -11,6 +11,20 @@ function formatYearMonth(yearMonth) {
   return new Date(y, m - 1, 1).toLocaleString("en-US", { month: "long", year: "numeric" });
 }
 
+// Activities may be strings or objects — normalise to { name, color }
+function actName(act) { return typeof act === "string" ? act : act.name; }
+function actColor(act, i) { return (typeof act === "object" && act.color) ? act.color : getActivityColor(i); }
+
+function buildZoneLblRow(labelText, labelClass, tierBadge) {
+  const row = document.createElement("div");
+  row.className = "fw-feed-zone-lbl-row";
+  const lbl = document.createElement("div");
+  lbl.className = labelClass;
+  lbl.textContent = labelText;
+  row.append(lbl, tierBadge);
+  return row;
+}
+
 export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUser) {
   const displayName = user?.displayName || "Unknown";
   const privacy = getPrivacy(user);
@@ -51,12 +65,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
   whenEl.textContent = formatYearMonth(yearMonth);
   nameCol.append(nameEl, whenEl);
 
-  const badge = renderTierBadge(privacy.calendar);
-  badge.style.position = "absolute";
-  badge.style.top = "14px";
-  badge.style.right = "16px";
-
-  head.append(avatar, nameCol, badge);
+  head.append(avatar, nameCol);
   card.appendChild(head);
 
   // ── Body ──
@@ -68,7 +77,9 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     // Cal zone -- ghost
     const calZone = document.createElement("div");
     calZone.className = "fw-feed-cal-zone";
-    calZone.style.textAlign = "center";
+    calZone.appendChild(buildZoneLblRow("ACTIVITY", "fw-feed-section-lbl", renderTierBadge(privacy.calendar)));
+    const ghostCal = document.createElement("div");
+    ghostCal.style.textAlign = "center";
     const moon1 = document.createElement("div");
     moon1.style.fontSize = "1.4rem";
     moon1.textContent = "\uD83C\uDF19";
@@ -77,7 +88,8 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     txt1.style.fontStyle = "italic";
     txt1.style.fontSize = "0.82rem";
     txt1.textContent = "Gone quiet for now.";
-    calZone.append(moon1, txt1);
+    ghostCal.append(moon1, txt1);
+    calZone.appendChild(ghostCal);
     card.appendChild(calZone);
 
     // Divider
@@ -88,6 +100,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     // Diary zone -- ghost (based on privacy.diary)
     const diaryZone = document.createElement("div");
     diaryZone.className = "fw-feed-diary-zone";
+    diaryZone.appendChild(buildZoneLblRow("diary.", "fw-feed-diary-lbl", renderTierBadge(privacy.diary)));
     if (privacy.diary === "ghost") {
       const moon2 = document.createElement("div");
       moon2.style.fontSize = "1.4rem";
@@ -110,6 +123,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     // Cal zone
     const calZone = document.createElement("div");
     calZone.className = "fw-feed-cal-zone";
+    calZone.appendChild(buildZoneLblRow("ACTIVITY", "fw-feed-section-lbl", renderTierBadge(privacy.calendar)));
     const block = document.createElement("div");
     block.className = "fw-feed-signal-block";
     const headline = document.createElement("div");
@@ -131,6 +145,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
 
     const diaryZone = document.createElement("div");
     diaryZone.className = "fw-feed-diary-zone";
+    diaryZone.appendChild(buildZoneLblRow("diary.", "fw-feed-diary-lbl", renderTierBadge(privacy.diary)));
     const diary = renderDiaryStrip(diaryEntry, privacy, signal, { isFollowing: true });
     if (diary) diaryZone.appendChild(diary);
     card.appendChild(diaryZone);
@@ -141,25 +156,22 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     // Cal zone
     const calZone = document.createElement("div");
     calZone.className = "fw-feed-cal-zone";
-
-    const actLabel = document.createElement("div");
-    actLabel.className = "fw-feed-section-lbl";
-    actLabel.textContent = "ACTIVITY";
-    calZone.appendChild(actLabel);
+    calZone.appendChild(buildZoneLblRow("ACTIVITY", "fw-feed-section-lbl", renderTierBadge(privacy.calendar)));
 
     if (log?.activities?.length) {
       const chips = document.createElement("div");
       chips.className = "fw-feed-chips";
       log.activities.forEach((act, i) => {
         const chip = document.createElement("span");
-        const hasMarks = (log.marks?.[act] || []).length > 0;
+        const name = actName(act);
+        const hasMarks = (log.marks?.[name] || []).length > 0;
         if (hasMarks) {
           chip.className = "fw-feed-chip";
-          chip.style.background = getActivityColor(i);
-          chip.textContent = "\u2713 " + act;
+          chip.style.background = actColor(act, i);
+          chip.textContent = "\u2713 " + name;
         } else {
           chip.className = "fw-feed-chip fw-feed-chip-off";
-          chip.textContent = act;
+          chip.textContent = name;
         }
         chips.appendChild(chip);
       });
@@ -184,9 +196,10 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
         log.activities.forEach((act, i) => {
           const dot = document.createElement("div");
           dot.className = "fw-feed-strip-dot";
-          const marked = (log.marks?.[act] || []).includes(d);
+          const name = actName(act);
+          const marked = (log.marks?.[name] || []).includes(d);
           if (marked) {
-            dot.style.background = getActivityColor(i);
+            dot.style.background = actColor(act, i);
           } else {
             dot.style.border = "1.5px solid var(--border)";
             dot.style.background = "transparent";
@@ -200,16 +213,19 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
 
     card.appendChild(calZone);
 
-    // Divider + diary zone
-    const divider = document.createElement("div");
-    divider.className = "fw-feed-zone-divider";
-    card.appendChild(divider);
-
-    const diaryZone = document.createElement("div");
-    diaryZone.className = "fw-feed-diary-zone";
+    // Divider + diary zone (only if diary strip has content)
     const diary = renderDiaryStrip(diaryEntry, privacy, signal, { isFollowing: true });
-    if (diary) diaryZone.appendChild(diary);
-    card.appendChild(diaryZone);
+    if (diary) {
+      const divider = document.createElement("div");
+      divider.className = "fw-feed-zone-divider";
+      card.appendChild(divider);
+
+      const diaryZone = document.createElement("div");
+      diaryZone.className = "fw-feed-diary-zone";
+      diaryZone.appendChild(buildZoneLblRow("diary.", "fw-feed-diary-lbl", renderTierBadge(privacy.diary)));
+      diaryZone.appendChild(diary);
+      card.appendChild(diaryZone);
+    }
   }
 
   // ── Footer ──
@@ -229,16 +245,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     }
   });
 
-  const sep = document.createElement("span");
-  sep.className = "fw-feed-footer-sep";
-  sep.textContent = "|";
-
-  const viewBtn = document.createElement("button");
-  viewBtn.className = "fw-feed-view-btn";
-  viewBtn.textContent = "\uD83D\uDCC5 View calendar";
-  viewBtn.addEventListener("click", () => showToast("Coming soon!"));
-
-  footer.append(pinBtn, sep, viewBtn);
+  footer.appendChild(pinBtn);
   card.appendChild(footer);
 
   return card;
