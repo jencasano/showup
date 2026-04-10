@@ -22,6 +22,14 @@ async function fetchLatestDiaryEntry(uid) {
   return null;
 }
 
+async function fetchTodayDiaryEntry(uid) {
+  const today = new Date().toISOString().slice(0, 10);
+  const snap = await getDoc(doc(db, "diary", uid, "entries", today));
+  if (!snap.exists()) return null;
+  const data = snap.data();
+  return data.note ? { docId: today, ...data } : null;
+}
+
 export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToAll, silent = false) {
   if (!silent) showLoader();
   container.innerHTML = "";
@@ -164,7 +172,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     await Promise.all(followingIds.map(async (uid) => {
       if (Object.prototype.hasOwnProperty.call(diaryCache, uid)) return;
       try {
-        diaryCache[uid] = await fetchLatestDiaryEntry(uid);
+        diaryCache[uid] = await fetchTodayDiaryEntry(uid);
       } catch {
         diaryCache[uid] = null;
       }
