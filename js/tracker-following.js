@@ -178,6 +178,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       if (diaryUnsubMap[uid]) continue;
       const diaryRef = doc(db, "diary", uid, "entries", today);
       diaryUnsubMap[uid] = onSnapshot(diaryRef, (snap) => {
+        console.log("[diary snap]", uid, "exists:", snap.exists(), "data:", snap.data());
         if (snap.exists() && snap.data().note) {
           diaryCache[uid] = { docId: today, ...snap.data() };
         } else {
