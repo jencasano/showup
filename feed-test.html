@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feed Card Test Harness</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/following.css" />
+  <link rel="stylesheet" href="css/tracker.css" />
+  <style>
+    body {
+      background: #FDF8F0;
+      margin: 0;
+      padding: 24px;
+      font-family: var(--font-body, system-ui, sans-serif);
+    }
+    .harness {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+    .controls {
+      max-width: 320px;
+      flex-shrink: 0;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .preview-col {
+      max-width: 480px;
+      flex: 1;
+    }
+    .controls h2 {
+      margin: 0 0 16px;
+      font-size: 1rem;
+      color: var(--text-secondary, #666);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .section {
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border, #eee);
+    }
+    .section:last-of-type { border-bottom: none; }
+    .section-label {
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary, #888);
+      margin-bottom: 8px;
+    }
+    .field { margin-bottom: 10px; }
+    .field label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--text-secondary, #666);
+      margin-bottom: 3px;
+    }
+    .field input[type="text"],
+    .field input[type="number"],
+    .field select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--border, #ddd);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      box-sizing: border-box;
+    }
+    .field input[type="checkbox"] { margin-right: 6px; }
+    .radio-group label {
+      display: block;
+      font-size: 0.85rem;
+      padding: 2px 0;
+      cursor: pointer;
+    }
+    .radio-group input { margin-right: 6px; }
+    #renderBtn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 12px;
+      background: #D8584E;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    #renderBtn:hover { opacity: 0.9; }
+    .debug-block {
+      margin-top: 16px;
+      padding: 12px;
+      background: #f5f5f0;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.72rem;
+      color: #888;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .placeholder-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      text-align: center;
+      color: var(--text-secondary, #888);
+    }
+    .placeholder-card h3 {
+      margin: 0 0 8px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .placeholder-card p {
+      margin: 0;
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="harness">
+    <!-- ── Control Panel ── -->
+    <div class="controls">
+      <h2>Feed Card Test</h2>
+
+      <!-- SECTION 1: Card Type -->
+      <div class="section">
+        <div class="section-label">Card Type</div>
+        <div class="radio-group">
+          <label><input type="radio" name="cardType" value="day" checked /> Day card</label>
+          <label><input type="radio" name="cardType" value="milestone" /> Milestone card</label>
+          <label><input type="radio" name="cardType" value="system" /> System event card</label>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Day Card Settings -->
+      <div class="section" id="daySettings">
+        <div class="section-label">Day Card Settings</div>
+        <div class="field">
+          <label><input type="checkbox" id="hasLog" checked /> Has log</label>
+        </div>
+        <div class="field">
+          <label><input type="checkbox" id="hasDiary" checked /> Has diary entry</label>
+        </div>
+        <div class="field">
+          <label>Calendar tier</label>
+          <select id="calTier">
+            <option value="sharing" selected>sharing</option>
+            <option value="followers">followers</option>
+            <option value="lowkey">lowkey</option>
+            <option value="ghost">ghost</option>
+            <option value="private">private</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Diary tier</label>
+          <select id="diaryTier">
+            <option value="sharing" selected>sharing</option>
+            <option value="followers">followers</option>
+            <option value="lowkey">lowkey</option>
+            <option value="ghost">ghost</option>
+            <option value="private">private</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Days since last active</label>
+          <input type="number" id="daysSince" value="0" min="0" />
+        </div>
+        <div class="field">
+          <label>Current streak</label>
+          <input type="number" id="streak" value="5" min="0" />
+        </div>
+        <div class="field">
+          <label>Total days active this month</label>
+          <input type="number" id="totalActive" value="5" min="0" />
+        </div>
+      </div>
+
+      <!-- SECTION 3: Milestone Card Settings -->
+      <div class="section" id="milestoneSettings" style="display:none;">
+        <div class="section-label">Milestone Card Settings</div>
+        <div class="field">
+          <label>Milestone type</label>
+          <select id="milestoneType">
+            <option value="first_ever">first_ever</option>
+            <option value="comeback_7">comeback_7</option>
+            <option value="comeback_30">comeback_30</option>
+            <option value="streak_7">streak_7</option>
+            <option value="streak_15">streak_15</option>
+            <option value="streak_25">streak_25</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SECTION 4: System Event Card Settings -->
+      <div class="section" id="systemSettings" style="display:none;">
+        <div class="section-label">System Event Card Settings</div>
+        <div class="field">
+          <label>Event type</label>
+          <select id="eventType">
+            <option value="went_private">went_private</option>
+            <option value="came_back">came_back</option>
+          </select>
+        </div>
+        <div class="field" id="returnTierField" style="display:none;">
+          <label>Return tier</label>
+          <select id="returnTier">
+            <option value="sharing">sharing</option>
+            <option value="followers">followers</option>
+            <option value="lowkey">lowkey</option>
+            <option value="ghost">ghost</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SECTION 5: Person -->
+      <div class="section">
+        <div class="section-label">Person</div>
+        <div class="field">
+          <label>First name</label>
+          <input type="text" id="firstName" value="Lulu" />
+        </div>
+        <div class="field">
+          <label><input type="checkbox" id="showAvatar" checked /> Show avatar</label>
+        </div>
+      </div>
+
+      <button id="renderBtn">Render</button>
+    </div>
+
+    <!-- ── Preview Column ── -->
+    <div class="preview-col" id="preview"></div>
+  </div>
+
+  <script type="module">
+    import { renderFeedCard } from "./js/feed-card.js";
+
+    const $ = (id) => document.getElementById(id);
+    const radios = document.querySelectorAll('input[name="cardType"]');
+    const daySettings = $("daySettings");
+    const milestoneSettings = $("milestoneSettings");
+    const systemSettings = $("systemSettings");
+    const eventType = $("eventType");
+    const returnTierField = $("returnTierField");
+
+    // ── Show/hide logic ──
+    function syncSections() {
+      const type = document.querySelector('input[name="cardType"]:checked').value;
+      daySettings.style.display = type === "day" ? "" : "none";
+      milestoneSettings.style.display = type === "milestone" ? "" : "none";
+      systemSettings.style.display = type === "system" ? "" : "none";
+    }
+    radios.forEach(r => r.addEventListener("change", syncSections));
+
+    eventType.addEventListener("change", () => {
+      returnTierField.style.display = eventType.value === "came_back" ? "" : "none";
+    });
+
+    // ── Render logic ──
+    $("renderBtn").addEventListener("click", () => {
+      const preview = $("preview");
+      preview.innerHTML = "";
+
+      const cardType = document.querySelector('input[name="cardType"]:checked').value;
+      const name = $("firstName").value || "Lulu";
+      const showAvatar = $("showAvatar").checked;
+
+      if (cardType === "milestone") {
+        const mType = $("milestoneType").value;
+        const card = document.createElement("div");
+        card.className = "placeholder-card";
+        card.innerHTML = `<h3>Milestone Card</h3><p>${mType}</p><p style="margin-top:8px;font-size:0.75rem;color:#aaa;">Placeholder -- real renderer coming soon</p>`;
+        preview.appendChild(card);
+
+        const debug = document.createElement("div");
+        debug.className = "debug-block";
+        debug.textContent = JSON.stringify({ cardType, milestoneType: mType, name }, null, 2);
+        preview.appendChild(debug);
+        return;
+      }
+
+      if (cardType === "system") {
+        const eType = $("eventType").value;
+        const rTier = $("returnTier").value;
+        const card = document.createElement("div");
+        card.className = "placeholder-card";
+        let info = eType;
+        if (eType === "came_back") info += ` (return tier: ${rTier})`;
+        card.innerHTML = `<h3>System Event</h3><p>${info}</p><p style="margin-top:8px;font-size:0.75rem;color:#aaa;">Placeholder -- real renderer coming soon</p>`;
+        preview.appendChild(card);
+
+        const debug = document.createElement("div");
+        debug.className = "debug-block";
+        debug.textContent = JSON.stringify({ cardType, eventType: eType, returnTier: eType === "came_back" ? rTier : undefined, name }, null, 2);
+        preview.appendChild(debug);
+        return;
+      }
+
+      // ── Day card ──
+      const hasLog = $("hasLog").checked;
+      const hasDiary = $("hasDiary").checked;
+      const calTier = $("calTier").value;
+      const diaryTier = $("diaryTier").value;
+      const daysSince = parseInt($("daysSince").value, 10) || 0;
+      const streak = parseInt($("streak").value, 10) || 0;
+      const totalActive = parseInt($("totalActive").value, 10) || 0;
+
+      const today = new Date();
+      const todayDay = today.getDate();
+      const yearMonth = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0");
+      const dateStr = today.toISOString().slice(0, 10);
+
+      // Build user object
+      const user = {
+        displayName: name,
+        decoration: {
+          color: "#D8584E",
+          fontColor: "#FFFFFF",
+        },
+        privacy: {
+          calendar: calTier,
+          diary: diaryTier,
+        },
+      };
+
+      if (!showAvatar) {
+        // No avatarUrl means the renderer shows the initial circle by default;
+        // to test "no avatar", we don't add avatarUrl (default behavior).
+        // The avatar circle with initial IS the fallback already.
+      }
+
+      // Build log object
+      let log = null;
+      if (hasLog) {
+        const lastActiveDay = Math.max(1, todayDay - daysSince);
+        const streakStart = Math.max(1, lastActiveDay - streak + 1);
+
+        const runningDays = [];
+        const strengthDays = [];
+        for (let d = streakStart; d <= lastActiveDay; d++) {
+          runningDays.push(d);
+          if ((d - streakStart) % 2 === 0) strengthDays.push(d);
+        }
+
+        log = {
+          activities: [
+            { name: "Running", color: "#E07A5F" },
+            { name: "Strength", color: "#5E81AC" },
+          ],
+          marks: {
+            Running: runningDays,
+            Strength: strengthDays,
+          },
+          decoration: user.decoration,
+        };
+      }
+
+      // Build diary entry
+      let diaryEntry = null;
+      if (hasDiary) {
+        diaryEntry = {
+          note: "Had a good session today. Feeling strong.",
+          photoUrl: null,
+          docId: dateStr,
+        };
+      }
+
+      const uid = "test-user-001";
+      const currentUser = { uid: "test-viewer" };
+
+      const card = renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUser, {
+        pinHandler: (e) => { e.stopPropagation(); console.log("[test harness] Pin clicked -- no-op"); },
+      });
+      preview.appendChild(card);
+
+      // Debug block
+      const debug = document.createElement("div");
+      debug.className = "debug-block";
+      debug.textContent = JSON.stringify({ uid, user, log, diaryEntry, yearMonth }, null, 2);
+      preview.appendChild(debug);
+    });
+  </script>
+</body>
+</html>

@@ -25,7 +25,7 @@ function buildZoneLblRow(labelText, labelClass, tierBadge) {
   return row;
 }
 
-export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUser) {
+export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUser, options = {}) {
   const displayName = user?.displayName || "Unknown";
   const privacy = getPrivacy(user);
   const signal = computeSignal(displayName, log);
@@ -237,15 +237,19 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
   const pinBtn = document.createElement("button");
   pinBtn.className = "fw-feed-pin-btn";
   pinBtn.textContent = "\uD83D\uDCCC Pin";
-  pinBtn.addEventListener("click", async (e) => {
-    e.stopPropagation();
-    try {
-      await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: arrayUnion(uid) }, { merge: true });
-      showToast("Pinned!");
-    } catch {
-      showToast("Couldn't pin. Try again.", "error");
-    }
-  });
+  if (options.pinHandler) {
+    pinBtn.addEventListener("click", options.pinHandler);
+  } else {
+    pinBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      try {
+        await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: arrayUnion(uid) }, { merge: true });
+        showToast("Pinned!");
+      } catch {
+        showToast("Couldn't pin. Try again.", "error");
+      }
+    });
+  }
 
   footer.appendChild(pinBtn);
   card.appendChild(footer);
