@@ -15,6 +15,47 @@ function formatYearMonth(yearMonth) {
 function actName(act) { return typeof act === "string" ? act : act.name; }
 function actColor(act, i) { return (typeof act === "object" && act.color) ? act.color : getActivityColor(i); }
 
+function bestTimestamp(log, diaryEntry) {
+  let best = null;
+  if (log?.lastUpdated?.toMillis) best = log.lastUpdated;
+  if (diaryEntry?.lastUpdated?.toMillis) {
+    if (!best || diaryEntry.lastUpdated.toMillis() > best.toMillis()) {
+      best = diaryEntry.lastUpdated;
+    }
+  }
+  return best;
+}
+
+function formatRelativeTime(ts) {
+  const ms = ts.toMillis();
+  const now = Date.now();
+  const diffMs = now - ms;
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHr = Math.floor(diffMs / 3600000);
+
+  if (diffMin < 1) return "Just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffHr < 24) return `${diffHr}h ago`;
+
+  const d = new Date(ms);
+  const timeStr = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return `Yesterday at ${timeStr}`;
+
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + ` at ${timeStr}`;
+}
+
+function formatDateLabel(dateStr) {
+  const d = new Date(dateStr + "T00:00:00");
+  const today = new Date();
+  if (d.toDateString() === today.toDateString()) return "Today";
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
 function buildZoneLblRow(labelText, labelClass, tierBadge) {
   const row = document.createElement("div");
   row.className = "fw-feed-zone-lbl-row";
@@ -32,7 +73,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
   const deco = log?.decoration || user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
   const initial = displayName.charAt(0).toUpperCase();
 
-  const dateStr = new Date().toISOString().slice(0, 10);
+  const dateStr = options.dateStr || new Date().toISOString().slice(0, 10);
 
   const card = document.createElement("div");
   card.className = "fw-feed-card";
@@ -64,7 +105,8 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
   nameEl.textContent = displayName;
   const whenEl = document.createElement("div");
   whenEl.className = "fw-feed-card-when";
-  whenEl.textContent = formatYearMonth(yearMonth);
+  const bestTs = bestTimestamp(log, diaryEntry);
+  whenEl.textContent = bestTs ? formatRelativeTime(bestTs) : formatDateLabel(dateStr);
   nameCol.append(nameEl, whenEl);
 
   head.append(avatar, nameCol);
@@ -188,10 +230,10 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
       const strip = document.createElement("div");
       strip.className = "fw-feed-strip";
 
-      const today = new Date().getDate();
-      const startDay = Math.max(1, today - 6);
+      const anchorDay = parseInt(dateStr.slice(-2), 10);
+      const startDay = Math.max(1, anchorDay - 6);
 
-      for (let d = startDay; d <= today; d++) {
+      for (let d = startDay; d <= anchorDay; d++) {
         const col = document.createElement("div");
         col.className = "fw-feed-strip-day";
 

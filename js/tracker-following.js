@@ -172,22 +172,37 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       } catch { /* skip */ }
     }));
 
-    // Subscribe to diary entries for new followingIds (reactive)
-    const today = new Date().toISOString().slice(0, 10);
+    // Subscribe to diary entries for rolling window (up to 3 days, capped to current month)
+    const now = new Date();
+    const [ym_y, ym_m] = yearMonth.split("-").map(Number);
+    const windowDates = [];
+    for (let i = 0; i < 3; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      if (d.getFullYear() === ym_y && d.getMonth() + 1 === ym_m) {
+        windowDates.push(d.toISOString().slice(0, 10));
+      }
+    }
+
     for (const uid of followingIds) {
-      if (diaryUnsubMap[uid]) continue;
-      const diaryRef = doc(db, "diary", uid, "entries", today);
-      diaryUnsubMap[uid] = onSnapshot(diaryRef, (snap) => {
-        if (snap.exists() && snap.data().note) {
-          diaryCache[uid] = { docId: today, ...snap.data() };
-        } else {
-          diaryCache[uid] = null;
-        }
-        renderBoard();
-      }, (err) => {
-        console.error("Diary snapshot error:", err);
-        diaryCache[uid] = null;
-      });
+      if (!diaryCache[uid]) diaryCache[uid] = {};
+      for (const dateStr of windowDates) {
+        const key = `${uid}-${dateStr}`;
+        if (diaryUnsubMap[key]) continue;
+        const diaryRef = doc(db, "diary", uid, "entries", dateStr);
+        diaryUnsubMap[key] = onSnapshot(diaryRef, (snap) => {
+          if (!diaryCache[uid]) diaryCache[uid] = {};
+          if (snap.exists() && snap.data().note) {
+            diaryCache[uid][dateStr] = { docId: dateStr, ...snap.data() };
+          } else {
+            diaryCache[uid][dateStr] = null;
+          }
+          renderBoard();
+        }, (err) => {
+          console.error("Diary snapshot error:", err);
+          if (!diaryCache[uid]) diaryCache[uid] = {};
+          diaryCache[uid][dateStr] = null;
+        });
+      }
     }
 
     // Remove listeners for uids no longer followed
@@ -196,7 +211,9 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       if (!newSet.has(uid)) {
         logUnsubMap[uid]();
         delete logUnsubMap[uid];
-        if (diaryUnsubMap[uid]) { diaryUnsubMap[uid](); delete diaryUnsubMap[uid]; }
+        for (const key of Object.keys(diaryUnsubMap)) {
+          if (key.startsWith(uid + "-")) { diaryUnsubMap[key](); delete diaryUnsubMap[key]; }
+        }
         delete logsCache[uid];
         delete userCache[uid];
         delete diaryCache[uid];

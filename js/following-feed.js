@@ -1,6 +1,8 @@
 import { renderFeedCard } from "./feed-card.js";
 import { getPrivacy } from "./following-utils.js";
 
+function actName(act) { return typeof act === "string" ? act : act.name; }
+
 export function renderFeedView(container, model) {
   const {
     currentUser, yearMonth, followingIds, logsCache, userCache, diaryCache, onSwitchToAll,
@@ -37,44 +39,67 @@ export function renderFeedView(container, model) {
     return;
   }
 
-  // Sort: most recently updated first, no-signal users at end alphabetically
-  const sorted = [...filtered].sort((aUid, bUid) => {
-    const aTs = lastSignalMs(logsCache[aUid], diaryCache?.[aUid]);
-    const bTs = lastSignalMs(logsCache[bUid], diaryCache?.[bUid]);
-    if (aTs === 0 && bTs === 0) {
-      const aName = (userCache[aUid]?.displayName || "").toLowerCase();
-      const bName = (userCache[bUid]?.displayName || "").toLowerCase();
+  // Build rolling window dates (up to 3 days, capped to current month)
+  const now = new Date();
+  const [ym_y, ym_m] = yearMonth.split("-").map(Number);
+  const windowDates = [];
+  for (let i = 0; i < 3; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    if (d.getFullYear() === ym_y && d.getMonth() + 1 === ym_m) {
+      windowDates.push(d.toISOString().slice(0, 10));
+    }
+  }
+
+  // Build per-day card entries
+  const cards = [];
+  for (const uid of filtered) {
+    const user = userCache[uid] || null;
+    const log = logsCache[uid] || null;
+    const diaryByDate = diaryCache?.[uid] || {};
+
+    for (const dateStr of windowDates) {
+      const dayNum = parseInt(dateStr.slice(-2), 10);
+      const diaryEntry = diaryByDate[dateStr] || null;
+      const hasLogMarks = log?.activities?.some(act =>
+        (log.marks?.[actName(act)] || []).includes(dayNum)
+      );
+
+      if (!hasLogMarks && !diaryEntry) continue;
+
+      // Compute sort key: most recent lastUpdated between log and diary
+      let ms = 0;
+      if (log?.lastUpdated?.toMillis) ms = log.lastUpdated.toMillis();
+      if (diaryEntry?.lastUpdated?.toMillis) {
+        const dMs = diaryEntry.lastUpdated.toMillis();
+        if (dMs > ms) ms = dMs;
+      }
+      // Fallback: use the date itself at start-of-day
+      if (ms === 0) ms = new Date(dateStr + "T00:00:00").getTime();
+
+      cards.push({ uid, user, log, diaryEntry, dateStr, ms });
+    }
+  }
+
+  // Sort by lastUpdated descending, alphabetical fallback
+  cards.sort((a, b) => {
+    if (a.ms === 0 && b.ms === 0) {
+      const aName = (a.user?.displayName || "").toLowerCase();
+      const bName = (b.user?.displayName || "").toLowerCase();
       return aName.localeCompare(bName);
     }
-    if (aTs === 0) return 1;
-    if (bTs === 0) return -1;
-    return bTs - aTs;
+    if (a.ms === 0) return 1;
+    if (b.ms === 0) return -1;
+    return b.ms - a.ms;
   });
 
   const stream = document.createElement("div");
   stream.className = "fw-feed-stream";
 
-  for (const uid of sorted) {
-    const user = userCache[uid] || null;
-    const log = logsCache[uid] || null;
-    const diaryEntry = diaryCache?.[uid] ?? null;
-    stream.appendChild(renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUser));
+  for (const card of cards) {
+    stream.appendChild(
+      renderFeedCard(card.uid, card.user, card.log, card.diaryEntry, yearMonth, currentUser, { dateStr: card.dateStr })
+    );
   }
 
   container.appendChild(stream);
-}
-
-function lastSignalMs(log, diary) {
-  let ms = 0;
-  if (log?.lastUpdated?.toMillis) {
-    ms = log.lastUpdated.toMillis();
-  }
-  if (diary?.lastUpdated?.toMillis) {
-    const dMs = diary.lastUpdated.toMillis();
-    if (dMs > ms) ms = dMs;
-  } else if (diary?.docId) {
-    const dMs = new Date(diary.docId + "T00:00:00").getTime();
-    if (dMs > ms) ms = dMs;
-  }
-  return ms;
 }

@@ -7,6 +7,17 @@ import { showToast } from "./ui.js";
 import { renderDiaryStrip } from "./diary-strip.js";
 import { getPrivacy, renderTierBadge } from "./following-utils.js";
 
+// Pick the most recent non-null diary entry from the rolling window cache
+function newestDiaryEntry(diaryByDate) {
+  if (!diaryByDate || typeof diaryByDate !== "object") return null;
+  let best = null;
+  for (const entry of Object.values(diaryByDate)) {
+    if (!entry) continue;
+    if (!best || (entry.docId && entry.docId > best.docId)) best = entry;
+  }
+  return best;
+}
+
 // ── Data helpers ───────────────────────────────────────
 
 function countUniqueDays(log) {
@@ -334,7 +345,7 @@ export function renderPeopleView(container, model) {
     uid,
     user:       userCache[uid] || null,
     log:        Object.prototype.hasOwnProperty.call(logsCache, uid) ? logsCache[uid] : undefined,
-    diaryEntry: diaryCache?.[uid] ?? null,
+    diaryEntry: newestDiaryEntry(diaryCache?.[uid]),
     isPinned:   pinnedSet.has(uid),
   })).filter(({ user }) => {
     const p = user?.privacy || {};

@@ -377,6 +377,7 @@
       const currentUser = { uid: "test-viewer" };
 
       const card = renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUser, {
+        dateStr,
         pinHandler: (e) => { e.stopPropagation(); console.log("[test harness] Pin clicked -- no-op"); },
       });
       preview.appendChild(card);
