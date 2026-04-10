@@ -4,6 +4,7 @@ import { renderDiaryStrip } from "./diary-strip.js";
 import { db } from "./firebase-config.js";
 import { doc, setDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from "./ui.js";
+import { getActivityColor } from "./utils.js";
 
 function formatYearMonth(yearMonth) {
   const [y, m] = yearMonth.split("-").map(Number);
@@ -84,24 +85,25 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     div1.className = "fw-feed-zone-divider";
     card.appendChild(div1);
 
-    // Diary zone -- ghost
+    // Diary zone -- ghost (based on privacy.diary)
     const diaryZone = document.createElement("div");
     diaryZone.className = "fw-feed-diary-zone";
-    const diaryLbl = document.createElement("div");
-    diaryLbl.className = "fw-feed-diary-lbl";
-    diaryLbl.textContent = "diary.";
-    diaryZone.appendChild(diaryLbl);
-    const moon2 = document.createElement("div");
-    moon2.style.fontSize = "1.4rem";
-    moon2.style.textAlign = "center";
-    moon2.textContent = "\uD83C\uDF19";
-    const txt2 = document.createElement("div");
-    txt2.style.color = "var(--text-faint)";
-    txt2.style.fontStyle = "italic";
-    txt2.style.fontSize = "0.82rem";
-    txt2.style.textAlign = "center";
-    txt2.textContent = "Gone quiet for now.";
-    diaryZone.append(moon2, txt2);
+    if (privacy.diary === "ghost") {
+      const moon2 = document.createElement("div");
+      moon2.style.fontSize = "1.4rem";
+      moon2.style.textAlign = "center";
+      moon2.textContent = "\uD83C\uDF19";
+      const txt2 = document.createElement("div");
+      txt2.style.color = "var(--text-faint)";
+      txt2.style.fontStyle = "italic";
+      txt2.style.fontSize = "0.82rem";
+      txt2.style.textAlign = "center";
+      txt2.textContent = "Gone quiet for now.";
+      diaryZone.append(moon2, txt2);
+    } else {
+      const diary = renderDiaryStrip(diaryEntry, privacy, signal, { isFollowing: true });
+      if (diary) diaryZone.appendChild(diary);
+    }
     card.appendChild(diaryZone);
 
   } else if (tier === "lowkey") {
@@ -129,10 +131,6 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
 
     const diaryZone = document.createElement("div");
     diaryZone.className = "fw-feed-diary-zone";
-    const diaryLbl = document.createElement("div");
-    diaryLbl.className = "fw-feed-diary-lbl";
-    diaryLbl.textContent = "diary.";
-    diaryZone.appendChild(diaryLbl);
     const diary = renderDiaryStrip(diaryEntry, privacy, signal, { isFollowing: true });
     if (diary) diaryZone.appendChild(diary);
     card.appendChild(diaryZone);
@@ -144,22 +142,27 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     const calZone = document.createElement("div");
     calZone.className = "fw-feed-cal-zone";
 
+    const actLabel = document.createElement("div");
+    actLabel.className = "fw-feed-section-lbl";
+    actLabel.textContent = "ACTIVITY";
+    calZone.appendChild(actLabel);
+
     if (log?.activities?.length) {
       const chips = document.createElement("div");
       chips.className = "fw-feed-chips";
-      for (const act of log.activities) {
+      log.activities.forEach((act, i) => {
         const chip = document.createElement("span");
-        const key = act.key || act.name;
-        const hasMarks = log.marks?.[key]?.length > 0;
+        const hasMarks = (log.marks?.[act] || []).length > 0;
         if (hasMarks) {
           chip.className = "fw-feed-chip";
-          chip.style.background = act.color || "var(--color-primary)";
+          chip.style.background = getActivityColor(i);
+          chip.textContent = "\u2713 " + act;
         } else {
           chip.className = "fw-feed-chip fw-feed-chip-off";
+          chip.textContent = act;
         }
-        chip.textContent = act.name;
         chips.appendChild(chip);
-      }
+      });
       calZone.appendChild(chips);
 
       // 7-day activity strip
@@ -178,19 +181,18 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
         dayNum.textContent = d;
         col.appendChild(dayNum);
 
-        for (const act of log.activities) {
+        log.activities.forEach((act, i) => {
           const dot = document.createElement("div");
           dot.className = "fw-feed-strip-dot";
-          const key = act.key || act.name;
-          const marked = log.marks?.[key]?.includes(d);
+          const marked = (log.marks?.[act] || []).includes(d);
           if (marked) {
-            dot.style.background = act.color || "var(--color-primary)";
+            dot.style.background = getActivityColor(i);
           } else {
             dot.style.border = "1.5px solid var(--border)";
             dot.style.background = "transparent";
           }
           col.appendChild(dot);
-        }
+        });
         strip.appendChild(col);
       }
       calZone.appendChild(strip);
@@ -205,10 +207,6 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
 
     const diaryZone = document.createElement("div");
     diaryZone.className = "fw-feed-diary-zone";
-    const diaryLbl = document.createElement("div");
-    diaryLbl.className = "fw-feed-diary-lbl";
-    diaryLbl.textContent = "diary.";
-    diaryZone.appendChild(diaryLbl);
     const diary = renderDiaryStrip(diaryEntry, privacy, signal, { isFollowing: true });
     if (diary) diaryZone.appendChild(diary);
     card.appendChild(diaryZone);
@@ -230,7 +228,17 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
       showToast("Couldn't pin. Try again.", "error");
     }
   });
-  footer.appendChild(pinBtn);
+
+  const sep = document.createElement("span");
+  sep.className = "fw-feed-footer-sep";
+  sep.textContent = "|";
+
+  const viewBtn = document.createElement("button");
+  viewBtn.className = "fw-feed-view-btn";
+  viewBtn.textContent = "\uD83D\uDCC5 View calendar";
+  viewBtn.addEventListener("click", () => showToast("Coming soon!"));
+
+  footer.append(pinBtn, sep, viewBtn);
   card.appendChild(footer);
 
   return card;

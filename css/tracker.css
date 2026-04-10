@@ -3310,11 +3310,22 @@
   margin-bottom: 10px;
 }
 
+.fw-feed-section-lbl {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+  font-family: 'Sora', sans-serif;
+}
+
 .fw-feed-chip {
   display: inline-flex;
   align-items: center;
+  min-height: 24px;
   font-size: 0.62rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 3px 10px;
   border-radius: var(--radius-full);
   color: #fff;
@@ -3340,6 +3351,7 @@
   align-items: center;
   gap: 3px;
   padding: 2px 0;
+  min-height: 28px;
 }
 
 .fw-feed-strip-daynum {
@@ -3383,5 +3395,26 @@
 }
 
 .fw-feed-pin-btn:hover {
+  color: var(--color-primary);
+}
+
+.fw-feed-footer-sep {
+  color: var(--border);
+  margin: 0 8px;
+  font-size: 0.72rem;
+}
+
+.fw-feed-view-btn {
+  background: none;
+  border: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 0;
+  transition: color 0.15s;
+}
+
+.fw-feed-view-btn:hover {
   color: var(--color-primary);
 }
