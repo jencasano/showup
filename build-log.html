@@ -566,8 +566,8 @@
           <li class="deck-item"><span class="deck-num">6</span>Safari Fit mode blur — canvas downscale/upscale tuning on iOS</li>
           <li class="deck-item"><span class="deck-num">7</span>Diary polaroid — square in desktop modal read view</li>
           <li class="deck-item"><span class="deck-num">8</span>Storage migration to asia-southeast1 for faster uploads from the Philippines</li>
-          <li class="deck-item"><span class="deck-num">9</span>Feed card UI polish — zone divider missing; double "diary." label</li>
-          <li class="deck-item"><span class="deck-num">10</span>Feed — per-day diary fetch (today's entry, not latest-ever)</li>
+          <li class="deck-item"><span class="deck-num">9</span><s>Feed card UI polish — zone divider missing; double "diary." label</s> → shipped in FO02</li>
+          <li class="deck-item"><span class="deck-num">10</span><s>Feed — per-day diary fetch (today's entry, not latest-ever)</s> → shipped in FO02</li>
           <li class="deck-item"><span class="deck-num">11</span>Feed — changed zone (log removed / diary removed states)</li>
           <li class="deck-item"><span class="deck-num">12</span>Feed — milestone cards (streak hits, first day, comeback)</li>
           <li class="deck-item"><span class="deck-num">13</span>All tab card tap — no-op placeholder, activates when user profiles are built</li>
@@ -581,8 +581,57 @@
     </details>
   </div>
 
-  <!-- ── Apr 10, 2026 — Following Feed view ── -->
+  <!-- ── Apr 10, 2026 — Feed Sort + Reactive Diary ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 10, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">FO03</span>
+    </div>
+    <div class="entry-title">Feed Sort by Last Updated + Reactive Diary</div>
+    <p class="entry-desc">Feed now sorts by real timestamps instead of day number. Both calendar log and diary writes stamp lastUpdated via serverTimestamp(). Diary cache upgraded from one-time fetch to live onSnapshot listeners — edits propagate to followers' feeds in real time.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">lastUpdated on log writes</div>
+        <div class="item-desc">serverTimestamp() added to both save paths (tracker-mylog.js toggleDay, cal-card.js onDayTap). Every day-mark tap now stamps the log doc with an exact server time.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">lastUpdated on diary writes</div>
+        <div class="item-desc">serverTimestamp() added to saveDiaryEntry in diary.js. Diary edits now have precise timestamps for sort ordering.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Timestamp-based feed sort</div>
+        <div class="item-desc">Replaced maxActiveDay sort (highest day number) with lastSignalMs — compares log.lastUpdated and diary.lastUpdated, most recent wins. Old docs without the field gracefully sort to the bottom. No backfill needed.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Reactive diary cache</div>
+        <div class="item-desc">Diary entries upgraded from one-time getDoc to persistent onSnapshot listeners (same pattern as logs). When a followed user edits their diary, the feed re-renders and re-sorts in real time. Listeners cleaned up on unfollow and teardown.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Test harness updated</div>
+        <div class="item-desc">feed-test.html mock log now includes lastUpdated with a toMillis() shim matching Firestore Timestamp shape.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/FO03/01.png" alt="Feed Sort by Last Updated" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO03/02.png" alt="Feed Sort by Last Updated" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO03/03.png" alt="Feed Sort by Last Updated" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO03/04.png" alt="Feed Sort by Last Updated" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO03/05.png" alt="Feed Sort by Last Updated" onerror="this.style.display='none'">
+        <video src="assets/build-log/FO03/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 10, 2026 — Following Feed view ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 10, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
