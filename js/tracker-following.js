@@ -179,7 +179,8 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     for (let i = 0; i < 3; i++) {
       const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
       if (d.getFullYear() === ym_y && d.getMonth() + 1 === ym_m) {
-        windowDates.push(d.toISOString().slice(0, 10));
+        const ds = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+        windowDates.push(ds);
       }
     }
 

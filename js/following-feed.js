@@ -3,6 +3,10 @@ import { getPrivacy } from "./following-utils.js";
 
 function actName(act) { return typeof act === "string" ? act : act.name; }
 
+function toLocalDateStr(d) {
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+
 export function renderFeedView(container, model) {
   const {
     currentUser, yearMonth, followingIds, logsCache, userCache, diaryCache, onSwitchToAll,
@@ -46,7 +50,7 @@ export function renderFeedView(container, model) {
   for (let i = 0; i < 3; i++) {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
     if (d.getFullYear() === ym_y && d.getMonth() + 1 === ym_m) {
-      windowDates.push(d.toISOString().slice(0, 10));
+      windowDates.push(toLocalDateStr(d));
     }
   }
 
@@ -64,7 +68,6 @@ export function renderFeedView(container, model) {
         (log.marks?.[actName(act)] || []).includes(dayNum)
       );
 
-      console.log("[feed]", uid, dateStr, "dayNum:", dayNum, "hasLog:", hasLogMarks, "diary:", !!diaryEntry, "log marks:", log?.marks);
       if (!hasLogMarks && !diaryEntry) continue;
 
       // Compute sort key: most recent lastUpdated between log and diary
