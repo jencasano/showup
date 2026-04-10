@@ -24,10 +24,13 @@ async function fetchLatestDiaryEntry(uid) {
 
 async function fetchTodayDiaryEntry(uid) {
   const today = new Date().toISOString().slice(0, 10);
+  console.log("Fetching diary for", uid, "at path diary/", uid, "/entries/", today);
   const snap = await getDoc(doc(db, "diary", uid, "entries", today));
-  if (!snap.exists()) return null;
+  console.log("Diary snap exists:", snap.exists(), "data:", snap.data());
+  if (!snap.exists()) { console.log("Returning null for", uid); return null; }
   const data = snap.data();
-  return data.note ? { docId: today, ...data } : null;
+  if (!data.note) { console.log("Returning null for", uid); return null; }
+  return { docId: today, ...data };
 }
 
 export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToAll, silent = false) {
