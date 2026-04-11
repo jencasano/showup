@@ -147,24 +147,28 @@ export function renderFeedView(container, model) {
 
   container.appendChild(stream);
 
-  // Scroll-driven timeline glow
+  // Scroll-driven timeline glow + dot activation
+  const glow = document.createElement("div");
+  glow.className = "fw-feed-tl-glow";
+  stream.appendChild(glow);
+
+  const dots = stream.querySelectorAll(".fw-feed-date-dot");
+
   function updateTimeline() {
     const streamRect = stream.getBoundingClientRect();
-    const viewMid = window.innerHeight * 0.6;
-    const fill = Math.max(0, Math.min(viewMid - streamRect.top, stream.scrollHeight));
-    stream.style.setProperty("--tl-fill", fill + "px");
+    const trigger = window.innerHeight * 0.55;
+    const fill = Math.max(0, Math.min(trigger - streamRect.top, stream.scrollHeight));
+    glow.style.height = fill + "px";
 
-    const dots = stream.querySelectorAll(".fw-feed-date-dot");
     dots.forEach(dot => {
-      const dotRect = dot.getBoundingClientRect();
-      if (dotRect.top < viewMid) {
+      const dotTop = dot.getBoundingClientRect().top;
+      if (dotTop < trigger) {
         dot.classList.add("reached");
-      } else {
-        dot.classList.remove("reached");
       }
     });
   }
 
   window.addEventListener("scroll", updateTimeline, { passive: true });
-  requestAnimationFrame(updateTimeline);
+  window.addEventListener("resize", updateTimeline, { passive: true });
+  setTimeout(updateTimeline, 50);
 }
