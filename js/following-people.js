@@ -348,7 +348,8 @@ export function renderPeopleView(container, model) {
     diaryEntry: newestDiaryEntry(diaryCache?.[uid]),
     isPinned:   pinnedSet.has(uid),
   })).filter(({ user }) => {
-    const p = user?.privacy || {};
+    if (!user) return false;
+    const p = user.privacy || {};
     const calTier = p.calendar || "sharing";
     const diaryTier = p.diary || "sharing";
     return calTier !== "private" && diaryTier !== "private";

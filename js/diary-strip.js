@@ -52,7 +52,7 @@ export function renderDiaryStrip(entry, privacy, signal, { isFollowing = true } 
   }
 
   // sharing or followers -- entry is already resolved, no async needed
-  if (!entry?.note) return null;
+  if (!entry?.note && !entry?.photoUrl) return null;
 
   const strip = document.createElement("div");
   strip.className = "fw-diary-strip";
@@ -69,10 +69,13 @@ export function renderDiaryStrip(entry, privacy, signal, { isFollowing = true } 
 
   const body = document.createElement("div");
   body.className = "fw-diary-strip-body";
-  const note = document.createElement("div");
-  note.className = "fw-diary-strip-note";
-  note.textContent = entry.note;
-  body.appendChild(note);
+
+  if (entry.note) {
+    const note = document.createElement("div");
+    note.className = "fw-diary-strip-note";
+    note.textContent = entry.note;
+    body.appendChild(note);
+  }
 
   if (entry.photoUrl) {
     const photo = document.createElement("img");

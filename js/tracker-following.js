@@ -17,7 +17,7 @@ async function fetchLatestDiaryEntry(uid) {
     .sort((a, b) => b.id.localeCompare(a.id));
   for (const d of sorted) {
     const data = d.data();
-    if (data.note) return { docId: d.id, ...data };
+    if (data.note || data.photoUrl) return { docId: d.id, ...data };
   }
   return null;
 }
@@ -29,7 +29,7 @@ async function fetchTodayDiaryEntry(uid) {
   console.log("Diary snap exists:", snap.exists(), "data:", snap.data());
   if (!snap.exists()) { console.log("Returning null for", uid); return null; }
   const data = snap.data();
-  if (!data.note) { console.log("Returning null for", uid); return null; }
+  if (!data.note && !data.photoUrl) { console.log("Returning null for", uid); return null; }
   return { docId: today, ...data };
 }
 
@@ -73,7 +73,8 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     title.textContent = "Following";
     const count = document.createElement("span");
     count.className = "fw-count";
-    count.textContent = `${followingIds.length} ${followingIds.length === 1 ? "person" : "people"}`;
+    const loadedCount = followingIds.filter(uid => userCache[uid]).length;
+    count.textContent = `${loadedCount} ${loadedCount === 1 ? "person" : "people"}`;
     const toggle = document.createElement("div");
     toggle.className = "fw-view-toggle";
     const pillPeople = document.createElement("button");
@@ -164,13 +165,26 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     }
 
     // Fetch user docs for new followingIds
+    const deletedUids = new Set();
     await Promise.all(followingIds.map(async (uid) => {
       if (userCache[uid]) return;
       try {
         const snap = await getDoc(doc(db, "users", uid));
         if (snap.exists()) userCache[uid] = snap.data();
-      } catch { /* skip */ }
+        else deletedUids.add(uid);
+      } catch { /* network error -- leave unresolved, don't assume deleted */ }
     }));
+
+    // Auto-clean confirmed-deleted follows
+    if (deletedUids.size > 0) {
+      const staleUids = [...deletedUids];
+      followingIds = followingIds.filter(uid => !deletedUids.has(uid));
+      pinnedFollowingIds = pinnedFollowingIds.filter(uid => !deletedUids.has(uid));
+      setDoc(myRef, {
+        following: arrayRemove(...staleUids),
+        pinnedFollowing: arrayRemove(...staleUids),
+      }, { merge: true }).catch(() => {});
+    }
 
     // Subscribe to diary entries for rolling window (up to 3 days, capped to current month)
     const now = new Date();

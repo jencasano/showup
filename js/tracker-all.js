@@ -20,6 +20,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
   let wrapperEl = null;
   let statLineEl = null;
   let gridEl = null;
+  let cancelled = false;
 
   function normalizeText(value) {
     return String(value || "").toLowerCase().trim();
@@ -207,7 +208,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
     }
   }
 
-  return onSnapshot(entriesRef, async (snapshot) => {
+  const unsub = onSnapshot(entriesRef, async (snapshot) => {
     const validDocs = snapshot.docs.filter(docSnap => {
       if (docSnap.id === currentUser?.uid) return false;
       const data = docSnap.data();
@@ -255,6 +256,8 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
       } catch (_) { /* diary fetch is best-effort */ }
     }));
 
+    if (cancelled) return;
+
     const entries = entryMetas
       .map((meta) => {
         if (!meta) return null;
@@ -300,4 +303,9 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
     showToast("Failed to load trackers.", "error");
     hideLoader();
   });
+
+  return () => {
+    cancelled = true;
+    unsub();
+  };
 }
