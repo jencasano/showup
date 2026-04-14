@@ -78,3 +78,50 @@ firebase deploy --only functions,hosting
 ```
 
 For v2 params, set values with CLI prompts or parameter tooling so `ADMIN_UID` and `ADMIN_TOOL_EXPIRES_AT` are defined in your environment.
+
+## 3) Dev Test Harness (console tool for feed & privacy testing)
+
+Interactive console tool that writes real Firestore data so the app's real-time listeners react naturally.
+
+### How to run
+
+1. Sign into the app.
+2. Open browser DevTools Console.
+3. Import:
+
+```js
+const t = await import('/js/dev-test.js');
+```
+
+### Available functions
+
+```js
+// List followed users with their UIDs and privacy tiers
+await t.listUsers();
+
+// Mark today's calendar for a user (simulates a check-in)
+await t.markToday('dummy_abc_01');
+await t.markToday('dummy_abc_01', 'Yoga');  // specific activity
+
+// Write a diary entry for today
+await t.writeDiary('dummy_abc_01', { note: 'Solid session today.' });
+await t.writeDiary('dummy_abc_01', { photoUrl: 'https://picsum.photos/600/400' });
+await t.writeDiary('dummy_abc_01', { note: 'Good day!', photoUrl: 'https://picsum.photos/600/400' });
+
+// Change privacy tiers
+await t.setPrivacy('dummy_abc_01', { calendar: 'lowkey', diary: 'ghost' });
+await t.setPrivacy('dummy_abc_01', { calendar: 'sharing' });  // change one, keep the other
+```
+
+### Pre-built scenarios
+
+```js
+// Simulates timed updates: calendar mark, wait 5s, then diary write
+await t.runScenario('realtime');
+
+// Assigns a spread of calendar x diary tier combos across your followed users
+await t.runScenario('privacy-matrix');
+
+// Multiple users update rapidly (tests feed sort order)
+await t.runScenario('burst');
+```

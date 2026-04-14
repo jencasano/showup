@@ -55,9 +55,15 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   let pinnedFollowingIds = [];
   let diaryReady = false; // gate: don't renderBoard until diary fetch is done
 
-  function renderBoard() {
-    if (!diaryReady) return; // diary cache not ready yet -- skip
+  // Persistent header refs (built once, updated incrementally)
+  let boardRoot = null;
+  let countEl = null;
+  let boardEl = null;
+  let pillPeopleEl = null;
+  let pillFeedEl = null;
+  let lastView = null;
 
+  function initBoard() {
     container.innerHTML = "";
 
     const wrap = document.createElement("div");
@@ -71,28 +77,51 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     const title = document.createElement("h2");
     title.className = "fw-title";
     title.textContent = "Following";
-    const count = document.createElement("span");
-    count.className = "fw-count";
-    const loadedCount = followingIds.filter(uid => userCache[uid]).length;
-    count.textContent = `${loadedCount} ${loadedCount === 1 ? "person" : "people"}`;
+    countEl = document.createElement("span");
+    countEl.className = "fw-count";
     const toggle = document.createElement("div");
     toggle.className = "fw-view-toggle";
-    const pillPeople = document.createElement("button");
-    pillPeople.className = `fw-vt-pill${currentView === "people" ? " active" : ""}`;
-    pillPeople.textContent = "People";
-    pillPeople.addEventListener("click", () => { currentView = "people"; renderBoard(); });
-    const pillFeed = document.createElement("button");
-    pillFeed.className = `fw-vt-pill${currentView === "feed" ? " active" : ""}`;
-    pillFeed.textContent = "Feed";
-    pillFeed.addEventListener("click", () => { currentView = "feed"; renderBoard(); });
-    toggle.append(pillPeople, pillFeed);
-    titleRow.append(title, count, toggle);
+    pillPeopleEl = document.createElement("button");
+    pillPeopleEl.className = "fw-vt-pill";
+    pillPeopleEl.textContent = "People";
+    pillPeopleEl.addEventListener("click", () => { currentView = "people"; renderBoard(); });
+    pillFeedEl = document.createElement("button");
+    pillFeedEl.className = "fw-vt-pill";
+    pillFeedEl.textContent = "Feed";
+    pillFeedEl.addEventListener("click", () => { currentView = "feed"; renderBoard(); });
+    toggle.append(pillPeopleEl, pillFeedEl);
+    titleRow.append(title, countEl, toggle);
     header.appendChild(titleRow);
     const divider = document.createElement("hr");
     divider.className = "fw-divider";
     wrap.append(header, divider);
 
+    boardEl = document.createElement("div");
+    boardEl.className = "fw-board";
+    wrap.appendChild(boardEl);
+
+    boardRoot = wrap;
+    lastView = null;
+  }
+
+  function renderBoard() {
+    if (!diaryReady) return;
+    // Build header once (or if DOM was destroyed externally, e.g. tab switch)
+    if (!boardRoot || !container.contains(boardRoot)) {
+      initBoard();
+    }
+
+    // Update count
+    const loadedCount = followingIds.filter(uid => userCache[uid]).length;
+    countEl.textContent = `${loadedCount} ${loadedCount === 1 ? "person" : "people"}`;
+
+    // Update pill states
+    pillPeopleEl.classList.toggle("active", currentView === "people");
+    pillFeedEl.classList.toggle("active", currentView === "feed");
+
+    // Empty state
     if (followingIds.length === 0) {
+      boardEl.innerHTML = "";
       const empty = document.createElement("div");
       empty.className = "following-empty";
       empty.innerHTML = `
@@ -106,36 +135,27 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       browseBtn.textContent = "Browse All \u2192";
       browseBtn.addEventListener("click", onSwitchToAll);
       empty.appendChild(browseBtn);
-      wrap.appendChild(empty);
+      boardEl.appendChild(empty);
+      lastView = null;
       return;
     }
 
-    const boardContainer = document.createElement("div");
-    boardContainer.className = "fw-board";
-    wrap.appendChild(boardContainer);
+    // Clear board on view switch
+    if (lastView !== null && lastView !== currentView) {
+      boardEl.innerHTML = "";
+    }
+    lastView = currentView;
+
+    const model = {
+      currentUser, yearMonth, followingIds, pinnedFollowingIds,
+      logsCache, userCache, diaryCache, onSwitchToAll,
+    };
 
     if (currentView === "feed") {
-      renderFeedView(boardContainer, {
-        currentUser,
-        yearMonth,
-        followingIds,
-        pinnedFollowingIds,
-        logsCache,
-        userCache,
-        diaryCache,
-        onSwitchToAll,
-      });
+      renderFeedView(boardEl, model);
     } else {
-      renderPeopleView(boardContainer, {
-        currentUser,
-        yearMonth,
-        followingIds,
-        pinnedFollowingIds,
-        logsCache,
-        userCache,
-        diaryCache,
-        onSwitchToAll,
-      });
+      boardEl.innerHTML = "";
+      renderPeopleView(boardEl, model);
     }
   }
 

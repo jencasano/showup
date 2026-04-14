@@ -430,3 +430,86 @@ export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeout
     deletedAt: new Date().toISOString()
   };
 });
+
+// ═══════════════════════════════════════════════
+// Admin Test Harness
+// Console-driven tool for testing feed, privacy, and diary scenarios.
+// Accepts actions: markToday, writeDiary, setPrivacy
+// ═══════════════════════════════════════════════
+
+export const adminTestHarness = onCall({ region: "asia-southeast1", timeoutSeconds: 30, invoker: "public" }, async (request) => {
+  const adminUid = requireAdminAuth(request);
+  const { action, uid, payload } = request.data || {};
+
+  if (!action || !uid) {
+    throw new HttpsError("invalid-argument", "action and uid are required.");
+  }
+
+  if (typeof uid !== "string" || !uid.startsWith("dummy_")) {
+    throw new HttpsError("permission-denied", "Test harness can only write to dummy user docs.");
+  }
+
+  const now = new Date();
+  const yearMonth = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+  const todayStr = yearMonth + "-" + String(now.getDate()).padStart(2, "0");
+  const todayDay = now.getDate();
+
+  if (action === "markToday") {
+    const logRef = db.doc(`logs/${yearMonth}/entries/${uid}`);
+    const snap = await logRef.get();
+
+    if (snap.exists) {
+      const data = snap.data();
+      const activity = payload?.activityName || (data.activities || [])[0];
+      if (!activity) throw new HttpsError("failed-precondition", "No activities on this log. Pass activityName in payload.");
+      const currentMarks = data.marks?.[activity] || [];
+      if (!currentMarks.includes(todayDay)) currentMarks.push(todayDay);
+      await logRef.update({
+        [`marks.${activity}`]: currentMarks,
+        lastUpdated: FieldValue.serverTimestamp(),
+      });
+      return { ok: true, action, uid, activity, day: todayDay };
+    } else {
+      const userSnap = await db.doc(`users/${uid}`).get();
+      const userData = userSnap.exists ? userSnap.data() : {};
+      const activity = payload?.activityName || "Workout";
+      await logRef.set({
+        userId: uid,
+        yearMonth,
+        displayName: userData.displayName || "",
+        username: userData.username || "",
+        activities: [activity],
+        cadences: [5],
+        marks: { [activity]: [todayDay] },
+        decoration: userData.decoration || { color: "#D8584E", fontColor: "#FFFFFF", font: "Inter", sticker: "", marker: "circle", avatarUrl: "" },
+        lastUpdated: FieldValue.serverTimestamp(),
+      });
+      return { ok: true, action, uid, activity, day: todayDay, created: true };
+    }
+  }
+
+  if (action === "writeDiary") {
+    const { note, photoUrl } = payload || {};
+    if (!note && !photoUrl) throw new HttpsError("invalid-argument", "Provide at least one of: note, photoUrl in payload.");
+    const entry = { lastUpdated: FieldValue.serverTimestamp() };
+    if (note) entry.note = note;
+    if (photoUrl) entry.photoUrl = photoUrl;
+    await db.doc(`diary/${uid}/entries/${todayStr}`).set(entry, { merge: true });
+    return { ok: true, action, uid, dateStr: todayStr };
+  }
+
+  if (action === "setPrivacy") {
+    const validTiers = ["sharing", "followers", "lowkey", "ghost", "private"];
+    const { calendar, diary } = payload || {};
+    if (calendar && !validTiers.includes(calendar)) throw new HttpsError("invalid-argument", `Invalid calendar tier: ${calendar}`);
+    if (diary && !validTiers.includes(diary)) throw new HttpsError("invalid-argument", `Invalid diary tier: ${diary}`);
+    const update = {};
+    if (calendar) update["privacy.calendar"] = calendar;
+    if (diary) update["privacy.diary"] = diary;
+    if (Object.keys(update).length === 0) throw new HttpsError("invalid-argument", "Provide at least one of: calendar, diary in payload.");
+    await db.doc(`users/${uid}`).update(update);
+    return { ok: true, action, uid, update };
+  }
+
+  throw new HttpsError("invalid-argument", `Unknown action: ${action}. Use markToday, writeDiary, or setPrivacy.`);
+});

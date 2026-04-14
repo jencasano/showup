@@ -3291,11 +3291,11 @@
 .fw-feed-date-section {
   position: relative;
   padding-bottom: 24px;
-  animation: tl-section-in 0.4s ease-out both;
 }
 
-.fw-feed-date-section:nth-child(2) { animation-delay: 0.15s; }
-.fw-feed-date-section:nth-child(3) { animation-delay: 0.3s; }
+.fw-feed-date-section-enter { animation: tl-section-in 0.4s ease-out both; }
+.fw-feed-date-section-enter:nth-child(2) { animation-delay: 0.15s; }
+.fw-feed-date-section-enter:nth-child(3) { animation-delay: 0.3s; }
 
 @keyframes tl-section-in {
   from {
@@ -3372,8 +3372,8 @@
   gap: 16px;
 }
 
-/* Card entrance animation */
-.fw-feed-date-cards .fw-feed-card {
+/* Card entrance animation -- only on genuinely new cards */
+.fw-feed-card-enter {
   animation: tl-card-in 0.45s ease-out both;
 }
 
