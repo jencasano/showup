@@ -1,13 +1,14 @@
 import { db } from "./firebase-config.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from "./ui.js";
+import { icon } from "./icons.js";
 
 const TIERS = [
-  { id: "sharing",   name: "Sharing",       desc: "Full content visible to followers." },
-  { id: "followers", name: "Followers Only", desc: "Visible only to your followers." },
-  { id: "lowkey",    name: "Low Key",        desc: "Others see signals, not details." },
-  { id: "ghost",     name: "Ghost",          desc: "You appear but share nothing." },
-  { id: "private",   name: "Private",        desc: "Completely hidden." },
+  { id: "sharing",   name: "Sharing",       desc: "Your content is visible to everyone." },
+  { id: "followers", name: "Followers Only", desc: "Only your followers can see your content." },
+  { id: "lowkey",    name: "Low Key",        desc: "Others see patterns and insights, not the raw details." },
+  { id: "ghost",     name: "Ghost",          desc: "Others know you're around, nothing more." },
+  { id: "private",   name: "Private",        desc: "Completely hidden. No one sees a thing." },
 ];
 
 export async function getUserPrivacy(uid) {
@@ -80,7 +81,7 @@ export function openPrivacySettingsModal(currentUser) {
         const row = document.createElement("button");
         row.className = "ps-tier-option" + (id === selected ? " tier-option-active" : "");
         row.dataset.tier = id;
-        row.innerHTML = `<span class="ps-tier-name">${name}</span><span class="ps-tier-desc">${desc}</span>`;
+        row.innerHTML = `<div class="ps-tier-icon">${icon(id, 20)}</div><div class="ps-tier-text"><span class="ps-tier-name">${name}</span><span class="ps-tier-desc">${desc}</span></div>`;
         row.addEventListener("click", () => {
           if (section === "calendar") selectedCalendar = id;
           else selectedDiary = id;

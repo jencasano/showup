@@ -36,6 +36,11 @@ export const ICON_NAMES = [
   'following',   // ❤️   Following nav
   'all',         // ⊞   All nav
   'favicon',     // .   The showup. period — used as favicon
+  'sharing',     // 🌐  privacy tier: public sharing
+  'followers',   // 👥  privacy tier: followers only
+  'lowkey',      // 〰️  privacy tier: signals only
+  'ghost',       // 👻  privacy tier: presence only
+  'private',     // 🔒  privacy tier: completely hidden
 ];
 
 // Sticker options shown in month setup
