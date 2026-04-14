@@ -108,6 +108,32 @@ function buildMarks({ year, month, activities, chanceByActivity, seed, dayLimit 
   return marks;
 }
 
+const PRIVACY_TIERS = ["sharing", "followers", "lowkey", "ghost", "private"];
+
+const DUMMY_DIARY_NOTES = [
+  "Kept it simple today. Just showed up and did the work.",
+  "Had a rough start but pushed through. Small wins count.",
+  "Feeling the momentum building. Consistency is everything.",
+  "Rest day, but still moving. Walked around the block twice.",
+  "Something clicked today. The routine finally feels natural.",
+  "Missed my window this morning. Made up for it tonight.",
+  "Three weeks in and I can feel the difference already.",
+  "Not my best day, but I didn't skip. That's the point.",
+  "Tried a new approach. Jury's still out but felt good.",
+  "Energy was low. Did the minimum and called it a win.",
+];
+
+const DUMMY_DIARY_PHOTOS = [
+  "https://picsum.photos/seed/diary01/600/400",
+  "https://picsum.photos/seed/diary02/600/400",
+  "https://picsum.photos/seed/diary03/600/400",
+  "https://picsum.photos/seed/diary04/600/400",
+  "https://picsum.photos/seed/diary05/600/400",
+  "https://picsum.photos/seed/diary06/600/400",
+  "https://picsum.photos/seed/diary07/600/400",
+  "https://picsum.photos/seed/diary08/600/400",
+];
+
 const PROFILES = [
   { activities: ["Workout", "Walk", "Mobility"], cadences: [4, 7, 3], chances: { Workout: 0.62, Walk: 0.83, Mobility: 0.48 }, color: "#80B9B9", sticker: "💪", marker: "check" },
   { activities: ["Run", "Stretch", "Hydration"], cadences: [4, 5, 7], chances: { Run: 0.57, Stretch: 0.52, Hydration: 0.79 }, color: "#F8C08A", sticker: "🏃", marker: "star" },
@@ -161,7 +187,7 @@ export const adminGenerateDummyUsers = onCall({ region: "asia-southeast1", timeo
   const adminUid = requireAdminAuth(request);
   const payload = request.data || {};
 
-  const userCount = Number(payload.userCount ?? 15);
+  const userCount = Number(payload.userCount ?? 25);
   const startMonth = payload.startMonth ?? "2026-01";
   const endMonth = payload.endMonth ?? toYearMonth(new Date());
   const overwrite = Boolean(payload.overwrite ?? false);
@@ -203,6 +229,10 @@ export const adminGenerateDummyUsers = onCall({ region: "asia-southeast1", timeo
       setupComplete: true,
       following: [],
       pinnedFollowing: [],
+      privacy: {
+        calendar: PRIVACY_TIERS[i % 5],
+        diary:    PRIVACY_TIERS[Math.floor(i / 5) % 5],
+      },
       isDummy: true,
       seedOwnerUid: adminUid,
       seedBatchId: batchId,
@@ -260,6 +290,33 @@ export const adminGenerateDummyUsers = onCall({ region: "asia-southeast1", timeo
       }, { merge: false });
 
       logsWritten++;
+    }
+
+    // ── Seed diary entries (today + yesterday) ──
+    const diaryVariant = i % 3;  // 0 = note+photo, 1 = note only, 2 = photo only
+    for (let d = 0; d < 2; d++) {
+      const date = new Date(now.getFullYear(), now.getMonth(), now.getDate() - d);
+      const dateStr = date.getFullYear() + "-"
+        + String(date.getMonth() + 1).padStart(2, "0") + "-"
+        + String(date.getDate()).padStart(2, "0");
+      const diaryRef = db.doc(`diary/${dummy.uid}/entries/${dateStr}`);
+
+      if (!overwrite) {
+        const existing = await diaryRef.get();
+        if (existing.exists) continue;
+      }
+
+      const entry = { lastUpdated: FieldValue.serverTimestamp() };
+      if (diaryVariant === 0) {
+        entry.note = DUMMY_DIARY_NOTES[(i + d) % DUMMY_DIARY_NOTES.length];
+        entry.photoUrl = DUMMY_DIARY_PHOTOS[(i + d) % DUMMY_DIARY_PHOTOS.length];
+      } else if (diaryVariant === 1) {
+        entry.note = DUMMY_DIARY_NOTES[(i + d) % DUMMY_DIARY_NOTES.length];
+      } else {
+        entry.photoUrl = DUMMY_DIARY_PHOTOS[(i + d) % DUMMY_DIARY_PHOTOS.length];
+      }
+
+      await diaryRef.set(entry, { merge: false });
     }
   }
 
@@ -330,6 +387,7 @@ export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeout
 
   const skipped = [];
   const logRefs = [];
+  const diaryRefs = [];
   const userRefs = [];
 
   for (const uid of createdUserIds) {
@@ -347,10 +405,16 @@ export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeout
     }
 
     userRefs.push(db.doc(`users/${uid}`));
+
+    // Collect diary entries for deletion
+    const diarySnap = await db.collection(`diary/${uid}/entries`).listDocuments();
+    for (const docRef of diarySnap) {
+      diaryRefs.push(docRef);
+    }
   }
 
   try {
-    await deleteInBatches([...logRefs, ...userRefs, batchDocRef]);
+    await deleteInBatches([...logRefs, ...diaryRefs, ...userRefs, batchDocRef]);
   } catch (error) {
     throw new HttpsError("internal", `Batch delete failed: ${error?.message || "unknown error"}`);
   }
@@ -360,6 +424,7 @@ export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeout
     seedBatchId,
     usersDeleted: userRefs.length,
     logsDeleted: logRefs.length,
+    diaryEntriesDeleted: diaryRefs.length,
     skippedCount: skipped.length,
     skipped: skipped.slice(0, 25),
     deletedAt: new Date().toISOString()
