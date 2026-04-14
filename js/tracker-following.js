@@ -186,7 +186,23 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       }, { merge: true }).catch(() => {});
     }
 
-    // Subscribe to diary entries for rolling window (up to 3 days, capped to current month)
+    // Fetch most recent diary entry for each followed user this month
+    await Promise.all(followingIds.map(async (uid) => {
+      if (!diaryCache[uid]) diaryCache[uid] = {};
+      try {
+        const entriesRef = collection(db, "diary", uid, "entries");
+        const snap = await getDocs(entriesRef);
+        const matching = snap.docs
+          .filter(d => d.id.startsWith(yearMonth) && (d.data().note || d.data().photoUrl))
+          .sort((a, b) => b.id.localeCompare(a.id));
+        if (matching.length > 0) {
+          const d = matching[0];
+          diaryCache[uid][d.id] = { docId: d.id, ...d.data() };
+        }
+      } catch { /* best-effort */ }
+    }));
+
+    // Real-time listeners for rolling window (last 3 days) to catch live updates
     const now = new Date();
     const [ym_y, ym_m] = yearMonth.split("-").map(Number);
     const windowDates = [];
@@ -199,14 +215,13 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     }
 
     for (const uid of followingIds) {
-      if (!diaryCache[uid]) diaryCache[uid] = {};
       for (const dateStr of windowDates) {
         const key = `${uid}-${dateStr}`;
         if (diaryUnsubMap[key]) continue;
         const diaryRef = doc(db, "diary", uid, "entries", dateStr);
         diaryUnsubMap[key] = onSnapshot(diaryRef, (snap) => {
           if (!diaryCache[uid]) diaryCache[uid] = {};
-          if (snap.exists() && snap.data().note) {
+          if (snap.exists() && (snap.data().note || snap.data().photoUrl)) {
             diaryCache[uid][dateStr] = { docId: dateStr, ...snap.data() };
           } else {
             diaryCache[uid][dateStr] = null;
