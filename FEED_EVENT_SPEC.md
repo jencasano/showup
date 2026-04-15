@@ -129,15 +129,25 @@ Privacy tiers apply per zone (calendar and diary independently) as defined in FO
 
 **Low key** -- insight, not action. Names the person. Never names the activity. Surfaces the pattern -- streak, momentum, comeback -- as data reframed as a human observation. Feels like someone who has been quietly paying attention from across the room.
 
-**Ghost** -- the feed noticing an absence. No name ever. No action, no insight. Just the faint signal that something happened somewhere. Poetic, slightly haunting. A closed door that is somehow still beautiful.
+**Ghost** -- the feed noticing an absence. Shows the person's real name and avatar, but reveals nothing about what they did. No action, no insight. Just the faint signal that something happened somewhere. Poetic, slightly haunting. A closed door that is somehow still beautiful.
 
 **Private** -- user does not appear in the feed at all.
 
-### Nudges
+### Three-layer action line
 
-Certain event contexts include a viewer-facing nudge woven into the action line -- a line that turns to face the person reading the feed. Nudges appear in Sharing and Low key tiers only. Ghost never gets a nudge.
+The action line in Sharing tier log events has three visual layers:
 
-Nudges are not on every event. They appear where the context earns it: streaks, comebacks, first evers. They are italic, coral-colored (Sharing) or part of the flow (Low key). They whisper -- they do not shout.
+1. **Fact** -- the log action. Normal text color. "Alyssa logged *Workout*, *Walk*, and 2 more."
+2. **Streak commentary** -- the context observation. Muted text. "Something logged every day this month. Every one." Wrapped in `{streak}...{/streak}` in copy templates.
+3. **Nudge** -- a viewer-facing prompt. Italic, coral (Sharing) or teal (Low key). "Have you shown up today?" Wrapped in `{nudge}...{/nudge}` in copy templates.
+
+Not every event has all three layers. Default log events have only the fact. Streak/comeback events add commentary. Only some variants include a nudge.
+
+Low key tier events don't have a separate fact (no activity names), so the whole line reads as insight. Nudges still appear in teal italic where the context earns it.
+
+Ghost tier never gets streak commentary or nudges.
+
+`feed-copy.js` converts `{streak}` and `{nudge}` markers to styled `<span>` elements at fill time.
 
 ---
 
@@ -292,7 +302,7 @@ Variants are randomized at render time, seeded by uid + date so the same event s
 ---
 
 ### GHOST
-*(no name ever -- the feed speaking to itself)*
+*(name and avatar shown, but copy reveals nothing -- the feed speaking to itself)*
 
 #### Logged -- default
 - "Someone showed up today. The details are theirs."
@@ -384,7 +394,7 @@ Action line copy. Nudge copy if applicable.
 
 ### Ghost avatar
 
-Ghost events show a "?" avatar with a muted background. No real name shown -- name field reads "Someone" in faint text.
+Ghost events show the person's real avatar and name. The ghost treatment is in the copy (poetic, reveals nothing), the visual styling (subtle border, reduced opacity), and the absence of timestamps and links.
 
 ---
 

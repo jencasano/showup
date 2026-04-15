@@ -603,7 +603,12 @@
       </div>
       <div class="entry-item">
         <div class="item-name">Tier-specific narrative copy</div>
-        <div class="item-desc">Sharing tier: specific and warm, names activities inline. Low key: insight without activity names. Ghost: poetic, anonymous ("Someone" with "?" avatar). Copy selected via feed-copy.js with seeded random variants per uid+date.</div>
+        <div class="item-desc">Sharing tier: specific and warm, names activities inline. Low key: insight without activity names. Ghost: real name and avatar shown, but poetic copy that reveals nothing. Copy selected via feed-copy.js with seeded random variants per uid+date.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Three-layer copy styling</div>
+        <div class="item-desc">Action line has three visual layers: fact (normal text), streak commentary (muted, via {streak} markers), and nudge (coral italic for Sharing, teal italic for Low key, via {nudge} markers). feed-copy.js converts markers to styled spans at fill time.</div>
         <div class="item-spec"></div>
       </div>
       <div class="entry-item">
@@ -619,6 +624,16 @@
       <div class="entry-item">
         <div class="item-name">~120 copy variants</div>
         <div class="item-desc">signal-copy.json expanded with feed_{tier}_{type}_{context}_{variant} keys. Covers default, streak_3/7/15/25, streak_full_month, first_ever, comeback_small/big, backfill, diary today/past -- across all three visible tiers.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">"New posts" pill</div>
+        <div class="item-desc">Real-time events queue silently when the user is scrolled down. A fixed pill appears showing the count. Tapping merges pending events and scrolls to top. Matches the FB/IG pattern to prevent the feed from shifting while reading.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Back to top button</div>
+        <div class="item-desc">Global chevron button in the bottom-right corner. Appears when scrolled past 300px, fades in with transition. Works on all tabs. Sits above bottom nav on mobile.</div>
         <div class="item-spec"></div>
       </div>
     </div>
