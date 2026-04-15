@@ -143,20 +143,15 @@ export function renderFeedEvent(event, currentUser) {
 
   const avatar = document.createElement("div");
   avatar.className = "fw-feed-evt-avatar";
-  if (tier === "ghost") {
-    avatar.classList.add("fw-feed-evt-avatar--ghost");
-    avatar.textContent = "?";
+  avatar.style.background = deco.color;
+  avatar.style.color = deco.fontColor || "#FFFFFF";
+  if (deco.avatarUrl) {
+    const img = document.createElement("img");
+    img.src = deco.avatarUrl;
+    img.alt = displayName;
+    avatar.appendChild(img);
   } else {
-    avatar.style.background = deco.color;
-    avatar.style.color = deco.fontColor || "#FFFFFF";
-    if (deco.avatarUrl) {
-      const img = document.createElement("img");
-      img.src = deco.avatarUrl;
-      img.alt = displayName;
-      avatar.appendChild(img);
-    } else {
-      avatar.textContent = displayName.charAt(0).toUpperCase();
-    }
+    avatar.textContent = displayName.charAt(0).toUpperCase();
   }
 
   const nameCol = document.createElement("div");
@@ -164,12 +159,7 @@ export function renderFeedEvent(event, currentUser) {
 
   const nameEl = document.createElement("div");
   nameEl.className = "fw-feed-evt-name";
-  if (tier === "ghost") {
-    nameEl.classList.add("fw-feed-evt-name--ghost");
-    nameEl.textContent = "Someone";
-  } else {
-    nameEl.textContent = displayName;
-  }
+  nameEl.textContent = displayName;
 
   const timeEl = document.createElement("div");
   timeEl.className = "fw-feed-evt-time";
