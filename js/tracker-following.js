@@ -105,6 +105,21 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     renderBoard();
   }
 
+  // Auto-flush pending events when user scrolls back to top
+  let scrollTicking = false;
+  function onScrollCheck() {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {
+        if (pendingEvents.length > 0 && currentView === "feed" && !isFeedScrolledDown()) {
+          flushPending();
+        }
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }
+  window.addEventListener("scroll", onScrollCheck, { passive: true });
+
   const debouncer = createDebouncer(onFeedEvent);
   const firstLogSnapshot = new Set(); // bypass debounce on first snapshot per uid
 
@@ -360,6 +375,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   return () => {
     unsubMe();
     debouncer.destroy();
+    window.removeEventListener("scroll", onScrollCheck);
     Object.values(logUnsubMap).forEach(u => u());
     Object.values(diaryUnsubMap).forEach(u => u());
     logUnsubMap = {};
