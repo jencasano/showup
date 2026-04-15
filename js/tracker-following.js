@@ -6,6 +6,8 @@ import {
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderPeopleView } from "./following-people.js";
 import { renderFeedView } from "./following-feed.js";
+import { createDebouncer } from "./feed-debounce.js";
+import { buildLogEvent, buildDiaryEvent } from "./feed-event.js";
 
 let currentView = "people";
 
@@ -54,6 +56,31 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   let followingIds       = [];
   let pinnedFollowingIds = [];
   let diaryReady = false; // gate: don't renderBoard until diary fetch is done
+  let feedEvents = []; // persistent event list for the feed view
+
+  function onFeedEvent(type, uid, dateStr) {
+    const user = userCache[uid] || null;
+    let evt;
+    if (type === "log") {
+      const log = logsCache[uid];
+      if (!log) return;
+      // Determine which date(s) changed -- use today as default for log events
+      const evtDate = dateStr || new Date().toISOString().slice(0, 10);
+      evt = buildLogEvent(uid, user, log, yearMonth, evtDate);
+    } else {
+      const diaryEntry = diaryCache[uid]?.[dateStr] || null;
+      if (!diaryEntry) return;
+      evt = buildDiaryEvent(uid, user, diaryEntry, dateStr);
+    }
+    // Dedup by key: replace existing event with same key
+    const idx = feedEvents.findIndex(e => e.key === evt.key);
+    if (idx >= 0) feedEvents[idx] = evt;
+    else feedEvents.push(evt);
+    renderBoard();
+  }
+
+  const debouncer = createDebouncer(onFeedEvent);
+  const firstLogSnapshot = new Set(); // bypass debounce on first snapshot per uid
 
   // Persistent header refs (built once, updated incrementally)
   let boardRoot = null;
@@ -148,7 +175,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
 
     const model = {
       currentUser, yearMonth, followingIds, pinnedFollowingIds,
-      logsCache, userCache, diaryCache, onSwitchToAll,
+      logsCache, userCache, diaryCache, onSwitchToAll, feedEvents,
     };
 
     if (currentView === "feed") {
@@ -243,6 +270,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
           if (!diaryCache[uid]) diaryCache[uid] = {};
           if (snap.exists() && (snap.data().note || snap.data().photoUrl)) {
             diaryCache[uid][dateStr] = { docId: dateStr, ...snap.data() };
+            debouncer.diaryChanged(uid, dateStr);
           } else {
             diaryCache[uid][dateStr] = null;
           }
@@ -279,6 +307,12 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         logsCache[uid] = logSnap.exists() && d?.activities?.length
           ? { id: uid, ...d, displayName: userCache[uid]?.displayName || "" }
           : null;
+        if (!firstLogSnapshot.has(uid)) {
+          firstLogSnapshot.add(uid);
+          onFeedEvent("log", uid);    // immediate on first load
+        } else {
+          debouncer.logChanged(uid);  // debounced on real-time updates
+        }
         renderBoard(); // safe -- diaryReady gates this
       }, (err) => {
         console.error("Log snapshot error:", err);
@@ -298,6 +332,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
 
   return () => {
     unsubMe();
+    debouncer.destroy();
     Object.values(logUnsubMap).forEach(u => u());
     Object.values(diaryUnsubMap).forEach(u => u());
     logUnsubMap = {};

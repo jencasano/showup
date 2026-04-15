@@ -75,20 +75,36 @@ export function computeSignal(displayName, logEntry) {
   const isComeback30  = daysSinceLastActive >= 30;
   const isComeback7   = daysSinceLastActive >= 7 && daysSinceLastActive < 30;
 
-  let key;
-  if      (isFirstEver)          key = "first_ever";
-  else if (isComeback30)         key = "comeback_30";
-  else if (isComeback7)          key = "comeback_7";
-  else if (streak >= 25)         key = "streak_25";
-  else if (streak >= 15)         key = "streak_15";
-  else if (streak >= 7)          key = "streak_7";
-  else if (streak >= 3)          key = "streak_3";
-  else if (totalDaysActive >= 1) key = "checked_in";
-  else                           return fallback;
+  // streak_full_month: every day from 1..today has a mark
+  const isStreakFullMonth = (() => {
+    if (today < 2) return false;
+    for (let d = 1; d <= today; d++) {
+      if (!activeDaysSet.has(d)) return false;
+    }
+    return true;
+  })();
+
+  // backfill: logged for a past day but NOT today
+  const isBackfill = !activeDaysSet.has(today) && lastActiveDay < today;
+
+  // contextKey uses the new naming; key uses old naming for People-view compat
+  let key, contextKey;
+  if      (isFirstEver)          { key = "first_ever";  contextKey = "first_ever"; }
+  else if (isComeback30)         { key = "comeback_30";  contextKey = "comeback_big"; }
+  else if (isComeback7)          { key = "comeback_7";   contextKey = "comeback_small"; }
+  else if (isBackfill)           { key = "checked_in";   contextKey = "backfill"; }
+  else if (isStreakFullMonth)    { key = "streak_25";    contextKey = "streak_full_month"; }
+  else if (streak >= 25)         { key = "streak_25";    contextKey = "streak_25"; }
+  else if (streak >= 15)         { key = "streak_15";    contextKey = "streak_15"; }
+  else if (streak >= 7)          { key = "streak_7";     contextKey = "streak_7"; }
+  else if (streak >= 3)          { key = "streak_3";     contextKey = "streak_3"; }
+  else if (totalDaysActive >= 1) { key = "checked_in";   contextKey = "default"; }
+  else                           return { ...fallback, contextKey: "default" };
 
   return {
     calendarHeadline: fillName(signalCopy[key + "_calendar"], firstName),
     diaryHeadline:    fillName(signalCopy[key + "_diary"],    firstName),
+    contextKey,
     sub: "Showing up quietly.",
   };
 }
@@ -99,4 +115,4 @@ export function pickCopy(keys, uid, date) {
   return signalCopy[key] || key;
 }
 
-export { copyReady };
+export { copyReady, signalCopy, fillName };

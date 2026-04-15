@@ -1,5 +1,5 @@
 {
-  "_note": "Signal copy templates for the Low key privacy tier. {firstName} is replaced at runtime. Conditions and logic stay in following-signals.js -- only the copy strings live here. Each condition has two variants: 'calendar' (data-flavored) and 'diary' (feeling-flavored).",
+  "_note": "Signal copy templates. {firstName} is replaced at runtime. Old-format keys (People view) above the divider; feed_* keys (event stream) below.",
 
   "first_ever_calendar":   "{firstName} just started. Day one.",
   "first_ever_diary":      "Something's beginning for {firstName}.",
@@ -45,5 +45,159 @@
 
   "changed_diary_1":       "Wrote something earlier. It's gone now.",
   "changed_diary_2":       "Had something to say. Changed their mind.",
-  "changed_diary_3":       "There was an entry. It didn't stay."
+  "changed_diary_3":       "There was an entry. It didn't stay.",
+
+  "_divider": "--- FEED EVENT COPY (feed_{tier}_{eventtype}_{context}_{variant}) ---",
+
+  "feed_sharing_log_default_1":           "{firstName} logged {activities}.",
+  "feed_sharing_log_default_2":           "{firstName} just put {activities} on the board.",
+  "feed_sharing_log_default_3":           "{firstName} got {activities} done today.",
+  "feed_sharing_log_default_4":           "{firstName} marked {activities}. Done.",
+
+  "feed_sharing_log_streak3_1":           "{firstName} logged {activities}. They've logged something 3 days in a row.",
+  "feed_sharing_log_streak3_2":           "{firstName} logged {activities}. Something every day for 3 days straight.",
+
+  "feed_sharing_log_streak7_1":           "{firstName} logged {activities}. They've logged something every day this week.",
+  "feed_sharing_log_streak7_2":           "{firstName} logged {activities}. Something every single day this week.",
+  "feed_sharing_log_streak7_3":           "{firstName} logged {activities}. Seven days of showing up. Every day. Have you shown up today?",
+
+  "feed_sharing_log_streak15_1":          "{firstName} logged {activities}. Something logged every day for 15 days straight.",
+  "feed_sharing_log_streak15_2":          "{firstName} logged {activities}. They've logged something every day for half a month.",
+  "feed_sharing_log_streak15_3":          "{firstName} logged {activities}. Fifteen days of showing up every day. Have you done anything today?",
+
+  "feed_sharing_log_streak25_1":          "{firstName} logged {activities}. They've logged something every day for 25 days.",
+  "feed_sharing_log_streak25_2":          "{firstName} logged {activities}. Something every day for 25 days. They're not stopping. Are you?",
+  "feed_sharing_log_streak25_3":          "{firstName} logged {activities}. Twenty-five days of something every single day. Join them in showing up.",
+
+  "feed_sharing_log_streak_full_month_1": "{firstName} logged {activities}. They've logged something every single day this month.",
+  "feed_sharing_log_streak_full_month_2": "{firstName} logged {activities}. Something logged every day this month. Every one. Have you shown up today?",
+  "feed_sharing_log_streak_full_month_3": "{firstName} logged {activities}. A perfect month so far. Every single day. Can you say the same?",
+
+  "feed_sharing_log_first_ever_1":        "{firstName} just logged {activities} for the first time. Day one.",
+  "feed_sharing_log_first_ever_2":        "{firstName} started. First log: {activities}. Everyone starts somewhere.",
+  "feed_sharing_log_first_ever_3":        "First day for {firstName}. They logged {activities}. Have you started yours?",
+
+  "feed_sharing_log_comeback_small_1":    "{firstName} logged {activities}. They found their way back.",
+  "feed_sharing_log_comeback_small_2":    "{firstName} is back. Picked up {activities} right where they left off.",
+  "feed_sharing_log_comeback_small_3":    "A little time away, then {activities}. {firstName} is back. Coming back is the hardest part.",
+
+  "feed_sharing_log_comeback_big_1":      "{firstName} logged {activities}. After a long time away. They're back.",
+  "feed_sharing_log_comeback_big_2":      "After a long silence, {firstName} logged {activities}. Welcome back.",
+  "feed_sharing_log_comeback_big_3":      "{firstName} broke a long quiet with {activities}. Good to see them. Is there something you've been putting off?",
+
+  "feed_sharing_log_backfill_1":          "{firstName} logged {activities} for {date}.",
+  "feed_sharing_log_backfill_2":          "{firstName} filled in {activities} for {date}.",
+  "feed_sharing_log_backfill_3":          "{firstName} went back and marked {activities} for {date}.",
+  "feed_sharing_log_backfill_4":          "{firstName} didn't let {date} go unlogged. {activities}.",
+
+  "feed_sharing_diary_today_1":           "{firstName} wrote in their diary today.",
+  "feed_sharing_diary_today_2":           "{firstName} had something to say about today.",
+  "feed_sharing_diary_today_3":           "{firstName} put today into words.",
+  "feed_sharing_diary_today_4":           "{firstName} left an entry. Go read it.",
+  "feed_sharing_diary_today_5":           "{firstName} closed today with words.",
+  "feed_sharing_diary_today_6":           "{firstName} wrote something worth reading.",
+
+  "feed_sharing_diary_past_1":            "{firstName} went back and wrote about {date}.",
+  "feed_sharing_diary_past_2":            "{firstName} had more to say about {date}.",
+  "feed_sharing_diary_past_3":            "{firstName} put {date} into words.",
+  "feed_sharing_diary_past_4":            "{firstName} didn't let {date} pass without words.",
+
+  "_divider_lowkey": "--- LOW KEY ---",
+
+  "feed_lowkey_log_default_1":            "{firstName} showed up today.",
+  "feed_lowkey_log_default_2":            "{firstName} put something in today.",
+  "feed_lowkey_log_default_3":            "{firstName} was here today.",
+  "feed_lowkey_log_default_4":            "Something got done in {firstName}'s world.",
+
+  "feed_lowkey_log_streak3_1":            "{firstName} has been here 3 days in a row.",
+  "feed_lowkey_log_streak3_2":            "3 days straight for {firstName}.",
+
+  "feed_lowkey_log_streak7_1":            "{firstName} hasn't missed a day this week. Join them in showing up.",
+  "feed_lowkey_log_streak7_2":            "7 days in a row for {firstName}.",
+  "feed_lowkey_log_streak7_3":            "{firstName} keeps showing up. Every day this week.",
+
+  "feed_lowkey_log_streak15_1":           "{firstName} has been showing up every day for 15 days.",
+  "feed_lowkey_log_streak15_2":           "15 days and {firstName} hasn't stopped.",
+  "feed_lowkey_log_streak15_3":           "Half a month of showing up for {firstName}. Have you done anything today?",
+
+  "feed_lowkey_log_streak25_1":           "{firstName} hasn't missed a day in 25 days.",
+  "feed_lowkey_log_streak25_2":           "25 days in a row for {firstName}. Still going.",
+  "feed_lowkey_log_streak25_3":           "{firstName} keeps showing up. 25 days now. Quietly. Are you keeping up?",
+
+  "feed_lowkey_log_streak_full_month_1":  "{firstName} hasn't missed a single day this month.",
+  "feed_lowkey_log_streak_full_month_2":  "A perfect month so far for {firstName}.",
+  "feed_lowkey_log_streak_full_month_3":  "Not one missed day for {firstName} this month. Not one. Have you shown up today?",
+  "feed_lowkey_log_streak_full_month_4":  "{firstName} has shown up every single day this month.",
+
+  "feed_lowkey_log_first_ever_1":         "{firstName} just started.",
+  "feed_lowkey_log_first_ever_2":         "Day one for {firstName}.",
+  "feed_lowkey_log_first_ever_3":         "Something's beginning for {firstName}.",
+
+  "feed_lowkey_log_comeback_small_1":     "{firstName} came back today.",
+  "feed_lowkey_log_comeback_small_2":     "{firstName} returned. That's the whole story.",
+  "feed_lowkey_log_comeback_small_3":     "{firstName} picked it back up. Coming back is the hardest part.",
+
+  "feed_lowkey_log_comeback_big_1":       "{firstName} is back.",
+  "feed_lowkey_log_comeback_big_2":       "{firstName} came back today. It's been a while.",
+  "feed_lowkey_log_comeback_big_3":       "{firstName} returned after a long time away.",
+  "feed_lowkey_log_comeback_big_4":       "{firstName} broke a long silence today. Is there something you've been putting off?",
+
+  "feed_lowkey_log_backfill_1":           "{firstName} circled back and filled something in.",
+  "feed_lowkey_log_backfill_2":           "{firstName} went back and tidied something up.",
+  "feed_lowkey_log_backfill_3":           "{firstName} caught up on something.",
+
+  "feed_lowkey_diary_today_1":            "{firstName} had something on their mind today.",
+  "feed_lowkey_diary_today_2":            "Today meant something to {firstName}.",
+  "feed_lowkey_diary_today_3":            "{firstName} is sitting with something.",
+  "feed_lowkey_diary_today_4":            "Something's going on in {firstName}'s world. They wrote about it.",
+  "feed_lowkey_diary_today_5":            "{firstName} processed something today. In writing.",
+
+  "feed_lowkey_diary_past_1":             "{firstName} wasn't done with {date} yet.",
+  "feed_lowkey_diary_past_2":             "{date} still had something to say to {firstName}.",
+  "feed_lowkey_diary_past_3":             "{firstName} went back to {date}. Something was left unfinished.",
+
+  "_divider_ghost": "--- GHOST ---",
+
+  "feed_ghost_log_default_1":             "Someone showed up today. The details are theirs.",
+  "feed_ghost_log_default_2":             "Something got logged. We're not saying what.",
+  "feed_ghost_log_default_3":             "The work happened. That's all this feed knows.",
+  "feed_ghost_log_default_4":             "A quiet one checked in today.",
+  "feed_ghost_log_default_5":             "Something got done. Privately.",
+  "feed_ghost_log_default_6":             "Someone put something on the board. Quietly.",
+
+  "feed_ghost_log_streak_full_month_1":   "Someone hasn't missed a single day this month.",
+  "feed_ghost_log_streak_full_month_2":   "A perfect month. Quietly.",
+  "feed_ghost_log_streak_full_month_3":   "Every day this month. Someone out there is serious.",
+  "feed_ghost_log_streak_full_month_4":   "Not one missed day. We don't know who. But they know.",
+
+  "feed_ghost_log_first_ever_1":          "Someone just started. Day one.",
+  "feed_ghost_log_first_ever_2":          "A first day happened. Quietly.",
+  "feed_ghost_log_first_ever_3":          "Something began today. We don't know what.",
+
+  "feed_ghost_log_comeback_small_1":      "Someone came back today. Just like that.",
+  "feed_ghost_log_comeback_small_2":      "Something that went quiet started again.",
+  "feed_ghost_log_comeback_small_3":      "Someone picked it back up.",
+  "feed_ghost_log_comeback_small_4":      "A quiet one returned.",
+
+  "feed_ghost_log_comeback_big_1":        "Someone came back today. It's been a while.",
+  "feed_ghost_log_comeback_big_2":        "A long silence broke today. Quietly.",
+  "feed_ghost_log_comeback_big_3":        "The silence broke. Just like that.",
+  "feed_ghost_log_comeback_big_4":        "Someone returned after a long time away. No announcement. Just showed up.",
+  "feed_ghost_log_comeback_big_5":        "Something that had gone very quiet started again today.",
+
+  "feed_ghost_log_backfill_1":            "Someone went back and filled something in.",
+  "feed_ghost_log_backfill_2":            "A past day got its due.",
+  "feed_ghost_log_backfill_3":            "Something from {date} got logged. Privately.",
+  "feed_ghost_log_backfill_4":            "Someone circled back. No further details.",
+
+  "feed_ghost_diary_today_1":             "Someone wrote something today. It's not for us.",
+  "feed_ghost_diary_today_2":             "Words happened. The door stays closed.",
+  "feed_ghost_diary_today_3":             "An entry exists. That's all we know.",
+  "feed_ghost_diary_today_4":             "Someone sat with today and wrote. We'll never know what.",
+  "feed_ghost_diary_today_5":             "Something got put into words. Not our words to read.",
+  "feed_ghost_diary_today_6":             "A page filled up somewhere. Quietly.",
+
+  "feed_ghost_diary_past_1":              "{date} got words. Private ones.",
+  "feed_ghost_diary_past_2":              "Someone went back to {date} and wrote something.",
+  "feed_ghost_diary_past_3":              "Something from {date} got written down. It stays there."
 }
