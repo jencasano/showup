@@ -54,36 +54,36 @@
   "feed_sharing_log_default_3":           "{firstName} got {activities} done today.",
   "feed_sharing_log_default_4":           "{firstName} marked {activities}. Done.",
 
-  "feed_sharing_log_streak3_1":           "{firstName} logged {activities}. They've logged something 3 days in a row.",
-  "feed_sharing_log_streak3_2":           "{firstName} logged {activities}. Something every day for 3 days straight.",
+  "feed_sharing_log_streak3_1":           "{firstName} logged {activities}. {streak}They've logged something 3 days in a row.{/streak}",
+  "feed_sharing_log_streak3_2":           "{firstName} logged {activities}. {streak}Something every day for 3 days straight.{/streak}",
 
-  "feed_sharing_log_streak7_1":           "{firstName} logged {activities}. They've logged something every day this week.",
-  "feed_sharing_log_streak7_2":           "{firstName} logged {activities}. Something every single day this week.",
-  "feed_sharing_log_streak7_3":           "{firstName} logged {activities}. Seven days of showing up. Every day. Have you shown up today?",
+  "feed_sharing_log_streak7_1":           "{firstName} logged {activities}. {streak}They've logged something every day this week.{/streak}",
+  "feed_sharing_log_streak7_2":           "{firstName} logged {activities}. {streak}Something every single day this week.{/streak}",
+  "feed_sharing_log_streak7_3":           "{firstName} logged {activities}. {streak}Seven days of showing up. Every day.{/streak} {nudge}Have you shown up today?{/nudge}",
 
-  "feed_sharing_log_streak15_1":          "{firstName} logged {activities}. Something logged every day for 15 days straight.",
-  "feed_sharing_log_streak15_2":          "{firstName} logged {activities}. They've logged something every day for half a month.",
-  "feed_sharing_log_streak15_3":          "{firstName} logged {activities}. Fifteen days of showing up every day. Have you done anything today?",
+  "feed_sharing_log_streak15_1":          "{firstName} logged {activities}. {streak}Something logged every day for 15 days straight.{/streak}",
+  "feed_sharing_log_streak15_2":          "{firstName} logged {activities}. {streak}They've logged something every day for half a month.{/streak}",
+  "feed_sharing_log_streak15_3":          "{firstName} logged {activities}. {streak}Fifteen days of showing up every day.{/streak} {nudge}Have you done anything today?{/nudge}",
 
-  "feed_sharing_log_streak25_1":          "{firstName} logged {activities}. They've logged something every day for 25 days.",
-  "feed_sharing_log_streak25_2":          "{firstName} logged {activities}. Something every day for 25 days. They're not stopping. Are you?",
-  "feed_sharing_log_streak25_3":          "{firstName} logged {activities}. Twenty-five days of something every single day. Join them in showing up.",
+  "feed_sharing_log_streak25_1":          "{firstName} logged {activities}. {streak}They've logged something every day for 25 days.{/streak}",
+  "feed_sharing_log_streak25_2":          "{firstName} logged {activities}. {streak}Something every day for 25 days. They're not stopping.{/streak} {nudge}Are you?{/nudge}",
+  "feed_sharing_log_streak25_3":          "{firstName} logged {activities}. {streak}Twenty-five days of something every single day.{/streak} {nudge}Join them in showing up.{/nudge}",
 
-  "feed_sharing_log_streak_full_month_1": "{firstName} logged {activities}. They've logged something every single day this month.",
-  "feed_sharing_log_streak_full_month_2": "{firstName} logged {activities}. Something logged every day this month. Every one. Have you shown up today?",
-  "feed_sharing_log_streak_full_month_3": "{firstName} logged {activities}. A perfect month so far. Every single day. Can you say the same?",
+  "feed_sharing_log_streak_full_month_1": "{firstName} logged {activities}. {streak}They've logged something every single day this month.{/streak}",
+  "feed_sharing_log_streak_full_month_2": "{firstName} logged {activities}. {streak}Something logged every day this month. Every one.{/streak} {nudge}Have you shown up today?{/nudge}",
+  "feed_sharing_log_streak_full_month_3": "{firstName} logged {activities}. {streak}A perfect month so far. Every single day.{/streak} {nudge}Can you say the same?{/nudge}",
 
-  "feed_sharing_log_first_ever_1":        "{firstName} just logged {activities} for the first time. Day one.",
-  "feed_sharing_log_first_ever_2":        "{firstName} started. First log: {activities}. Everyone starts somewhere.",
-  "feed_sharing_log_first_ever_3":        "First day for {firstName}. They logged {activities}. Have you started yours?",
+  "feed_sharing_log_first_ever_1":        "{firstName} just logged {activities} for the first time. {streak}Day one.{/streak}",
+  "feed_sharing_log_first_ever_2":        "{firstName} started. First log: {activities}. {streak}Everyone starts somewhere.{/streak}",
+  "feed_sharing_log_first_ever_3":        "First day for {firstName}. They logged {activities}. {nudge}Have you started yours?{/nudge}",
 
-  "feed_sharing_log_comeback_small_1":    "{firstName} logged {activities}. They found their way back.",
+  "feed_sharing_log_comeback_small_1":    "{firstName} logged {activities}. {streak}They found their way back.{/streak}",
   "feed_sharing_log_comeback_small_2":    "{firstName} is back. Picked up {activities} right where they left off.",
-  "feed_sharing_log_comeback_small_3":    "A little time away, then {activities}. {firstName} is back. Coming back is the hardest part.",
+  "feed_sharing_log_comeback_small_3":    "A little time away, then {activities}. {firstName} is back. {nudge}Coming back is the hardest part.{/nudge}",
 
-  "feed_sharing_log_comeback_big_1":      "{firstName} logged {activities}. After a long time away. They're back.",
-  "feed_sharing_log_comeback_big_2":      "After a long silence, {firstName} logged {activities}. Welcome back.",
-  "feed_sharing_log_comeback_big_3":      "{firstName} broke a long quiet with {activities}. Good to see them. Is there something you've been putting off?",
+  "feed_sharing_log_comeback_big_1":      "{firstName} logged {activities}. {streak}After a long time away. They're back.{/streak}",
+  "feed_sharing_log_comeback_big_2":      "After a long silence, {firstName} logged {activities}. {streak}Welcome back.{/streak}",
+  "feed_sharing_log_comeback_big_3":      "{firstName} broke a long quiet with {activities}. {streak}Good to see them.{/streak} {nudge}Is there something you've been putting off?{/nudge}",
 
   "feed_sharing_log_backfill_1":          "{firstName} logged {activities} for {date}.",
   "feed_sharing_log_backfill_2":          "{firstName} filled in {activities} for {date}.",
@@ -112,21 +112,21 @@
   "feed_lowkey_log_streak3_1":            "{firstName} has been here 3 days in a row.",
   "feed_lowkey_log_streak3_2":            "3 days straight for {firstName}.",
 
-  "feed_lowkey_log_streak7_1":            "{firstName} hasn't missed a day this week. Join them in showing up.",
+  "feed_lowkey_log_streak7_1":            "{firstName} hasn't missed a day this week. {nudge}Join them in showing up.{/nudge}",
   "feed_lowkey_log_streak7_2":            "7 days in a row for {firstName}.",
   "feed_lowkey_log_streak7_3":            "{firstName} keeps showing up. Every day this week.",
 
   "feed_lowkey_log_streak15_1":           "{firstName} has been showing up every day for 15 days.",
   "feed_lowkey_log_streak15_2":           "15 days and {firstName} hasn't stopped.",
-  "feed_lowkey_log_streak15_3":           "Half a month of showing up for {firstName}. Have you done anything today?",
+  "feed_lowkey_log_streak15_3":           "Half a month of showing up for {firstName}. {nudge}Have you done anything today?{/nudge}",
 
   "feed_lowkey_log_streak25_1":           "{firstName} hasn't missed a day in 25 days.",
   "feed_lowkey_log_streak25_2":           "25 days in a row for {firstName}. Still going.",
-  "feed_lowkey_log_streak25_3":           "{firstName} keeps showing up. 25 days now. Quietly. Are you keeping up?",
+  "feed_lowkey_log_streak25_3":           "{firstName} keeps showing up. 25 days now. Quietly. {nudge}Are you keeping up?{/nudge}",
 
   "feed_lowkey_log_streak_full_month_1":  "{firstName} hasn't missed a single day this month.",
   "feed_lowkey_log_streak_full_month_2":  "A perfect month so far for {firstName}.",
-  "feed_lowkey_log_streak_full_month_3":  "Not one missed day for {firstName} this month. Not one. Have you shown up today?",
+  "feed_lowkey_log_streak_full_month_3":  "Not one missed day for {firstName} this month. Not one. {nudge}Have you shown up today?{/nudge}",
   "feed_lowkey_log_streak_full_month_4":  "{firstName} has shown up every single day this month.",
 
   "feed_lowkey_log_first_ever_1":         "{firstName} just started.",
@@ -135,12 +135,12 @@
 
   "feed_lowkey_log_comeback_small_1":     "{firstName} came back today.",
   "feed_lowkey_log_comeback_small_2":     "{firstName} returned. That's the whole story.",
-  "feed_lowkey_log_comeback_small_3":     "{firstName} picked it back up. Coming back is the hardest part.",
+  "feed_lowkey_log_comeback_small_3":     "{firstName} picked it back up. {nudge}Coming back is the hardest part.{/nudge}",
 
   "feed_lowkey_log_comeback_big_1":       "{firstName} is back.",
   "feed_lowkey_log_comeback_big_2":       "{firstName} came back today. It's been a while.",
   "feed_lowkey_log_comeback_big_3":       "{firstName} returned after a long time away.",
-  "feed_lowkey_log_comeback_big_4":       "{firstName} broke a long silence today. Is there something you've been putting off?",
+  "feed_lowkey_log_comeback_big_4":       "{firstName} broke a long silence today. {nudge}Is there something you've been putting off?{/nudge}",
 
   "feed_lowkey_log_backfill_1":           "{firstName} circled back and filled something in.",
   "feed_lowkey_log_backfill_2":           "{firstName} went back and tidied something up.",

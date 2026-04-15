@@ -100,6 +100,23 @@
 
   </div>
 
+  <button id="back-to-top" class="back-to-top" aria-label="Back to top">&#x2303;</button>
+  <script>
+    (() => {
+      const btn = document.getElementById('back-to-top');
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            btn.classList.toggle('visible', window.scrollY > 300);
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+      btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    })();
+  </script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

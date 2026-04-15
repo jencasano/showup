@@ -67,6 +67,30 @@ function attachTimelineListeners(stream) {
   };
 }
 
+// ── "New posts" pill ────────────────────────────────
+
+function syncNewPostsPill(stream, model) {
+  const count = model.pendingEvents?.length || 0;
+  let pill = document.querySelector(".fw-feed-new-pill");
+
+  if (count === 0) {
+    if (pill) pill.remove();
+    return;
+  }
+
+  if (!pill) {
+    pill = document.createElement("button");
+    pill.className = "fw-feed-new-pill";
+    pill.addEventListener("click", () => {
+      model.flushPending();
+    });
+    // Append to body so position:fixed works regardless of ancestor transforms
+    document.body.appendChild(pill);
+  }
+
+  pill.textContent = count === 1 ? "1 new post" : `${count} new posts`;
+}
+
 // ── Render helpers ──────────────────────────────────
 
 function makeEventEl(evt, model, isNew) {
@@ -161,6 +185,7 @@ function buildFeedFromScratch(container, model) {
   glow.className = "fw-feed-tl-glow";
   stream.appendChild(glow);
 
+  syncNewPostsPill(stream, model);
   stream._tlCleanup = attachTimelineListeners(stream);
 }
 
@@ -238,6 +263,9 @@ function updateFeedInPlace(stream, model) {
   // Re-append glow
   const glow = stream.querySelector(".fw-feed-tl-glow");
   if (glow) stream.appendChild(glow);
+
+  // New posts pill
+  syncNewPostsPill(stream, model);
 
   // Re-attach timeline listeners
   if (stream._tlCleanup) stream._tlCleanup();

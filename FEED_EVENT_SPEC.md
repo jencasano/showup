@@ -408,6 +408,14 @@ Feed event generation is debounced on log writes with a 10-second quiet window. 
 - Activity name collapsing function (1 / 2 / 3 / n+more display logic)
 - Context detection extended to include `streak_full_month` (not currently in `computeSignal`)
 
+### "New posts" pill (scroll-aware queueing)
+
+When a real-time event arrives while the user has scrolled down in the feed (reading older posts), the event is queued silently instead of being merged into the visible feed. A floating pill appears at the top of the stream: "1 new post" or "N new posts". Tapping it merges all pending events into the feed and scrolls to top.
+
+If the user is at the top of the feed (not scrolled past ~50px), events merge directly with no pill -- same as before.
+
+This prevents the feed from shifting under the reader's eyes, matching the pattern used by Facebook and Instagram.
+
 ---
 
-*Spec written April 2026. Supersedes FEED_SPEC.md. Companion to FOLLOWING_SPEC.md.* 🪨
+*Spec written April 2026. Supersedes FEED_SPEC.md. Companion to FOLLOWING_SPEC.md.*

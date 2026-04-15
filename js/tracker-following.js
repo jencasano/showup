@@ -56,7 +56,26 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   let followingIds       = [];
   let pinnedFollowingIds = [];
   let diaryReady = false; // gate: don't renderBoard until diary fetch is done
-  let feedEvents = []; // persistent event list for the feed view
+  let feedEvents = [];    // rendered events
+  let pendingEvents = []; // queued events (shown via "New posts" pill)
+
+  function isFeedScrolledDown() {
+    const stream = boardEl?.querySelector(".fw-feed-stream");
+    if (!stream) return false;
+    return stream.getBoundingClientRect().top < -50;
+  }
+
+  function flushPending() {
+    for (const evt of pendingEvents) {
+      const idx = feedEvents.findIndex(e => e.key === evt.key);
+      if (idx >= 0) feedEvents[idx] = evt;
+      else feedEvents.push(evt);
+    }
+    pendingEvents = [];
+    renderBoard();
+    // Scroll to top of page
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   function onFeedEvent(type, uid, dateStr) {
     const user = userCache[uid] || null;
@@ -64,7 +83,6 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     if (type === "log") {
       const log = logsCache[uid];
       if (!log) return;
-      // Determine which date(s) changed -- use today as default for log events
       const evtDate = dateStr || new Date().toISOString().slice(0, 10);
       evt = buildLogEvent(uid, user, log, yearMonth, evtDate);
     } else {
@@ -72,10 +90,18 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       if (!diaryEntry) return;
       evt = buildDiaryEvent(uid, user, diaryEntry, dateStr);
     }
-    // Dedup by key: replace existing event with same key
-    const idx = feedEvents.findIndex(e => e.key === evt.key);
-    if (idx >= 0) feedEvents[idx] = evt;
-    else feedEvents.push(evt);
+
+    if (currentView === "feed" && isFeedScrolledDown()) {
+      // User is reading -- queue silently
+      const idx = pendingEvents.findIndex(e => e.key === evt.key);
+      if (idx >= 0) pendingEvents[idx] = evt;
+      else pendingEvents.push(evt);
+    } else {
+      // User is at top or not on feed -- merge directly
+      const idx = feedEvents.findIndex(e => e.key === evt.key);
+      if (idx >= 0) feedEvents[idx] = evt;
+      else feedEvents.push(evt);
+    }
     renderBoard();
   }
 
@@ -175,7 +201,8 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
 
     const model = {
       currentUser, yearMonth, followingIds, pinnedFollowingIds,
-      logsCache, userCache, diaryCache, onSwitchToAll, feedEvents,
+      logsCache, userCache, diaryCache, onSwitchToAll,
+      feedEvents, pendingEvents, flushPending,
     };
 
     if (currentView === "feed") {

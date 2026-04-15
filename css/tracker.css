@@ -3689,6 +3689,19 @@
   color: var(--text-muted);
 }
 
+.fw-feed-evt-streak {
+  color: var(--text-muted);
+}
+
+.fw-feed-evt-nudge {
+  font-style: italic;
+  color: var(--color-primary);
+}
+
+.fw-feed-evt--lowkey .fw-feed-evt-nudge {
+  color: var(--color-teal);
+}
+
 .fw-feed-evt-links {
   display: flex;
   gap: 16px;
@@ -3718,5 +3731,42 @@
 /* Event entrance animation */
 .fw-feed-evt-enter {
   animation: tl-card-in 0.45s ease-out both;
+}
+
+/* "New posts" pill -- FB/IG-style floating indicator */
+.fw-feed-new-pill {
+  position: fixed;
+  top: 108px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-base, 'Inter', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(216, 88, 78, 0.35);
+  animation: pill-in 0.35s ease-out both;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.fw-feed-new-pill:hover {
+  transform: translateX(-50%) scale(1.04);
+  box-shadow: 0 6px 20px rgba(216, 88, 78, 0.45);
+}
+
+@keyframes pill-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
