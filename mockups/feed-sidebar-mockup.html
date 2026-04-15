@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>showup. — Feed + Pinned Sidebar Final</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,400;1,9..144,600&family=Sora:wght@800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --coral: #D8584E; --teal: #80B9B9; --amber: #F8C08A; --lavender: #B3A1B4;
+  --font-logo: 'Sora', sans-serif; --font-head: 'Fraunces', serif; --font-base: 'Inter', sans-serif;
+}
+
+.dark {
+  --bg: #1D2142; --surface: #2A2E45; --subtle: #353B5C;
+  --border: #3D4468; --border-faint: #2F3456;
+  --text: #FBDFCB; --muted: #B3A1B4; --faint: #596088;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.2); --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+body { font-family: var(--font-base); background: #0F1020; color: #FBDFCB; padding: 32px 20px 60px; }
+.shell { max-width: 1400px; margin: 0 auto; }
+.page-logo { font-family: var(--font-logo); font-size: 0.9rem; font-weight: 800; color: var(--coral); margin-bottom: 4px; }
+.page-sub { font-size: 0.68rem; color: #3D4468; margin-bottom: 32px; }
+
+.app-frame { background: var(--bg); border-radius: 14px; overflow: hidden; border: 1px solid #2A2E45; }
+
+.app-head { padding: 13px 24px 11px; border-bottom: 1px solid var(--border); background: var(--bg); display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: var(--font-logo); font-weight: 800; font-size: 0.95rem; color: var(--coral); }
+.app-tabs { display: flex; gap: 24px; }
+.app-tab { font-size: 0.72rem; font-weight: 500; color: var(--faint); cursor: pointer; }
+.app-tab.active { font-weight: 600; color: var(--text); border-bottom: 2px solid var(--coral); padding-bottom: 2px; }
+.app-user { font-size: 0.7rem; color: var(--faint); display: flex; align-items: center; gap: 6px; }
+.app-user-dot { width: 22px; height: 22px; border-radius: 50%; background: var(--coral); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; color: white; }
+
+.following-inner { padding: 24px 24px 32px; }
+.following-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.following-title { font-family: var(--font-head); font-size: 1.3rem; font-weight: 700; color: var(--text); display: flex; align-items: baseline; gap: 8px; }
+.following-count { font-size: 0.7rem; color: var(--faint); font-family: var(--font-base); font-weight: 400; }
+.view-toggle { display: flex; background: var(--subtle); border-radius: 99px; padding: 3px; }
+.vt-pill { font-size: 0.68rem; font-weight: 600; padding: 5px 14px; border-radius: 99px; color: var(--faint); cursor: pointer; }
+.vt-pill.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+
+.feed-layout { display: grid; grid-template-columns: minmax(0, 680px) 260px; gap: 28px; align-items: start; justify-content: center; }
+
+/* ── FEED ── */
+.feed-col { min-width: 0; }
+.tl { position: relative; padding-left: 28px; }
+.tl::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 1.5px; background: linear-gradient(to bottom, transparent 0%, var(--border) 6%, var(--border) 94%, transparent 100%); }
+.dg { margin-bottom: 28px; }
+.dr { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; position: relative; }
+.dd { position: absolute; left: -28px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--border); top: 50%; transform: translateY(-50%); }
+.dd.today { width: 16px; height: 16px; left: -30px; background: var(--coral); border-color: var(--coral); box-shadow: 0 0 0 3px rgba(216,88,78,0.15); animation: pulse 2.8s ease-out 0.4s 2 forwards; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 3px rgba(216,88,78,0.15); } 40% { box-shadow: 0 0 0 9px rgba(216,88,78,0); } 100% { box-shadow: 0 0 0 3px rgba(216,88,78,0.15); } }
+.dt { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+.dt.today { color: var(--coral); }
+.ev { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 13px 15px; margin-bottom: 10px; transition: box-shadow 0.18s; }
+.ev:hover { box-shadow: var(--shadow-md); }
+.ev.sh { border-left: 3px solid var(--coral); }
+.ev.lk { border-left: 3px solid var(--teal); }
+.ev.fo { border-left: 3px solid var(--amber); }
+.ev.gh { border-left: 3px solid var(--border); opacity: 0.78; }
+.eh { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+.av { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: #fff; flex-shrink: 0; overflow: hidden; }
+.av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.em { flex: 1; min-width: 0; }
+.en { font-size: 0.78rem; font-weight: 600; color: var(--text); }
+.ew { font-size: 0.62rem; color: var(--faint); margin-top: 1px; }
+.tb { font-size: 0.53rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 99px; flex-shrink: 0; }
+.tb-sh { background: rgba(216,88,78,0.12); color: var(--coral); }
+.tb-lk { background: rgba(128,185,185,0.12); color: var(--teal); }
+.tb-fo { background: rgba(248,192,138,0.14); color: var(--amber); }
+.tb-gh { background: var(--subtle); color: var(--faint); }
+.ea { font-size: 0.84rem; color: var(--text); line-height: 1.55; margin-bottom: 6px; }
+.act { font-family: var(--font-head); font-style: italic; font-weight: 600; }
+.streak { color: var(--muted); }
+.nudge { color: var(--coral); font-style: italic; }
+.ea.ghost { font-family: var(--font-head); font-style: italic; font-weight: 400; color: var(--muted); font-size: 0.82rem; }
+.links { display: flex; gap: 12px; margin-top: 2px; }
+.lnk { font-size: 0.65rem; font-weight: 500; cursor: pointer; }
+.lnk.cal { color: var(--teal); }
+.lnk.diary { color: var(--amber); }
+
+/* ── SIDEBAR ── */
+/* nudged down to align stats with first feed card */
+.sidebar-col {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 32px;
+}
+
+.sidebar-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); margin-bottom: 2px; padding-left: 2px; }
+
+.sidebar-stats { display: flex; gap: 0; background: var(--subtle); border-radius: 10px; overflow: hidden; margin-bottom: 4px; }
+.sidebar-stat { flex: 1; padding: 10px 8px; text-align: center; border-right: 1px solid var(--border-faint); }
+.sidebar-stat:last-child { border-right: none; }
+.sidebar-stat-val { font-family: var(--font-head); font-size: 1.3rem; font-weight: 700; font-style: italic; color: var(--text); line-height: 1; }
+.sidebar-stat-lbl { font-size: 0.52rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--faint); margin-top: 3px; line-height: 1.2; }
+
+.sidebar-divider { height: 1px; background: var(--border-faint); margin: 2px 0; }
+
+/* ── Pin card ── */
+.pin-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px 9px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.pin-card:hover { box-shadow: var(--shadow-md); border-color: rgba(216,88,78,0.2); }
+.pin-card.tier-sh { border-left: 3px solid var(--coral); }
+.pin-card.tier-lk { border-left: 3px solid var(--teal); }
+.pin-card.tier-fo { border-left: 3px solid var(--amber); }
+.pin-card.tier-gh { border-left: 3px solid var(--border); opacity: 0.75; }
+
+/* top row */
+.pin-top { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.pin-av { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: #fff; }
+.pin-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.pin-info { flex: 1; min-width: 0; }
+.pin-name-row { display: flex; align-items: center; gap: 5px; }
+.pin-name { font-size: 0.76rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; flex: 1; min-width: 0; }
+.pin-sub { font-size: 0.6rem; color: var(--faint); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* legend format: colored dot + activity name */
+.pin-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-bottom: 9px;
+  padding: 0 1px;
+}
+
+.pin-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.pin-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pin-legend-item.inactive { color: var(--faint); }
+.pin-legend-item.inactive .pin-legend-dot { background: var(--faint) !important; opacity: 0.4; }
+
+/* ghost state */
+.pin-ghost { font-size: 0.65rem; color: var(--faint); font-style: italic; display: flex; align-items: center; gap: 5px; margin-bottom: 9px; padding: 2px 0; }
+
+/* icon-only links inline beside name */
+.pin-links { display: flex; gap: 1px; flex-shrink: 0; }
+
+.pin-link {
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--faint); cursor: pointer; font-size: 0.7rem;
+  border-radius: 4px;
+  transition: background 0.12s, color 0.12s;
+}
+
+.pin-link:hover { background: var(--subtle); }
+.pin-link.cal:hover { color: var(--teal); }
+.pin-link.diary:hover { color: var(--amber); }
+.pin-link.profile { opacity: 0.3; cursor: not-allowed; }
+.pin-link.profile:hover { background: none; color: var(--faint); }
+
+.sidebar-more { font-size: 0.63rem; font-weight: 600; color: var(--faint); text-align: center; cursor: pointer; padding: 6px 0; border-radius: 8px; transition: color 0.15s, background 0.15s; }
+.sidebar-more:hover { color: var(--coral); background: var(--subtle); }
+
+</style>
+</head>
+<body class="dark">
+<div class="shell">
+
+  <div class="page-logo">showup.</div>
+  <div class="page-sub">Feed + Pinned Sidebar — Legend format, icon-only links, aligned · Dark Mode</div>
+
+  <div class="app-frame dark">
+    <div class="app-head">
+      <div class="logo">showup.</div>
+      <div class="app-tabs">
+        <div class="app-tab">Mine</div>
+        <div class="app-tab active">Following</div>
+        <div class="app-tab">All</div>
+      </div>
+      <div class="app-user"><div class="app-user-dot">J</div>Jeni Casano</div>
+    </div>
+
+    <div class="following-inner">
+      <div class="following-header">
+        <div class="following-title">Following <span class="following-count">12 people</span></div>
+        <div class="view-toggle"><div class="vt-pill">People</div><div class="vt-pill active">Feed</div></div>
+      </div>
+
+      <div class="feed-layout">
+
+        <!-- FEED -->
+        <div class="feed-col">
+          <div class="tl">
+
+            <div class="dg">
+              <div class="dr"><div class="dd today"></div><div class="dt today">Today</div></div>
+
+              <div class="ev fo">
+                <div class="eh">
+                  <div class="av" style="background:#F8C08A;color:#2A2E45;"><img src="https://i.pravatar.cc/30?img=5" alt="A"></div>
+                  <div class="em"><div class="en">Alyssa Flores</div><div class="ew">today at 3:36pm</div></div>
+                  <div class="tb tb-fo">Followers</div>
+                </div>
+                <div class="ea">Alyssa logged <span class="act">Workout</span>, <span class="act">Walk</span>, and 2 more. <span class="streak">Something logged every day this month. Every one.</span> <span class="nudge">Have you shown up today?</span></div>
+                <div class="links"><span class="lnk cal">📅 View Calendar</span></div>
+              </div>
+
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#80B9B9;">A</div>
+                  <div class="em"><div class="en">Andre Castillo</div><div class="ew">today at 3:40pm</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">Andre processed something today. In writing.</div>
+              </div>
+
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=15" alt="P"></div>
+                  <div class="em"><div class="en">Paolo Villanueva</div><div class="ew">today at 3:37pm</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Paolo left an entry. Go read it.</div>
+                <div class="links"><span class="lnk diary">📓 Read entry</span></div>
+              </div>
+
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#B3A1B4;"><img src="https://i.pravatar.cc/30?img=12" alt="K"></div>
+                  <div class="em"><div class="en">Kian Domingo</div><div class="ew">today at 3:26pm</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Kian got <span class="act">Meditate</span>, <span class="act">No Sugar</span>, and 4 more done today. <span class="streak">Seven days of showing up. Every day.</span> <span class="nudge">Have you shown up today?</span></div>
+                <div class="links"><span class="lnk cal">📅 View Calendar</span></div>
+              </div>
+            </div>
+
+            <div class="dg">
+              <div class="dr"><div class="dd"></div><div class="dt">Yesterday</div></div>
+
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#80B9B9;">B</div>
+                  <div class="em"><div class="en">Bea Mercado</div><div class="ew">yesterday at 5:21pm</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">Apr 13 still had something to say to Bea.</div>
+              </div>
+
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+                  <div class="em"><div class="en">Neithan Casano</div><div class="ew">yesterday at 10:16am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Neithan filled in <span class="act">No Don Papa</span> for Apr 14.</div>
+                <div class="links"><span class="lnk cal">📅 View Calendar</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="sidebar-col">
+
+          <div class="sidebar-stats">
+            <div class="sidebar-stat">
+              <div class="sidebar-stat-val">8</div>
+              <div class="sidebar-stat-lbl">Active<br>today</div>
+            </div>
+            <div class="sidebar-stat">
+              <div class="sidebar-stat-val">3</div>
+              <div class="sidebar-stat-lbl">Wrote<br>diary</div>
+            </div>
+            <div class="sidebar-stat">
+              <div class="sidebar-stat-val">12</div>
+              <div class="sidebar-stat-lbl">Following</div>
+            </div>
+          </div>
+
+          <div class="sidebar-divider"></div>
+          <div class="sidebar-label">📌 Pinned</div>
+
+          <!-- Neithan -->
+          <div class="pin-card tier-sh">
+            <div class="pin-top">
+              <div class="pin-av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+              <div class="pin-info">
+                <div class="pin-name-row">
+                  <div class="pin-name">Neithan Casano</div>
+                  <div class="pin-links">
+                    <div class="pin-link cal" title="Calendar">📅</div>
+                    <div class="pin-link diary" title="Diary">📓</div>
+                    <div class="pin-link profile" title="Profile (coming soon)">👤</div>
+                  </div>
+                </div>
+                <div class="pin-sub">today at 10:15am</div>
+              </div>
+            </div>
+            <div class="pin-legend">
+              <div class="pin-legend-item"><div class="pin-legend-dot" style="background:#D8584E;"></div>Wim Hof Pushups</div>
+              <div class="pin-legend-item"><div class="pin-legend-dot" style="background:#80B9B9;"></div>No Don Papa</div>
+            </div>
+          </div>
+
+          <!-- Alyssa -->
+          <div class="pin-card tier-fo">
+            <div class="pin-top">
+              <div class="pin-av" style="background:#F8C08A;color:#2A2E45;"><img src="https://i.pravatar.cc/30?img=5" alt="A"></div>
+              <div class="pin-info">
+                <div class="pin-name-row">
+                  <div class="pin-name">Alyssa Flores</div>
+                  <div class="pin-links">
+                    <div class="pin-link cal" title="Calendar">📅</div>
+                    <div class="pin-link diary" title="Diary">📓</div>
+                    <div class="pin-link profile" title="Profile (coming soon)">👤</div>
+                  </div>
+                </div>
+                <div class="pin-sub">today at 3:36pm</div>
+              </div>
+            </div>
+            <div class="pin-legend">
+              <div class="pin-legend-item"><div class="pin-legend-dot" style="background:#D8584E;"></div>Workout</div>
+              <div class="pin-legend-item"><div class="pin-legend-dot" style="background:#80B9B9;"></div>Walk</div>
+              <div class="pin-legend-item"><div class="pin-legend-dot" style="background:#F8C08A;"></div>Sleep</div>
+              <div class="pin-legend-item inactive"><div class="pin-legend-dot" style="background:#B3A1B4;"></div>Hydration</div>
+            </div>
+          </div>
+
+          <!-- Kian -->
+          <div class="pin-card tier-sh">
+            <div class="pin-top">
+              <div class="pin-av" style="background:#B3A1B4;"><img src="https://i.pravatar.cc/30?img=12" alt="K"></div>
+              <div class="pin-info">
+                <div class="pin-name-row">
+                  <div class="pin-name">Kian Domingo</div>
+                  <div class="pin-links">
+                    <div class="pin-link cal" title="Calendar">📅</div>
+                    <div class="pin-link diary" title="Diary">📓</div>
+                    <div class="pin-link profile" title="Profile (coming soon)">👤</div>
+                  </div>
+                </div>
+                <div class="pin-sub">today at 3:26pm</div>
+              </div>
+            </div>
+            <div class="pin-legend">
+              <div class="pin-legend-item"><div class="pin-legend-dot" style="background:#B3A1B4;"></div>Meditate</div>
+              <div class="pin-legend-item"><div class="pin-legend-dot" style="background:#D8584E;"></div>No Sugar</div>
+              <div class="pin-legend-item inactive"><div class="pin-legend-dot" style="background:#80B9B9;"></div>Running</div>
+              <div class="pin-legend-item inactive"><div class="pin-legend-dot" style="background:#F8C08A;"></div>Reading</div>
+            </div>
+          </div>
+
+          <!-- Andre -- Ghost -->
+          <div class="pin-card tier-gh">
+            <div class="pin-top">
+              <div class="pin-av" style="background:#353B5C; color:#596088;"><img src="https://i.pravatar.cc/30?img=7" alt="A"></div>
+              <div class="pin-info">
+                <div class="pin-name-row">
+                  <div class="pin-name" style="opacity:0.55;">Andre Castillo</div>
+                  <div class="pin-links">
+                    <div class="pin-link cal" title="Calendar">📅</div>
+                    <div class="pin-link diary" title="Diary">📓</div>
+                    <div class="pin-link profile" title="Profile (coming soon)">👤</div>
+                  </div>
+                </div>
+                <div class="pin-sub">Ghost</div>
+              </div>
+            </div>
+            <div class="pin-ghost">🌙 Gone quiet for now.</div>
+          </div>
+
+          <!-- Paolo -->
+          <div class="pin-card tier-sh">
+            <div class="pin-top">
+              <div class="pin-av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=15" alt="P"></div>
+              <div class="pin-info">
+                <div class="pin-name-row">
+                  <div class="pin-name">Paolo Villanueva</div>
+                  <div class="pin-links">
+                    <div class="pin-link cal" title="Calendar">📅</div>
+                    <div class="pin-link diary" title="Diary">📓</div>
+                    <div class="pin-link profile" title="Profile (coming soon)">👤</div>
+                  </div>
+                </div>
+                <div class="pin-sub">wrote today</div>
+              </div>
+            </div>
+            <div class="pin-legend">
+              <div class="pin-legend-item inactive"><div class="pin-legend-dot" style="background:#D8584E;"></div>Running</div>
+              <div class="pin-legend-item inactive"><div class="pin-legend-dot" style="background:#80B9B9;"></div>No Sugar</div>
+            </div>
+          </div>
+
+          <div class="sidebar-more">+ 7 more pinned</div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

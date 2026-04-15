@@ -359,6 +359,55 @@ Variants are randomized at render time, seeded by uid + date so the same event s
 
 ## Visual Design
 
+### Desktop layout
+
+On desktop the feed view uses a two-column layout:
+
+- **Feed column:** max-width 680px, event stream with Option A timeline (gradient line, TODAY pulse)
+- **Pinned sidebar:** 260px, sticky, nudged down ~32px so the stats row aligns with the first feed card
+- **Grid:** `minmax(0, 680px) 260px`, gap 28px, centered as a pair
+- **Outer shell:** max-width 1400px to give both columns room without over-stretching
+
+On mobile the sidebar is hidden -- feed takes full width.
+
+### Timeline -- Option A: Quiet Elegance
+
+- Vertical line: 1.5px, gradient (transparent at top and bottom, solid `var(--border)` through the middle)
+- TODAY dot: 16px, coral, soft double-pulse animation fires twice on load then settles completely still
+- Past date dots: 12px, muted, no animation
+- TODAY date label: coral. Past labels: faint.
+- No scroll tracking. No glow. Total stillness after the initial pulse.
+
+### Pinned sidebar anatomy
+
+The sidebar shows the current user's pinned people (same `pinnedFollowing` array as the People tab -- one source of truth).
+
+**Stats row** (top, above Pinned label):
+- Three stats: Active today / Wrote diary / Following
+- Fraunces italic numbers, Sora uppercase labels
+- Contained in a subtle background block
+
+**Pinned label:** small uppercase faint text, 📌 prefix
+
+**Pin card** (one per pinned person):
+- Left border in tier color (coral / teal / amber / faint for ghost)
+- Top row: avatar (30px) + name + icon links inline
+- Icon links beside name: 📅 📓 👤 -- small (20px), icon only, no labels
+  - 📅 Calendar: opens mini calendar popup (not yet built)
+  - 📓 Diary: opens mini diary popup with browseable entries (not yet built)
+  - 👤 Profile: placeholder, dimmed + disabled until profiles are built
+- Activity legend: colored dot + activity name, same format as People view footer
+  - Logged today: full opacity
+  - Not yet logged today: faded (inactive state)
+  - Ghost tier: replaced by 🌙 "Gone quiet for now." in italic
+- Sub line: timestamp of last event, or "wrote today", or "Ghost"
+
+**Overflow link:** "+ N more pinned" at bottom if pinned list exceeds visible cards
+
+### Mini popups (planned, not yet built)
+
+Tapping 📅 or 📓 on a pin card will open a small floating popover showing that person's calendar or diary without navigating away from the feed. Diary popover supports browsing through past entries. Design TBD.
+
 ### Event card anatomy
 
 ```
@@ -410,6 +459,7 @@ Feed event generation is debounced on log writes with a 10-second quiet window. 
 - `pickCopy()` in `following-signals.js` -- seeded random copy selection. Reused as-is.
 - `onSnapshot` listeners in `tracker-following.js` -- already fire on log and diary updates. Debounce layer sits on top.
 - `data/signal-copy.json` -- new feed copy keys added alongside existing keys.
+- `pinnedFollowing` array on user doc -- sidebar reads the same array as People tab. No new data needed.
 
 ### New infrastructure needed
 
@@ -417,6 +467,9 @@ Feed event generation is debounced on log writes with a 10-second quiet window. 
 - Debounce manager per uid (tracks pending event timer per followed user)
 - Activity name collapsing function (1 / 2 / 3 / n+more display logic)
 - Context detection extended to include `streak_full_month` (not currently in `computeSignal`)
+- Pinned sidebar renderer -- reads `pinnedFollowing`, `logsCache`, `userCache` from existing model
+- Activity legend renderer for sidebar pin cards -- colored dot + name, logged/inactive state
+- Mini popup scaffolding for calendar and diary links (design TBD)
 
 ### "New posts" pill (scroll-aware queueing)
 
@@ -428,4 +481,4 @@ This prevents the feed from shifting under the reader's eyes, matching the patte
 
 ---
 
-*Spec written April 2026. Supersedes FEED_SPEC.md. Companion to FOLLOWING_SPEC.md.*
+*Spec written April 2026. Supersedes FEED_SPEC.md. Companion to FOLLOWING_SPEC.md. Mockup: `mockups/feed-sidebar-mockup.html`.*
