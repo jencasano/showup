@@ -464,10 +464,16 @@ export const adminTestHarness = onCall({ region: "asia-southeast1", timeoutSecon
       if (!activity) throw new HttpsError("failed-precondition", "No activities on this log. Pass activityName in payload.");
       const currentMarks = data.marks?.[activity] || [];
       if (!currentMarks.includes(todayDay)) currentMarks.push(todayDay);
-      await logRef.update({
+      const update = {
         [`marks.${activity}`]: currentMarks,
         lastUpdated: FieldValue.serverTimestamp(),
-      });
+      };
+      // Add activity to the list if it's new
+      if (!(data.activities || []).includes(activity)) {
+        update.activities = [...(data.activities || []), activity];
+        update.cadences = [...(data.cadences || []), 5];
+      }
+      await logRef.update(update);
       return { ok: true, action, uid, activity, day: todayDay };
     } else {
       const userSnap = await db.doc(`users/${uid}`).get();

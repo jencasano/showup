@@ -74,6 +74,8 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
   const initial = displayName.charAt(0).toUpperCase();
 
   const dateStr = options.dateStr || new Date().toISOString().slice(0, 10);
+  const changedDots = options.changedDots || null; // Set of "activityName-dayNum" strings
+  const diaryUpdated = options.diaryUpdated ? " fw-feed-zone-updated" : "";
 
   const card = document.createElement("div");
   card.className = "fw-feed-card";
@@ -148,7 +150,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
 
     // Diary zone -- ghost (based on privacy.diary)
     const diaryZone = document.createElement("div");
-    diaryZone.className = "fw-feed-diary-zone";
+    diaryZone.className = "fw-feed-diary-zone" + diaryUpdated;
     diaryZone.appendChild(buildZoneLblRow("diary.", "fw-feed-diary-lbl", renderTierBadge(privacy.diary)));
     if (privacy.diary === "ghost") {
       const moon2 = document.createElement("div");
@@ -193,7 +195,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     card.appendChild(divider);
 
     const diaryZone = document.createElement("div");
-    diaryZone.className = "fw-feed-diary-zone";
+    diaryZone.className = "fw-feed-diary-zone" + diaryUpdated;
     diaryZone.appendChild(buildZoneLblRow("diary.", "fw-feed-diary-lbl", renderTierBadge(privacy.diary)));
     const diary = renderDiaryStrip(diaryEntry, privacy, signal, { isFollowing: true });
     if (diary) diaryZone.appendChild(diary);
@@ -249,6 +251,10 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
           const marked = (log.marks?.[name] || []).includes(d);
           if (marked) {
             dot.style.background = actColor(act, i);
+            if (changedDots?.has(`${name}-${d}`)) {
+              dot.classList.add("fw-feed-dot-new");
+              dot.style.setProperty("--dot-color", actColor(act, i));
+            }
           } else {
             dot.style.border = "1.5px solid var(--border)";
             dot.style.background = "transparent";
@@ -268,7 +274,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
     card.appendChild(divider);
 
     const diaryZone = document.createElement("div");
-    diaryZone.className = "fw-feed-diary-zone";
+    diaryZone.className = "fw-feed-diary-zone" + diaryUpdated;
     if (privacy.diary === "ghost") {
       diaryZone.classList.add("fw-feed-zone-ghost");
     }

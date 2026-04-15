@@ -114,11 +114,56 @@ function attachTimelineListeners(stream) {
   };
 }
 
+// ── Fingerprinting ───────────────────────────────────
+
+function visibleDayRange(dateStr) {
+  const anchorDay = parseInt(dateStr.slice(-2), 10);
+  const startDay = Math.max(1, anchorDay - 6);
+  return { startDay, anchorDay };
+}
+
+function calMarksSnapshot(log, dateStr) {
+  if (!log?.marks || !log?.activities) return {};
+  const { startDay, anchorDay } = visibleDayRange(dateStr);
+  const snap = {};
+  for (const act of log.activities) {
+    const name = actName(act);
+    const marks = log.marks[name] || [];
+    snap[name] = marks.filter(d => d >= startDay && d <= anchorDay);
+  }
+  return snap;
+}
+
+function diffMarks(oldSnap, newSnap) {
+  const changed = new Set();
+  const allActivities = new Set([...Object.keys(oldSnap), ...Object.keys(newSnap)]);
+  for (const act of allActivities) {
+    const oldDays = new Set(oldSnap[act] || []);
+    const newDays = new Set(newSnap[act] || []);
+    for (const d of newDays) {
+      if (!oldDays.has(d)) changed.add(`${act}-${d}`);
+    }
+  }
+  return changed;
+}
+
+function diaryFingerprint(diaryEntry) {
+  if (!diaryEntry) return "";
+  return (diaryEntry.note || "").slice(0, 80) + "|" + (diaryEntry.photoUrl || "");
+}
+
 // ── Render helpers ───────────────────────────────────
 
-function makeCardEl(card, model, isNew) {
-  const el = renderFeedCard(card.uid, card.user, card.log, card.diaryEntry, model.yearMonth, model.currentUser, { dateStr: card.dateStr });
+function makeCardEl(card, model, { isNew, changedDots, diaryChanged } = {}) {
+  const opts = { dateStr: card.dateStr };
+  if (isNew) { opts.diaryUpdated = true; opts.changedDots = null; }
+  else { opts.diaryUpdated = diaryChanged; opts.changedDots = changedDots || null; }
+
+  const el = renderFeedCard(card.uid, card.user, card.log, card.diaryEntry, model.yearMonth, model.currentUser, opts);
   el.dataset.cardKey = `${card.uid}-${card.dateStr}`;
+  el.dataset.calMarks = JSON.stringify(calMarksSnapshot(card.log, card.dateStr));
+  el.dataset.diaryFp = diaryFingerprint(card.diaryEntry);
+
   if (isNew) {
     el.classList.add("fw-feed-card-enter");
     el.addEventListener("animationend", () => el.classList.remove("fw-feed-card-enter"), { once: true });
@@ -191,7 +236,7 @@ function buildFeedFromScratch(container, model) {
 
     let cardIdx = 0;
     for (const card of groupCards) {
-      const el = makeCardEl(card, model, true);
+      const el = makeCardEl(card, model, { isNew: true });
       el.style.animationDelay = `${cardIdx * 80}ms`;
       cardsWrap.appendChild(el);
       cardIdx++;
@@ -221,6 +266,10 @@ function updateFeedInPlace(stream, model) {
     renderEmptyState(container, model);
     return;
   }
+
+  // Persistent unseen change tracking
+  if (!stream._unseenDots) stream._unseenDots = new Map();
+  if (!stream._unseenDiary) stream._unseenDiary = new Set();
 
   // Map existing cards by key
   const existingCards = new Map();
@@ -256,7 +305,28 @@ function updateFeedInPlace(stream, model) {
       visitedKeys.add(key);
 
       const existingEl = existingCards.get(key);
-      const newEl = makeCardEl(card, model, !existingEl);
+
+      // Detect new changes and accumulate into unseen sets
+      if (existingEl) {
+        const oldSnap = JSON.parse(existingEl.dataset.calMarks || "{}");
+        const newSnap = calMarksSnapshot(card.log, card.dateStr);
+        const dots = diffMarks(oldSnap, newSnap);
+        if (dots.size > 0) {
+          const prev = stream._unseenDots.get(key) || new Set();
+          dots.forEach(d => prev.add(d));
+          stream._unseenDots.set(key, prev);
+        }
+        if (existingEl.dataset.diaryFp !== diaryFingerprint(card.diaryEntry)) {
+          stream._unseenDiary.add(key);
+        }
+      }
+
+      // Build card with accumulated unseen markers
+      const newEl = makeCardEl(card, model, {
+        isNew: !existingEl,
+        changedDots: stream._unseenDots.get(key) || null,
+        diaryChanged: stream._unseenDiary.has(key),
+      });
       orderedEls.push(newEl);
 
       if (existingEl) {

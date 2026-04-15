@@ -109,13 +109,17 @@ const SCENARIOS = {
   async realtime(users) {
     const u = users[Math.floor(Math.random() * users.length)];
     if (!u) throw new Error("No followed users.");
+    // Use a unique activity name so a NEW dot always appears
+    const newActivity = "Session " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
     console.log(`--- realtime: simulating ${u.name} ---`);
-    console.log(`[1/2] ${u.name} marks calendar...`);
-    await markToday(u.uid);
+    console.log(`[1/2] ${u.name} marks "${newActivity}"...`);
+    await markToday(u.uid, newActivity);
     console.log("Waiting 5s...");
     await sleep(5000);
+    // Use a unique note so diary change is always detected
+    const note = `${u.name} checked in. ${new Date().toLocaleTimeString()}.`;
     console.log(`[2/2] ${u.name} writes diary...`);
-    await writeDiary(u.uid, { note: "Just finished a solid session. Feeling good." });
+    await writeDiary(u.uid, { note });
     console.log("--- done ---");
   },
 

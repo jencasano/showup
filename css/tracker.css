@@ -3452,6 +3452,10 @@
   padding: 10px 16px 12px;
 }
 
+.fw-feed-zone-updated {
+  border-left: 3px solid var(--color-primary);
+}
+
 .fw-feed-zone-ghost {
   opacity: 0.55;
   background: var(--bg-subtle);
@@ -3539,6 +3543,15 @@
   height: 7px;
   border-radius: 50%;
   box-sizing: border-box;
+}
+
+.fw-feed-dot-new {
+  width: 10px;
+  height: 10px;
+  box-shadow:
+    0 0 0 2px var(--bg-surface),
+    0 0 0 4px var(--dot-color, var(--color-primary)),
+    0 0 8px 2px var(--dot-color, var(--color-primary));
 }
 
 .fw-feed-signal-block {
