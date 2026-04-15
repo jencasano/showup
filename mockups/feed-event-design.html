@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>showup. — Feed Event Mockup (Final)</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,400;1,9..144,600&family=Sora:wght@800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --color-primary: #D8584E;
+    --color-teal: #80B9B9;
+    --color-amber: #F8C08A;
+    --color-lavender: #B3A1B4;
+    --font-logo: 'Sora', sans-serif;
+    --font-heading: 'Fraunces', serif;
+    --font-base: 'Inter', sans-serif;
+    --radius-lg: 16px;
+    --radius-full: 99px;
+  }
+
+  .theme-light {
+    --bg: #FFFAF5;
+    --bg-surface: #FFFFFF;
+    --bg-subtle: #F5EFE8;
+    --border: #EDE5DA;
+    --border-faint: #F5EFE8;
+    --text: #2A2E45;
+    --text-muted: #596088;
+    --text-faint: #B3A1B4;
+    --shadow-sm: 0 1px 4px rgba(42,46,69,0.06);
+    --shadow-md: 0 4px 16px rgba(42,46,69,0.10);
+    --tl-dot: #D8584E;
+    --tl-dot-inactive: #EDE5DA;
+    --tl-line: #EDE5DA;
+    --ghost-av-bg: #F5EFE8;
+    --ghost-av-color: #B3A1B4;
+  }
+
+  .theme-dark {
+    --bg: #1D2142;
+    --bg-surface: #2A2E45;
+    --bg-subtle: #353B5C;
+    --border: #3D4468;
+    --border-faint: #2F3456;
+    --text: #FBDFCB;
+    --text-muted: #B3A1B4;
+    --text-faint: #596088;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.2);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
+    --tl-dot: #D8584E;
+    --tl-dot-inactive: #3D4468;
+    --tl-line: #3D4468;
+    --ghost-av-bg: #353B5C;
+    --ghost-av-color: #596088;
+  }
+
+  body {
+    font-family: var(--font-base);
+    background: #0F1020;
+    color: #FBDFCB;
+    padding: 40px 20px;
+  }
+
+  .shell { max-width: 1160px; margin: 0 auto; }
+
+  .page-logo { font-family: var(--font-logo); font-size: 1rem; font-weight: 800; color: #D8584E; letter-spacing: -0.02em; margin-bottom: 3px; }
+  .page-sub  { font-size: 0.68rem; color: #3D4468; letter-spacing: 0.04em; margin-bottom: 48px; }
+
+  .section-row { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 64px; }
+  .section-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #3D4468; text-align: center; margin-bottom: 28px; }
+  .col-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #596088; margin-bottom: 10px; }
+
+  .divider { height: 1px; background: #1D2142; margin: 56px 0 48px; }
+
+  .frame-desktop { border-radius: 12px; overflow: hidden; border: 1px solid #2A2E45; }
+
+  .frame-mobile {
+    width: 360px;
+    border-radius: 38px;
+    overflow: hidden;
+    border: 7px solid #2A2E45;
+    position: relative;
+    margin: 0 auto;
+  }
+
+  .frame-mobile::before {
+    content: '';
+    display: block;
+    width: 90px;
+    height: 24px;
+    background: #2A2E45;
+    border-radius: 0 0 16px 16px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+
+  .app-head {
+    padding: 13px 18px 11px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .app-head.mobile { padding-top: 32px; }
+
+  .logo { font-family: var(--font-logo); font-weight: 800; font-size: 0.95rem; color: var(--color-primary); letter-spacing: -0.02em; }
+
+  .app-tabs { display: flex; gap: 18px; }
+  .app-tab { font-size: 0.72rem; font-weight: 500; color: var(--text-faint); cursor: pointer; }
+  .app-tab.active { font-weight: 600; color: var(--text); border-bottom: 2px solid var(--color-primary); padding-bottom: 2px; }
+
+  .toggle { display: flex; background: var(--bg-subtle); border-radius: 99px; padding: 3px; }
+  .pill { font-size: 0.67rem; font-weight: 600; padding: 4px 12px; border-radius: 99px; color: var(--text-faint); cursor: pointer; }
+  .pill.active { background: var(--bg-surface); color: var(--text); box-shadow: var(--shadow-sm); }
+
+  .feed { background: var(--bg); padding: 20px 18px 28px; }
+  .feed-title { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 20px; font-style: normal; }
+
+  .tl { position: relative; padding-left: 26px; }
+  .tl::before { content: ''; position: absolute; left: 6px; top: 10px; bottom: 0; width: 1.5px; background: var(--tl-line); }
+
+  .dg { margin-bottom: 24px; }
+
+  .dr { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; position: relative; }
+  .dd { position: absolute; left: -26px; width: 14px; height: 14px; border-radius: 50%; background: var(--tl-dot-inactive); border: 2px solid var(--bg); top: 50%; transform: translateY(-50%); }
+  .dd.today { background: var(--tl-dot); box-shadow: 0 0 0 3px rgba(216,88,78,0.15); }
+  .dt { font-size: 0.61rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); }
+  .dt.today { color: var(--color-primary); }
+
+  .ev {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 13px 14px;
+    margin-bottom: 9px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.18s ease;
+  }
+
+  .ev:hover { box-shadow: var(--shadow-md); }
+  .ev.sh { border-left: 3px solid var(--color-primary); }
+  .ev.lk { border-left: 3px solid var(--color-teal); }
+  .ev.gh { border-left: 3px solid var(--border); opacity: 0.78; }
+
+  .eh { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+
+  .av {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; color: #fff;
+    flex-shrink: 0; overflow: hidden;
+  }
+  .av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+  .em { flex: 1; min-width: 0; }
+  .en { font-size: 0.78rem; font-weight: 600; color: var(--text); line-height: 1.2; }
+  .ew { font-size: 0.63rem; color: var(--text-faint); margin-top: 1px; }
+  .ew .ed { font-style: italic; }
+
+  .tb { font-size: 0.54rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; flex-shrink: 0; }
+  .tb-sh { background: rgba(216,88,78,0.12); color: var(--color-primary); }
+  .tb-lk { background: rgba(128,185,185,0.12); color: var(--color-teal); }
+  .tb-gh { background: var(--bg-subtle); color: var(--text-faint); }
+
+  .ea { font-size: 0.86rem; color: var(--text); line-height: 1.55; margin-bottom: 8px; }
+
+  .act { font-family: var(--font-heading); font-style: italic; font-weight: 600; }
+
+  .nudge { color: var(--color-primary); font-style: italic; font-family: var(--font-base); font-weight: 400; }
+
+  .ea.ghost { font-family: var(--font-heading); font-style: italic; font-weight: 400; color: var(--text-muted); font-size: 0.84rem; }
+
+  .links { display: flex; gap: 14px; margin-top: 2px; }
+  .lnk { font-size: 0.65rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; opacity: 0.9; }
+  .lnk.diary { color: var(--color-amber); }
+  .lnk.cal   { color: var(--color-teal); }
+
+  @media (max-width: 760px) { .section-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="page-logo">showup.</div>
+  <div class="page-sub">Feed Event Design — Final · Dark + Light · Desktop + Mobile</div>
+
+  <div class="section-label">Dark Mode</div>
+  <div class="section-row">
+
+    <div>
+      <div class="col-label">Desktop</div>
+      <div class="frame-desktop theme-dark">
+        <div class="app-head">
+          <div class="logo">showup.</div>
+          <div class="app-tabs">
+            <div class="app-tab">Tracker</div>
+            <div class="app-tab active">Following</div>
+            <div class="app-tab">All</div>
+          </div>
+        </div>
+        <div class="feed">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <div class="feed-title">Following</div>
+            <div class="toggle"><div class="pill">People</div><div class="pill active">Feed</div></div>
+          </div>
+          <div class="tl">
+            <div class="dg">
+              <div class="dr"><div class="dd today"></div><div class="dt today">Today</div></div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+                  <div class="em"><div class="en">Neithan Casano</div><div class="ew">today at 10:15am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Neithan logged <span class="act">Wim Hof Pushups</span> and <span class="act">No Don Papa</span>. <span class="nudge">Something every single day this month. Have you shown up today?</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#F8C08A; color:#2A2E45;">J</div>
+                  <div class="em"><div class="en">Jeni Casano</div><div class="ew">today at 7:30am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Jeni logged <span class="act">Wim Hof</span>, <span class="act">Cold Shower</span>, and 3 more. <span class="nudge">Something every day this week. Have you?</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+                  <div class="em"><div class="en">Neithan Casano</div><div class="ew">today at 2:03pm &middot; <span class="ed">edited</span></div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Neithan put today into words.</div>
+                <div class="links"><span class="lnk diary">&#128211; Read entry</span></div>
+              </div>
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#80B9B9;">A</div>
+                  <div class="em"><div class="en">Andrea Castillo</div><div class="ew">today at 8:40am</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">Andrea hasn't missed a day this week. <span class="nudge">Join her in showing up.</span></div>
+              </div>
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#F8C08A; color:#2A2E45;">L</div>
+                  <div class="em"><div class="en">Lulu Santos</div><div class="ew">today at 11:22am</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">Something's going on in Lulu's world. She wrote about it.</div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#B3A1B4;">M</div>
+                  <div class="em"><div class="en">Marco Reyes</div><div class="ew">today at 6:30am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Marco just started. First log: <span class="act">Running</span>. <span class="nudge">Everyone starts somewhere.</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev gh">
+                <div class="eh">
+                  <div class="av" style="background:var(--ghost-av-bg); color:var(--ghost-av-color);">?</div>
+                  <div class="em"><div class="en" style="color:var(--text-faint);">Someone</div><div class="ew">today at 9:15am</div></div>
+                  <div class="tb tb-gh">Ghost</div>
+                </div>
+                <div class="ea ghost">The work happened. That's all this feed knows.</div>
+              </div>
+              <div class="ev gh">
+                <div class="eh">
+                  <div class="av" style="background:var(--ghost-av-bg); color:var(--ghost-av-color);">?</div>
+                  <div class="em"><div class="en" style="color:var(--text-faint);">Someone</div><div class="ew">today at 1:47pm</div></div>
+                  <div class="tb tb-gh">Ghost</div>
+                </div>
+                <div class="ea ghost">Someone sat with today and wrote. We'll never know what.</div>
+              </div>
+            </div>
+            <div class="dg">
+              <div class="dr"><div class="dd"></div><div class="dt">Yesterday</div></div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#B3A1B4;">M</div>
+                  <div class="em"><div class="en">Marco Reyes</div><div class="ew">yesterday at 7:55pm</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Marco logged <span class="act">Running</span>. <span class="nudge">They found their way back. Good to see them.</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+                  <div class="em"><div class="en">Neithan Casano</div><div class="ew">yesterday at 10:16am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Neithan filled in <span class="act">No Don Papa</span> for Apr 14.</div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev gh">
+                <div class="eh">
+                  <div class="av" style="background:var(--ghost-av-bg); color:var(--ghost-av-color);">?</div>
+                  <div class="em"><div class="en" style="color:var(--text-faint);">Someone</div><div class="ew">Apr 14 at 3:20pm</div></div>
+                  <div class="tb tb-gh">Ghost</div>
+                </div>
+                <div class="ea ghost">Apr 14 got words. Private ones.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-label">Mobile</div>
+      <div class="frame-mobile theme-dark">
+        <div class="app-head mobile">
+          <div class="logo">showup.</div>
+          <div class="toggle"><div class="pill">People</div><div class="pill active">Feed</div></div>
+        </div>
+        <div class="feed">
+          <div class="tl">
+            <div class="dg">
+              <div class="dr"><div class="dd today"></div><div class="dt today">Today</div></div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+                  <div class="em"><div class="en">Neithan Casano</div><div class="ew">today at 10:15am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Neithan logged <span class="act">Wim Hof Pushups</span> and <span class="act">No Don Papa</span>. <span class="nudge">Something every single day this month. Have you?</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#F8C08A; color:#2A2E45;">J</div>
+                  <div class="em"><div class="en">Jeni Casano</div><div class="ew">today at 7:30am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Jeni logged <span class="act">Wim Hof</span>, <span class="act">Cold Shower</span>, and 3 more. <span class="nudge">Something every day this week. Have you?</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#80B9B9;">A</div>
+                  <div class="em"><div class="en">Andrea Castillo</div><div class="ew">today at 8:40am</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">7 days in a row for Andrea. <span class="nudge">Join her in showing up.</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#B3A1B4;">M</div>
+                  <div class="em"><div class="en">Marco Reyes</div><div class="ew">today at 6:30am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Marco just started. First log: <span class="act">Running</span>. <span class="nudge">Everyone starts somewhere.</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+                  <div class="em"><div class="en">Neithan Casano</div><div class="ew">today at 2:03pm &middot; <span class="ed">edited</span></div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Neithan put today into words.</div>
+                <div class="links"><span class="lnk diary">&#128211; Read entry</span></div>
+              </div>
+              <div class="ev gh">
+                <div class="eh">
+                  <div class="av" style="background:var(--ghost-av-bg); color:var(--ghost-av-color);">?</div>
+                  <div class="em"><div class="en" style="color:var(--text-faint);">Someone</div><div class="ew">today at 9:15am</div></div>
+                  <div class="tb tb-gh">Ghost</div>
+                </div>
+                <div class="ea ghost">A quiet one checked in today.</div>
+              </div>
+            </div>
+            <div class="dg">
+              <div class="dr"><div class="dd"></div><div class="dt">Yesterday</div></div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#B3A1B4;">M</div>
+                  <div class="em"><div class="en">Marco Reyes</div><div class="ew">yesterday at 7:55pm</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Marco logged <span class="act">Running</span>. <span class="nudge">They found their way back.</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#F8C08A; color:#2A2E45;">L</div>
+                  <div class="em"><div class="en">Lulu Santos</div><div class="ew">yesterday at 9:05pm</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">Apr 14 still had something to say to Lulu.</div>
+              </div>
+              <div class="ev gh">
+                <div class="eh">
+                  <div class="av" style="background:var(--ghost-av-bg); color:var(--ghost-av-color);">?</div>
+                  <div class="em"><div class="en" style="color:var(--text-faint);">Someone</div><div class="ew">Apr 14 at 1:47pm</div></div>
+                  <div class="tb tb-gh">Ghost</div>
+                </div>
+                <div class="ea ghost">Apr 14 got words. Private ones.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label">Light Mode</div>
+  <div class="section-row">
+
+    <div>
+      <div class="col-label">Desktop</div>
+      <div class="frame-desktop theme-light">
+        <div class="app-head">
+          <div class="logo">showup.</div>
+          <div class="app-tabs">
+            <div class="app-tab">Tracker</div>
+            <div class="app-tab active">Following</div>
+            <div class="app-tab">All</div>
+          </div>
+        </div>
+        <div class="feed">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <div class="feed-title">Following</div>
+            <div class="toggle"><div class="pill">People</div><div class="pill active">Feed</div></div>
+          </div>
+          <div class="tl">
+            <div class="dg">
+              <div class="dr"><div class="dd today"></div><div class="dt today">Today</div></div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+                  <div class="em"><div class="en">Neithan Casano</div><div class="ew">today at 10:15am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Neithan logged <span class="act">Wim Hof Pushups</span> and <span class="act">No Don Papa</span>. <span class="nudge">Something every single day this month. Have you shown up today?</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#F8C08A; color:#2A2E45;">J</div>
+                  <div class="em"><div class="en">Jeni Casano</div><div class="ew">today at 7:30am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Jeni logged <span class="act">Wim Hof</span>, <span class="act">Cold Shower</span>, and 3 more. <span class="nudge">Something every day this week. Have you?</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+                  <div class="em"><div class="en">Neithan Casano</div><div class="ew">today at 2:03pm &middot; <span class="ed">edited</span></div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Neithan put today into words.</div>
+                <div class="links"><span class="lnk diary">&#128211; Read entry</span></div>
+              </div>
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#80B9B9;">A</div>
+                  <div class="em"><div class="en">Andrea Castillo</div><div class="ew">today at 8:40am</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">Andrea hasn't missed a day this week. <span class="nudge">Join her in showing up.</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#B3A1B4;">M</div>
+                  <div class="em"><div class="en">Marco Reyes</div><div class="ew">today at 6:30am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Marco just started. First log: <span class="act">Running</span>. <span class="nudge">Everyone starts somewhere.</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#F8C08A; color:#2A2E45;">L</div>
+                  <div class="em"><div class="en">Lulu Santos</div><div class="ew">today at 11:22am</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">Today meant something to Lulu.</div>
+              </div>
+              <div class="ev gh">
+                <div class="eh">
+                  <div class="av" style="background:var(--ghost-av-bg); color:var(--ghost-av-color);">?</div>
+                  <div class="em"><div class="en" style="color:var(--text-faint);">Someone</div><div class="ew">today at 9:15am</div></div>
+                  <div class="tb tb-gh">Ghost</div>
+                </div>
+                <div class="ea ghost">Someone put something on the board. Quietly.</div>
+              </div>
+              <div class="ev gh">
+                <div class="eh">
+                  <div class="av" style="background:var(--ghost-av-bg); color:var(--ghost-av-color);">?</div>
+                  <div class="em"><div class="en" style="color:var(--text-faint);">Someone</div><div class="ew">today at 1:47pm</div></div>
+                  <div class="tb tb-gh">Ghost</div>
+                </div>
+                <div class="ea ghost">Someone sat with today and wrote. We'll never know what.</div>
+              </div>
+            </div>
+            <div class="dg">
+              <div class="dr"><div class="dd"></div><div class="dt">Yesterday</div></div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#B3A1B4;">M</div>
+                  <div class="em"><div class="en">Marco Reyes</div><div class="ew">yesterday at 7:55pm</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Marco logged <span class="act">Running</span>. <span class="nudge">They found their way back. Good to see them.</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#80B9B9;">A</div>
+                  <div class="em"><div class="en">Andrea Castillo</div><div class="ew">yesterday at 9:05pm</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">Apr 14 still had something to say to Andrea.</div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+                  <div class="em"><div class="en">Neithan Casano</div><div class="ew">yesterday at 10:16am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Neithan filled in <span class="act">No Don Papa</span> for Apr 14.</div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-label">Mobile</div>
+      <div class="frame-mobile theme-light">
+        <div class="app-head mobile">
+          <div class="logo">showup.</div>
+          <div class="toggle"><div class="pill">People</div><div class="pill active">Feed</div></div>
+        </div>
+        <div class="feed">
+          <div class="tl">
+            <div class="dg">
+              <div class="dr"><div class="dd today"></div><div class="dt today">Today</div></div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+                  <div class="em"><div class="en">Neithan Casano</div><div class="ew">today at 10:15am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Neithan logged <span class="act">Wim Hof Pushups</span> and <span class="act">No Don Papa</span>. <span class="nudge">Something every single day this month. Have you?</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#F8C08A; color:#2A2E45;">J</div>
+                  <div class="em"><div class="en">Jeni Casano</div><div class="ew">today at 7:30am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Jeni logged <span class="act">Wim Hof</span>, <span class="act">Cold Shower</span>, and 3 more. <span class="nudge">Something every day this week. Have you?</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#80B9B9;">A</div>
+                  <div class="em"><div class="en">Andrea Castillo</div><div class="ew">today at 8:40am</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">7 days in a row for Andrea. <span class="nudge">Join her in showing up.</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#B3A1B4;">M</div>
+                  <div class="em"><div class="en">Marco Reyes</div><div class="ew">today at 6:30am</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Marco just started. First log: <span class="act">Running</span>. <span class="nudge">Everyone starts somewhere.</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#D8584E;"><img src="https://i.pravatar.cc/30?img=11" alt="N"></div>
+                  <div class="em"><div class="en">Neithan Casano</div><div class="ew">today at 2:03pm &middot; <span class="ed">edited</span></div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Neithan put today into words.</div>
+                <div class="links"><span class="lnk diary">&#128211; Read entry</span></div>
+              </div>
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#F8C08A; color:#2A2E45;">L</div>
+                  <div class="em"><div class="en">Lulu Santos</div><div class="ew">today at 11:22am</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">Today meant something to Lulu.</div>
+              </div>
+              <div class="ev gh">
+                <div class="eh">
+                  <div class="av" style="background:var(--ghost-av-bg); color:var(--ghost-av-color);">?</div>
+                  <div class="em"><div class="en" style="color:var(--text-faint);">Someone</div><div class="ew">today at 9:15am</div></div>
+                  <div class="tb tb-gh">Ghost</div>
+                </div>
+                <div class="ea ghost">Someone put something on the board. Quietly.</div>
+              </div>
+            </div>
+            <div class="dg">
+              <div class="dr"><div class="dd"></div><div class="dt">Yesterday</div></div>
+              <div class="ev sh">
+                <div class="eh">
+                  <div class="av" style="background:#B3A1B4;">M</div>
+                  <div class="em"><div class="en">Marco Reyes</div><div class="ew">yesterday at 7:55pm</div></div>
+                  <div class="tb tb-sh">Sharing</div>
+                </div>
+                <div class="ea">Marco logged <span class="act">Running</span>. <span class="nudge">They found their way back. Good to see them.</span></div>
+                <div class="links"><span class="lnk cal">&#128197; View Calendar</span></div>
+              </div>
+              <div class="ev lk">
+                <div class="eh">
+                  <div class="av" style="background:#80B9B9;">A</div>
+                  <div class="em"><div class="en">Andrea Castillo</div><div class="ew">yesterday at 9:05pm</div></div>
+                  <div class="tb tb-lk">Low key</div>
+                </div>
+                <div class="ea">Apr 14 still had something to say to Andrea.</div>
+              </div>
+              <div class="ev gh">
+                <div class="eh">
+                  <div class="av" style="background:var(--ghost-av-bg); color:var(--ghost-av-color);">?</div>
+                  <div class="em"><div class="en" style="color:var(--text-faint);">Someone</div><div class="ew">Apr 14 at 1:47pm</div></div>
+                  <div class="tb tb-gh">Ghost</div>
+                </div>
+                <div class="ea ghost">Apr 14 got words. Private ones.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>
