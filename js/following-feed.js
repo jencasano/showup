@@ -1,5 +1,6 @@
 import { renderFeedEvent } from "./feed-event.js";
 import { getPrivacy } from "./following-utils.js";
+import { renderFeedSidebar } from "./feed-sidebar.js";
 
 function formatDateLabel(dateStr) {
   const d = new Date(dateStr + "T00:00:00");
@@ -229,11 +230,35 @@ function updateFeedInPlace(stream, model) {
 // ── Main export ─────────────────────────────────────
 
 export function renderFeedView(container, model) {
-  const existingStream = container.querySelector(".fw-feed-stream");
+  let layout = container.querySelector(".fw-feed-layout");
 
-  if (!existingStream) {
-    buildFeedFromScratch(container, model);
+  if (!layout) {
+    // First render: create two-column layout
+    layout = document.createElement("div");
+    layout.className = "fw-feed-layout";
+
+    const streamCol = document.createElement("div");
+    streamCol.className = "fw-feed-stream-col";
+
+    const sidebar = document.createElement("div");
+    sidebar.className = "fw-feed-sidebar";
+
+    layout.append(streamCol, sidebar);
+    container.appendChild(layout);
+
+    buildFeedFromScratch(streamCol, model);
   } else {
-    updateFeedInPlace(existingStream, model);
+    const streamCol = layout.querySelector(".fw-feed-stream-col");
+    const existingStream = streamCol.querySelector(".fw-feed-stream");
+
+    if (!existingStream) {
+      buildFeedFromScratch(streamCol, model);
+    } else {
+      updateFeedInPlace(existingStream, model);
+    }
   }
+
+  // Always update sidebar
+  const sidebarEl = layout.querySelector(".fw-feed-sidebar");
+  renderFeedSidebar(sidebarEl, model);
 }

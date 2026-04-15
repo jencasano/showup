@@ -86,6 +86,258 @@
   width: 100%;
 }
 
+/* ── Feed two-column layout ────────────────────────── */
+
+.fw-feed-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 640px) 260px;
+  gap: 28px;
+  align-items: start;
+  justify-content: center;
+}
+
+.fw-feed-stream-col {
+  min-width: 0;
+}
+
+/* ── Feed sidebar ──────────────────────────────────── */
+
+.fw-feed-sidebar {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 32px;
+}
+
+/* Stats row */
+.fsd-stats {
+  display: flex;
+  gap: 0;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.fsd-stat {
+  flex: 1;
+  padding: 10px 8px;
+  text-align: center;
+  border-right: 1px solid var(--border-faint);
+}
+
+.fsd-stat:last-child { border-right: none; }
+
+.fsd-stat-num {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.fsd-stat-label {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: 3px;
+  line-height: 1.2;
+}
+
+.fsd-divider {
+  height: 1px;
+  background: var(--border-faint);
+  margin: 2px 0;
+}
+
+/* Pinned label */
+.fsd-pinned-label {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 2px;
+  padding-left: 2px;
+}
+
+/* Pin card */
+.fsd-pin-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px 9px;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.fsd-pin-card:hover { box-shadow: var(--shadow-md); }
+
+/* Tier left-border colors */
+.fsd-pin-card--sharing   { border-left: 3px solid var(--color-primary); }
+.fsd-pin-card--followers { border-left: 3px solid var(--color-amber); }
+.fsd-pin-card--lowkey    { border-left: 3px solid var(--color-teal); }
+.fsd-pin-card--ghost     { border-left: 3px solid var(--border); opacity: 0.75; }
+
+/* Card top row */
+.fsd-pin-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 8px;
+}
+
+.fsd-pin-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.fsd-pin-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.fsd-pin-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.fsd-pin-name-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.fsd-pin-name {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+  flex: 1;
+  min-width: 0;
+}
+
+.fsd-pin-sub {
+  font-size: 0.6rem;
+  color: var(--text-faint);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Icon links beside name */
+.fsd-pin-links {
+  display: flex;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.fsd-pin-link {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  cursor: pointer;
+  font-size: 0.7rem;
+  border-radius: 4px;
+  transition: background 0.12s, color 0.12s;
+}
+
+.fsd-pin-link:hover { background: var(--bg-subtle); }
+.fsd-pin-link.cal:hover { color: var(--color-teal); }
+.fsd-pin-link.diary:hover { color: var(--color-amber); }
+.fsd-pin-link.profile { opacity: 0.3; cursor: not-allowed; }
+.fsd-pin-link.profile:hover { background: none; color: var(--text-faint); }
+
+/* Activity legend */
+.fsd-pin-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-bottom: 9px;
+  padding: 0 1px;
+}
+
+.fsd-pin-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.fsd-pin-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.fsd-pin-legend-item.inactive { color: var(--text-faint); }
+.fsd-pin-legend-item.inactive .fsd-pin-legend-dot { background: var(--text-faint) !important; opacity: 0.4; }
+
+/* Ghost quiet text */
+.fsd-pin-ghost-text {
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 9px;
+  padding: 2px 0;
+}
+
+/* Ghost name dimmed */
+.fsd-pin-card--ghost .fsd-pin-name { opacity: 0.55; }
+
+/* Overflow link */
+.fsd-pin-overflow {
+  font-size: 0.63rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-align: center;
+  cursor: pointer;
+  padding: 6px 0;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+}
+
+.fsd-pin-overflow:hover { color: var(--color-primary); background: var(--bg-subtle); }
+
+/* Empty pinned state */
+.fsd-pin-empty {
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  font-style: italic;
+  text-align: center;
+  padding: 12px 8px;
+}
+
 /* ── Layout ────────────────────────────────────────── */
 
 .fw-people-layout {
@@ -585,4 +837,6 @@
   .fw-pinned-grid { column-count: 1; }
   .fw-pinned-slot,
   .fw-pinned-slot-inner { max-width: 100%; }
+  .fw-feed-layout { grid-template-columns: 1fr; }
+  .fw-feed-sidebar { display: none; }
 }
