@@ -568,8 +568,8 @@
           <li class="deck-item"><span class="deck-num">8</span>Storage migration to asia-southeast1 for faster uploads from the Philippines</li>
           <li class="deck-item"><span class="deck-num">9</span><s>Feed card UI polish — zone divider missing; double "diary." label</s> → shipped in FO02</li>
           <li class="deck-item"><span class="deck-num">10</span><s>Feed — per-day diary fetch (today's entry, not latest-ever)</s> → shipped in FO02</li>
-          <li class="deck-item"><span class="deck-num">11</span>Feed — changed zone (log removed / diary removed states)</li>
-          <li class="deck-item"><span class="deck-num">12</span>Feed — milestone cards (streak hits, first day, comeback)</li>
+          <li class="deck-item"><span class="deck-num">11</span><s>Feed — changed zone (log removed / diary removed states)</s> → superseded by FO04 event model</li>
+          <li class="deck-item"><span class="deck-num">12</span><s>Feed — milestone cards (streak hits, first day, comeback)</s> → superseded by FO04 event model</li>
           <li class="deck-item"><span class="deck-num">13</span>All tab card tap — no-op placeholder, activates when user profiles are built</li>
           <li class="deck-item"><span class="deck-num">14</span>Diary Phase B — swipe between pages, per-habit photo reel</li>
           <li class="deck-item"><span class="deck-num">15</span>Diary Phase C — diary pages visible to followers</li>
@@ -581,8 +581,62 @@
     </details>
   </div>
 
-  <!-- ── Apr 10, 2026 — Feed Sort + Reactive Diary ── -->
+  <!-- ── Apr 15, 2026 — Feed Event Stream ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 15, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">FO04</span>
+    </div>
+    <div class="entry-title">Feed Event Stream</div>
+    <p class="entry-desc">Feed redesigned from day-card model to event-stream model. Each log or diary write produces one event with tier-specific narrative copy. 10-second debounce batches rapid log taps. Activity names shown inline with smart collapsing. ~120 copy variants across Sharing, Low key, and Ghost tiers.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Event-stream model</div>
+        <div class="item-desc">Unit is the event, not the day. Each meaningful write (log or diary) generates one feed event. Replaces the old day-card that showed chips, 7-day strips, and diary previews per user per day.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/FEED_EVENT_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">10-second debounce</div>
+        <div class="item-desc">Activity taps fire Firestore writes individually. feed-debounce.js batches them with a 10-second quiet window -- one event per burst. Diary writes fire immediately (no debounce). First snapshot per user bypasses debounce for instant initial load.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Tier-specific narrative copy</div>
+        <div class="item-desc">Sharing tier: specific and warm, names activities inline. Low key: insight without activity names. Ghost: poetic, anonymous ("Someone" with "?" avatar). Copy selected via feed-copy.js with seeded random variants per uid+date.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Activity name collapsing</div>
+        <div class="item-desc">Sharing tier shows activity names in Fraunces italic 600 inline. Smart format: 1 name, "A and B", "A, B, and C", or "A, B, and N more" for 4+.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Extended context signals</div>
+        <div class="item-desc">computeSignal now returns contextKey alongside existing headlines. New contexts: streak_full_month (every day this month), backfill (past day, not today), comeback_big/comeback_small. Old keys preserved for People view.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">~120 copy variants</div>
+        <div class="item-desc">signal-copy.json expanded with feed_{tier}_{type}_{context}_{variant} keys. Covers default, streak_3/7/15/25, streak_full_month, first_ever, comeback_small/big, backfill, diary today/past -- across all three visible tiers.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/FO04/01.png" alt="Feed Event Stream" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO04/02.png" alt="Feed Event Stream" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO04/03.png" alt="Feed Event Stream" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO04/04.png" alt="Feed Event Stream" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO04/05.png" alt="Feed Event Stream" onerror="this.style.display='none'">
+        <video src="assets/build-log/FO04/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 10, 2026 — Feed Sort + Reactive Diary ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 10, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
