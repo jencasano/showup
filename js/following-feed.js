@@ -39,37 +39,9 @@ function computeEventList(model) {
   return { events, groups };
 }
 
-// ── Timeline glow + dot listener ────────────────────
-
-function attachTimelineListeners(stream) {
-  const glow = stream.querySelector(".fw-feed-tl-glow");
-  const dots = stream.querySelectorAll(".fw-feed-date-dot");
-
-  function updateTimeline() {
-    const streamRect = stream.getBoundingClientRect();
-    const trigger = window.innerHeight * 0.55;
-    const fill = Math.max(0, Math.min(trigger - streamRect.top, stream.scrollHeight));
-    if (glow) glow.style.height = fill + "px";
-
-    dots.forEach(dot => {
-      const dotTop = dot.getBoundingClientRect().top;
-      if (dotTop < trigger) dot.classList.add("reached");
-    });
-  }
-
-  window.addEventListener("scroll", updateTimeline, { passive: true });
-  window.addEventListener("resize", updateTimeline, { passive: true });
-  setTimeout(updateTimeline, 50);
-
-  return () => {
-    window.removeEventListener("scroll", updateTimeline);
-    window.removeEventListener("resize", updateTimeline);
-  };
-}
-
 // ── "New posts" pill ────────────────────────────────
 
-function syncNewPostsPill(stream, model) {
+function syncNewPostsPill(model) {
   const count = model.pendingEvents?.length || 0;
   let pill = document.querySelector(".fw-feed-new-pill");
 
@@ -84,7 +56,6 @@ function syncNewPostsPill(stream, model) {
     pill.addEventListener("click", () => {
       model.flushPending();
     });
-    // Append to body so position:fixed works regardless of ancestor transforms
     document.body.appendChild(pill);
   }
 
@@ -180,13 +151,7 @@ function buildFeedFromScratch(container, model) {
   }
 
   container.appendChild(stream);
-
-  const glow = document.createElement("div");
-  glow.className = "fw-feed-tl-glow";
-  stream.appendChild(glow);
-
-  syncNewPostsPill(stream, model);
-  stream._tlCleanup = attachTimelineListeners(stream);
+  syncNewPostsPill(model);
 }
 
 // ── Incremental update ──────────────────────────────
@@ -195,7 +160,6 @@ function updateFeedInPlace(stream, model) {
   const { events, groups } = computeEventList(model);
 
   if (events.length === 0) {
-    if (stream._tlCleanup) stream._tlCleanup();
     const container = stream.parentElement;
     renderEmptyState(container, model);
     return;
@@ -232,7 +196,6 @@ function updateFeedInPlace(stream, model) {
       visitedKeys.add(evt.key);
       const existingEl = existingEls.get(evt.key);
 
-      // Always rebuild -- events carry fresh data
       const newEl = makeEventEl(evt, model, !existingEl);
       orderedEls.push(newEl);
 
@@ -260,16 +223,7 @@ function updateFeedInPlace(stream, model) {
     if (!visitedDates.has(dateStr)) section.remove();
   });
 
-  // Re-append glow
-  const glow = stream.querySelector(".fw-feed-tl-glow");
-  if (glow) stream.appendChild(glow);
-
-  // New posts pill
-  syncNewPostsPill(stream, model);
-
-  // Re-attach timeline listeners
-  if (stream._tlCleanup) stream._tlCleanup();
-  stream._tlCleanup = attachTimelineListeners(stream);
+  syncNewPostsPill(model);
 }
 
 // ── Main export ─────────────────────────────────────
