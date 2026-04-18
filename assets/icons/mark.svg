@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- showup. standalone mark — generic format for social avatars,
+       README headers, and any square or circular frame. Per spec §10. -->
+  <rect width="100" height="100" fill="#2A1F1A"/>
+  <rect x="30" y="33" width="40" height="40" fill="#C3342B"/>
+</svg>
