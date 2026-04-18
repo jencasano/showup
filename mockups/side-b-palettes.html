@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Side B palettes · showup.</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600;1,9..144,700&family=Manrope:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+/* ═══════════════════════════════════════════════
+   Page-level tokens (light meta-shell, Side A palette)
+   ═══════════════════════════════════════════════ */
+:root {
+  --paper:       #F4ECD8;
+  --paper-deep:  #ECE1C6;
+  --ink:         #2A1F1A;
+  --ink-soft:    #5A463A;
+  --ink-faint:   #9C8874;
+  --red:         #C3342B;
+  --yellow:      #E8B33A;
+  --blue:        #4F6C8E;
+  --hairline:    #D4C3A1;
+
+  --font-logo:    'Sora', sans-serif;
+  --font-display: 'Fraunces', serif;
+  --font-body:    'Manrope', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+/* Simple texture for the page background */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0.08 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  background-size: 260px 260px;
+}
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 32px 96px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── intro ── */
+.intro {
+  text-align: center;
+  margin-bottom: 64px;
+  padding-bottom: 40px;
+  border-bottom: 1px dashed var(--hairline);
+}
+.kicker {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: #F6E4B0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.intro h1 {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -0.03em;
+  margin: 0 0 10px;
+}
+.intro h1 em {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.75em;
+  color: var(--ink-soft);
+  letter-spacing: -0.01em;
+}
+.intro p {
+  max-width: 620px;
+  margin: 0 auto;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+/* ── section head ── */
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--hairline);
+}
+.head-num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--red);
+  font-weight: 500;
+}
+.head-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.head-sub {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+.description {
+  background: #F6E4B0;
+  border: 1px dashed var(--yellow);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.description strong { color: var(--red); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════
+   Palette card
+   ═══════════════════════════════════════════════ */
+.palette {
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(42,31,26,0.08), 0 8px 24px rgba(42,31,26,0.06);
+  margin-bottom: 40px;
+}
+
+.palette-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.palette-head .tag {
+  background: var(--red);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+}
+.palette-head .name-wrap { display: flex; align-items: baseline; gap: 10px; }
+.palette-head .name { font-weight: 700; }
+.palette-head .vibe {
+  color: rgba(244, 236, 216, 0.65);
+  font-style: italic;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+
+/* Preview strip: shows the palette applied (sidebar + stripe + main sample) */
+.preview {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 240px;
+  position: relative;
+  /* each palette fills these via CSS variables set on the wrapper */
+}
+
+.preview::before {
+  /* red/yellow/blue ribbon stripe at the top */
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--side-red) 0 33%,
+    var(--side-yellow) 33% 66%,
+    var(--side-blue) 66% 100%
+  );
+  z-index: 5;
+}
+
+.preview-sidebar {
+  background: var(--side-sidebar);
+  backdrop-filter: blur(6px);
+  padding: 26px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-right: 1px solid var(--side-hairline);
+}
+
+.preview-logo {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.03em;
+  padding: 0 8px;
+  color: var(--side-text);
+}
+.preview-logo span { color: var(--side-red); }
+
+.preview-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.preview-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--side-text-soft);
+}
+.preview-nav-item .num {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--side-text-faint);
+  letter-spacing: 0.08em;
+  min-width: 16px;
+}
+.preview-nav-item.active {
+  background: var(--side-active-bg);
+  color: var(--side-active-text);
+  font-weight: 600;
+}
+.preview-nav-item.active .num { color: var(--side-red); }
+
+.preview-main {
+  padding: 28px 24px;
+  background: var(--side-paper);
+  color: var(--side-text);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.preview-main h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--side-text);
+}
+.preview-main h2 em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--side-red);
+}
+.preview-main .meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--side-text-faint);
+}
+.preview-main .sample-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: var(--side-text-soft);
+}
+.preview-main .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.preview-main .mark {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--side-hairline);
+  background: var(--side-paper);
+}
+.preview-main .mark.done {
+  background: var(--side-text);
+  border-color: var(--side-text);
+}
+.preview-main .mark.today {
+  border-color: var(--side-red);
+  border-width: 2px;
+}
+
+/* ═══════════════════════════════════════════════
+   Swatch grid
+   ═══════════════════════════════════════════════ */
+.swatches {
+  padding: 20px 18px 22px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  background: var(--paper);
+  border-top: 1px solid var(--hairline);
+}
+.swatch {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+}
+.swatch-color {
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  padding: 8px 10px;
+}
+.swatch-meta {
+  padding: 8px 10px;
+  background: #fff;
+  border-top: 1px solid var(--hairline);
+}
+.swatch-name {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.swatch-hex {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--ink-faint);
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+.swatch-role {
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Reading note on the red */
+.red-note {
+  padding: 12px 18px;
+  background: var(--paper-deep);
+  border-top: 1px solid var(--hairline);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.red-note-swatch {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.red-note .hex {
+  font-family: var(--font-mono);
+  font-style: normal;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════
+   Per-option palette tokens
+   ═══════════════════════════════════════════════ */
+
+/* OPTION 1: Aged tobacco / leather bar */
+.opt-1 {
+  --side-paper:       #2B1F15;  /* deep espresso brown */
+  --side-paper-deep:  #1F1610;  /* darker for panels */
+  --side-sidebar:     rgba(45, 33, 23, 0.72);
+  --side-text:        #EDD9B5;  /* warm cream, slightly amber */
+  --side-text-soft:   #B89A70;
+  --side-text-faint:  #705944;
+  --side-red:         #D94A3E;  /* warmer brighter red to pop on brown */
+  --side-yellow:      #E8B33A;
+  --side-blue:        #6A84A6;
+  --side-hairline:    #4A3524;
+  --side-active-bg:   #EDD9B5;
+  --side-active-text: #1F1610;
+}
+
+/* OPTION 2: Velvet record sleeve (oxblood) */
+.opt-2 {
+  --side-paper:       #2A1014;  /* oxblood near-black */
+  --side-paper-deep:  #1E0A0D;
+  --side-sidebar:     rgba(42, 16, 20, 0.72);
+  --side-text:        #F0DAD1;  /* soft warm cream */
+  --side-text-soft:   #B98A87;
+  --side-text-faint:  #75524F;
+  --side-red:         #E85858;  /* has to be lighter/pinker to sit above the bg red */
+  --side-yellow:      #E8B33A;
+  --side-blue:        #8896B0;
+  --side-hairline:    #4A1E22;
+  --side-active-bg:   #F0DAD1;
+  --side-active-text: #1E0A0D;
+}
+
+/* OPTION 3: Night kitchen / warm dark */
+.opt-3 {
+  --side-paper:       #24201C;  /* warm neutral near-black */
+  --side-paper-deep:  #1B1815;
+  --side-sidebar:     rgba(36, 32, 28, 0.72);
+  --side-text:        #EDE4D3;
+  --side-text-soft:   #A99E89;
+  --side-text-faint:  #665D4C;
+  --side-red:         #D84238;  /* clean, saturated, reads well on neutral warm dark */
+  --side-yellow:      #E8B33A;
+  --side-blue:        #7890AE;
+  --side-hairline:    #403A32;
+  --side-active-bg:   #EDE4D3;
+  --side-active-text: #1B1815;
+}
+
+/* OPTION 4: Midnight blue, done right */
+.opt-4 {
+  --side-paper:       #151A2A;  /* deep navy ink */
+  --side-paper-deep:  #0E1220;
+  --side-sidebar:     rgba(21, 26, 42, 0.75);
+  --side-text:        #DDE2EF;
+  --side-text-soft:   #8C95AE;
+  --side-text-faint:  #525A74;
+  --side-red:         #DC4F45;  /* cooler red to work with the navy */
+  --side-yellow:      #E8B33A;
+  --side-blue:        #6C8FBE;  /* not the hero; avoids ambiguity */
+  --side-hairline:    #2A3248;
+  --side-active-bg:   #DDE2EF;
+  --side-active-text: #0E1220;
+}
+
+/* ═══════════════════════════════════════════════
+   "5th slot" placeholder for the VSCode theme
+   ═══════════════════════════════════════════════ */
+.opt-5-placeholder {
+  border: 1px dashed var(--hairline);
+  border-radius: 16px;
+  padding: 40px 32px;
+  text-align: center;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 12px,
+    rgba(195,52,43,0.05) 12px 13px
+  );
+}
+.opt-5-placeholder h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 6px;
+}
+.opt-5-placeholder p {
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  max-width: 460px;
+  margin: 0 auto;
+  font-family: var(--font-display);
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════ */
+@media (max-width: 700px) {
+  .preview { grid-template-columns: 1fr; }
+  .preview-sidebar { border-right: none; border-bottom: 1px solid var(--side-hairline); }
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <!-- ── intro ───────────────────────────────────── -->
+  <section class="intro">
+    <span class="kicker">Mixtape · Side B · palette studies</span>
+    <h1>showup<span style="color:var(--red);">.</span> <em>/ four dark directions</em></h1>
+    <p>Four emotional targets for Side B, presented as palette studies with a mini preview of how each would feel applied to the locked sidebar + stripe + tracker. The red in each option is tuned to the background it sits on, not the same #C3342B from Side A. A fifth slot is reserved for the VSCode theme reference you're about to share.</p>
+  </section>
+
+  <!-- ── OPTION 1 ───────────────────────────────── -->
+  <section>
+    <div class="head">
+      <div class="head-num">OPTION 1</div>
+      <div class="head-title">Aged tobacco / leather bar</div>
+      <div class="head-sub">deep warm browns · amber ghost · masculine, contemplative</div>
+    </div>
+
+    <div class="description">
+      <strong>The feeling.</strong> Sitting in a cognac bar with low lighting. Not black, but a deep espresso brown with a ghost of amber warmth in the shadows. Text is a soft warm cream with a slightly amber tint, like old paper under a bar lamp. Most distinctively "Mixtape" of the four. Risk: can feel a touch masculine if the red is too aggressive.
+    </div>
+
+    <div class="palette opt-1">
+      <div class="palette-head">
+        <div class="name-wrap">
+          <span class="name">Option 1 · Aged tobacco</span>
+          <span class="vibe">late-night cognac bar</span>
+        </div>
+        <span class="tag">SIDE B</span>
+      </div>
+
+      <div class="preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+          </nav>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span>
+            <span class="mark"></span>
+            <span class="mark done"></span>
+            <span class="mark today"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-color" style="background:#2B1F15;"></div><div class="swatch-meta"><div class="swatch-role">Paper</div><div class="swatch-name">Espresso</div><div class="swatch-hex">#2B1F15</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#1F1610;"></div><div class="swatch-meta"><div class="swatch-role">Paper deep</div><div class="swatch-name">Dark espresso</div><div class="swatch-hex">#1F1610</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#EDD9B5;"></div><div class="swatch-meta"><div class="swatch-role">Text</div><div class="swatch-name">Amber cream</div><div class="swatch-hex">#EDD9B5</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#B89A70;"></div><div class="swatch-meta"><div class="swatch-role">Text soft</div><div class="swatch-name">Faded bronze</div><div class="swatch-hex">#B89A70</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#705944;"></div><div class="swatch-meta"><div class="swatch-role">Text faint</div><div class="swatch-name">Walnut</div><div class="swatch-hex">#705944</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#D94A3E;"></div><div class="swatch-meta"><div class="swatch-role">Red · hero</div><div class="swatch-name">Cognac red</div><div class="swatch-hex">#D94A3E</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E8B33A;"></div><div class="swatch-meta"><div class="swatch-role">Yellow</div><div class="swatch-name">Mustard (same)</div><div class="swatch-hex">#E8B33A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#6A84A6;"></div><div class="swatch-meta"><div class="swatch-role">Blue</div><div class="swatch-name">Dusty slate</div><div class="swatch-hex">#6A84A6</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#4A3524;"></div><div class="swatch-meta"><div class="swatch-role">Hairline</div><div class="swatch-name">Worn leather</div><div class="swatch-hex">#4A3524</div></div></div>
+      </div>
+
+      <div class="red-note">
+        <span class="red-note-swatch" style="background:#D94A3E;"></span>
+        <span>Red tuned warmer and brighter (<span class="hex">#D94A3E</span>) to pop against warm brown instead of fighting it. Side A red (<span class="hex">#C3342B</span>) would mud out on this background.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OPTION 2 ───────────────────────────────── -->
+  <section>
+    <div class="head">
+      <div class="head-num">OPTION 2</div>
+      <div class="head-title">Velvet record sleeve (oxblood)</div>
+      <div class="head-sub">deep burgundy-black · cinematic · slightly dramatic</div>
+    </div>
+
+    <div class="description">
+      <strong>The feeling.</strong> The inside of a vintage vinyl sleeve. A deep oxblood that's almost burgundy-black, warmer and more romantic than Option 1. Most cinematic of the four. <strong>Biggest risk:</strong> the red hero has to sit on top of a background that's already red-adjacent, which means the red has to shift considerably lighter/pinker to still read as "the signature."
+    </div>
+
+    <div class="palette opt-2">
+      <div class="palette-head">
+        <div class="name-wrap">
+          <span class="name">Option 2 · Velvet oxblood</span>
+          <span class="vibe">vintage vinyl sleeve</span>
+        </div>
+        <span class="tag">SIDE B</span>
+      </div>
+
+      <div class="preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+          </nav>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span>
+            <span class="mark"></span>
+            <span class="mark done"></span>
+            <span class="mark today"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-color" style="background:#2A1014;"></div><div class="swatch-meta"><div class="swatch-role">Paper</div><div class="swatch-name">Oxblood</div><div class="swatch-hex">#2A1014</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#1E0A0D;"></div><div class="swatch-meta"><div class="swatch-role">Paper deep</div><div class="swatch-name">Black cherry</div><div class="swatch-hex">#1E0A0D</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#F0DAD1;"></div><div class="swatch-meta"><div class="swatch-role">Text</div><div class="swatch-name">Soft rose cream</div><div class="swatch-hex">#F0DAD1</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#B98A87;"></div><div class="swatch-meta"><div class="swatch-role">Text soft</div><div class="swatch-name">Dusty mauve</div><div class="swatch-hex">#B98A87</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#75524F;"></div><div class="swatch-meta"><div class="swatch-role">Text faint</div><div class="swatch-name">Aged plum</div><div class="swatch-hex">#75524F</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E85858;"></div><div class="swatch-meta"><div class="swatch-role">Red · hero</div><div class="swatch-name">Lipstick coral</div><div class="swatch-hex">#E85858</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E8B33A;"></div><div class="swatch-meta"><div class="swatch-role">Yellow</div><div class="swatch-name">Mustard (same)</div><div class="swatch-hex">#E8B33A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#8896B0;"></div><div class="swatch-meta"><div class="swatch-role">Blue</div><div class="swatch-name">Smoke blue</div><div class="swatch-hex">#8896B0</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#4A1E22;"></div><div class="swatch-meta"><div class="swatch-role">Hairline</div><div class="swatch-name">Dried blood</div><div class="swatch-hex">#4A1E22</div></div></div>
+      </div>
+
+      <div class="red-note">
+        <span class="red-note-swatch" style="background:#E85858;"></span>
+        <span>Red shifted significantly lighter and pinker (<span class="hex">#E85858</span>) so it separates from the oxblood background. This is the biggest departure from the Side A red of any option here.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OPTION 3 ───────────────────────────────── -->
+  <section>
+    <div class="head">
+      <div class="head-num">OPTION 3</div>
+      <div class="head-title">Night kitchen / warm dark</div>
+      <div class="head-sub">neutral warm dark · cozy · easy on long-session reading</div>
+    </div>
+
+    <div class="description">
+      <strong>The feeling.</strong> Kitchen light off but the under-cabinet strip still on. Less "mood piece," more "daily comfort." Neutral warm dark, less saturated than Options 1 or 2. Red pops harder against it because the background doesn't fight back. <strong>Best daily-driver candidate</strong> of the four. Least distinctive, but most forgiving for long reading and journaling sessions.
+    </div>
+
+    <div class="palette opt-3">
+      <div class="palette-head">
+        <div class="name-wrap">
+          <span class="name">Option 3 · Night kitchen</span>
+          <span class="vibe">under-cabinet lamp</span>
+        </div>
+        <span class="tag">SIDE B</span>
+      </div>
+
+      <div class="preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+          </nav>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span>
+            <span class="mark"></span>
+            <span class="mark done"></span>
+            <span class="mark today"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-color" style="background:#24201C;"></div><div class="swatch-meta"><div class="swatch-role">Paper</div><div class="swatch-name">Warm slate</div><div class="swatch-hex">#24201C</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#1B1815;"></div><div class="swatch-meta"><div class="swatch-role">Paper deep</div><div class="swatch-name">Deep warm</div><div class="swatch-hex">#1B1815</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#EDE4D3;"></div><div class="swatch-meta"><div class="swatch-role">Text</div><div class="swatch-name">Warm cream</div><div class="swatch-hex">#EDE4D3</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#A99E89;"></div><div class="swatch-meta"><div class="swatch-role">Text soft</div><div class="swatch-name">Driftwood</div><div class="swatch-hex">#A99E89</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#665D4C;"></div><div class="swatch-meta"><div class="swatch-role">Text faint</div><div class="swatch-name">Warm ash</div><div class="swatch-hex">#665D4C</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#D84238;"></div><div class="swatch-meta"><div class="swatch-role">Red · hero</div><div class="swatch-name">Clean red</div><div class="swatch-hex">#D84238</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E8B33A;"></div><div class="swatch-meta"><div class="swatch-role">Yellow</div><div class="swatch-name">Mustard (same)</div><div class="swatch-hex">#E8B33A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#7890AE;"></div><div class="swatch-meta"><div class="swatch-role">Blue</div><div class="swatch-name">Muted blue</div><div class="swatch-hex">#7890AE</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#403A32;"></div><div class="swatch-meta"><div class="swatch-role">Hairline</div><div class="swatch-name">Taupe shadow</div><div class="swatch-hex">#403A32</div></div></div>
+      </div>
+
+      <div class="red-note">
+        <span class="red-note-swatch" style="background:#D84238;"></span>
+        <span>Red tuned only slightly from Side A (<span class="hex">#D84238</span> vs. <span class="hex">#C3342B</span>). Closest to brand continuity. Reads confidently on the neutral warm background.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OPTION 4 ───────────────────────────────── -->
+  <section>
+    <div class="head">
+      <div class="head-num">OPTION 4</div>
+      <div class="head-title">Midnight blue, done right</div>
+      <div class="head-sub">cold where the others are warm · crisp · editorial</div>
+    </div>
+
+    <div class="description">
+      <strong>The feeling.</strong> Inside the Met at closing time. Not Claude blue. A properly cold, inky navy that leans editorial instead of SaaS. <strong>Biggest risk:</strong> any dark-blue dark mode risks reading as a generic "dark theme," which is precisely what Mixtape is trying to escape. Included for completeness. My instinct is we don't pick this unless it wins on its own merit when placed next to the others.
+    </div>
+
+    <div class="palette opt-4">
+      <div class="palette-head">
+        <div class="name-wrap">
+          <span class="name">Option 4 · Midnight ink</span>
+          <span class="vibe">museum after hours</span>
+        </div>
+        <span class="tag">SIDE B</span>
+      </div>
+
+      <div class="preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+          </nav>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span>
+            <span class="mark"></span>
+            <span class="mark done"></span>
+            <span class="mark today"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-color" style="background:#151A2A;"></div><div class="swatch-meta"><div class="swatch-role">Paper</div><div class="swatch-name">Navy ink</div><div class="swatch-hex">#151A2A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#0E1220;"></div><div class="swatch-meta"><div class="swatch-role">Paper deep</div><div class="swatch-name">Midnight</div><div class="swatch-hex">#0E1220</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#DDE2EF;"></div><div class="swatch-meta"><div class="swatch-role">Text</div><div class="swatch-name">Cool cream</div><div class="swatch-hex">#DDE2EF</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#8C95AE;"></div><div class="swatch-meta"><div class="swatch-role">Text soft</div><div class="swatch-name">Cold steel</div><div class="swatch-hex">#8C95AE</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#525A74;"></div><div class="swatch-meta"><div class="swatch-role">Text faint</div><div class="swatch-name">Dim blue-grey</div><div class="swatch-hex">#525A74</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#DC4F45;"></div><div class="swatch-meta"><div class="swatch-role">Red · hero</div><div class="swatch-name">Cool red</div><div class="swatch-hex">#DC4F45</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E8B33A;"></div><div class="swatch-meta"><div class="swatch-role">Yellow</div><div class="swatch-name">Mustard (same)</div><div class="swatch-hex">#E8B33A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#6C8FBE;"></div><div class="swatch-meta"><div class="swatch-role">Blue</div><div class="swatch-name">Lifted blue</div><div class="swatch-hex">#6C8FBE</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#2A3248;"></div><div class="swatch-meta"><div class="swatch-role">Hairline</div><div class="swatch-name">Ink shadow</div><div class="swatch-hex">#2A3248</div></div></div>
+      </div>
+
+      <div class="red-note">
+        <span class="red-note-swatch" style="background:#DC4F45;"></span>
+        <span>Red shifted cooler and slightly lighter (<span class="hex">#DC4F45</span>) so it doesn't clash against the navy. The supporting blue also had to shift (<span class="hex">#6C8FBE</span>) or the stripe would blend into the background.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OPTION 5 (placeholder for VSCode theme) ──── -->
+  <section>
+    <div class="head">
+      <div class="head-num">OPTION 5</div>
+      <div class="head-title">VSCode theme reference</div>
+      <div class="head-sub">waiting for Jeni to share</div>
+    </div>
+
+    <div class="description">
+      <strong>Placeholder.</strong> You're about to share a VSCode theme you want to explore as a reference for Side B. Once I have that, I'll extract its palette, translate it to our token structure (paper, ink, red/yellow/blue, hairline), and drop it here as Option 5 for comparison. If it's strong, it either wins outright or merges with one of the four above.
+    </div>
+
+    <div class="opt-5-placeholder">
+      <h3>Waiting for the VSCode theme</h3>
+      <p>Send it over in your next message. A screenshot works, or the .json color file, or just the name of the theme if it's well-known and I can look it up.</p>
+    </div>
+  </section>
+
+  <!-- ── closing ──────────────────────────────── -->
+  <section style="margin-top:48px;">
+    <div class="head">
+      <div class="head-num">NOTES</div>
+      <div class="head-title">On the red strategy</div>
+      <div class="head-sub">red-by-context, not same-red-across-themes</div>
+    </div>
+
+    <div class="description">
+      You picked "let me pick what works best on the dark palette," which is the right call. Each option has its red tuned to its own background. <strong>Side A red stays locked at #C3342B.</strong> Side B red varies by option. If we pick Option 3, the Side B red (<span style="font-family:var(--font-mono); font-weight:600;">#D84238</span>) is the closest to Side A's red, which means brand continuity is strongest there. Options 1, 2, and 4 diverge further.<br><br>
+      Drop the VSCode theme and I'll add Option 5.
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
