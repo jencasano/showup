@@ -296,7 +296,7 @@ header h1 span { color: var(--color-primary); }
 #app-content {
   flex: 1;
   padding: 24px 28px;
-  background: var(--bg);
+  /* No background: lets the ambient texture show through around cards. */
 }
 
 .tab-panel {
