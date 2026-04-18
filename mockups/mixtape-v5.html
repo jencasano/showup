@@ -251,6 +251,24 @@ body::after {
 }
 
 /* ═══════════════════════════════════════════════
+   STRIPE WRAPPER -- sits OUTSIDE the texture-clipped frame
+   so the stripe is visible above the texture.
+   Usage: <div class="stripe-wrap"> <div class="v1-frame tex-3"> ... </div> </div>
+   ═══════════════════════════════════════════════ */
+.stripe-wrap {
+  position: relative;
+}
+.stripe-wrap::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--red) 0 33%, var(--yellow) 33% 66%, var(--blue) 66% 100%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════
    SHARED UI BITS
    ═══════════════════════════════════════════════ */
 .mx-logo {
@@ -341,41 +359,18 @@ body::after {
 .mx-trk-mark.future { opacity: 0.4; border-style: dashed; }
 
 /* ═══════════════════════════════════════════════════════════════
-   THE STRIPE -- used by multiple variants
-   Red-yellow-blue band, placed at the top of whatever container
-   ═══════════════════════════════════════════════════════════════ */
-.mx-stripe-top {
-  position: relative;
-}
-.mx-stripe-top::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--red) 0 33%, var(--yellow) 33% 66%, var(--blue) 66% 100%);
-  z-index: 5;
-}
-
-/* ═══════════════════════════════════════════════════════════════
    VARIANT 1 -- A with full-page-top stripe
+   Stripe lives on .stripe-wrap (parent), v1-frame is the tex-3 box.
+   Add top padding so content clears the stripe.
    ═══════════════════════════════════════════════════════════════ */
 .v1-frame {
   display: grid;
   grid-template-columns: 240px 1fr;
   min-height: 680px;
-  position: relative;
-}
-.v1-frame::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--red) 0 33%, var(--yellow) 33% 66%, var(--blue) 66% 100%);
-  z-index: 5;
 }
 
 .sb-a {
-  padding: 32px 22px 22px 26px;
+  padding: 36px 22px 22px 26px;
   display: flex; flex-direction: column; gap: 28px;
   border-right: 1px solid var(--hairline);
 }
@@ -403,10 +398,11 @@ body::after {
   padding-top: 18px; border-top: 1px dashed var(--hairline);
 }
 
-.v1-frame .mx-main { padding-top: 36px; }
+.v1-frame .mx-main { padding-top: 40px; }
 
 /* ═══════════════════════════════════════════════════════════════
-   VARIANT 2 -- A with sidebar-only stripe (for comparison)
+   VARIANT 2 -- A with sidebar-only stripe (comparison)
+   Stripe on sidebar only, painted as a top border inside padding area
    ═══════════════════════════════════════════════════════════════ */
 .v2-frame {
   display: grid;
@@ -415,43 +411,35 @@ body::after {
 }
 .v2-frame .sb-a {
   position: relative;
+  padding-top: 36px;
 }
-.v2-frame .sb-a::before {
-  content: "";
+.v2-frame .sb-a > div:first-child {
+  position: relative;
+}
+.v2-sidebar-stripe {
   position: absolute;
-  top: 0; left: 0; right: -1px;
-  height: 4px;
+  top: 0; left: -26px; right: -22px;
+  height: 5px;
   background: linear-gradient(90deg, var(--red) 0 33%, var(--yellow) 33% 66%, var(--blue) 66% 100%);
-  z-index: 5;
+  z-index: 2;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   VARIANT 3 -- HYBRID 1: A's column + E's habits
-   Frosted sidebar, nav items are rounded pills with a small dot,
-   full-width ink pill on active, hover raises a soft highlight
+   VARIANT 3 -- HYBRID 1: A's column + E's pill treatment
+   Frosted sidebar, pills with mono numbers, ink-pill active
    ═══════════════════════════════════════════════════════════════ */
 .v3-frame {
   display: grid;
   grid-template-columns: 240px 1fr;
   min-height: 680px;
-  position: relative;
-}
-.v3-frame::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--red) 0 33%, var(--yellow) 33% 66%, var(--blue) 66% 100%);
-  z-index: 5;
 }
 
 .sb-hybrid1 {
-  padding: 32px 16px 22px;
+  padding: 36px 16px 22px;
   display: flex; flex-direction: column; gap: 24px;
   background: rgba(236, 225, 198, 0.4);
   backdrop-filter: blur(6px);
   border-right: 1px solid var(--hairline);
-  position: relative;
 }
 .sb-hybrid1 .mx-logo { font-size: 1.5rem; padding: 0 10px; }
 .sb-hybrid1-motif { width: 44px; height: 12px; margin-bottom: 14px; padding: 0 10px; }
@@ -479,7 +467,6 @@ body::after {
   color: var(--paper);
   font-weight: 600;
 }
-
 .h1-num {
   font-family: var(--font-mono);
   font-size: 0.66rem;
@@ -488,8 +475,6 @@ body::after {
   min-width: 18px;
 }
 .h1-nav-item.active .h1-num { color: var(--red); }
-.h1-nav-item.active .h1-num::after { content: ""; }
-
 .h1-label { font-family: var(--font-body); }
 
 .sb-hybrid1-foot {
@@ -499,16 +484,16 @@ body::after {
   border-top: 1px dashed var(--hairline);
 }
 
+.v3-frame .mx-main { padding-top: 40px; }
+
 /* ═══════════════════════════════════════════════════════════════
    VARIANT 4 -- HYBRID 2: E's rail with more confidence
-   Rail is wider, includes logo at top, color stripe, active has
-   full label visible inline (no hover required)
    ═══════════════════════════════════════════════════════════════ */
 .v4-frame {
   position: relative;
   min-height: 680px;
 }
-.v4-frame .mx-main { padding-left: 84px; padding-top: 36px; }
+.v4-frame .mx-main { padding-left: 84px; padding-top: 88px; }
 
 .sb-hybrid2 {
   position: absolute;
@@ -529,7 +514,6 @@ body::after {
   overflow: visible;
 }
 
-/* top stripe hugging the rail */
 .sb-hybrid2::before {
   content: "";
   position: absolute;
@@ -575,7 +559,6 @@ body::after {
 }
 .h2-nav-item:hover { color: var(--ink); background: rgba(244, 236, 216, 0.8); }
 
-/* Active item: bleeds out to the right with a full label inline */
 .h2-nav-item.active {
   color: var(--paper);
   background: var(--red);
@@ -599,8 +582,6 @@ body::after {
   letter-spacing: -0.005em;
   box-shadow: 0 2px 8px rgba(42, 31, 26, 0.16);
 }
-
-/* non-active hover label (same treatment, hidden by default) */
 .h2-nav-item::before {
   content: attr(data-label);
   position: absolute;
@@ -647,7 +628,6 @@ body::after {
 }
 .h2-theme-mini strong { color: var(--red); font-weight: 700; }
 
-/* Logo floats top-left of main area, just past the rail */
 .h2-logo-float {
   position: absolute;
   top: 28px;
@@ -663,8 +643,6 @@ body::after {
   font-size: 0.88rem;
   color: var(--ink-faint);
 }
-
-.v4-frame .mx-main { padding-top: 88px; }
 
 /* ── Responsive fallbacks ── */
 @media (max-width: 900px) {
@@ -698,7 +676,7 @@ body::after {
     </div>
 
     <div class="mx-notes">
-      <strong>What this is.</strong> Original A, untouched, with a thin red-yellow-blue stripe spanning the entire top of the page from left to right. It reads as the <em>ribbon around a book</em>, not a sidebar decoration. This is the cleanest way to add a signature without introducing a panel-divider feeling.
+      <strong>What this is.</strong> Original A, with a red-yellow-blue stripe spanning the entire top of the page from left to right. The stripe now actually renders (was hidden by the texture clip in the first push). It reads as the <em>ribbon around a book</em>, not a sidebar decoration.
     </div>
 
     <div class="mx-compare">
@@ -706,72 +684,74 @@ body::after {
         <div>V1 · A + FULL STRIPE <span class="desc">stripe runs the whole top</span></div>
         <span class="tag">DESKTOP</span>
       </div>
-      <div class="v1-frame tex-3">
-        <aside class="sb-a">
-          <div>
-            <svg class="sb-a-motif" viewBox="0 0 44 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 6 Q 6 2, 10 6 T 18 6" stroke="#C3342B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-              <circle cx="24" cy="6" r="1.6" fill="#E8B33A"/>
-              <path d="M30 6 l3 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-3 -4 l-4 -1.5 z" fill="#C3342B" opacity="0.7"/>
-            </svg>
-            <div class="mx-logo">showup<span>.</span></div>
-          </div>
-          <nav style="display:flex;flex-direction:column;">
-            <div class="sb-a-nav-item active">My log</div>
-            <div class="sb-a-nav-item">Diary</div>
-            <div class="sb-a-nav-item">Following</div>
-            <div class="sb-a-nav-item">All</div>
-            <div class="sb-a-nav-item">Shop</div>
-            <div class="sb-a-nav-item">Settings</div>
-          </nav>
-          <div class="sb-a-foot">
-            <div class="mx-user-chip">
-              <div class="mx-user-avatar">J</div>
-              <div><div class="mx-user-name">Jeni</div><div class="mx-user-handle">@jencasano</div></div>
+      <div class="stripe-wrap">
+        <div class="v1-frame tex-3">
+          <aside class="sb-a">
+            <div>
+              <svg class="sb-a-motif" viewBox="0 0 44 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 6 Q 6 2, 10 6 T 18 6" stroke="#C3342B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                <circle cx="24" cy="6" r="1.6" fill="#E8B33A"/>
+                <path d="M30 6 l3 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-3 -4 l-4 -1.5 z" fill="#C3342B" opacity="0.7"/>
+              </svg>
+              <div class="mx-logo">showup<span>.</span></div>
             </div>
-            <div class="mx-theme-pill">Theme · <strong>Side A</strong></div>
-          </div>
-        </aside>
+            <nav style="display:flex;flex-direction:column;">
+              <div class="sb-a-nav-item active">My log</div>
+              <div class="sb-a-nav-item">Diary</div>
+              <div class="sb-a-nav-item">Following</div>
+              <div class="sb-a-nav-item">All</div>
+              <div class="sb-a-nav-item">Shop</div>
+              <div class="sb-a-nav-item">Settings</div>
+            </nav>
+            <div class="sb-a-foot">
+              <div class="mx-user-chip">
+                <div class="mx-user-avatar">J</div>
+                <div><div class="mx-user-name">Jeni</div><div class="mx-user-handle">@jencasano</div></div>
+              </div>
+              <div class="mx-theme-pill">Theme · <strong>Side A</strong></div>
+            </div>
+          </aside>
 
-        <div class="mx-main">
-          <div class="mx-tracker-head">
-            <div><div class="mx-month">April <em>2026</em></div><div class="mx-stat-label">day 18 of 30</div></div>
-            <div class="mx-tracker-stats">
-              <div class="mx-stat"><div class="mx-stat-num">74<em>%</em></div><div class="mx-stat-label">on pace</div></div>
-              <div class="mx-stat"><div class="mx-stat-num">5</div><div class="mx-stat-label">habits</div></div>
-              <div class="mx-stat"><div class="mx-stat-num">12</div><div class="mx-stat-label">streak</div></div>
-            </div>
-          </div>
-          <div class="mx-tracker-card">
-            <div class="mx-tracker-badge"><div class="mx-tb-avatar">J</div><div class="mx-tb-text">Jeni's April</div></div>
-            <div class="mx-trk-daybar">
-              <div class="mx-trk-daybar-label">&nbsp;</div>
-              <div class="mx-trk-daynum-row">
-                <div class="mx-trk-day">14</div><div class="mx-trk-day">15</div><div class="mx-trk-day">16</div><div class="mx-trk-day">17</div><div class="mx-trk-day today">18</div><div class="mx-trk-day">19</div><div class="mx-trk-day sun">20</div><div class="mx-trk-day">21</div><div class="mx-trk-day">22</div><div class="mx-trk-day">23</div><div class="mx-trk-day">24</div><div class="mx-trk-day">25</div><div class="mx-trk-day">26</div><div class="mx-trk-day sun">27</div>
+          <div class="mx-main">
+            <div class="mx-tracker-head">
+              <div><div class="mx-month">April <em>2026</em></div><div class="mx-stat-label">day 18 of 30</div></div>
+              <div class="mx-tracker-stats">
+                <div class="mx-stat"><div class="mx-stat-num">74<em>%</em></div><div class="mx-stat-label">on pace</div></div>
+                <div class="mx-stat"><div class="mx-stat-num">5</div><div class="mx-stat-label">habits</div></div>
+                <div class="mx-stat"><div class="mx-stat-num">12</div><div class="mx-stat-label">streak</div></div>
               </div>
             </div>
-            <div class="mx-trk-row">
-              <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--red);"></span><span class="mx-trk-name">Running</span><span class="mx-trk-cad">3x/wk</span></div>
-              <div class="mx-trk-cells">
-                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+            <div class="mx-tracker-card">
+              <div class="mx-tracker-badge"><div class="mx-tb-avatar">J</div><div class="mx-tb-text">Jeni's April</div></div>
+              <div class="mx-trk-daybar">
+                <div class="mx-trk-daybar-label">&nbsp;</div>
+                <div class="mx-trk-daynum-row">
+                  <div class="mx-trk-day">14</div><div class="mx-trk-day">15</div><div class="mx-trk-day">16</div><div class="mx-trk-day">17</div><div class="mx-trk-day today">18</div><div class="mx-trk-day">19</div><div class="mx-trk-day sun">20</div><div class="mx-trk-day">21</div><div class="mx-trk-day">22</div><div class="mx-trk-day">23</div><div class="mx-trk-day">24</div><div class="mx-trk-day">25</div><div class="mx-trk-day">26</div><div class="mx-trk-day sun">27</div>
+                </div>
               </div>
-            </div>
-            <div class="mx-trk-row">
-              <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--blue);"></span><span class="mx-trk-name">Reading</span><span class="mx-trk-cad">daily</span></div>
-              <div class="mx-trk-cells">
-                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+              <div class="mx-trk-row">
+                <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--red);"></span><span class="mx-trk-name">Running</span><span class="mx-trk-cad">3x/wk</span></div>
+                <div class="mx-trk-cells">
+                  <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                </div>
               </div>
-            </div>
-            <div class="mx-trk-row">
-              <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--yellow);"></span><span class="mx-trk-name">Stretching</span><span class="mx-trk-cad">5x/wk</span></div>
-              <div class="mx-trk-cells">
-                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark today"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+              <div class="mx-trk-row">
+                <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--blue);"></span><span class="mx-trk-name">Reading</span><span class="mx-trk-cad">daily</span></div>
+                <div class="mx-trk-cells">
+                  <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                </div>
               </div>
-            </div>
-            <div class="mx-trk-row">
-              <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--green);"></span><span class="mx-trk-name">Drawing</span><span class="mx-trk-cad">3x/wk</span></div>
-              <div class="mx-trk-cells">
-                <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+              <div class="mx-trk-row">
+                <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--yellow);"></span><span class="mx-trk-name">Stretching</span><span class="mx-trk-cad">5x/wk</span></div>
+                <div class="mx-trk-cells">
+                  <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark today"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                </div>
+              </div>
+              <div class="mx-trk-row">
+                <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--green);"></span><span class="mx-trk-name">Drawing</span><span class="mx-trk-cad">3x/wk</span></div>
+                <div class="mx-trk-cells">
+                  <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -789,7 +769,7 @@ body::after {
     </div>
 
     <div class="mx-notes">
-      <strong>Why I'm showing you this.</strong> Just to prove that the full-page stripe in V1 is the right choice. Here the stripe stops at the sidebar's right edge. It looks like it's decorating a panel, which reintroduces the "panel container" feeling we worked to avoid.
+      <strong>Why I'm showing you this.</strong> So you can see why V1 wins. Here the stripe only tops the sidebar. It immediately reads as "panel decoration" and brings back the SaaS-container feeling.
     </div>
 
     <div class="mx-compare">
@@ -800,6 +780,7 @@ body::after {
       <div class="v2-frame tex-3">
         <aside class="sb-a">
           <div>
+            <div class="v2-sidebar-stripe"></div>
             <svg class="sb-a-motif" viewBox="0 0 44 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M2 6 Q 6 2, 10 6 T 18 6" stroke="#C3342B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
               <circle cx="24" cy="6" r="1.6" fill="#E8B33A"/>
@@ -880,7 +861,7 @@ body::after {
     </div>
 
     <div class="mx-notes">
-      <strong>What this is.</strong> A's column structure, but the sidebar is now <em>frosted and translucent</em> (you can see the page texture through it), and nav items are pills with a small mono track number on the left. Active item is a full ink-black pill with paper-white text. Color stripe at the top of the page. All the elements of A kept (full column, all items visible), plus E's liveliness.
+      <strong>What this is.</strong> A's column structure, but the sidebar is now <em>frosted and translucent</em>, and nav items are pills with a small mono track number on the left. Active item is a full ink-black pill with paper-white text. Color stripe at the top of the page.
     </div>
 
     <div class="mx-compare">
@@ -888,74 +869,76 @@ body::after {
         <div>V3 · HYBRID 1 <span class="desc">A's structure + E's pill treatment</span></div>
         <span class="tag">HYBRID</span>
       </div>
-      <div class="v3-frame tex-3">
-        <aside class="sb-hybrid1">
-          <div>
-            <svg class="sb-hybrid1-motif" viewBox="0 0 44 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 6 Q 6 2, 10 6 T 18 6" stroke="#C3342B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-              <circle cx="24" cy="6" r="1.6" fill="#E8B33A"/>
-              <path d="M30 6 l3 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-3 -4 l-4 -1.5 z" fill="#C3342B" opacity="0.7"/>
-            </svg>
-            <div class="mx-logo">showup<span>.</span></div>
-          </div>
+      <div class="stripe-wrap">
+        <div class="v3-frame tex-3">
+          <aside class="sb-hybrid1">
+            <div>
+              <svg class="sb-hybrid1-motif" viewBox="0 0 44 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 6 Q 6 2, 10 6 T 18 6" stroke="#C3342B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                <circle cx="24" cy="6" r="1.6" fill="#E8B33A"/>
+                <path d="M30 6 l3 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-3 -4 l-4 -1.5 z" fill="#C3342B" opacity="0.7"/>
+              </svg>
+              <div class="mx-logo">showup<span>.</span></div>
+            </div>
 
-          <nav class="h1-nav">
-            <div class="h1-nav-item active"><span class="h1-num">01</span><span class="h1-label">My log</span></div>
-            <div class="h1-nav-item"><span class="h1-num">02</span><span class="h1-label">Diary</span></div>
-            <div class="h1-nav-item"><span class="h1-num">03</span><span class="h1-label">Following</span></div>
-            <div class="h1-nav-item"><span class="h1-num">04</span><span class="h1-label">All</span></div>
-            <div class="h1-nav-item"><span class="h1-num">05</span><span class="h1-label">Shop</span></div>
-            <div class="h1-nav-item"><span class="h1-num">06</span><span class="h1-label">Settings</span></div>
-          </nav>
+            <nav class="h1-nav">
+              <div class="h1-nav-item active"><span class="h1-num">01</span><span class="h1-label">My log</span></div>
+              <div class="h1-nav-item"><span class="h1-num">02</span><span class="h1-label">Diary</span></div>
+              <div class="h1-nav-item"><span class="h1-num">03</span><span class="h1-label">Following</span></div>
+              <div class="h1-nav-item"><span class="h1-num">04</span><span class="h1-label">All</span></div>
+              <div class="h1-nav-item"><span class="h1-num">05</span><span class="h1-label">Shop</span></div>
+              <div class="h1-nav-item"><span class="h1-num">06</span><span class="h1-label">Settings</span></div>
+            </nav>
 
-          <div class="sb-hybrid1-foot">
-            <div class="mx-user-chip">
-              <div class="mx-user-avatar">J</div>
-              <div><div class="mx-user-name">Jeni</div><div class="mx-user-handle">@jencasano</div></div>
+            <div class="sb-hybrid1-foot">
+              <div class="mx-user-chip">
+                <div class="mx-user-avatar">J</div>
+                <div><div class="mx-user-name">Jeni</div><div class="mx-user-handle">@jencasano</div></div>
+              </div>
+              <div class="mx-theme-pill">Theme · <strong>Side A</strong></div>
             </div>
-            <div class="mx-theme-pill">Theme · <strong>Side A</strong></div>
-          </div>
-        </aside>
+          </aside>
 
-        <div class="mx-main">
-          <div class="mx-tracker-head">
-            <div><div class="mx-month">April <em>2026</em></div><div class="mx-stat-label">day 18 of 30</div></div>
-            <div class="mx-tracker-stats">
-              <div class="mx-stat"><div class="mx-stat-num">74<em>%</em></div><div class="mx-stat-label">on pace</div></div>
-              <div class="mx-stat"><div class="mx-stat-num">5</div><div class="mx-stat-label">habits</div></div>
-              <div class="mx-stat"><div class="mx-stat-num">12</div><div class="mx-stat-label">streak</div></div>
-            </div>
-          </div>
-          <div class="mx-tracker-card">
-            <div class="mx-tracker-badge"><div class="mx-tb-avatar">J</div><div class="mx-tb-text">Jeni's April</div></div>
-            <div class="mx-trk-daybar">
-              <div class="mx-trk-daybar-label">&nbsp;</div>
-              <div class="mx-trk-daynum-row">
-                <div class="mx-trk-day">14</div><div class="mx-trk-day">15</div><div class="mx-trk-day">16</div><div class="mx-trk-day">17</div><div class="mx-trk-day today">18</div><div class="mx-trk-day">19</div><div class="mx-trk-day sun">20</div><div class="mx-trk-day">21</div><div class="mx-trk-day">22</div><div class="mx-trk-day">23</div><div class="mx-trk-day">24</div><div class="mx-trk-day">25</div><div class="mx-trk-day">26</div><div class="mx-trk-day sun">27</div>
+          <div class="mx-main">
+            <div class="mx-tracker-head">
+              <div><div class="mx-month">April <em>2026</em></div><div class="mx-stat-label">day 18 of 30</div></div>
+              <div class="mx-tracker-stats">
+                <div class="mx-stat"><div class="mx-stat-num">74<em>%</em></div><div class="mx-stat-label">on pace</div></div>
+                <div class="mx-stat"><div class="mx-stat-num">5</div><div class="mx-stat-label">habits</div></div>
+                <div class="mx-stat"><div class="mx-stat-num">12</div><div class="mx-stat-label">streak</div></div>
               </div>
             </div>
-            <div class="mx-trk-row">
-              <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--red);"></span><span class="mx-trk-name">Running</span><span class="mx-trk-cad">3x/wk</span></div>
-              <div class="mx-trk-cells">
-                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+            <div class="mx-tracker-card">
+              <div class="mx-tracker-badge"><div class="mx-tb-avatar">J</div><div class="mx-tb-text">Jeni's April</div></div>
+              <div class="mx-trk-daybar">
+                <div class="mx-trk-daybar-label">&nbsp;</div>
+                <div class="mx-trk-daynum-row">
+                  <div class="mx-trk-day">14</div><div class="mx-trk-day">15</div><div class="mx-trk-day">16</div><div class="mx-trk-day">17</div><div class="mx-trk-day today">18</div><div class="mx-trk-day">19</div><div class="mx-trk-day sun">20</div><div class="mx-trk-day">21</div><div class="mx-trk-day">22</div><div class="mx-trk-day">23</div><div class="mx-trk-day">24</div><div class="mx-trk-day">25</div><div class="mx-trk-day">26</div><div class="mx-trk-day sun">27</div>
+                </div>
               </div>
-            </div>
-            <div class="mx-trk-row">
-              <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--blue);"></span><span class="mx-trk-name">Reading</span><span class="mx-trk-cad">daily</span></div>
-              <div class="mx-trk-cells">
-                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+              <div class="mx-trk-row">
+                <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--red);"></span><span class="mx-trk-name">Running</span><span class="mx-trk-cad">3x/wk</span></div>
+                <div class="mx-trk-cells">
+                  <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                </div>
               </div>
-            </div>
-            <div class="mx-trk-row">
-              <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--yellow);"></span><span class="mx-trk-name">Stretching</span><span class="mx-trk-cad">5x/wk</span></div>
-              <div class="mx-trk-cells">
-                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark today"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+              <div class="mx-trk-row">
+                <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--blue);"></span><span class="mx-trk-name">Reading</span><span class="mx-trk-cad">daily</span></div>
+                <div class="mx-trk-cells">
+                  <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                </div>
               </div>
-            </div>
-            <div class="mx-trk-row">
-              <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--green);"></span><span class="mx-trk-name">Drawing</span><span class="mx-trk-cad">3x/wk</span></div>
-              <div class="mx-trk-cells">
-                <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+              <div class="mx-trk-row">
+                <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--yellow);"></span><span class="mx-trk-name">Stretching</span><span class="mx-trk-cad">5x/wk</span></div>
+                <div class="mx-trk-cells">
+                  <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark today"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                </div>
+              </div>
+              <div class="mx-trk-row">
+                <div class="mx-trk-lbl"><span class="mx-trk-dot" style="background:var(--green);"></span><span class="mx-trk-name">Drawing</span><span class="mx-trk-cad">3x/wk</span></div>
+                <div class="mx-trk-cells">
+                  <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark today"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div><div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -973,7 +956,7 @@ body::after {
     </div>
 
     <div class="mx-notes">
-      <strong>What this is.</strong> E's floating rail, but it now <em>anchors</em>: the showup logo sits inside a round ink dot at the top of the rail, a tiny color stripe crowns it, and the <strong>active item always shows its label inline as a dark pill sliding out to the right</strong>, no hover required. Non-active items still show labels on hover. Floating logo with italic tagline sits at top-left of the main area. Edge rail is fixed to the left edge and always visible. This is the one that should feel most like a personal object sitting on a page.
+      <strong>What this is.</strong> E's floating rail, anchored: logo dot at top, tiny stripe on the rail, active label always inline as a dark pill. Floating italic tagline sits at top-left of main content.
     </div>
 
     <div class="mx-compare">
@@ -1062,11 +1045,7 @@ body::after {
     </div>
 
     <div class="mx-notes">
-      <strong>V1</strong> A + full-page stripe. Cleanest way to give A a signature.<br><br>
-      <strong>V2</strong> A + sidebar-only stripe. Shown as a counter-example.<br><br>
-      <strong>V3</strong> Hybrid 1. A's column structure, E's pill DNA. Frosted sidebar, ink-pill active state, small mono numbers beside each item.<br><br>
-      <strong>V4</strong> Hybrid 2. E's rail but anchored: logo in a black dot at top, tiny stripe, active label always inline, italic tagline floating next to the main content.<br><br>
-      Pick one and we move on to Dark mode next. 🎧
+      V1 should now actually show the stripe at the top. Sorry about that, my clip-fix was wrong the first time. Pick one and we move to Dark mode. 🎧
     </div>
   </section>
 
