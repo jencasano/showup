@@ -1146,13 +1146,13 @@
 }
 .ma-name-was {
   text-decoration: line-through;
-  color: var(--color-amber);
+  color: var(--yellow);
   max-width: 80px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-[data-theme="light"] .ma-name-was { color: #b45309; }
+[data-theme="light"] .ma-name-was { color: var(--yellow); }
 .ma-name-arrow { color: var(--text-faint); font-size: 0.6rem; }
 
 .ma-name-edit {
@@ -1237,11 +1237,11 @@
   font-weight: 600;
   flex-wrap: wrap;
 }
-.ma-inline-was { text-decoration: line-through; color: var(--color-amber); }
-[data-theme="light"] .ma-inline-was { color: #b45309; }
+.ma-inline-was { text-decoration: line-through; color: var(--yellow); }
+[data-theme="light"] .ma-inline-was { color: var(--yellow); }
 .ma-inline-arrow { color: var(--text-faint); font-size: 0.6rem; }
-.ma-inline-new { color: #1DD1A1; }
-[data-theme="light"] .ma-inline-new { color: #0a7a5c; }
+.ma-inline-new { color: var(--green); }
+[data-theme="light"] .ma-inline-new { color: var(--green); }
 
 .ma-add-btn {
   width: calc(100% - 28px);
@@ -1358,9 +1358,9 @@
 }
 
 .confirm-highlight { font-weight: 700; color: var(--yellow); }
-[data-theme="light"] .confirm-highlight { color: #b45309; }
-.confirm-new { font-weight: 700; color: #1DD1A1; }
-[data-theme="light"] .confirm-new { color: #0a7a5c; }
+[data-theme="light"] .confirm-highlight { color: var(--yellow); }
+.confirm-new { font-weight: 700; color: var(--green); }
+[data-theme="light"] .confirm-new { color: var(--green); }
 
 .confirm-body-emphasis { font-weight: 700; color: var(--color-primary); }
 
