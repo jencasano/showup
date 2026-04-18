@@ -238,7 +238,7 @@ onAuthReady(async (user) => {
     }
 
     loginScreen.style.display = "none";
-    appScreen.style.display   = "block";
+    appScreen.style.display   = "";
     userName.textContent      = user.displayName;
     const sbUserName = document.getElementById("sb-user-name");
     if (sbUserName) sbUserName.textContent = user.displayName || "";
