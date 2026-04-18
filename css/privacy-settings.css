@@ -24,6 +24,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
 }
 
 .ps-header {
@@ -31,6 +33,13 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  position: sticky;
+  top: 0;
+  margin: -24px -24px 0;
+  padding: 20px 24px 12px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  z-index: 2;
 }
 
 .ps-heading {
@@ -125,11 +134,14 @@
   width: 100%;
   padding: 13px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--paper);
   border-radius: var(--radius-full);
   font-size: 0.95rem;
   font-weight: 600;
   transition: background var(--transition);
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
 }
 
 .ps-save:hover {
@@ -159,5 +171,13 @@
 @media (max-width: 480px) {
   #privacy-settings-modal {
     padding: 12px;
+  }
+  .ps-panel {
+    padding: 18px;
+    max-height: calc(100vh - 24px);
+  }
+  .ps-header {
+    margin: -18px -18px 0;
+    padding: 14px 18px 10px;
   }
 }
