@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Option 8 sidebar studies · maroon + teal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600;1,9..144,700&family=Manrope:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+/* ═══════════════════════════════════════════════
+   Page shell (light Side A meta-frame)
+   ═══════════════════════════════════════════════ */
+:root {
+  --paper:       #F4ECD8;
+  --paper-deep:  #ECE1C6;
+  --ink:         #2A1F1A;
+  --ink-soft:    #5A463A;
+  --ink-faint:   #9C8874;
+  --red:         #C3342B;
+  --yellow:      #E8B33A;
+  --hairline:    #D4C3A1;
+
+  --font-logo:    'Sora', sans-serif;
+  --font-display: 'Fraunces', serif;
+  --font-body:    'Manrope', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.55;
+  min-height: 100vh;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0.08 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  background-size: 260px 260px;
+}
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 32px 96px;
+  position: relative;
+  z-index: 1;
+}
+
+.intro {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-bottom: 36px;
+  border-bottom: 1px dashed var(--hairline);
+}
+.kicker {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: #F6E4B0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.intro h1 {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -0.03em;
+  margin: 0 0 10px;
+}
+.intro h1 em {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.75em;
+  color: var(--ink-soft);
+}
+.intro p {
+  max-width: 640px;
+  margin: 0 auto;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--hairline);
+}
+.head-num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--red);
+}
+.head-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.head-sub {
+  margin-left: auto;
+  font-size: 0.76rem;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+.description {
+  background: #F6E4B0;
+  border: 1px dashed var(--yellow);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+.description strong { color: var(--red); font-weight: 600; }
+.description .hex { font-family: var(--font-mono); font-style: normal; font-weight: 600; color: var(--ink); font-size: 0.85em; }
+
+/* ═══════════════════════════════════════════════
+   The option-8 locked tokens (paper, red, teal)
+   ═══════════════════════════════════════════════ */
+.opt-8 {
+  --side-paper:       #2A1518;
+  --side-paper-deep:  #1D0E10;
+  --side-text:        #F0DCCF;
+  --side-text-soft:   #B18A84;
+  --side-text-faint:  #6E504B;
+  --side-red:         #F07A5E;
+  --side-yellow:      #E8B33A;
+  --side-teal:        #5EAAA8;
+  --side-hairline:    #4A2025;
+  --side-active-bg:   #F0DCCF;
+  --side-active-text: #1D0E10;
+}
+
+/* Variants override only --side-sidebar */
+.opt-8.var-8a { --side-sidebar: rgba(42, 21, 24, 0.72); }
+.opt-8.var-8b { --side-sidebar: rgba(18, 10, 12, 0.85); }
+.opt-8.var-8c { --side-sidebar: rgba(26, 40, 48, 0.7); }
+.opt-8.var-8d { --side-sidebar: rgba(46, 27, 26, 0.78); }
+.opt-8.var-8e { --side-sidebar: #1D0E10; }
+
+/* ═══════════════════════════════════════════════
+   Preview card
+   ═══════════════════════════════════════════════ */
+.preview-card {
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(42,31,26,0.08), 0 8px 20px rgba(42,31,26,0.06);
+  margin-bottom: 32px;
+}
+.preview-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 16px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.preview-label .left { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.preview-label .name { font-weight: 700; }
+.preview-label .code {
+  color: rgba(244, 236, 216, 0.6);
+  font-style: italic;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+.preview-label .tag {
+  background: var(--red);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+}
+
+.preview {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 320px;
+  position: relative;
+}
+
+.preview::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--side-red) 0 33%,
+    var(--side-yellow) 33% 66%,
+    var(--side-teal) 66% 100%
+  );
+  z-index: 5;
+}
+
+.preview-sidebar {
+  background: var(--side-sidebar);
+  backdrop-filter: blur(6px);
+  padding: 28px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border-right: 1px solid var(--side-hairline);
+}
+
+.preview-logo {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.03em;
+  padding: 0 8px;
+  color: var(--side-text);
+}
+.preview-logo span { color: var(--side-red); }
+
+.preview-nav { display: flex; flex-direction: column; gap: 3px; }
+.preview-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--side-text-soft);
+}
+.preview-nav-item .num {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--side-text-faint);
+  letter-spacing: 0.08em;
+  min-width: 16px;
+}
+.preview-nav-item.active {
+  background: var(--side-active-bg);
+  color: var(--side-active-text);
+  font-weight: 600;
+}
+.preview-nav-item.active .num { color: var(--side-red); }
+
+.preview-sidebar-foot {
+  margin-top: auto;
+  padding: 10px 8px 0;
+  border-top: 1px dashed var(--side-hairline);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.preview-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--side-red);
+  color: var(--side-paper-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 0.7rem;
+}
+.preview-chip-name {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--side-text);
+}
+.preview-chip-handle {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--side-text-faint);
+}
+
+.preview-main {
+  padding: 32px 28px;
+  background: var(--side-paper);
+  color: var(--side-text);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.preview-main h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.8rem;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--side-text);
+}
+.preview-main h2 em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--side-red);
+}
+.preview-main .meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--side-text-faint);
+}
+.preview-main .sample-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 0.84rem;
+  color: var(--side-text-soft);
+}
+.preview-main .dot { width: 10px; height: 10px; border-radius: 50%; }
+.preview-main .mark {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid var(--side-hairline);
+  background: var(--side-paper);
+}
+.preview-main .mark.done { background: var(--side-text); border-color: var(--side-text); }
+.preview-main .mark.today { border-color: var(--side-red); border-width: 2px; }
+
+.sidebar-hex-note {
+  padding: 10px 16px;
+  background: var(--paper-deep);
+  border-top: 1px solid var(--hairline);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar-hex-note .swatch-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.sidebar-hex-note .hex {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+@media (max-width: 700px) {
+  .preview { grid-template-columns: 1fr; }
+  .preview-sidebar { border-right: none; border-bottom: 1px solid var(--side-hairline); }
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <!-- ── intro ───────────────────────────────────── -->
+  <section class="intro">
+    <span class="kicker">Option 8 · sidebar background studies</span>
+    <h1>showup<span style="color:var(--red);">.</span> <em>/ five ways to sidebar Option 8</em></h1>
+    <p>Maroon paper and teal accent are locked. Only the sidebar background changes. Scroll through and feel which version of the "90s hotel bar" you're actually in.</p>
+  </section>
+
+  <!-- ── 8a ───────────────────────────────────── -->
+  <section style="margin-bottom:40px;">
+    <div class="head">
+      <div class="head-num">8a · CURRENT</div>
+      <div class="head-title">Deeper maroon</div>
+      <div class="head-sub">frosted same-family tint · quiet, harmonious</div>
+    </div>
+    <div class="description">
+      <strong>The feeling.</strong> Slightly darker maroon at 72% with blur. Sidebar reads as "a darker corner of the same room." Most conservative. Good if we want the main content to be the star and the sidebar to recede.
+    </div>
+
+    <div class="preview-card">
+      <div class="preview-label">
+        <div class="left"><span class="name">8a · Deeper maroon (current)</span><span class="code">rgba(42, 21, 24, 0.72)</span></div>
+        <span class="tag">SIDE B · OPT 8</span>
+      </div>
+      <div class="opt-8 var-8a preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+            <div class="preview-nav-item"><span class="num">04</span>All</div>
+          </nav>
+          <div class="preview-sidebar-foot">
+            <div class="preview-avatar">J</div>
+            <div><div class="preview-chip-name">Jeni</div><div class="preview-chip-handle">@jencasano</div></div>
+          </div>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span><span class="mark"></span><span class="mark done"></span><span class="mark today"></span>
+          </div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-teal);"></span>
+            <span>Reading</span>
+            <span class="mark done"></span><span class="mark done"></span><span class="mark done"></span><span class="mark"></span>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-hex-note">
+        <span class="swatch-dot" style="background:#2A1518;"></span>
+        Sidebar uses a slightly darker tint of the maroon paper at <span class="hex">rgba(42, 21, 24, 0.72)</span>. Harmony-first.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 8b ───────────────────────────────────── -->
+  <section style="margin-bottom:40px;">
+    <div class="head">
+      <div class="head-num">8b</div>
+      <div class="head-title">Near-black ink</div>
+      <div class="head-sub">sharp distinct panel · architectural</div>
+    </div>
+    <div class="description">
+      <strong>The feeling.</strong> Deep cool-black at 85% with blur. Sidebar feels like a separate darker object that sits in front of the maroon paper. More distinct, more architectural. The ink pill for the active nav item now reads as less of a leap because the sidebar is already dark.
+    </div>
+
+    <div class="preview-card">
+      <div class="preview-label">
+        <div class="left"><span class="name">8b · Near-black ink</span><span class="code">rgba(18, 10, 12, 0.85)</span></div>
+        <span class="tag">SIDE B · OPT 8</span>
+      </div>
+      <div class="opt-8 var-8b preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+            <div class="preview-nav-item"><span class="num">04</span>All</div>
+          </nav>
+          <div class="preview-sidebar-foot">
+            <div class="preview-avatar">J</div>
+            <div><div class="preview-chip-name">Jeni</div><div class="preview-chip-handle">@jencasano</div></div>
+          </div>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span><span class="mark"></span><span class="mark done"></span><span class="mark today"></span>
+          </div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-teal);"></span>
+            <span>Reading</span>
+            <span class="mark done"></span><span class="mark done"></span><span class="mark done"></span><span class="mark"></span>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-hex-note">
+        <span class="swatch-dot" style="background:#120A0C;"></span>
+        Near-black with a hint of warm at <span class="hex">rgba(18, 10, 12, 0.85)</span>. The sidebar becomes an "object," not a tint.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 8c ───────────────────────────────────── -->
+  <section style="margin-bottom:40px;">
+    <div class="head">
+      <div class="head-num">8c · FAVORITE?</div>
+      <div class="head-title">Teal-tinted shadow</div>
+      <div class="head-sub">warm paper · cold sidebar · two-tone bar taken literally</div>
+    </div>
+    <div class="description">
+      <strong>The feeling.</strong> This is where Option 8 actually becomes a design statement. The sidebar shifts toward the teal accent (a dark teal-blue at 70%), so the page splits into two tones: warm maroon on the right, cool teal on the left. The red hero reads against <em>both</em>. This is "red leather booths / teal neon sign" taken literally.
+    </div>
+
+    <div class="preview-card">
+      <div class="preview-label">
+        <div class="left"><span class="name">8c · Teal-tinted shadow</span><span class="code">rgba(26, 40, 48, 0.7)</span></div>
+        <span class="tag">SIDE B · OPT 8</span>
+      </div>
+      <div class="opt-8 var-8c preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+            <div class="preview-nav-item"><span class="num">04</span>All</div>
+          </nav>
+          <div class="preview-sidebar-foot">
+            <div class="preview-avatar">J</div>
+            <div><div class="preview-chip-name">Jeni</div><div class="preview-chip-handle">@jencasano</div></div>
+          </div>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span><span class="mark"></span><span class="mark done"></span><span class="mark today"></span>
+          </div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-teal);"></span>
+            <span>Reading</span>
+            <span class="mark done"></span><span class="mark done"></span><span class="mark done"></span><span class="mark"></span>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-hex-note">
+        <span class="swatch-dot" style="background:#1A2830;"></span>
+        Dark teal-blue at <span class="hex">rgba(26, 40, 48, 0.7)</span>. Makes the maroon-vs-teal identity the <em>structural</em> move, not just an accent.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 8d ───────────────────────────────────── -->
+  <section style="margin-bottom:40px;">
+    <div class="head">
+      <div class="head-num">8d</div>
+      <div class="head-title">Warm leather</div>
+      <div class="head-sub">subtle warm-on-warm · older leather</div>
+    </div>
+    <div class="description">
+      <strong>The feeling.</strong> The opposite direction from 8c. Instead of going cold, we go <em>warmer</em> for the sidebar. A richer oxblood-brown at 78% with blur. The sidebar reads as "older leather" than the booth seats. Most harmonious and warmest-feeling version.
+    </div>
+
+    <div class="preview-card">
+      <div class="preview-label">
+        <div class="left"><span class="name">8d · Warm leather</span><span class="code">rgba(46, 27, 26, 0.78)</span></div>
+        <span class="tag">SIDE B · OPT 8</span>
+      </div>
+      <div class="opt-8 var-8d preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+            <div class="preview-nav-item"><span class="num">04</span>All</div>
+          </nav>
+          <div class="preview-sidebar-foot">
+            <div class="preview-avatar">J</div>
+            <div><div class="preview-chip-name">Jeni</div><div class="preview-chip-handle">@jencasano</div></div>
+          </div>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span><span class="mark"></span><span class="mark done"></span><span class="mark today"></span>
+          </div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-teal);"></span>
+            <span>Reading</span>
+            <span class="mark done"></span><span class="mark done"></span><span class="mark done"></span><span class="mark"></span>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-hex-note">
+        <span class="swatch-dot" style="background:#2E1B1A;"></span>
+        Richer warm-brown at <span class="hex">rgba(46, 27, 26, 0.78)</span>. Warmest variant. Most leather-forward.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 8e ───────────────────────────────────── -->
+  <section style="margin-bottom:40px;">
+    <div class="head">
+      <div class="head-num">8e</div>
+      <div class="head-title">Paper-deep, opaque</div>
+      <div class="head-sub">solid panel · no frosted translucency</div>
+    </div>
+    <div class="description">
+      <strong>The feeling.</strong> Drop the frosted effect entirely. Solid <span class="hex">#1D0E10</span> — our paper-deep. The sidebar becomes a defined object, not a subtle overlay. Loses some of the "airy" feeling from V3 Hybrid 1, but gains a sharper, more graphic identity. This is how most serious design apps handle dark-mode sidebars.
+    </div>
+
+    <div class="preview-card">
+      <div class="preview-label">
+        <div class="left"><span class="name">8e · Paper-deep opaque</span><span class="code">#1D0E10</span></div>
+        <span class="tag">SIDE B · OPT 8</span>
+      </div>
+      <div class="opt-8 var-8e preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+            <div class="preview-nav-item"><span class="num">04</span>All</div>
+          </nav>
+          <div class="preview-sidebar-foot">
+            <div class="preview-avatar">J</div>
+            <div><div class="preview-chip-name">Jeni</div><div class="preview-chip-handle">@jencasano</div></div>
+          </div>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span><span class="mark"></span><span class="mark done"></span><span class="mark today"></span>
+          </div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-teal);"></span>
+            <span>Reading</span>
+            <span class="mark done"></span><span class="mark done"></span><span class="mark done"></span><span class="mark"></span>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-hex-note">
+        <span class="swatch-dot" style="background:#1D0E10;"></span>
+        Solid <span class="hex">#1D0E10</span>, no blur. Sidebar is a defined panel, not a tint.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── closing ──────────────────────────────── -->
+  <section style="margin-top:40px;">
+    <div class="head">
+      <div class="head-num">NOTES</div>
+      <div class="head-title">Reading the five</div>
+      <div class="head-sub">what's the Option 8 you actually want</div>
+    </div>
+
+    <div class="description">
+      <strong>8a</strong> is the current, safe, quiet default. <br><br>
+      <strong>8b</strong> is Option 8 as an architectural dark dashboard. The active ink-pill is less of a color leap. <br><br>
+      <strong>8c</strong> is Option 8 fully committing to its identity. Two-tone maroon + teal, structural, most distinctive, most 90s-bar. My personal favorite of the five if we're being bold.<br><br>
+      <strong>8d</strong> is the warmest version. Cozy, harmonious, least contrasty. Best for long reading.<br><br>
+      <strong>8e</strong> is the most "standard dark-mode" option. Opaque panel, no magic. Reliable.<br><br>
+      My gut: <strong>8c or 8d</strong>. 8c if you want Option 8 to earn its own identity. 8d if you want showup. to feel warm above all else.
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
