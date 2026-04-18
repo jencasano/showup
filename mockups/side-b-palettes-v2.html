@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Side B palettes · round 2 · night colors</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600;1,9..144,700&family=Manrope:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+/* ═══════════════════════════════════════════════
+   Page-level tokens (light meta-shell, Side A)
+   ═══════════════════════════════════════════════ */
+:root {
+  --paper:       #F4ECD8;
+  --paper-deep:  #ECE1C6;
+  --ink:         #2A1F1A;
+  --ink-soft:    #5A463A;
+  --ink-faint:   #9C8874;
+  --red:         #C3342B;
+  --yellow:      #E8B33A;
+  --blue:        #4F6C8E;
+  --hairline:    #D4C3A1;
+
+  --font-logo:    'Sora', sans-serif;
+  --font-display: 'Fraunces', serif;
+  --font-body:    'Manrope', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0.08 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  background-size: 260px 260px;
+}
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 32px 96px;
+  position: relative;
+  z-index: 1;
+}
+
+.intro {
+  text-align: center;
+  margin-bottom: 64px;
+  padding-bottom: 40px;
+  border-bottom: 1px dashed var(--hairline);
+}
+.kicker {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: #F6E4B0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.intro h1 {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -0.03em;
+  margin: 0 0 10px;
+}
+.intro h1 em {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.75em;
+  color: var(--ink-soft);
+  letter-spacing: -0.01em;
+}
+.intro p {
+  max-width: 620px;
+  margin: 0 auto;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--hairline);
+}
+.head-num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--red);
+  font-weight: 500;
+}
+.head-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.head-sub {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+.description {
+  background: #F6E4B0;
+  border: 1px dashed var(--yellow);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.description strong { color: var(--red); font-weight: 600; }
+
+.palette {
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(42,31,26,0.08), 0 8px 24px rgba(42,31,26,0.06);
+  margin-bottom: 40px;
+}
+
+.palette-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.palette-head .tag {
+  background: var(--red);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+}
+.palette-head .name-wrap { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.palette-head .name { font-weight: 700; }
+.palette-head .vibe {
+  color: rgba(244, 236, 216, 0.65);
+  font-style: italic;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+
+.preview {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 240px;
+  position: relative;
+}
+
+.preview::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--side-red) 0 33%,
+    var(--side-yellow) 33% 66%,
+    var(--side-blue) 66% 100%
+  );
+  z-index: 5;
+}
+
+.preview-sidebar {
+  background: var(--side-sidebar);
+  backdrop-filter: blur(6px);
+  padding: 26px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-right: 1px solid var(--side-hairline);
+}
+
+.preview-logo {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.03em;
+  padding: 0 8px;
+  color: var(--side-text);
+}
+.preview-logo span { color: var(--side-red); }
+
+.preview-nav { display: flex; flex-direction: column; gap: 3px; }
+.preview-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--side-text-soft);
+}
+.preview-nav-item .num {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--side-text-faint);
+  letter-spacing: 0.08em;
+  min-width: 16px;
+}
+.preview-nav-item.active {
+  background: var(--side-active-bg);
+  color: var(--side-active-text);
+  font-weight: 600;
+}
+.preview-nav-item.active .num { color: var(--side-red); }
+
+.preview-main {
+  padding: 28px 24px;
+  background: var(--side-paper);
+  color: var(--side-text);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.preview-main h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--side-text);
+}
+.preview-main h2 em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--side-red);
+}
+.preview-main .meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--side-text-faint);
+}
+.preview-main .sample-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: var(--side-text-soft);
+}
+.preview-main .dot { width: 10px; height: 10px; border-radius: 50%; }
+.preview-main .mark {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--side-hairline);
+  background: var(--side-paper);
+}
+.preview-main .mark.done { background: var(--side-text); border-color: var(--side-text); }
+.preview-main .mark.today { border-color: var(--side-red); border-width: 2px; }
+
+.swatches {
+  padding: 20px 18px 22px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  background: var(--paper);
+  border-top: 1px solid var(--hairline);
+}
+.swatch {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+}
+.swatch-color {
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  padding: 8px 10px;
+}
+.swatch-meta {
+  padding: 8px 10px;
+  background: #fff;
+  border-top: 1px solid var(--hairline);
+}
+.swatch-name {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.swatch-hex {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--ink-faint);
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+.swatch-role {
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.red-note {
+  padding: 12px 18px;
+  background: var(--paper-deep);
+  border-top: 1px solid var(--hairline);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.red-note-swatch {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.red-note .hex {
+  font-family: var(--font-mono);
+  font-style: normal;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════
+   OPTION 6: Muted violet night
+   2am TV glow, soft warm cream text
+   ═══════════════════════════════════════════════ */
+.opt-6 {
+  --side-paper:       #261B38;
+  --side-paper-deep:  #1B1329;
+  --side-sidebar:     rgba(38, 27, 56, 0.72);
+  --side-text:        #EEDDD0;
+  --side-text-soft:   #B39FAE;
+  --side-text-faint:  #6E5D78;
+  --side-red:         #E85846;
+  --side-yellow:      #E8B33A;
+  --side-blue:        #7C8FC8;
+  --side-hairline:    #3E2F52;
+  --side-active-bg:   #EEDDD0;
+  --side-active-text: #1B1329;
+}
+
+/* ═══════════════════════════════════════════════
+   OPTION 7: Magenta bruise
+   Deeper, plum/eggplant, theatrical
+   ═══════════════════════════════════════════════ */
+.opt-7 {
+  --side-paper:       #2D1528;
+  --side-paper-deep:  #1F0E1C;
+  --side-sidebar:     rgba(45, 21, 40, 0.72);
+  --side-text:        #F1D9D0;
+  --side-text-soft:   #B58E9E;
+  --side-text-faint:  #72566A;
+  --side-red:         #F2725A;
+  --side-yellow:      #E8B33A;
+  --side-blue:        #9A88C2;
+  --side-hairline:    #4A2340;
+  --side-active-bg:   #F1D9D0;
+  --side-active-text: #1F0E1C;
+}
+
+/* ═══════════════════════════════════════════════
+   OPTION 8: Maroon + teal accent
+   Old hotel bar, red leather + teal neon
+   ═══════════════════════════════════════════════ */
+.opt-8 {
+  --side-paper:       #2A1518;
+  --side-paper-deep:  #1D0E10;
+  --side-sidebar:     rgba(42, 21, 24, 0.72);
+  --side-text:        #F0DCCF;
+  --side-text-soft:   #B18A84;
+  --side-text-faint:  #6E504B;
+  --side-red:         #F07A5E;
+  --side-yellow:      #E8B33A;
+  --side-blue:        #5EAAA8;  /* teal replaces blue */
+  --side-hairline:    #4A2025;
+  --side-active-bg:   #F0DCCF;
+  --side-active-text: #1D0E10;
+}
+
+/* ═══════════════════════════════════════════════
+   OPTION 9: VSCode teal, translated (abyss-deep)
+   Pushed darker than the reference screenshot
+   ═══════════════════════════════════════════════ */
+.opt-9 {
+  --side-paper:       #0D1620;
+  --side-paper-deep:  #070E16;
+  --side-sidebar:     rgba(13, 22, 32, 0.78);
+  --side-text:        #DCE4EC;
+  --side-text-soft:   #7C93A8;
+  --side-text-faint:  #425468;
+  --side-red:         #E3604E;
+  --side-yellow:      #E8B33A;
+  --side-blue:        #5FA8B8;  /* cold teal */
+  --side-hairline:    #1E2D3C;
+  --side-active-bg:   #DCE4EC;
+  --side-active-text: #070E16;
+}
+
+@media (max-width: 700px) {
+  .preview { grid-template-columns: 1fr; }
+  .preview-sidebar { border-right: none; border-bottom: 1px solid var(--side-hairline); }
+}
+
+.compare-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2px;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 40px;
+  background: var(--hairline);
+}
+.compare-cell {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+  position: relative;
+}
+.compare-cell .compare-logo {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 1.7rem;
+  letter-spacing: -0.03em;
+}
+.compare-cell .compare-label {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.compare-cell .compare-hex {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  opacity: 0.55;
+}
+.compare-cell.c6 { background: #261B38; color: #EEDDD0; }
+.compare-cell.c6 .compare-logo span { color: #E85846; }
+.compare-cell.c7 { background: #2D1528; color: #F1D9D0; }
+.compare-cell.c7 .compare-logo span { color: #F2725A; }
+.compare-cell.c8 { background: #2A1518; color: #F0DCCF; }
+.compare-cell.c8 .compare-logo span { color: #F07A5E; }
+.compare-cell.c9 { background: #0D1620; color: #DCE4EC; }
+.compare-cell.c9 .compare-logo span { color: #E3604E; }
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <!-- ── intro ───────────────────────────────────── -->
+  <section class="intro">
+    <span class="kicker">Mixtape · Side B · round 2 · night colors</span>
+    <h1>showup<span style="color:var(--red);">.</span> <em>/ four night directions</em></h1>
+    <p>Violet, magenta, maroon+teal, and a deepened take on the VSCode teal. These go somewhere the warm options couldn't. Each one gives Side B its own emotional identity instead of just being "Side A with the lights off."</p>
+  </section>
+
+  <!-- ── quick side-by-side ──────────────────────── -->
+  <section>
+    <div class="head">
+      <div class="head-num">FIRST LOOK</div>
+      <div class="head-title">All four, at a glance</div>
+      <div class="head-sub">just the logo on its background · feel the mood first</div>
+    </div>
+
+    <div class="compare-hero">
+      <div class="compare-cell c6">
+        <div class="compare-label">Option 6</div>
+        <div class="compare-logo">showup<span>.</span></div>
+        <div class="compare-hex">#261B38</div>
+      </div>
+      <div class="compare-cell c7">
+        <div class="compare-label">Option 7</div>
+        <div class="compare-logo">showup<span>.</span></div>
+        <div class="compare-hex">#2D1528</div>
+      </div>
+      <div class="compare-cell c8">
+        <div class="compare-label">Option 8</div>
+        <div class="compare-logo">showup<span>.</span></div>
+        <div class="compare-hex">#2A1518</div>
+      </div>
+      <div class="compare-cell c9">
+        <div class="compare-label">Option 9</div>
+        <div class="compare-logo">showup<span>.</span></div>
+        <div class="compare-hex">#0D1620</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OPTION 6 ───────────────────────────────── -->
+  <section>
+    <div class="head">
+      <div class="head-num">OPTION 6</div>
+      <div class="head-title">Muted violet night</div>
+      <div class="head-sub">TV glow · warm cream text · dreamy, personal</div>
+    </div>
+
+    <div class="description">
+      <strong>The feeling.</strong> Alone in the living room at 2am with the TV on and the lights off. The violet isn't pure or loud, it's a desaturated dusty purple like the color of a dark room lit only by a screen. Text is a warm cream (not cold white) which keeps the showup. warmth intact even though the background is cool. <strong>Most emotionally romantic of the four.</strong> Diary feature lives here comfortably.
+    </div>
+
+    <div class="palette opt-6">
+      <div class="palette-head">
+        <div class="name-wrap">
+          <span class="name">Option 6 · Violet night</span>
+          <span class="vibe">2am TV glow</span>
+        </div>
+        <span class="tag">SIDE B</span>
+      </div>
+
+      <div class="preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+          </nav>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span>
+            <span class="mark"></span>
+            <span class="mark done"></span>
+            <span class="mark today"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-color" style="background:#261B38;"></div><div class="swatch-meta"><div class="swatch-role">Paper</div><div class="swatch-name">Dusk violet</div><div class="swatch-hex">#261B38</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#1B1329;"></div><div class="swatch-meta"><div class="swatch-role">Paper deep</div><div class="swatch-name">Midnight plum</div><div class="swatch-hex">#1B1329</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#EEDDD0;"></div><div class="swatch-meta"><div class="swatch-role">Text</div><div class="swatch-name">Warm cream</div><div class="swatch-hex">#EEDDD0</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#B39FAE;"></div><div class="swatch-meta"><div class="swatch-role">Text soft</div><div class="swatch-name">Lavender grey</div><div class="swatch-hex">#B39FAE</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#6E5D78;"></div><div class="swatch-meta"><div class="swatch-role">Text faint</div><div class="swatch-name">Dim mauve</div><div class="swatch-hex">#6E5D78</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E85846;"></div><div class="swatch-meta"><div class="swatch-role">Red · hero</div><div class="swatch-name">Cherry coral</div><div class="swatch-hex">#E85846</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E8B33A;"></div><div class="swatch-meta"><div class="swatch-role">Yellow</div><div class="swatch-name">Mustard (same)</div><div class="swatch-hex">#E8B33A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#7C8FC8;"></div><div class="swatch-meta"><div class="swatch-role">Blue</div><div class="swatch-name">Periwinkle</div><div class="swatch-hex">#7C8FC8</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#3E2F52;"></div><div class="swatch-meta"><div class="swatch-role">Hairline</div><div class="swatch-name">Twilight</div><div class="swatch-hex">#3E2F52</div></div></div>
+      </div>
+
+      <div class="red-note">
+        <span class="red-note-swatch" style="background:#E85846;"></span>
+        <span>Red warmed and brightened (<span class="hex">#E85846</span>) to cut through the violet's cool cast. The supporting blue shifted toward periwinkle to avoid clashing.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OPTION 7 ───────────────────────────────── -->
+  <section>
+    <div class="head">
+      <div class="head-num">OPTION 7</div>
+      <div class="head-title">Magenta bruise</div>
+      <div class="head-sub">plum / eggplant · rich, slightly theatrical</div>
+    </div>
+
+    <div class="description">
+      <strong>The feeling.</strong> Deeper and more saturated than violet. Leans toward eggplant, plum, bruise. Richer, more cinematic, slightly theatrical. A velvet curtain at a 90s arthouse theater. Red has to shift further toward peach/coral to separate from the magenta background. <strong>Most dramatic of the four.</strong> Feels intentional and stylized, not neutral.
+    </div>
+
+    <div class="palette opt-7">
+      <div class="palette-head">
+        <div class="name-wrap">
+          <span class="name">Option 7 · Magenta bruise</span>
+          <span class="vibe">velvet curtain, arthouse theater</span>
+        </div>
+        <span class="tag">SIDE B</span>
+      </div>
+
+      <div class="preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+          </nav>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span>
+            <span class="mark"></span>
+            <span class="mark done"></span>
+            <span class="mark today"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-color" style="background:#2D1528;"></div><div class="swatch-meta"><div class="swatch-role">Paper</div><div class="swatch-name">Eggplant</div><div class="swatch-hex">#2D1528</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#1F0E1C;"></div><div class="swatch-meta"><div class="swatch-role">Paper deep</div><div class="swatch-name">Bruised plum</div><div class="swatch-hex">#1F0E1C</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#F1D9D0;"></div><div class="swatch-meta"><div class="swatch-role">Text</div><div class="swatch-name">Rose cream</div><div class="swatch-hex">#F1D9D0</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#B58E9E;"></div><div class="swatch-meta"><div class="swatch-role">Text soft</div><div class="swatch-name">Dusty mauve</div><div class="swatch-hex">#B58E9E</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#72566A;"></div><div class="swatch-meta"><div class="swatch-role">Text faint</div><div class="swatch-name">Aged grape</div><div class="swatch-hex">#72566A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#F2725A;"></div><div class="swatch-meta"><div class="swatch-role">Red · hero</div><div class="swatch-name">Peach coral</div><div class="swatch-hex">#F2725A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E8B33A;"></div><div class="swatch-meta"><div class="swatch-role">Yellow</div><div class="swatch-name">Mustard (same)</div><div class="swatch-hex">#E8B33A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#9A88C2;"></div><div class="swatch-meta"><div class="swatch-role">Blue</div><div class="swatch-name">Lilac</div><div class="swatch-hex">#9A88C2</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#4A2340;"></div><div class="swatch-meta"><div class="swatch-role">Hairline</div><div class="swatch-name">Deep plum</div><div class="swatch-hex">#4A2340</div></div></div>
+      </div>
+
+      <div class="red-note">
+        <span class="red-note-swatch" style="background:#F2725A;"></span>
+        <span>Red pushed toward peach/coral (<span class="hex">#F2725A</span>) because anything redder would mud into the magenta. Biggest departure from Side A's red of any option. Blue shifted to lilac for harmony.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OPTION 8 ───────────────────────────────── -->
+  <section>
+    <div class="head">
+      <div class="head-num">OPTION 8</div>
+      <div class="head-title">Maroon + teal accent</div>
+      <div class="head-sub">red leather booth · teal neon sign · 90s hotel bar</div>
+    </div>
+
+    <div class="description">
+      <strong>The feeling.</strong> Maroon/burgundy paper (warmer than 6 and 7), and the supporting blue role is replaced by cold teal to create dramatic contrast. Old hotel bar with red leather booths and a teal neon sign over the door. Most 90s-mixtape-specific of the four. <strong>The warm/cold split is the whole move here.</strong> Red stays familial to Side A. Risk: two-tone aesthetic can read as "retro styled" if we aren't careful.
+    </div>
+
+    <div class="palette opt-8">
+      <div class="palette-head">
+        <div class="name-wrap">
+          <span class="name">Option 8 · Maroon + teal</span>
+          <span class="vibe">90s hotel bar, leather + neon</span>
+        </div>
+        <span class="tag">SIDE B</span>
+      </div>
+
+      <div class="preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+          </nav>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span>
+            <span class="mark"></span>
+            <span class="mark done"></span>
+            <span class="mark today"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-color" style="background:#2A1518;"></div><div class="swatch-meta"><div class="swatch-role">Paper</div><div class="swatch-name">Burgundy</div><div class="swatch-hex">#2A1518</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#1D0E10;"></div><div class="swatch-meta"><div class="swatch-role">Paper deep</div><div class="swatch-name">Leather shadow</div><div class="swatch-hex">#1D0E10</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#F0DCCF;"></div><div class="swatch-meta"><div class="swatch-role">Text</div><div class="swatch-name">Warm cream</div><div class="swatch-hex">#F0DCCF</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#B18A84;"></div><div class="swatch-meta"><div class="swatch-role">Text soft</div><div class="swatch-name">Faded rose</div><div class="swatch-hex">#B18A84</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#6E504B;"></div><div class="swatch-meta"><div class="swatch-role">Text faint</div><div class="swatch-name">Worn leather</div><div class="swatch-hex">#6E504B</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#F07A5E;"></div><div class="swatch-meta"><div class="swatch-role">Red · hero</div><div class="swatch-name">Salmon</div><div class="swatch-hex">#F07A5E</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E8B33A;"></div><div class="swatch-meta"><div class="swatch-role">Yellow</div><div class="swatch-name">Mustard (same)</div><div class="swatch-hex">#E8B33A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#5EAAA8;"></div><div class="swatch-meta"><div class="swatch-role">Teal · accent</div><div class="swatch-name">Neon teal</div><div class="swatch-hex">#5EAAA8</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#4A2025;"></div><div class="swatch-meta"><div class="swatch-role">Hairline</div><div class="swatch-name">Deep burgundy</div><div class="swatch-hex">#4A2025</div></div></div>
+      </div>
+
+      <div class="red-note">
+        <span class="red-note-swatch" style="background:#F07A5E;"></span>
+        <span>Red shifted salmon (<span class="hex">#F07A5E</span>) so it reads as a different color from the maroon background. The blue role became teal (<span class="hex">#5EAAA8</span>) — cold contrast against the warm paper is the whole point of this option.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OPTION 9 ───────────────────────────────── -->
+  <section>
+    <div class="head">
+      <div class="head-num">OPTION 9</div>
+      <div class="head-title">Deep teal abyss</div>
+      <div class="head-sub">your VSCode theme, pushed darker · architectural, focused</div>
+    </div>
+
+    <div class="description">
+      <strong>The feeling.</strong> Your VSCode theme, but dropped deeper than the reference screenshot. Not slate blue-grey, an actual <em>abyss</em>. Cold marine-ink. Reads as architectural, focused, quiet. <strong>Biggest risk:</strong> this is the coldest option and the furthest from Side A's warmth. Pick this only if you want Side B to genuinely feel like a different mood, not a companion. Red stays warm and bright to break through the cold.
+    </div>
+
+    <div class="palette opt-9">
+      <div class="palette-head">
+        <div class="name-wrap">
+          <span class="name">Option 9 · Deep teal abyss</span>
+          <span class="vibe">VSCode theme, darker</span>
+        </div>
+        <span class="tag">SIDE B</span>
+      </div>
+
+      <div class="preview">
+        <aside class="preview-sidebar">
+          <div class="preview-logo">showup<span>.</span></div>
+          <nav class="preview-nav">
+            <div class="preview-nav-item active"><span class="num">01</span>My log</div>
+            <div class="preview-nav-item"><span class="num">02</span>Diary</div>
+            <div class="preview-nav-item"><span class="num">03</span>Following</div>
+          </nav>
+        </aside>
+        <div class="preview-main">
+          <h2>April <em>2026</em></h2>
+          <div class="meta">day 18 of 30</div>
+          <div class="sample-row">
+            <span class="dot" style="background:var(--side-red);"></span>
+            <span>Running</span>
+            <span class="mark done"></span>
+            <span class="mark"></span>
+            <span class="mark done"></span>
+            <span class="mark today"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-color" style="background:#0D1620;"></div><div class="swatch-meta"><div class="swatch-role">Paper</div><div class="swatch-name">Abyss</div><div class="swatch-hex">#0D1620</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#070E16;"></div><div class="swatch-meta"><div class="swatch-role">Paper deep</div><div class="swatch-name">Pitch marine</div><div class="swatch-hex">#070E16</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#DCE4EC;"></div><div class="swatch-meta"><div class="swatch-role">Text</div><div class="swatch-name">Cold cream</div><div class="swatch-hex">#DCE4EC</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#7C93A8;"></div><div class="swatch-meta"><div class="swatch-role">Text soft</div><div class="swatch-name">Fog</div><div class="swatch-hex">#7C93A8</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#425468;"></div><div class="swatch-meta"><div class="swatch-role">Text faint</div><div class="swatch-name">Deep slate</div><div class="swatch-hex">#425468</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E3604E;"></div><div class="swatch-meta"><div class="swatch-role">Red · hero</div><div class="swatch-name">Beacon</div><div class="swatch-hex">#E3604E</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E8B33A;"></div><div class="swatch-meta"><div class="swatch-role">Yellow</div><div class="swatch-name">Mustard (same)</div><div class="swatch-hex">#E8B33A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#5FA8B8;"></div><div class="swatch-meta"><div class="swatch-role">Blue · teal</div><div class="swatch-name">Marine teal</div><div class="swatch-hex">#5FA8B8</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#1E2D3C;"></div><div class="swatch-meta"><div class="swatch-role">Hairline</div><div class="swatch-name">Dim teal</div><div class="swatch-hex">#1E2D3C</div></div></div>
+      </div>
+
+      <div class="red-note">
+        <span class="red-note-swatch" style="background:#E3604E;"></span>
+        <span>Red tuned as a beacon (<span class="hex">#E3604E</span>) against the cold abyss. The blue role became teal to harmonize with the marine paper. Pushed <em>significantly</em> darker than the VSCode screenshot to give it drama.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── closing ──────────────────────────────── -->
+  <section style="margin-top:48px;">
+    <div class="head">
+      <div class="head-num">NOTES</div>
+      <div class="head-title">Reading the four</div>
+      <div class="head-sub">one of these should win, or confirm none of them do</div>
+    </div>
+
+    <div class="description">
+      <strong>Option 6 (Violet)</strong> is the "bedroom" option. Personal, dreamy, diary-friendly. Warm text on cool background is the key trick.<br><br>
+      <strong>Option 7 (Magenta)</strong> is the "theater" option. Dramatic, stylized, loudest personality. Reddest red deviation though.<br><br>
+      <strong>Option 8 (Maroon + teal)</strong> is the "90s bar" option. Warmest of the four, closest to Side A continuity. The teal accent is the differentiator.<br><br>
+      <strong>Option 9 (Deep teal)</strong> is the "workshop at midnight" option. Coldest, most architectural, furthest from Side A. If Side B should be "a different mood, not a dark Side A," this is the strongest candidate.<br><br>
+      Also keep in mind: <em>nothing we've built is wasted</em>. Anything we don't pick for Side B becomes a paid theme candidate later.
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
