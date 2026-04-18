@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>showup. · Mixtape Playbook</title>
+<meta name="description" content="The Mixtape design playbook for showup. -- visual, typographic, motion, and voice system." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600;1,9..144,700&family=Manrope:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS (Side A is the playbook's own theme)
+   ═══════════════════════════════════════════════ */
+:root {
+  --paper:       #F4ECD8;
+  --paper-deep:  #ECE1C6;
+  --paper-edge:  #DCCFA6;
+  --ink:         #2A1F1A;
+  --ink-soft:    #5A463A;
+  --ink-faint:   #9C8874;
+  --red:         #C3342B;
+  --red-hover:   #A62822;
+  --red-wash:    #F5D9D5;
+  --blue:        #4F6C8E;
+  --yellow:      #E8B33A;
+  --green:       #3E5C3A;
+  --hairline:    #D4C3A1;
+
+  /* Side B, available for inline use */
+  --b-paper:     #2A1518;
+  --b-paper-deep:#1D0E10;
+  --b-text:      #F0DCCF;
+  --b-text-soft: #B18A84;
+  --b-text-faint:#6E504B;
+  --b-red:       #F07A5E;
+  --b-teal:      #5EAAA8;
+  --b-hairline:  #4A2025;
+
+  --font-logo:    'Sora', sans-serif;
+  --font-display: 'Fraunces', serif;
+  --font-body:    'Manrope', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+  --font-hand:    'Caveat', cursive;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-full: 999px;
+
+  --shadow-soft: 0 1px 2px rgba(42,31,26,0.06), 0 2px 6px rgba(42,31,26,0.04);
+  --shadow-card: 0 2px 4px rgba(42,31,26,0.08), 0 8px 24px rgba(42,31,26,0.06);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Global paper grain */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0.08 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  background-size: 260px 260px;
+}
+
+/* Stripe across page top */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    var(--red) 0 33%,
+    var(--yellow) 33% 66%,
+    var(--blue) 66% 100%);
+  z-index: 100;
+}
+
+/* ═══════════════════════════════════════════════
+   LAYOUT -- sidebar TOC + main content
+   ═══════════════════════════════════════════════ */
+.shell {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Sticky sidebar TOC ────────────────────────── */
+.toc {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 44px 20px 32px 32px;
+  border-right: 1px solid var(--hairline);
+  background: rgba(236, 225, 198, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.toc-brand {
+  margin-bottom: 32px;
+}
+.toc-motif {
+  width: 44px; height: 12px;
+  margin-bottom: 12px;
+}
+.toc-logo {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.toc-logo .highlight { color: var(--red); }
+.toc-subtitle {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.toc-list li { margin: 0 0 4px 0; }
+
+.toc-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  text-decoration: none;
+  color: var(--ink-soft);
+  border-radius: var(--r-full);
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+.toc-link:hover {
+  color: var(--ink);
+  background: rgba(244, 236, 216, 0.6);
+}
+.toc-link.active {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+.toc-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  min-width: 16px;
+}
+.toc-link.active .toc-num { color: var(--red); }
+
+.toc-foot {
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+}
+.toc-foot a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  display: block;
+  padding: 4px 0;
+}
+.toc-foot a:hover { color: var(--red); }
+
+/* ── Main content ──────────────────────────────── */
+.main {
+  padding: 64px 56px 120px;
+  max-width: 920px;
+  position: relative;
+}
+
+/* Hero */
+.hero {
+  margin-bottom: 64px;
+  padding-bottom: 44px;
+  border-bottom: 1px dashed var(--hairline);
+}
+.hero-eyebrow {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: rgba(232, 179, 58, 0.18);
+  padding: 4px 12px;
+  border-radius: var(--r-full);
+  margin-bottom: 20px;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 3.4rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 0 0 16px;
+  color: var(--ink);
+}
+.hero-title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--red);
+}
+.hero-lede {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  max-width: 620px;
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+.hero-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+}
+.hero-meta strong { color: var(--ink-soft); font-weight: 600; }
+.hero-meta a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px dashed var(--ink-faint); }
+.hero-meta a:hover { color: var(--red); border-bottom-color: var(--red); }
+
+/* ── Section ──────────────────────────────────── */
+.section {
+  margin-bottom: 80px;
+  scroll-margin-top: 40px;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--ink);
+}
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  color: var(--red);
+  font-weight: 500;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--ink);
+}
+.section-sub {
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+.subsection-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 32px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--hairline);
+}
+.subsection-num {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--red);
+}
+.subsection-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.section p, .section li {
+  color: var(--ink-soft);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+.section p { margin: 0 0 14px; }
+.section strong { color: var(--ink); font-weight: 600; }
+.section em {
+  font-style: italic;
+  color: var(--ink);
+  font-family: var(--font-display);
+}
+.section code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  background: var(--paper-deep);
+  border: 1px solid var(--hairline);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--ink);
+}
+
+/* Callout box */
+.callout {
+  background: rgba(246, 228, 176, 0.5);
+  border: 1px dashed var(--yellow);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin: 20px 0;
+  position: relative;
+}
+.callout::before {
+  content: "note";
+  position: absolute;
+  top: -9px; left: 16px;
+  background: var(--paper);
+  padding: 0 8px;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-style: normal;
+}
+.callout strong { color: var(--red); font-weight: 600; }
+
+/* Pillar list */
+.pillar-list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+  display: grid;
+  gap: 14px;
+}
+.pillar-list li {
+  display: flex;
+  gap: 20px;
+  padding: 18px 20px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  background: var(--paper);
+}
+.pillar-num {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--red);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.pillar-text {
+  font-family: var(--font-display);
+  color: var(--ink);
+  line-height: 1.55;
+}
+.pillar-text strong {
+  font-weight: 600;
+  display: block;
+  font-size: 1.08rem;
+  margin-bottom: 2px;
+}
+.pillar-text-desc {
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+/* ═══════════════════════════════════════════════
+   TABLES
+   ═══════════════════════════════════════════════ */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.88rem;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.tbl th, .tbl td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--hairline);
+}
+.tbl th {
+  background: var(--paper-deep);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl td code { font-size: 0.85em; }
+
+/* Do/Don't table */
+.tbl-donts td:first-child {
+  color: var(--ink-faint);
+  text-decoration: line-through;
+}
+.tbl-donts td:last-child {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════
+   SWATCH GRID
+   ═══════════════════════════════════════════════ */
+.swatch-section {
+  margin: 24px 0;
+}
+
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.swatch {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: #fff;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.swatch:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+.swatch-chip {
+  height: 80px;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px 12px;
+}
+.swatch-chip.light-text { color: var(--paper); }
+.swatch-chip.dark-text { color: var(--ink); }
+.swatch-chip-label {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.swatch-meta {
+  padding: 10px 12px;
+}
+.swatch-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 3px;
+}
+.swatch-hex {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  user-select: all;
+}
+.swatch-role {
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.copy-toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--ink);
+  color: var(--paper);
+  padding: 10px 18px;
+  border-radius: var(--r-full);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  box-shadow: var(--shadow-card);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s;
+  z-index: 200;
+}
+.copy-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════
+   TYPOGRAPHY SPECIMENS
+   ═══════════════════════════════════════════════ */
+.type-specimen {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 24px;
+  margin: 16px 0;
+  background: var(--paper);
+}
+.type-specimen-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--hairline);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.type-specimen-name {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--red);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.type-specimen-role {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.type-sample {
+  color: var(--ink);
+  margin: 10px 0;
+}
+
+.sample-sora {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 3rem;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.sample-sora .highlight { color: var(--red); }
+
+.sample-fraunces-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 2.2rem;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+.sample-fraunces-display em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--red);
+}
+.sample-fraunces-body {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+.sample-manrope {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.sample-manrope-alt {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.sample-caveat {
+  font-family: var(--font-hand);
+  font-weight: 500;
+  font-size: 1.7rem;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.sample-mono {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.sample-mono-small {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.type-meta {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+}
+.type-meta span strong { color: var(--ink-soft); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════
+   COMPONENT PREVIEWS
+   ═══════════════════════════════════════════════ */
+.preview-wrap {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--paper);
+  margin: 20px 0;
+  box-shadow: var(--shadow-soft);
+}
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.preview-header .tag {
+  background: var(--red);
+  color: var(--paper);
+  padding: 2px 10px;
+  border-radius: var(--r-full);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+}
+.preview-body {
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.preview-body.dark {
+  background: var(--b-paper);
+  color: var(--b-text);
+}
+
+/* Stripe preview */
+.stripe-preview {
+  height: 8px;
+  background: linear-gradient(90deg,
+    var(--red) 0 33%,
+    var(--yellow) 33% 66%,
+    var(--blue) 66% 100%);
+  border-radius: 4px;
+}
+.stripe-preview.side-b {
+  background: linear-gradient(90deg,
+    var(--b-red) 0 33%,
+    var(--yellow) 33% 66%,
+    var(--b-teal) 66% 100%);
+}
+
+/* Mini sidebar preview */
+.mini-sidebar {
+  width: 260px;
+  padding: 24px 14px 16px;
+  background: rgba(236, 225, 198, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.mini-sidebar.dark {
+  background: rgba(46, 27, 26, 0.78);
+  border-color: var(--b-hairline);
+}
+.mini-sidebar-motif { width: 40px; height: 10px; }
+.mini-sidebar-logo {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.mini-sidebar.dark .mini-sidebar-logo { color: var(--b-text); }
+.mini-sidebar-logo .highlight { color: var(--red); }
+.mini-sidebar.dark .mini-sidebar-logo .highlight { color: var(--b-red); }
+.mini-nav { display: flex; flex-direction: column; gap: 3px; }
+.mini-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-radius: var(--r-full);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+.mini-sidebar.dark .mini-nav-item { color: var(--b-text-soft); }
+.mini-nav-item.active {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+.mini-sidebar.dark .mini-nav-item.active {
+  background: var(--b-text);
+  color: var(--b-paper-deep);
+}
+.mini-nav-num {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+}
+.mini-nav-item.active .mini-nav-num { color: var(--red); }
+.mini-sidebar.dark .mini-nav-item.active .mini-nav-num { color: var(--b-red); }
+
+/* Texture demo with drifting motifs */
+.texture-demo {
+  height: 240px;
+  border-radius: var(--r-md);
+  background: var(--paper);
+  position: relative;
+  overflow: hidden;
+  margin: 16px 0;
+  border: 1px solid var(--hairline);
+}
+.texture-demo::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(40% 35% at 22% 30%, rgba(232, 179, 58, 0.2), transparent 70%),
+    radial-gradient(50% 40% at 78% 72%, rgba(195, 52, 43, 0.12), transparent 70%),
+    radial-gradient(35% 30% at 55% 10%, rgba(79, 108, 142, 0.1), transparent 70%);
+  animation: drift-warmth 55s ease-in-out infinite alternate;
+  filter: blur(10px);
+  pointer-events: none;
+}
+.texture-demo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke-width='1'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23C3342B' opacity='0.45'/><circle cx='160' cy='120' r='1.8' fill='%234F6C8E' opacity='0.55'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' stroke='%23C3342B' opacity='0.35'/><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4'/><circle cx='220' cy='280' r='2' fill='%23C3342B' opacity='0.35'/><path d='M320 310 q5 -7 10 0 q5 7 10 0' stroke='%234F6C8E' opacity='0.4'/><circle cx='80' cy='360' r='1.4' fill='%234F6C8E' opacity='0.5'/><path d='M190 380 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23C3342B' opacity='0.3'/></g></svg>");
+  background-size: 420px 420px;
+  animation: drift-motifs 70s linear infinite;
+  pointer-events: none;
+}
+.texture-demo.dark {
+  background: var(--b-paper);
+}
+.texture-demo.dark::before {
+  background:
+    radial-gradient(40% 35% at 22% 30%, rgba(232, 179, 58, 0.14), transparent 70%),
+    radial-gradient(50% 40% at 78% 72%, rgba(240, 122, 94, 0.16), transparent 70%),
+    radial-gradient(35% 30% at 55% 10%, rgba(94, 170, 168, 0.08), transparent 70%);
+}
+.texture-demo.dark::after {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke-width='1'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23F07A5E' opacity='0.45'/><circle cx='160' cy='120' r='1.8' fill='%235EAAA8' opacity='0.55'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' stroke='%23F07A5E' opacity='0.35'/><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4'/><circle cx='220' cy='280' r='2' fill='%23F07A5E' opacity='0.35'/><path d='M320 310 q5 -7 10 0 q5 7 10 0' stroke='%235EAAA8' opacity='0.4'/><circle cx='80' cy='360' r='1.4' fill='%235EAAA8' opacity='0.5'/><path d='M190 380 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23F07A5E' opacity='0.3'/></g></svg>");
+}
+
+.texture-demo-label {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  z-index: 2;
+}
+.texture-demo.dark .texture-demo-label { color: var(--b-text-faint); }
+
+@keyframes drift-warmth {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  50%  { transform: translate(2%, -2%) rotate(1deg); }
+  100% { transform: translate(-1%, 1%) rotate(-0.5deg); }
+}
+@keyframes drift-motifs {
+  from { background-position: 0 0; }
+  to { background-position: -420px -420px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .texture-demo::before, .texture-demo::after { animation: none !important; }
+}
+
+/* Motion demo */
+.motion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.motion-card {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--paper);
+}
+.motion-card-preview {
+  height: 120px;
+  background: var(--paper-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.motion-card-preview:hover .motion-demo-bubble {
+  animation: motion-ping 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.motion-card-preview:hover .motion-demo-fade {
+  animation: motion-fade 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.motion-card-preview:hover .motion-demo-stagger .motion-demo-pill {
+  animation: motion-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.motion-demo-bubble {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--red);
+}
+.motion-demo-fade {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink);
+}
+.motion-demo-stagger {
+  display: flex;
+  gap: 6px;
+}
+.motion-demo-stagger .motion-demo-pill {
+  width: 18px;
+  height: 18px;
+  background: var(--blue);
+  border-radius: 50%;
+  opacity: 0;
+}
+.motion-demo-stagger .motion-demo-pill:nth-child(1) { animation-delay: 0s; }
+.motion-demo-stagger .motion-demo-pill:nth-child(2) { animation-delay: 0.06s; }
+.motion-demo-stagger .motion-demo-pill:nth-child(3) { animation-delay: 0.12s; }
+.motion-demo-stagger .motion-demo-pill:nth-child(4) { animation-delay: 0.18s; }
+.motion-demo-stagger .motion-demo-pill:nth-child(5) { animation-delay: 0.24s; }
+
+@keyframes motion-ping {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+@keyframes motion-fade {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes motion-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.motion-card-meta {
+  padding: 10px 14px;
+  border-top: 1px solid var(--hairline);
+}
+.motion-card-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.motion-card-spec {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+}
+
+/* Mark preview */
+.mark-showcase {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 18px;
+  margin: 18px 0;
+}
+.mark-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.app-icon-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 18px;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-card);
+}
+.app-icon-medium {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.app-icon-small {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.app-icon-tiny {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mark-item-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+
+/* Stage (neutral background for mini-previews) */
+.stage {
+  background: var(--paper-deep);
+  border-radius: var(--r-md);
+  padding: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+.stage.dark { background: var(--b-paper-deep); }
+
+/* Pill (active nav preview) */
+.pill-preview {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--r-full);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.pill-preview .num {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--red);
+  letter-spacing: 0.1em;
+}
+.pill-preview.side-b {
+  background: var(--b-text);
+  color: var(--b-paper-deep);
+}
+.pill-preview.side-b .num { color: var(--b-red); }
+
+/* Wordmark sizes */
+.wordmark-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 0;
+}
+.wordmark-row {
+  display: flex;
+  align-items: baseline;
+  gap: 40px;
+}
+.wordmark-sample {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--ink);
+}
+.wordmark-sample .highlight { color: var(--red); }
+.wordmark-size-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  min-width: 60px;
+}
+
+/* Appendix */
+.appendix {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 2px solid var(--ink);
+}
+.appendix-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  display: grid;
+  gap: 8px;
+}
+.appendix-list li {
+  padding: 10px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+.appendix-list li a {
+  color: var(--red);
+  text-decoration: none;
+  font-weight: 600;
+}
+.appendix-list li a:hover { text-decoration: underline; }
+
+.footer {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px dashed var(--hairline);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  line-height: 1.7;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .toc {
+    position: static;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--hairline);
+    padding: 32px 20px;
+  }
+  .main { padding: 32px 20px 80px; }
+  .hero-title { font-size: 2.4rem; }
+  .section-title { font-size: 1.5rem; }
+  .section-sub { display: none; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Copy toast -->
+<div class="copy-toast" id="copy-toast">copied to clipboard</div>
+
+<div class="shell">
+
+  <!-- ═══════════════════════ SIDEBAR TOC ═══════════════════════ -->
+  <aside class="toc">
+    <div class="toc-brand">
+      <svg class="toc-motif" viewBox="0 0 44 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 6 Q 6 2, 10 6 T 18 6" stroke="#C3342B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <circle cx="24" cy="6" r="1.6" fill="#E8B33A"/>
+        <path d="M30 6 l3 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-3 -4 l-4 -1.5 z" fill="#C3342B" opacity="0.7"/>
+      </svg>
+      <div class="toc-logo">showup<span class="highlight">.</span></div>
+      <div class="toc-subtitle">Mixtape playbook</div>
+    </div>
+
+    <ul class="toc-list">
+      <li><a class="toc-link active" href="#philosophy"><span class="toc-num">01</span>Philosophy</a></li>
+      <li><a class="toc-link" href="#tone"><span class="toc-num">02</span>Tone &amp; Voice</a></li>
+      <li><a class="toc-link" href="#hard-rules"><span class="toc-num">03</span>Hard Rules</a></li>
+      <li><a class="toc-link" href="#tokens"><span class="toc-num">04</span>Design Tokens</a></li>
+      <li><a class="toc-link" href="#motion"><span class="toc-num">05</span>Motion Language</a></li>
+      <li><a class="toc-link" href="#components"><span class="toc-num">06</span>Core Components</a></li>
+      <li><a class="toc-link" href="#empty-error"><span class="toc-num">07</span>Empty &amp; Error</a></li>
+      <li><a class="toc-link" href="#responsive"><span class="toc-num">08</span>Responsive</a></li>
+      <li><a class="toc-link" href="#mobile"><span class="toc-num">09</span>Mobile Layout</a></li>
+      <li><a class="toc-link" href="#identity"><span class="toc-num">10</span>Brand Identity</a></li>
+      <li><a class="toc-link" href="#themes"><span class="toc-num">11</span>Theme System</a></li>
+      <li><a class="toc-link" href="#icons"><span class="toc-num">12</span>Iconography</a></li>
+      <li><a class="toc-link" href="#migration"><span class="toc-num">13</span>Migration Plan</a></li>
+      <li><a class="toc-link" href="#open"><span class="toc-num">14</span>Open Questions</a></li>
+    </ul>
+
+    <div class="toc-foot">
+      <a href="../MIXTAPE_SPEC.md">source → MIXTAPE_SPEC.md</a>
+      <a href="../build-log.html">← back to build log</a>
+      <a href="../">← back to app</a>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════ MAIN ═══════════════════════ -->
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+      <span class="hero-eyebrow">showup. · design playbook</span>
+      <h1 class="hero-title">Mixtape <em>/ Side A &amp; Side B</em></h1>
+      <p class="hero-lede">The visual, typographic, motion, and voice system that keeps showup. feeling like showup. The source of truth is <code>MIXTAPE_SPEC.md</code>. This is the showcase.</p>
+      <div class="hero-meta">
+        <span>Built by <strong>Jen &amp; Cii</strong></span>
+        <span>Locked <strong>April 2026</strong></span>
+        <span><a href="../MIXTAPE_SPEC.md">view source .md</a></span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════ 01 PHILOSOPHY ═══════════════════════ -->
+    <section class="section" id="philosophy">
+      <div class="section-head">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Philosophy</h2>
+        <span class="section-sub">the why, on one page</span>
+      </div>
+
+      <h3 class="subsection-title" style="margin-top: 0;">The aesthetic</h3>
+      <p>Mixtape. Warm 90s and early-2000s nostalgia, not literal. Mid-century book meets cassette tape. The only "mixtape" vocabulary that reaches the UI is "Side A" and "Side B" in the theme picker. Everything else is warm editorial restraint.</p>
+
+      <h3 class="subsection-title">The product posture</h3>
+      <p>showup. is <strong>95% personal, 5% social</strong>. The tracker and diary are the product. Following and All tabs are supporting features, not the center of gravity. Every design decision respects this ratio.</p>
+      <p>showup. is <strong>premium-first, monetization-minded</strong>. The design quality sets a bar that justifies paid themes and future paid tiers. The app should feel worth paying for before we charge anyone.</p>
+
+      <h3 class="subsection-title">The five pillars</h3>
+      <p>Every component, every copy string, every animation answers to these five.</p>
+
+      <ol class="pillar-list">
+        <li>
+          <span class="pillar-num">01</span>
+          <div class="pillar-text">
+            <strong>The tracker is the heartbeat.</strong>
+            <span class="pillar-text-desc">It is what brings people back daily. Never obscure it, never bury it, never slow it down.</span>
+          </div>
+        </li>
+        <li>
+          <span class="pillar-num">02</span>
+          <div class="pillar-text">
+            <strong>The diary is the emotional peak.</strong>
+            <span class="pillar-text-desc">It is where the product becomes personal. Protect its intimacy.</span>
+          </div>
+        </li>
+        <li>
+          <span class="pillar-num">03</span>
+          <div class="pillar-text">
+            <strong>Warm analog, crisp digital.</strong>
+            <span class="pillar-text-desc">Paper and ink on the surface, precision and speed underneath. Both matter.</span>
+          </div>
+        </li>
+        <li>
+          <span class="pillar-num">04</span>
+          <div class="pillar-text">
+            <strong>Quiet by default, personality on contact.</strong>
+            <span class="pillar-text-desc">The app does not shout. It reveals itself as you use it.</span>
+          </div>
+        </li>
+        <li>
+          <span class="pillar-num">05</span>
+          <div class="pillar-text">
+            <strong>Specific, not generic.</strong>
+            <span class="pillar-text-desc">Copy uses the person's name. Activities are named inline. Signals reference the actual moment.</span>
+          </div>
+        </li>
+      </ol>
+
+      <h3 class="subsection-title">Side A / Side B</h3>
+      <p><strong>Side A</strong> is the default light theme. Cream paper, deep ink, confident red. Friendly, legible, welcoming. <em>Daytime showup.</em></p>
+      <p><strong>Side B</strong> is the default dark theme. Maroon leather, warm cream text, salmon red, teal accent. Quiet, contemplative, evening. <em>showup. in the evening.</em></p>
+      <p>Side B is not "Side A with the lights off." It has its own emotional register. Together they form one cassette with two sides.</p>
+    </section>
+
+    <!-- ═══════════════════════ 02 TONE & VOICE ═══════════════════════ -->
+    <section class="section" id="tone">
+      <div class="section-head">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Tone &amp; Voice</h2>
+        <span class="section-sub">how showup. sounds</span>
+      </div>
+
+      <p>showup. sounds like a quietly observant friend who pays attention. Not a coach, not a cheerleader, not a life-hack blog.</p>
+
+      <h3 class="subsection-title" style="margin-top: 24px;">The five traits</h3>
+      <ul>
+        <li><strong>Warm.</strong> Never cold, never clinical.</li>
+        <li><strong>Specific.</strong> Uses real names, real activities, real moments.</li>
+        <li><strong>Quietly observant.</strong> Notices things without announcing it.</li>
+        <li><strong>A little sarcastic, sometimes.</strong> Only when the moment earns it. Never mean.</li>
+        <li><strong>Never performative.</strong> No fake enthusiasm, no corporate cheerfulness.</li>
+      </ul>
+
+      <h3 class="subsection-title">Voice by context</h3>
+      <table class="tbl">
+        <thead>
+          <tr><th>Context</th><th>Calibration</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Streak hit / milestone</strong></td><td>Celebratory but grounded. <em>"day 25. still showing up."</em></td></tr>
+          <tr><td><strong>Low key signal copy</strong></td><td>Observational, third-person-ish, warm. Uses first name.</td></tr>
+          <tr><td><strong>Ghost / absence</strong></td><td>The feed itself speaking. No person named. Poetic restraint.</td></tr>
+          <tr><td><strong>Diary copy</strong></td><td>Personal, intimate, lowercase where appropriate.</td></tr>
+          <tr><td><strong>Error messages</strong></td><td>Direct, kind, specific. Never alarming.</td></tr>
+          <tr><td><strong>Confirm dialogs</strong></td><td>One word or two. <em>"Sure?"</em> not <em>"Are you sure you want to do this?"</em></td></tr>
+          <tr><td><strong>Empty states</strong></td><td>Patient, gentle. Never <em>"no data found."</em></td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">Do's and Don'ts</h3>
+      <table class="tbl tbl-donts">
+        <thead>
+          <tr><th>Instead of</th><th>Say</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>No activities found for 2026-04</td><td>no tracker this month</td></tr>
+          <tr><td>Error: Failed to save data</td><td>Couldn't save. Try again.</td></tr>
+          <tr><td>Are you sure you want to unfollow?</td><td>Unfollow? Sure?</td></tr>
+          <tr><td>User has disabled sharing</td><td>Gone quiet for now.</td></tr>
+          <tr><td>You have 3 new notifications!</td><td>three new today.</td></tr>
+          <tr><td>Please wait while we load your data</td><td>one moment...</td></tr>
+          <tr><td>Successfully saved!</td><td>saved.</td></tr>
+          <tr><td>Oops! Something went wrong.</td><td>That didn't go through.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">Intentionally lowercase</h3>
+      <p>showup. lowercases certain words for intimacy and texture. These are deliberate, not careless.</p>
+      <ul>
+        <li><code>diary.</code> (the feature name and section label)</li>
+        <li><code>crickets</code> (the empty section in People view)</li>
+        <li><code>no tracker this month</code></li>
+        <li>Toasts: <code>saved.</code> <code>synced.</code> <code>couldn't save.</code></li>
+      </ul>
+      <p>Sentence case stays for headings, proper nouns, button labels, and anywhere formality serves clarity.</p>
+
+      <h3 class="subsection-title">Forbidden patterns</h3>
+      <ul>
+        <li><strong>Em-dashes.</strong> Anywhere. Ever. Use a comma, period, semicolon, colon, or parentheses. This is a hard rule.</li>
+        <li><strong>Exclamation points</strong> unless the moment is genuinely celebratory.</li>
+        <li><strong>"The user"</strong> in any user-facing string. Say <em>you</em> or use their first name.</li>
+        <li><strong>AI-ish phrasing.</strong> <em>"I'd be happy to help."</em> <em>"Let me know if..."</em> This is a product, not an assistant.</li>
+        <li><strong>Startup cheerfulness.</strong> <em>"Oops!"</em> <em>"Whoops!"</em> If something failed, say what failed. With kindness.</li>
+        <li><strong>Generic placeholders.</strong> <em>"your activities"</em> when we could say the actual names.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Copy review checklist.</strong> Before shipping any user-facing string, run it through these: (1) Would a friend say this? (2) Is it specific to showing up, or generic? (3) Does it use the person's name if it should? (4) Does it respect the 95% personal / 5% social ratio? (5) Is anything here an em-dash? (6) Does it need an exclamation point, or is that fake enthusiasm?
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ 03 HARD RULES ═══════════════════════ -->
+    <section class="section" id="hard-rules">
+      <div class="section-head">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Hard Rules</h2>
+        <span class="section-sub">non-negotiable</span>
+      </div>
+
+      <p>These cannot be overridden by any design decision, feature request, or user preference. Breaking a hard rule breaks the system.</p>
+
+      <h3 class="subsection-title">Design system</h3>
+      <ul>
+        <li><strong>Red is the hero across every theme.</strong> Not blue, not green, not purple. The red hue may shift per theme (Side A <code>#C3342B</code>, Side B <code>#F07A5E</code>), but red is always the signature.</li>
+        <li><strong>The stripe order is always red / yellow / [accent]</strong>, left to right. The accent may vary per theme; the first two never move.</li>
+        <li><strong>Sora 800 is the logo font.</strong> Everywhere. At every size. No exceptions.</li>
+        <li><strong>Only "up" in the wordmark gets the red highlight.</strong> The period stays in normal text color.</li>
+        <li><strong>Active nav state is always the full ink pill with red track number.</strong> Not an underline, not a border, not a color swap on the label.</li>
+        <li><strong>Level 3 texture is the texture.</strong> Grain + drifting warmth glow + drifting motif layer. Don't introduce new noise patterns.</li>
+      </ul>
+
+      <h3 class="subsection-title">Privacy</h3>
+      <p>Cross-referenced from <code>FOLLOWING_SPEC.md</code>. Three rules that never break:</p>
+      <ol>
+        <li>A follower sees the same card in Following tab and All tab. Always identical.</li>
+        <li>Low key and Ghost are audience-agnostic. Same treatment for followers and strangers.</li>
+        <li>Private cascades both Calendar and Diary. Always.</li>
+      </ol>
+
+      <h3 class="subsection-title">Copy</h3>
+      <ul>
+        <li><strong>No em-dashes.</strong> Anywhere. Ever.</li>
+        <li><strong>No exclamation points</strong> unless the moment is genuinely celebratory.</li>
+        <li><strong>Never "the user"</strong> in any UI string.</li>
+        <li><strong>Never AI-ish phrasing.</strong> The app is an app, not an assistant.</li>
+      </ul>
+
+      <h3 class="subsection-title">Engineering</h3>
+      <ul>
+        <li><strong>Modularize aggressively.</strong> No file bloats past reasonable size.</li>
+        <li><strong>Design tokens live in <code>css/variables.css</code>.</strong> Never hardcode hex values in component CSS.</li>
+        <li><strong>Shared modules</strong> are single-source-of-truth. If a utility exists, use it.</li>
+      </ul>
+    </section>
+
+    <!-- ═══════════════════════ 04 DESIGN TOKENS ═══════════════════════ -->
+    <section class="section" id="tokens">
+      <div class="section-head">
+        <span class="section-num">04</span>
+        <h2 class="section-title">Design Tokens</h2>
+        <span class="section-sub">live swatches · click to copy</span>
+      </div>
+
+      <div class="subsection-head">
+        <span class="subsection-num">4.1</span>
+        <h3 class="subsection-title">Side A palette</h3>
+      </div>
+
+      <div class="swatch-grid">
+        <div class="swatch" data-hex="#F4ECD8">
+          <div class="swatch-chip dark-text" style="background: #F4ECD8;"><span class="swatch-chip-label">Paper</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Cream paper</div>
+            <div class="swatch-hex">#F4ECD8</div>
+            <div class="swatch-role">Primary surface</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#ECE1C6">
+          <div class="swatch-chip dark-text" style="background: #ECE1C6;"><span class="swatch-chip-label">Paper-deep</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Aged cream</div>
+            <div class="swatch-hex">#ECE1C6</div>
+            <div class="swatch-role">Elevated surfaces</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#2A1F1A">
+          <div class="swatch-chip light-text" style="background: #2A1F1A;"><span class="swatch-chip-label">Ink</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Deep ink</div>
+            <div class="swatch-hex">#2A1F1A</div>
+            <div class="swatch-role">Primary text, active pill</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#5A463A">
+          <div class="swatch-chip light-text" style="background: #5A463A;"><span class="swatch-chip-label">Ink-soft</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Warm walnut</div>
+            <div class="swatch-hex">#5A463A</div>
+            <div class="swatch-role">Secondary text</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#9C8874">
+          <div class="swatch-chip light-text" style="background: #9C8874;"><span class="swatch-chip-label">Ink-faint</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Driftwood</div>
+            <div class="swatch-hex">#9C8874</div>
+            <div class="swatch-role">Tertiary, metadata</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#C3342B">
+          <div class="swatch-chip light-text" style="background: #C3342B;"><span class="swatch-chip-label">Red · hero</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Hero red</div>
+            <div class="swatch-hex">#C3342B</div>
+            <div class="swatch-role">Logo accent, stripe, badge</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#4F6C8E">
+          <div class="swatch-chip light-text" style="background: #4F6C8E;"><span class="swatch-chip-label">Blue</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Ink-blue</div>
+            <div class="swatch-hex">#4F6C8E</div>
+            <div class="swatch-role">Supporting, activity</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#E8B33A">
+          <div class="swatch-chip dark-text" style="background: #E8B33A;"><span class="swatch-chip-label">Yellow</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Mustard</div>
+            <div class="swatch-hex">#E8B33A</div>
+            <div class="swatch-role">Diary dot, warmth glow</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#3E5C3A">
+          <div class="swatch-chip light-text" style="background: #3E5C3A;"><span class="swatch-chip-label">Green</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Forest</div>
+            <div class="swatch-hex">#3E5C3A</div>
+            <div class="swatch-role">Rare, activity dot only</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#D4C3A1">
+          <div class="swatch-chip dark-text" style="background: #D4C3A1;"><span class="swatch-chip-label">Hairline</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Linen line</div>
+            <div class="swatch-hex">#D4C3A1</div>
+            <div class="swatch-role">Borders, dividers</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection-head">
+        <span class="subsection-num">4.2</span>
+        <h3 class="subsection-title">Side B palette · Warm leather</h3>
+      </div>
+
+      <div class="swatch-grid">
+        <div class="swatch" data-hex="#2A1518">
+          <div class="swatch-chip light-text" style="background: #2A1518;"><span class="swatch-chip-label">Paper</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Burgundy</div>
+            <div class="swatch-hex">#2A1518</div>
+            <div class="swatch-role">Primary surface</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#1D0E10">
+          <div class="swatch-chip light-text" style="background: #1D0E10;"><span class="swatch-chip-label">Paper-deep</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Leather shadow</div>
+            <div class="swatch-hex">#1D0E10</div>
+            <div class="swatch-role">Elevated surfaces</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#F0DCCF">
+          <div class="swatch-chip dark-text" style="background: #F0DCCF;"><span class="swatch-chip-label">Text</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Warm cream</div>
+            <div class="swatch-hex">#F0DCCF</div>
+            <div class="swatch-role">Primary text</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#B18A84">
+          <div class="swatch-chip light-text" style="background: #B18A84;"><span class="swatch-chip-label">Text-soft</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Faded rose</div>
+            <div class="swatch-hex">#B18A84</div>
+            <div class="swatch-role">Secondary text</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#6E504B">
+          <div class="swatch-chip light-text" style="background: #6E504B;"><span class="swatch-chip-label">Text-faint</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Worn leather</div>
+            <div class="swatch-hex">#6E504B</div>
+            <div class="swatch-role">Tertiary, metadata</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#F07A5E">
+          <div class="swatch-chip dark-text" style="background: #F07A5E;"><span class="swatch-chip-label">Red · hero</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Salmon</div>
+            <div class="swatch-hex">#F07A5E</div>
+            <div class="swatch-role">Hero on dark bg</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#E8B33A">
+          <div class="swatch-chip dark-text" style="background: #E8B33A;"><span class="swatch-chip-label">Yellow</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Mustard (same)</div>
+            <div class="swatch-hex">#E8B33A</div>
+            <div class="swatch-role">Shared with Side A</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#5EAAA8">
+          <div class="swatch-chip dark-text" style="background: #5EAAA8;"><span class="swatch-chip-label">Teal</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Neon teal</div>
+            <div class="swatch-hex">#5EAAA8</div>
+            <div class="swatch-role">Supporting, replaces blue</div>
+          </div>
+        </div>
+        <div class="swatch" data-hex="#4A2025">
+          <div class="swatch-chip light-text" style="background: #4A2025;"><span class="swatch-chip-label">Hairline</span></div>
+          <div class="swatch-meta">
+            <div class="swatch-name">Deep burgundy</div>
+            <div class="swatch-hex">#4A2025</div>
+            <div class="swatch-role">Borders on dark</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection-head">
+        <span class="subsection-num">4.3</span>
+        <h3 class="subsection-title">Stripe</h3>
+      </div>
+      <p>The ribbon across the top of the book. Always red / yellow / [accent], left to right.</p>
+
+      <div class="stage">
+        <div style="flex: 1; min-width: 240px;">
+          <div class="stripe-preview"></div>
+          <div class="sample-mono-small" style="margin-top: 8px; text-align: center;">Side A · red / yellow / blue</div>
+        </div>
+        <div style="flex: 1; min-width: 240px;">
+          <div class="stripe-preview side-b"></div>
+          <div class="sample-mono-small" style="margin-top: 8px; text-align: center;">Side B · red / yellow / teal</div>
+        </div>
+      </div>
+
+      <div class="subsection-head">
+        <span class="subsection-num">4.4</span>
+        <h3 class="subsection-title">Typography</h3>
+      </div>
+
+      <div class="type-specimen">
+        <div class="type-specimen-head">
+          <span class="type-specimen-name">Sora 800</span>
+          <span class="type-specimen-role">Logo, wordmark. Nowhere else.</span>
+        </div>
+        <div class="type-sample sample-sora">show<span class="highlight">up</span>.</div>
+        <div class="type-meta">
+          <span><strong>Weight:</strong> 800</span>
+          <span><strong>Letter-spacing:</strong> -0.03em</span>
+          <span><strong>Uses:</strong> Logo only</span>
+        </div>
+      </div>
+
+      <div class="type-specimen">
+        <div class="type-specimen-head">
+          <span class="type-specimen-name">Fraunces</span>
+          <span class="type-specimen-role">Display, headings, italic emphasis</span>
+        </div>
+        <div class="type-sample sample-fraunces-display">April <em>2026</em></div>
+        <div class="type-sample sample-fraunces-body">"Day 18. Still showing up. Something is taking shape."</div>
+        <div class="type-meta">
+          <span><strong>Weights:</strong> 400, 500, 600, 700</span>
+          <span><strong>Italic:</strong> for emphasis and dates</span>
+          <span><strong>Uses:</strong> headings, quotes, stats</span>
+        </div>
+      </div>
+
+      <div class="type-specimen">
+        <div class="type-specimen-head">
+          <span class="type-specimen-name">Manrope</span>
+          <span class="type-specimen-role">Body, UI labels, buttons</span>
+        </div>
+        <div class="type-sample sample-manrope">This is body copy in Manrope. Sober, legible, quietly confident. The workhorse of the system — and by "workhorse" we do not mean "boring," we mean it gets out of the way.</div>
+        <div class="type-sample sample-manrope-alt">Mine · Diary · Following · All</div>
+        <div class="type-meta">
+          <span><strong>Weights:</strong> 400, 500, 600, 700</span>
+          <span><strong>Uses:</strong> paragraphs, labels, buttons</span>
+        </div>
+      </div>
+
+      <div class="type-specimen">
+        <div class="type-specimen-head">
+          <span class="type-specimen-name">Caveat</span>
+          <span class="type-specimen-role">Handwriting, diary only</span>
+        </div>
+        <div class="type-sample sample-caveat">today felt like clearing out a drawer. small joys.</div>
+        <div class="type-meta">
+          <span><strong>Weights:</strong> 500 default</span>
+          <span><strong>Uses:</strong> diary notes only · never UI chrome</span>
+        </div>
+      </div>
+
+      <div class="type-specimen">
+        <div class="type-specimen-head">
+          <span class="type-specimen-name">DM Mono</span>
+          <span class="type-specimen-role">Metadata, numbers, track labels</span>
+        </div>
+        <div class="type-sample sample-mono">01 my log · 02 diary · 03 following · 04 all</div>
+        <div class="type-sample sample-mono-small">DAY 18 OF 30 · 74% ON PACE · STREAK 12</div>
+        <div class="type-meta">
+          <span><strong>Weights:</strong> 400, 500</span>
+          <span><strong>Letter-spacing:</strong> +0.08 to +0.15em for caps</span>
+          <span><strong>Uses:</strong> track numbers, metadata, data</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ 05 MOTION ═══════════════════════ -->
+    <section class="section" id="motion">
+      <div class="section-head">
+        <span class="section-num">05</span>
+        <h2 class="section-title">Motion Language</h2>
+        <span class="section-sub">hover the cards to see motion</span>
+      </div>
+
+      <p><strong>Fast enough to feel snappy, slow enough to feel considered.</strong> showup. uses one spring curve for almost everything: <code>cubic-bezier(0.22, 1, 0.36, 1)</code>. iOS-feel. Crossfades for content swaps, never slides on variable-height panels.</p>
+
+      <div class="motion-grid">
+        <div class="motion-card">
+          <div class="motion-card-preview">
+            <div class="motion-demo-bubble"></div>
+          </div>
+          <div class="motion-card-meta">
+            <div class="motion-card-name">Ping / feedback</div>
+            <div class="motion-card-spec">350ms · spring · scale 1 → 1.4 → 1</div>
+          </div>
+        </div>
+        <div class="motion-card">
+          <div class="motion-card-preview">
+            <div class="motion-demo-fade">loading...</div>
+          </div>
+          <div class="motion-card-meta">
+            <div class="motion-card-name">Opacity crossfade</div>
+            <div class="motion-card-spec">280ms · spring · opacity 0 → 1</div>
+          </div>
+        </div>
+        <div class="motion-card">
+          <div class="motion-card-preview">
+            <div class="motion-demo-stagger">
+              <div class="motion-demo-pill"></div>
+              <div class="motion-demo-pill"></div>
+              <div class="motion-demo-pill"></div>
+              <div class="motion-demo-pill"></div>
+              <div class="motion-demo-pill"></div>
+            </div>
+          </div>
+          <div class="motion-card-meta">
+            <div class="motion-card-name">Staggered grid entry</div>
+            <div class="motion-card-spec">400ms · 60ms stagger · spring</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Ambient motion</h3>
+      <p>Two continuous background animations create a subtle breathing quality. Both respect reduced-motion.</p>
+
+      <div class="stage">
+        <div style="flex: 1; min-width: 260px;">
+          <div class="texture-demo">
+            <span class="texture-demo-label">Level 3 · Side A · warmth 55s + motifs 70s</span>
+          </div>
+        </div>
+        <div style="flex: 1; min-width: 260px;">
+          <div class="texture-demo dark">
+            <span class="texture-demo-label">Level 3 · Side B · warmth 55s + motifs 70s</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Duration scale</h3>
+      <table class="tbl">
+        <thead><tr><th>Duration</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td><code>120-180ms</code></td><td>Hover, focus, small state changes</td></tr>
+          <tr><td><code>220-280ms</code></td><td>Modal open/close, tab switch, bottom sheet</td></tr>
+          <tr><td><code>350ms</code></td><td>Staggered grid item entry, feed card entry</td></tr>
+          <tr><td><code>55s</code></td><td>Drifting warmth glow (background gradient)</td></tr>
+          <tr><td><code>70s</code></td><td>Drifting motif layer (SVG pattern)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ═══════════════════════ 06 COMPONENTS ═══════════════════════ -->
+    <section class="section" id="components">
+      <div class="section-head">
+        <span class="section-num">06</span>
+        <h2 class="section-title">Core Components</h2>
+        <span class="section-sub">rendered in context</span>
+      </div>
+
+      <div class="subsection-head">
+        <span class="subsection-num">6.1</span>
+        <h3 class="subsection-title">V3 Hybrid 1 sidebar</h3>
+      </div>
+      <p>The canonical desktop nav. Frosted translucent column, pills with mono track numbers, ink-cream active pill. Both sides shown.</p>
+
+      <div class="stage">
+        <div class="mini-sidebar">
+          <div>
+            <svg class="mini-sidebar-motif" viewBox="0 0 44 12" fill="none">
+              <path d="M2 6 Q 6 2, 10 6 T 18 6" stroke="#C3342B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              <circle cx="24" cy="6" r="1.6" fill="#E8B33A"/>
+              <path d="M30 6 l3 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-3 -4 l-4 -1.5 z" fill="#C3342B" opacity="0.7"/>
+            </svg>
+            <div class="mini-sidebar-logo">showup<span class="highlight">.</span></div>
+          </div>
+          <nav class="mini-nav">
+            <div class="mini-nav-item active"><span class="mini-nav-num">01</span>My log</div>
+            <div class="mini-nav-item"><span class="mini-nav-num">02</span>Diary</div>
+            <div class="mini-nav-item"><span class="mini-nav-num">03</span>Following</div>
+            <div class="mini-nav-item"><span class="mini-nav-num">04</span>All</div>
+            <div class="mini-nav-item"><span class="mini-nav-num">05</span>Shop</div>
+            <div class="mini-nav-item"><span class="mini-nav-num">06</span>Settings</div>
+          </nav>
+        </div>
+
+        <div class="mini-sidebar dark">
+          <div>
+            <svg class="mini-sidebar-motif" viewBox="0 0 44 12" fill="none">
+              <path d="M2 6 Q 6 2, 10 6 T 18 6" stroke="#F07A5E" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              <circle cx="24" cy="6" r="1.6" fill="#E8B33A"/>
+              <path d="M30 6 l3 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-3 -4 l-4 -1.5 z" fill="#F07A5E" opacity="0.7"/>
+            </svg>
+            <div class="mini-sidebar-logo">showup<span class="highlight">.</span></div>
+          </div>
+          <nav class="mini-nav">
+            <div class="mini-nav-item active"><span class="mini-nav-num">01</span>My log</div>
+            <div class="mini-nav-item"><span class="mini-nav-num">02</span>Diary</div>
+            <div class="mini-nav-item"><span class="mini-nav-num">03</span>Following</div>
+            <div class="mini-nav-item"><span class="mini-nav-num">04</span>All</div>
+            <div class="mini-nav-item"><span class="mini-nav-num">05</span>Shop</div>
+            <div class="mini-nav-item"><span class="mini-nav-num">06</span>Settings</div>
+          </nav>
+        </div>
+      </div>
+
+      <div class="subsection-head">
+        <span class="subsection-num">6.2</span>
+        <h3 class="subsection-title">Active pill</h3>
+      </div>
+      <p>The signature nav state. Ink pill with red track number. Never a color swap on the label, never an underline.</p>
+
+      <div class="stage">
+        <div class="pill-preview"><span class="num">02</span><span>Diary</span></div>
+        <div class="pill-preview side-b"><span class="num">02</span><span>Diary</span></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ 07 EMPTY & ERROR ═══════════════════════ -->
+    <section class="section" id="empty-error">
+      <div class="section-head">
+        <span class="section-num">07</span>
+        <h2 class="section-title">Empty &amp; Error States</h2>
+        <span class="section-sub">copy-critical moments</span>
+      </div>
+
+      <p>Empty and error states happen at emotional moments. They must sound like showup., not like a stack trace.</p>
+
+      <h3 class="subsection-title">Empty states</h3>
+      <table class="tbl">
+        <thead><tr><th>Context</th><th>Copy</th></tr></thead>
+        <tbody>
+          <tr><td>No activities set up for the month</td><td><em>"no tracker this month"</em></td></tr>
+          <tr><td>Crickets section</td><td><em>"crickets"</em> + <em>"Last tracked: [month]"</em></td></tr>
+          <tr><td>New user, no follows yet</td><td><em>"Nobody yet. Head to the All tab."</em></td></tr>
+          <tr><td>Feed, no events yet</td><td><em>"Nothing new. Everyone's quiet today."</em></td></tr>
+          <tr><td>Search, no results</td><td><em>"nothing matching that."</em></td></tr>
+          <tr><td>Diary, no entries yet</td><td><em>"no entries yet. today's a blank page."</em></td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">Error states</h3>
+      <table class="tbl">
+        <thead><tr><th>Context</th><th>Copy</th></tr></thead>
+        <tbody>
+          <tr><td>Save failed</td><td><em>"Couldn't save. Try again."</em></td></tr>
+          <tr><td>Network error</td><td><em>"Lost the connection. One sec."</em></td></tr>
+          <tr><td>Image upload failed</td><td><em>"Photo didn't upload. Try again?"</em></td></tr>
+          <tr><td>Auth expired</td><td><em>"Signed out. Log back in?"</em></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ═══════════════════════ 08 RESPONSIVE ═══════════════════════ -->
+    <section class="section" id="responsive">
+      <div class="section-head">
+        <span class="section-num">08</span>
+        <h2 class="section-title">Responsive System</h2>
+        <span class="section-sub">breakpoints &amp; rules</span>
+      </div>
+
+      <h3 class="subsection-title">Breakpoints</h3>
+      <table class="tbl">
+        <thead><tr><th>Name</th><th>Range</th><th>Context</th></tr></thead>
+        <tbody>
+          <tr><td>Mobile</td><td><code>0 – 767px</code></td><td>Phones, bottom-nav app shell</td></tr>
+          <tr><td>Tablet</td><td><code>768 – 1023px</code></td><td>Rare. Treated as desktop with tighter spacing.</td></tr>
+          <tr><td>Desktop</td><td><code>1024px +</code></td><td>Full V3 sidebar layout</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">What scales</h3>
+      <ul>
+        <li><strong>Typography:</strong> display sizes scale down 20-25% on mobile. Body stays 16px.</li>
+        <li><strong>Paddings and gaps:</strong> halve on mobile (32 → 16, 24 → 12).</li>
+        <li><strong>Texture:</strong> motif scale drops on mobile (260px tiles) to keep motifs visible.</li>
+      </ul>
+
+      <h3 class="subsection-title">What changes per viewport</h3>
+      <ul>
+        <li><strong>Nav:</strong> desktop V3 sidebar. Mobile bottom nav + header.</li>
+        <li><strong>Month nav:</strong> desktop has a dedicated bar. Mobile inlines into the header row.</li>
+        <li><strong>Tracker layout:</strong> desktop shows rows per activity. Mobile shows a 7-col month grid.</li>
+        <li><strong>Pinned panel:</strong> desktop on the right. Mobile at the top of the feed.</li>
+      </ul>
+
+      <h3 class="subsection-title">What stays constant</h3>
+      <p>Palette, typography stack, stripe colors, motion principles, and voice are identical at every viewport.</p>
+    </section>
+
+    <!-- ═══════════════════════ 09 MOBILE LAYOUT ═══════════════════════ -->
+    <section class="section" id="mobile">
+      <div class="section-head">
+        <span class="section-num">09</span>
+        <h2 class="section-title">Mobile Layout</h2>
+        <span class="section-sub">M3 Balanced · locked</span>
+      </div>
+
+      <p>Stripe sits above the bottom nav as a 2px top border. Header stays clean. Personality lives in the bottom-nav active pill.</p>
+
+      <h3 class="subsection-title">Header</h3>
+      <p>Left to right: <strong>Logo · Shop · Theme · Avatar</strong></p>
+      <ul>
+        <li><strong>Logo.</strong> <code>showup.</code> in Sora 800, 1.2rem.</li>
+        <li><strong>Shop.</strong> Opens the Shop (paid themes).</li>
+        <li><strong>Theme.</strong> Quick-toggle Side A / Side B. Frequent action, stays in header.</li>
+        <li><strong>Avatar.</strong> 30px circle with initial in red. Opens Settings menu.</li>
+      </ul>
+
+      <h3 class="subsection-title">Bottom nav</h3>
+      <p><strong>Mine · Diary · Following · All</strong> (four tabs). Active state = ink pill with red icon accent and cream text. Stripe sits as a 2px top border on the nav bar.</p>
+
+      <h3 class="subsection-title">Settings panel (under Avatar tap)</h3>
+      <table class="tbl">
+        <thead><tr><th>Section</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Privacy</strong></td><td>Calendar tier + Diary tier pickers</td></tr>
+          <tr><td><strong>Appearance</strong></td><td>Theme toggle. Once Shop ships, shows active theme + link to Shop.</td></tr>
+          <tr><td><strong>Account</strong></td><td>Display name (editable), email (read-only), sign out</td></tr>
+          <tr><td><strong>Notifications</strong></td><td><em>Stub for future.</em> Shows "Coming soon." No v1 functionality.</td></tr>
+          <tr><td><strong>About</strong></td><td>Version, tagline, build-log link, footer links</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ═══════════════════════ 10 IDENTITY ═══════════════════════ -->
+    <section class="section" id="identity">
+      <div class="section-head">
+        <span class="section-num">10</span>
+        <h2 class="section-title">Brand Identity</h2>
+        <span class="section-sub">wordmark · tagline · mark</span>
+      </div>
+
+      <h3 class="subsection-title">Wordmark</h3>
+      <p><code>show[up].</code> The "up" is in theme red, period in normal text color. Sora 800, letter-spacing -0.03em, line-height 1.</p>
+
+      <div class="preview-wrap">
+        <div class="preview-header">
+          <span>WORDMARK · SIDE A · ACROSS SIZES</span>
+          <span class="tag">SORA 800</span>
+        </div>
+        <div class="preview-body">
+          <div class="wordmark-grid">
+            <div class="wordmark-row">
+              <span class="wordmark-size-label">64px</span>
+              <span class="wordmark-sample" style="font-size: 4rem;">show<span class="highlight">up</span>.</span>
+            </div>
+            <div class="wordmark-row">
+              <span class="wordmark-size-label">40px</span>
+              <span class="wordmark-sample" style="font-size: 2.5rem;">show<span class="highlight">up</span>.</span>
+            </div>
+            <div class="wordmark-row">
+              <span class="wordmark-size-label">24px</span>
+              <span class="wordmark-sample" style="font-size: 1.5rem;">show<span class="highlight">up</span>.</span>
+            </div>
+            <div class="wordmark-row">
+              <span class="wordmark-size-label">16px</span>
+              <span class="wordmark-sample" style="font-size: 1rem;">show<span class="highlight">up</span>.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">Tagline</h3>
+      <p><em>"Show up. Period."</em> Used on login screen, About panel, and one-sentence brand positioning. Sentence case. Two periods, intentionally. Double meaning — "just show up, end of story" and "showing up, literally the period."</p>
+
+      <h3 class="subsection-title">Standalone mark</h3>
+      <p>Red <code>#C3342B</code> square on ink <code>#2A1F1A</code> background. Represents the period from the wordmark. Uses Sora's square period shape — never rounded.</p>
+
+      <div class="preview-wrap">
+        <div class="preview-header">
+          <span>MARK · RED SQUARE PERIOD</span>
+          <span class="tag">UNIVERSAL</span>
+        </div>
+        <div class="preview-body">
+          <div class="mark-showcase">
+            <div class="mark-item">
+              <div class="app-icon-large">
+                <svg width="52" height="52" viewBox="0 0 32 32">
+                  <rect x="9.5" y="9.5" width="13" height="13" fill="#C3342B"/>
+                </svg>
+              </div>
+              <div class="mark-item-label">App icon · 80px</div>
+            </div>
+            <div class="mark-item">
+              <div class="app-icon-medium">
+                <svg width="32" height="32" viewBox="0 0 32 32">
+                  <rect x="9.5" y="9.5" width="13" height="13" fill="#C3342B"/>
+                </svg>
+              </div>
+              <div class="mark-item-label">Avatar · 48px</div>
+            </div>
+            <div class="mark-item">
+              <div class="app-icon-small">
+                <svg width="20" height="20" viewBox="0 0 32 32">
+                  <rect x="9.5" y="9.5" width="13" height="13" fill="#C3342B"/>
+                </svg>
+              </div>
+              <div class="mark-item-label">Tab · 32px</div>
+            </div>
+            <div class="mark-item">
+              <div class="app-icon-tiny">
+                <svg width="10" height="10" viewBox="0 0 32 32">
+                  <rect x="9.5" y="9.5" width="13" height="13" fill="#C3342B"/>
+                </svg>
+              </div>
+              <div class="mark-item-label">Favicon · 16px</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="subsection-title">When to use which</h3>
+      <table class="tbl">
+        <thead><tr><th>Context</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td>App header, login, footer</td><td>Wordmark</td></tr>
+          <tr><td>Browser tab, bookmark</td><td>Mark (favicon)</td></tr>
+          <tr><td>PWA home screen, launcher</td><td>Mark (app icon)</td></tr>
+          <tr><td>Social avatars (Twitter, LinkedIn, GitHub)</td><td>Mark</td></tr>
+          <tr><td>README header, docs</td><td>Either</td></tr>
+          <tr><td>Marketing hero</td><td>Wordmark</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ═══════════════════════ 11 THEME SYSTEM ═══════════════════════ -->
+    <section class="section" id="themes">
+      <div class="section-head">
+        <span class="section-num">11</span>
+        <h2 class="section-title">Theme System</h2>
+        <span class="section-sub">two defaults · seven paid candidates</span>
+      </div>
+
+      <p>Every theme is a set of CSS custom properties. The theme switcher changes <code>data-theme</code> on <code>&lt;html&gt;</code>, which triggers a different token layer. Components always read from tokens, never hardcode hex values.</p>
+
+      <div class="callout">
+        A theme change is a <strong>token swap, nothing more</strong>. If a component references a token correctly, it will theme correctly with zero extra code.
+      </div>
+
+      <h3 class="subsection-title">Paid themes: the reserve</h3>
+      <p>Every palette we explored but did not ship as default becomes future Shop inventory. Nothing wasted.</p>
+
+      <table class="tbl">
+        <thead><tr><th>Option</th><th>Working name</th><th>Vibe</th></tr></thead>
+        <tbody>
+          <tr><td>Option 1</td><td>Aged tobacco</td><td>Cognac bar, warm brown</td></tr>
+          <tr><td>Option 3</td><td>Night kitchen</td><td>Neutral warm dark, daily driver</td></tr>
+          <tr><td>Option 6</td><td>Violet night</td><td>2am TV glow, dreamy</td></tr>
+          <tr><td>Option 7</td><td>Magenta bruise</td><td>Velvet curtain, theatrical</td></tr>
+          <tr><td>Option 8c</td><td>Teal-tinted shadow</td><td>Warm content + cold sidebar</td></tr>
+          <tr><td>Option 9</td><td>Deep teal abyss</td><td>Workshop at midnight, architectural</td></tr>
+          <tr><td>Rockstar</td><td><em>TBD</em></td><td>Black + red + white, paid premium</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-title">Authoring rules for new themes</h3>
+      <ul>
+        <li><strong>Red stays the hero.</strong> Hue may shift per theme.</li>
+        <li><strong>Stripe order is always red / yellow / [accent].</strong></li>
+        <li><strong>Minimum three-color palette.</strong> Red, yellow, accent required.</li>
+        <li><strong>Body text must pass WCAG AA</strong> against background.</li>
+        <li><strong>Motifs tuned per theme.</strong> Don't reuse Side A's SVG on a dark theme.</li>
+      </ul>
+    </section>
+
+    <!-- ═══════════════════════ 12 ICONS ═══════════════════════ -->
+    <section class="section" id="icons">
+      <div class="section-head">
+        <span class="section-num">12</span>
+        <h2 class="section-title">Iconography</h2>
+        <span class="section-sub">out of scope</span>
+      </div>
+
+      <p>Iconography is deliberately out of scope for this document. It will be documented in a future <code>ICON_SPEC.md</code> covering stroke weight, corner radius, fill rules, <code>currentColor</code> inheritance, and brand motifs.</p>
+
+      <p>Until <code>ICON_SPEC.md</code> exists, icons in the live app continue their current conventions. The Mixtape redesign does not change icon shapes, only their tint (via <code>currentColor</code>).</p>
+    </section>
+
+    <!-- ═══════════════════════ 13 MIGRATION ═══════════════════════ -->
+    <section class="section" id="migration">
+      <div class="section-head">
+        <span class="section-num">13</span>
+        <h2 class="section-title">Migration Plan</h2>
+        <span class="section-sub">how the redesign actually ships</span>
+      </div>
+
+      <p>The Mixtape redesign is a <strong>token and structure migration</strong>, not a rewrite. Existing features keep their logic and data paths. What changes:</p>
+
+      <h3 class="subsection-title">File-by-file order</h3>
+      <ol>
+        <li><code>css/variables.css</code> — Add Side B token layer, paid-theme placeholder layer</li>
+        <li><code>css/base.css</code> — Load Fraunces, Manrope, DM Mono, Caveat via Google Fonts</li>
+        <li><code>index.html</code> — Add desktop V3 sidebar shell</li>
+        <li><code>css/layout.css</code> — Rewrite for V3 sidebar on desktop. Mobile gains 4-tab bottom nav + new header icons.</li>
+        <li><code>css/tracker.css</code> and components — Switch hardcoded colors to tokens</li>
+        <li><code>assets/icons/favicon.svg</code> — Replace with red-on-ink favicon</li>
+        <li><code>assets/icons/app-icon.svg</code> — Create for PWA</li>
+        <li><code>assets/icons/mark.svg</code> — Create generic mark</li>
+        <li><strong>Settings panel</strong> — New, four sections + Notifications stub</li>
+        <li><strong>Shop stub</strong> — Placeholder route</li>
+      </ol>
+
+      <h3 class="subsection-title">Phased rollout</h3>
+      <table class="tbl">
+        <thead><tr><th>Phase</th><th>Ship</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1</strong></td><td>Side A only. Theme toggle shows Side A in both positions.</td></tr>
+          <tr><td><strong>2</strong></td><td>Side B. Theme toggle works. User choice persists in Firestore.</td></tr>
+          <tr><td><strong>3</strong></td><td>Settings panel with all four sections functional. Notifications "Coming soon."</td></tr>
+          <tr><td><strong>4</strong></td><td>First paid theme (Rockstar). Shop becomes a functional panel.</td></tr>
+        </tbody>
+      </table>
+      <p>Phases are independent. Each is a self-contained PR sequence.</p>
+
+      <h3 class="subsection-title">What does NOT change</h3>
+      <p>Firestore schema. Firestore rules. Auth flow. Cloud Functions. Privacy tiers. Diary paths. Log paths. Following arrays. All business logic is unaffected.</p>
+    </section>
+
+    <!-- ═══════════════════════ 14 OPEN QUESTIONS ═══════════════════════ -->
+    <section class="section" id="open">
+      <div class="section-head">
+        <span class="section-num">14</span>
+        <h2 class="section-title">Open Questions</h2>
+        <span class="section-sub">honestly parked</span>
+      </div>
+
+      <p>Things intentionally parked. These do not block the redesign implementation but need resolution before their related features ship.</p>
+
+      <ul>
+        <li><strong>Hand-drawn motif above the logo</strong> — Placeholder SVG, final art TBD</li>
+        <li><strong>Shop mobile placement long-term</strong> — Header icon is v1; revisit at Shop v2</li>
+        <li><strong>Diary theme harmonization</strong> — Coral/cream/indigo need retuning to Mixtape palette</li>
+        <li><strong>Custom spinner</strong> — Backlog item 17, brand-specific loader</li>
+        <li><strong>Motifs on low-end devices</strong> — Consider a "Reduce motion" user preference</li>
+      </ul>
+    </section>
+
+    <!-- ═══════════════════════ APPENDIX ═══════════════════════ -->
+    <div class="appendix">
+      <div class="section-head">
+        <span class="section-num">↳</span>
+        <h2 class="section-title">Appendix</h2>
+        <span class="section-sub">related specs</span>
+      </div>
+      <ul class="appendix-list">
+        <li><a href="../MIXTAPE_SPEC.md">MIXTAPE_SPEC.md</a> — the canonical markdown source for this playbook</li>
+        <li><a href="../ROCKSTACK.md">ROCKSTACK.md</a> — engineering stack, workflow, file structure</li>
+        <li><a href="../FOLLOWING_SPEC.md">FOLLOWING_SPEC.md</a> — privacy tiers, follow model</li>
+        <li><a href="../FEED_SPEC.md">FEED_SPEC.md</a> — feed behavior, card states, tier matrix</li>
+        <li><a href="../FEED_EVENT_SPEC.md">FEED_EVENT_SPEC.md</a> — event-stream model, copy variants</li>
+        <li><a href="../ALL_TAB_SPEC.md">ALL_TAB_SPEC.md</a> — All tab card types, search scoring</li>
+      </ul>
+
+      <div class="footer">
+        Locked April 2026 after a session that covered six Side A palette studies, four texture levels, five typography comparisons, five sidebar variants, four A/E hybrids, nine Side B palette options, five sidebar variants for Option 8, three finalists at full mockup scale, three mobile variants at two widths, and one combined brand identity study.<br><br>
+        Built by Jen &amp; Cii 🪨
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<!-- ═══════════════════════ JS ═══════════════════════ -->
+<script>
+// Click swatch to copy hex
+document.querySelectorAll('.swatch').forEach(swatch => {
+  swatch.addEventListener('click', () => {
+    const hex = swatch.dataset.hex;
+    if (!hex) return;
+    navigator.clipboard.writeText(hex).then(() => {
+      const toast = document.getElementById('copy-toast');
+      toast.textContent = `copied ${hex}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1400);
+    });
+  });
+});
+
+// Scrollspy for TOC
+const sections = document.querySelectorAll('.section, .hero');
+const tocLinks = document.querySelectorAll('.toc-link');
+
+function updateActiveTocLink() {
+  let currentSectionId = sections[0]?.id || '';
+  const scrollPos = window.scrollY + 120;
+  sections.forEach(section => {
+    if (section.offsetTop <= scrollPos) {
+      currentSectionId = section.id;
+    }
+  });
+  tocLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === `#${currentSectionId}`);
+  });
+}
+
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      updateActiveTocLink();
+      ticking = false;
+    });
+    ticking = true;
+  }
+}, { passive: true });
+
+updateActiveTocLink();
+</script>
+
+</body>
+</html>
