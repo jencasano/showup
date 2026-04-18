@@ -9,6 +9,15 @@
   flex-direction: column;
 }
 
+/* Main column — wraps everything right of the sidebar on desktop,
+   full width on mobile. */
+.main-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
 /* ── Header ────────────────────────────────────── */
 header {
   display: flex;
@@ -286,7 +295,7 @@ header h1 span { color: var(--color-primary); }
 }
 
 /* ── Responsive ──────────────────────────────────── */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   #tab-row { display: none; }
   #bottom-nav { display: flex; }
   #app-content { padding: 16px 16px 80px; }
@@ -295,4 +304,203 @@ header h1 span { color: var(--color-primary); }
   #month-bar { padding: 6px 16px; top: 48px; }
   .back-to-top { bottom: 72px; right: 16px; }
   #global-loader { top: 93px; }
+  .sidebar { display: none; }
+}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR (desktop V3 Hybrid 1)
+   Per MIXTAPE_SPEC §6.
+   ═══════════════════════════════════════════════ */
+
+.sidebar { display: none; } /* default: hidden until desktop */
+
+@media (min-width: 768px) {
+  #app-screen {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    grid-template-rows: auto;
+    align-items: stretch;
+  }
+
+  /* Hide legacy header + tab row on desktop; sidebar replaces them.
+     Month-bar sticks directly to the top instead of below the header. */
+  .main-col > header,
+  .main-col > #tab-row { display: none; }
+  #month-bar { top: 0; }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px 14px 16px;
+    background: rgba(236, 225, 198, 0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-right: 1px solid var(--hairline);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 50;
+  }
+
+  [data-theme="dark"] .sidebar {
+    background: rgba(46, 27, 26, 0.78);
+    border-right-color: var(--hairline);
+  }
+}
+
+/* ── Sidebar top (motif + logo) ───────────────── */
+.sb-top {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 6px 0;
+}
+
+.sb-motif {
+  width: 44px;
+  height: 12px;
+  display: block;
+}
+
+.sb-motif-squiggle { stroke: var(--red); }
+.sb-motif-dot      { fill:   var(--yellow); }
+.sb-motif-star     { fill:   var(--red); }
+
+.sb-logo {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.sb-logo span { color: var(--red); }
+
+/* ── Sidebar nav ──────────────────────────────── */
+.sb-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sb-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sb-nav-item:hover {
+  background: rgba(42, 31, 26, 0.05);
+  color: var(--ink);
+}
+
+.sb-nav-item.active {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.sb-nav-item.active:hover {
+  background: var(--ink);
+}
+
+.sb-nav-num {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  min-width: 18px;
+}
+
+.sb-nav-item.active .sb-nav-num {
+  color: var(--red);
+}
+
+/* ── Sidebar foot ─────────────────────────────── */
+.sb-foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 6px 4px;
+  border-top: 1px solid var(--hairline);
+}
+
+.sb-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.sb-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--red);
+  color: var(--paper);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sb-user-name {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sb-foot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sb-foot-btn {
+  padding: 4px 10px;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.sb-foot-btn:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.sb-theme-btn {
+  width: 28px;
+  height: 26px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }

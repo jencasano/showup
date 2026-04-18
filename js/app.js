@@ -118,6 +118,9 @@ export function switchTab(tab) {
   document.querySelectorAll(".bottom-tab").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.tab === tab);
   });
+  document.querySelectorAll(".sb-nav-item").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.tab === tab);
+  });
 
   if (tab !== "all" && allLogsUnsub) {
     allLogsUnsub();
@@ -179,31 +182,47 @@ document.querySelectorAll(".bottom-tab").forEach(btn => {
   btn.addEventListener("click", () => switchTab(btn.dataset.tab));
 });
 
+// Tab click handlers — desktop sidebar
+document.querySelectorAll(".sb-nav-item").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (btn.dataset.tab) {
+      switchTab(btn.dataset.tab);
+    } else if (btn.dataset.action) {
+      showToast("coming soon.");
+    }
+  });
+});
+
 // ── Auth + sign in/out ────────────────────────
 document.getElementById("google-signin-btn").addEventListener("click", signIn);
-document.getElementById("signout-btn").addEventListener("click", async () => {
-  await signOutUser();
-  showToast("Signed out!", "info");
+document.querySelectorAll("#signout-btn, #sb-signout-btn").forEach(el => {
+  el.addEventListener("click", async () => {
+    await signOutUser();
+    showToast("Signed out!", "info");
+  });
 });
 
 // ── Privacy settings ──────────────────────────
-document.getElementById("privacy-settings-btn").addEventListener("click", () => {
-  if (currentUser) openPrivacySettingsModal(currentUser);
+document.querySelectorAll("#privacy-settings-btn, #sb-privacy-btn").forEach(el => {
+  el.addEventListener("click", () => {
+    if (currentUser) openPrivacySettingsModal(currentUser);
+  });
 });
 
 // ── Dark mode toggle ──────────────────────────
-const themeToggle = document.getElementById("theme-toggle");
+const themeToggles = document.querySelectorAll("#theme-toggle, #sb-theme-toggle");
 const savedTheme  = localStorage.getItem("theme") || "light";
 document.documentElement.setAttribute("data-theme", savedTheme);
-themeToggle.innerHTML = icon(savedTheme === "dark" ? "sun" : "moon", 16);
+const setThemeIcon = (name) => themeToggles.forEach(el => el.innerHTML = icon(name, 16));
+setThemeIcon(savedTheme === "dark" ? "sun" : "moon");
 
-themeToggle.addEventListener("click", () => {
+themeToggles.forEach(el => el.addEventListener("click", () => {
   const current = document.documentElement.getAttribute("data-theme");
   const next = current === "dark" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme", next);
   localStorage.setItem("theme", next);
-  themeToggle.innerHTML = icon(next === "dark" ? "sun" : "moon", 16);
-});
+  setThemeIcon(next === "dark" ? "sun" : "moon");
+}));
 
 // ── Auth state ────────────────────────────────
 showLoader();
@@ -221,6 +240,10 @@ onAuthReady(async (user) => {
     loginScreen.style.display = "none";
     appScreen.style.display   = "block";
     userName.textContent      = user.displayName;
+    const sbUserName = document.getElementById("sb-user-name");
+    if (sbUserName) sbUserName.textContent = user.displayName || "";
+    const sbAvatar = document.getElementById("sb-avatar");
+    if (sbAvatar) sbAvatar.textContent = (user.displayName || "?").charAt(0).toUpperCase();
     updateMonthNav();
     hideLoader();
 

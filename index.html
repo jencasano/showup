@@ -46,60 +46,95 @@
   <!-- MAIN APP -->
   <div id="app-screen" style="display:none;">
 
-    <!-- HEADER -->
-    <header>
-      <h1>show<span>up</span>.</h1>
-      <div id="user-info">
-        <span id="user-name"></span>
-        <button id="privacy-settings-btn" title="Update your privacy settings">Privacy</button>
-        <button id="theme-toggle" title="Toggle dark mode"><img src="/assets/icons/moon.svg" width="16" height="16" alt="moon" draggable="false" class="showup-icon" /></button>
-        <button id="signout-btn">Sign out</button>
+    <!-- DESKTOP SIDEBAR (V3 Hybrid 1) -->
+    <aside class="sidebar">
+      <div class="sb-top">
+        <svg class="sb-motif" viewBox="0 0 44 12" fill="none" aria-hidden="true">
+          <path class="sb-motif-squiggle" d="M2 6 Q 6 2, 10 6 T 18 6" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <circle class="sb-motif-dot" cx="24" cy="6" r="1.6"/>
+          <path class="sb-motif-star" d="M30 6 l3 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-3 -4 l-4 -1.5 z" opacity="0.7"/>
+        </svg>
+        <div class="sb-logo">show<span>up</span>.</div>
       </div>
-    </header>
-
-    <!-- TAB ROW -->
-    <div id="tab-row">
-      <nav id="main-tabs">
-        <button class="tab-btn active" data-tab="mylog">Mine</button>
-        <button class="tab-btn" data-tab="following">Following</button>
-        <button class="tab-btn" data-tab="all">All</button>
+      <nav class="sb-nav">
+        <button class="sb-nav-item active" data-tab="mylog"><span class="sb-nav-num">01</span>My log</button>
+        <button class="sb-nav-item" data-action="diary"><span class="sb-nav-num">02</span>Diary</button>
+        <button class="sb-nav-item" data-tab="following"><span class="sb-nav-num">03</span>Following</button>
+        <button class="sb-nav-item" data-tab="all"><span class="sb-nav-num">04</span>All</button>
+        <button class="sb-nav-item" data-action="shop"><span class="sb-nav-num">05</span>Shop</button>
+        <button class="sb-nav-item" data-action="settings"><span class="sb-nav-num">06</span>Settings</button>
       </nav>
+      <div class="sb-foot">
+        <div class="sb-user-chip">
+          <span class="sb-avatar" id="sb-avatar"></span>
+          <span class="sb-user-name" id="sb-user-name"></span>
+        </div>
+        <div class="sb-foot-actions">
+          <button id="sb-privacy-btn" class="sb-foot-btn" title="Update your privacy settings">Privacy</button>
+          <button id="sb-theme-toggle" class="sb-foot-btn sb-theme-btn" title="Toggle dark mode"></button>
+          <button id="sb-signout-btn" class="sb-foot-btn">Sign out</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN COLUMN (everything right of sidebar on desktop; full width on mobile) -->
+    <div class="main-col">
+
+      <!-- HEADER (mobile only; hidden on desktop) -->
+      <header>
+        <h1>show<span>up</span>.</h1>
+        <div id="user-info">
+          <span id="user-name"></span>
+          <button id="privacy-settings-btn" title="Update your privacy settings">Privacy</button>
+          <button id="theme-toggle" title="Toggle dark mode"><img src="/assets/icons/moon.svg" width="16" height="16" alt="moon" draggable="false" class="showup-icon" /></button>
+          <button id="signout-btn">Sign out</button>
+        </div>
+      </header>
+
+      <!-- TAB ROW (legacy; hidden on desktop since sidebar replaces it) -->
+      <div id="tab-row">
+        <nav id="main-tabs">
+          <button class="tab-btn active" data-tab="mylog">Mine</button>
+          <button class="tab-btn" data-tab="following">Following</button>
+          <button class="tab-btn" data-tab="all">All</button>
+        </nav>
+      </div>
+
+      <!-- MONTH BAR -->
+      <div id="month-bar">
+        <button id="prev-month-btn">←</button>
+        <span id="current-month-label">April 2026</span>
+        <button id="next-month-btn">→</button>
+        <button id="cal-picker-btn" title="Jump to month"><img src="/assets/icons/calendar.svg" width="20" height="20" alt="calendar" draggable="false" class="showup-icon" /></button>
+        <button id="today-btn" title="" hidden>🎯</button>
+        <div id="month-bar-spacer"></div>
+        <div id="month-bar-stat"></div>
+      </div>
+
+      <!-- MAIN CONTENT -->
+      <main id="app-content">
+        <div id="tab-mylog" class="tab-panel"></div>
+        <div id="tab-following" class="tab-panel" style="display:none;"></div>
+        <div id="tab-all" class="tab-panel" style="display:none;"></div>
+      </main>
+
+      <!-- MOBILE BOTTOM NAV -->
+      <nav id="bottom-nav">
+        <button class="bottom-tab active" data-tab="mylog">
+          <img src="assets/icons/my-log.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="Mine" draggable="false" />
+          <span>Mine</span>
+        </button>
+        <button class="bottom-tab" data-tab="following">
+          <img src="assets/icons/following.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="Following" draggable="false" />
+          <span>Following</span>
+        </button>
+        <button class="bottom-tab" data-tab="all">
+          <img src="assets/icons/all.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="All" draggable="false" />
+          <span>All</span>
+        </button>
+      </nav>
+
     </div>
-
-    <!-- MONTH BAR -->
-    <div id="month-bar">
-      <button id="prev-month-btn">←</button>
-      <span id="current-month-label">April 2026</span>
-      <button id="next-month-btn">→</button>
-      <button id="cal-picker-btn" title="Jump to month"><img src="/assets/icons/calendar.svg" width="20" height="20" alt="calendar" draggable="false" class="showup-icon" /></button>
-      <button id="today-btn" title="" hidden>🎯</button>
-      <div id="month-bar-spacer"></div>
-      <div id="month-bar-stat"></div>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <main id="app-content">
-      <div id="tab-mylog" class="tab-panel"></div>
-      <div id="tab-following" class="tab-panel" style="display:none;"></div>
-      <div id="tab-all" class="tab-panel" style="display:none;"></div>
-    </main>
-
-    <!-- MOBILE BOTTOM NAV -->
-    <nav id="bottom-nav">
-      <button class="bottom-tab active" data-tab="mylog">
-        <img src="assets/icons/my-log.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="Mine" draggable="false" />
-        <span>Mine</span>
-      </button>
-      <button class="bottom-tab" data-tab="following">
-        <img src="assets/icons/following.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="Following" draggable="false" />
-        <span>Following</span>
-      </button>
-      <button class="bottom-tab" data-tab="all">
-        <img src="assets/icons/all.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="All" draggable="false" />
-        <span>All</span>
-      </button>
-    </nav>
-
   </div>
 
   <button id="back-to-top" class="back-to-top" aria-label="Back to top">&#x2303;</button>
