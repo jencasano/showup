@@ -270,7 +270,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
         // Decoration fallback: log doc may lack decoration for some tiers
         const decoration = (data.decoration?.color)
           ? data.decoration
-          : (userData.decoration || { color: "#D8584E", fontColor: "#FFFFFF", font: "Inter", sticker: "", marker: "circle", avatarUrl: "" });
+          : (userData.decoration || { color: "#C3342B", fontColor: "#FFFFFF", font: "Inter", sticker: "", marker: "circle", avatarUrl: "" });
 
         // _searchActivities: only expose for Sharing tier searches
         const searchActivities = (calTier === "sharing")

@@ -70,7 +70,7 @@ export function renderFeedCard(uid, user, log, diaryEntry, yearMonth, currentUse
   const displayName = user?.displayName || "Unknown";
   const privacy = getPrivacy(user);
   const signal = computeSignal(displayName, log);
-  const deco = log?.decoration || user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
+  const deco = log?.decoration || user?.decoration || { color: "#C3342B", fontColor: "#FFFFFF" };
   const initial = displayName.charAt(0).toUpperCase();
 
   const dateStr = options.dateStr || new Date().toISOString().slice(0, 10);

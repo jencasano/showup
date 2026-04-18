@@ -280,9 +280,9 @@ header h1 span { color: var(--color-primary); }
 }
 
 .back-to-top:hover {
-  background: var(--color-primary);
-  color: #fff;
-  border-color: var(--color-primary);
+  background: var(--red);
+  color: var(--paper);
+  border-color: var(--red);
 }
 
 /* ── Responsive ──────────────────────────────────── */

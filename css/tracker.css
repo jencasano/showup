@@ -2488,7 +2488,7 @@
   line-height: 1.4;
 }
 
-.confirm-highlight { font-weight: 700; color: var(--color-amber, #F8C08A); }
+.confirm-highlight { font-weight: 700; color: var(--yellow); }
 [data-theme="light"] .confirm-highlight { color: #b45309; }
 .confirm-new { font-weight: 700; color: #1DD1A1; }
 [data-theme="light"] .confirm-new { color: #0a7a5c; }
@@ -2897,8 +2897,8 @@
 }
 
 .mob-diary-pip.active {
-  background: var(--color-primary, #D8584E);
-  border-color: var(--color-primary, #D8584E);
+  background: var(--red);
+  border-color: var(--red);
   color: white;
 }
 
@@ -2959,7 +2959,7 @@
 }
 
 .mob-diary-cal-btn:hover {
-  background: var(--color-primary, #D8584E);
+  background: var(--red);
   color: white;
 }
 
@@ -3119,11 +3119,11 @@
 
 .mob-diary-cal-cell.active {
   background: rgba(216,88,78,.12);
-  outline: 1.5px solid var(--color-primary, #D8584E);
+  outline: 1.5px solid var(--red);
 }
 
 .mob-diary-cal-cell.active .mob-diary-cal-num {
-  color: var(--color-primary, #D8584E);
+  color: var(--red);
   font-weight: 700;
 }
 
@@ -3138,7 +3138,7 @@
 }
 
 .mob-diary-cal-cell.today .mob-diary-cal-num {
-  color: var(--color-primary, #D8584E);
+  color: var(--red);
   font-weight: 700;
 }
 

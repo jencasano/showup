@@ -103,7 +103,7 @@ export function renderFeedEvent(event, currentUser) {
   const firstName = (displayName || "").split(" ")[0] || displayName;
   const privacy = getPrivacy(user);
   const tier = type === "diary" ? privacy.diary : privacy.calendar;
-  const deco = log?.decoration || user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
+  const deco = log?.decoration || user?.decoration || { color: "#C3342B", fontColor: "#FFFFFF" };
 
   // Compute signal context from log data
   const signal = computeSignal(displayName, log);

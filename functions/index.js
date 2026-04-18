@@ -487,7 +487,7 @@ export const adminTestHarness = onCall({ region: "asia-southeast1", timeoutSecon
         activities: [activity],
         cadences: [5],
         marks: { [activity]: [todayDay] },
-        decoration: userData.decoration || { color: "#D8584E", fontColor: "#FFFFFF", font: "Inter", sticker: "", marker: "circle", avatarUrl: "" },
+        decoration: userData.decoration || { color: "#C3342B", fontColor: "#FFFFFF", font: "Inter", sticker: "", marker: "circle", avatarUrl: "" },
         lastUpdated: FieldValue.serverTimestamp(),
       });
       return { ok: true, action, uid, activity, day: todayDay, created: true };
