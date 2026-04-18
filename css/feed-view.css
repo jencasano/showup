@@ -1,0 +1,362 @@
+/* ═══════════════════════════════════════════════
+   ALL TAB
+   ═══════════════════════════════════════════════ */
+
+.all-tab-container {
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.all-stat-line {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin-bottom: 12px;
+  padding: 0 2px;
+}
+
+.all-search-row {
+  margin-bottom: 16px;
+}
+
+.all-search-input {
+  width: 100%;
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.all-search-input:focus {
+  border-color: var(--color-primary);
+}
+
+.all-result-card-slot {
+  margin-bottom: 16px;
+}
+
+/* ═══════════════════════════════════════════════
+   FEED VIEW -- OPTION A: QUIET ELEGANCE
+   Gradient line, single pulse on TODAY, no scroll tracking
+   ═══════════════════════════════════════════════ */
+
+.fw-feed-stream {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  padding-left: 28px;
+}
+
+/* ── Gradient vertical line -- fades in at top, fades out at bottom ── */
+.fw-feed-stream::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--border) 6%,
+    var(--border) 94%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Remove the old scroll-driven glow element entirely */
+.fw-feed-tl-glow { display: none; }
+
+/* Date section */
+.fw-feed-date-section {
+  position: relative;
+  padding-bottom: 28px;
+}
+
+.fw-feed-date-section-enter { animation: tl-section-in 0.4s ease-out both; }
+.fw-feed-date-section-enter:nth-child(2) { animation-delay: 0.15s; }
+.fw-feed-date-section-enter:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes tl-section-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fw-feed-date-section:last-child { padding-bottom: 0; }
+
+/* ── Timeline dot -- static, no scroll tracking ── */
+.fw-feed-date-dot {
+  position: absolute;
+  left: -28px;
+  top: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  z-index: 2;
+}
+
+/* TODAY dot -- coral, larger, double pulse on load then settles */
+.fw-feed-date-dot.today {
+  width: 16px;
+  height: 16px;
+  left: -30px;
+  top: 0;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(216, 88, 78, 0.15);
+  animation: tl-today-pulse 2.8s ease-out 0.4s 2 forwards;
+}
+
+@keyframes tl-today-pulse {
+  0%   { box-shadow: 0 0 0 3px rgba(216, 88, 78, 0.15); }
+  40%  { box-shadow: 0 0 0 8px rgba(216, 88, 78, 0); }
+  100% { box-shadow: 0 0 0 3px rgba(216, 88, 78, 0.15); }
+}
+
+/* Remove reached state -- no more scroll tracking */
+.fw-feed-date-dot.reached { }
+
+/* Date label */
+.fw-feed-date-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 12px;
+  padding-top: 1px;
+  padding-left: 4px;
+}
+
+/* TODAY label -- coral */
+.fw-feed-date-section:first-child .fw-feed-date-label {
+  color: var(--color-primary);
+}
+
+/* Cards within a date group */
+.fw-feed-date-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Card entrance animation */
+.fw-feed-card-enter,
+.fw-feed-evt-enter {
+  animation: tl-card-in 0.4s ease-out both;
+}
+
+@keyframes tl-card-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tl-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Event card ── */
+.fw-feed-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.fw-feed-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(216, 88, 78, 0.2);
+}
+
+.fw-feed-card-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 10px;
+  position: relative;
+}
+
+.fw-feed-card-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.fw-feed-card-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.fw-feed-card-when {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.fw-feed-cal-zone { padding: 10px 16px 12px; }
+.fw-feed-diary-zone { padding: 10px 16px 12px; }
+.fw-feed-zone-updated { border-left: 3px solid var(--color-primary); }
+.fw-feed-zone-ghost { opacity: 0.55; background: var(--bg-subtle); border-radius: 8px; }
+.fw-feed-zone-divider { height: 1px; background: var(--border-faint); margin: 0 16px; }
+.fw-feed-zone-lbl-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.fw-feed-section-lbl { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-faint); }
+.fw-feed-diary-lbl { font-size: 0.68rem; font-weight: 700; color: var(--text-faint); text-transform: lowercase; }
+.fw-feed-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.fw-feed-chip { display: inline-flex; align-items: center; min-height: 24px; font-size: 0.62rem; font-weight: 700; padding: 3px 10px; border-radius: var(--radius-full); color: #fff; white-space: nowrap; }
+.fw-feed-chip-off { background: var(--bg-subtle); color: var(--text-faint); border: 1px solid var(--border); }
+.fw-feed-strip { display: flex; gap: 0; margin-top: 4px; }
+.fw-feed-strip-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 2px 0; min-height: 28px; }
+.fw-feed-strip-daynum { font-size: 0.52rem; color: var(--text-faint); font-weight: 600; }
+.fw-feed-strip-dot { width: 7px; height: 7px; border-radius: 50%; box-sizing: border-box; }
+.fw-feed-dot-new { width: 10px; height: 10px; box-shadow: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--dot-color, var(--color-primary)), 0 0 8px 2px var(--dot-color, var(--color-primary)); }
+.fw-feed-signal-block { padding: 11px 14px; background: var(--bg-subtle); border-radius: var(--radius-md); margin-bottom: 10px; font-size: 0.82rem; color: var(--text); }
+.fw-feed-card-footer { padding: 8px 16px 12px; border-top: 1px solid var(--border-faint); display: flex; align-items: center; }
+.fw-feed-pin-btn { background: none; border: none; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); cursor: pointer; padding: 2px 0; transition: color 0.15s; }
+.fw-feed-pin-btn:hover { color: var(--color-primary); }
+
+/* ── Feed Event Stream (event model) ── */
+
+.fw-feed-evt {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  border-left: 3px solid transparent;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.fw-feed-evt:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.fw-feed-evt--sharing { border-left-color: var(--color-primary); }
+.fw-feed-evt--followers { border-left-color: var(--color-amber); }
+.fw-feed-evt--lowkey  { border-left-color: var(--color-teal); }
+.fw-feed-evt--ghost   { border-left-color: var(--border); opacity: 0.78; }
+
+.fw-feed-evt-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+
+.fw-feed-evt-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.88rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.fw-feed-evt-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.fw-feed-evt-avatar--ghost { background: var(--bg-subtle); color: var(--text-muted); font-family: 'Fraunces', serif; font-style: italic; }
+
+.fw-feed-evt-name-col { flex: 1; min-width: 0; }
+.fw-feed-evt-name { font-weight: 600; font-size: 0.86rem; color: var(--text); }
+.fw-feed-evt-name--ghost { color: var(--text-faint); font-style: italic; }
+.fw-feed-evt-time { font-size: 0.63rem; color: var(--text-faint); margin-top: 1px; }
+
+.fw-feed-evt-body { margin-bottom: 6px; }
+
+.fw-feed-evt-action {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.fw-feed-evt-action em {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.fw-feed-evt-ghost-copy {
+  font-family: 'Fraunces', serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.fw-feed-evt-streak { color: var(--text-muted); }
+
+.fw-feed-evt-nudge {
+  font-style: italic;
+  color: var(--color-primary);
+}
+
+.fw-feed-evt--lowkey .fw-feed-evt-nudge { color: var(--color-teal); }
+
+.fw-feed-evt-links { display: flex; gap: 16px; margin-top: 6px; }
+
+.fw-feed-evt-link {
+  font-size: 0.76rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.fw-feed-evt-link:hover { opacity: 0.75; }
+.fw-feed-evt-link--cal   { color: var(--color-teal); }
+.fw-feed-evt-link--diary { color: var(--color-amber); }
+
+/* "New posts" pill */
+.fw-feed-new-pill {
+  position: fixed;
+  top: 108px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-base, 'Inter', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(216, 88, 78, 0.35);
+  animation: pill-in 0.35s ease-out both;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.fw-feed-new-pill:hover {
+  transform: translateX(-50%) scale(1.04);
+  box-shadow: 0 6px 20px rgba(216, 88, 78, 0.45);
+}
+
+@keyframes pill-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .fw-feed-new-pill { top: 56px; }
+}
