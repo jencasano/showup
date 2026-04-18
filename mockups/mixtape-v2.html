@@ -1,0 +1,1207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mixtape v2 · showup. · texture comparison</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600;1,9..144,700&family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+/* ═══════════════════════════════════════════════
+   MIXTAPE / SIDE A -- design tokens
+   ═══════════════════════════════════════════════ */
+:root {
+  --paper:       #F4ECD8;
+  --paper-deep:  #ECE1C6;
+  --paper-edge:  #DCCFA6;
+  --ink:         #2A1F1A;
+  --ink-soft:    #5A463A;
+  --ink-faint:   #9C8874;
+
+  --red:         #C3342B;
+  --red-hover:   #A62822;
+  --red-wash:    #F5D9D5;
+
+  --blue:        #4F6C8E;
+  --blue-wash:   #D9E1EC;
+  --yellow:      #E8B33A;
+  --yellow-wash: #F6E4B0;
+  --green:       #3E5C3A;
+  --green-wash:  #D0DCC6;
+
+  --hairline:    #D4C3A1;
+  --shadow-soft: 0 1px 2px rgba(42, 31, 26, 0.06), 0 2px 6px rgba(42, 31, 26, 0.04);
+  --shadow-card: 0 2px 4px rgba(42, 31, 26, 0.08), 0 8px 24px rgba(42, 31, 26, 0.06);
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+
+  --font-logo:     'Sora', sans-serif;
+  --font-display:  'Fraunces', serif;
+  --font-body-a:   'Inter', sans-serif;
+  --font-body-b:   'Manrope', sans-serif;
+  --font-mono:     'DM Mono', monospace;
+  --font-hand:     'Caveat', cursive;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body-a);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+/* ═══════════════════════════════════════════════
+   TEXTURE LAYERS -- reusable mixins as classes
+   Each panel gets one of these applied to its inner frame.
+   ═══════════════════════════════════════════════ */
+
+/* ── TEX-0: baseline (current v1, barely visible grain) ── */
+.tex-0 {
+  background: var(--paper);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0.035 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  background-size: 220px 220px;
+}
+
+/* ── TEX-1: stronger paper grain, static ── */
+.tex-1 {
+  background: var(--paper);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0.11 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  background-size: 260px 260px;
+}
+
+/* ── TEX-2: stronger grain + slow drifting warmth ── */
+.tex-2 {
+  position: relative;
+  background: var(--paper);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0.10 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  background-size: 260px 260px;
+  overflow: hidden;
+}
+.tex-2::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(40% 35% at 22% 30%, rgba(232, 179, 58, 0.22), transparent 70%),
+    radial-gradient(50% 40% at 78% 72%, rgba(195, 52, 43, 0.12), transparent 70%),
+    radial-gradient(35% 30% at 55% 10%, rgba(79, 108, 142, 0.10), transparent 70%);
+  animation: drift-warmth 55s ease-in-out infinite alternate;
+  filter: blur(10px);
+}
+.tex-2 > * { position: relative; z-index: 1; }
+
+@keyframes drift-warmth {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  33%  { transform: translate(3%, -2%) rotate(1.5deg); }
+  66%  { transform: translate(-2%, 3%) rotate(-1deg); }
+  100% { transform: translate(1%, 1%) rotate(0.5deg); }
+}
+
+/* ── TEX-3: all of TEX-2 + drifting motifs (stars/dots/squiggles) ── */
+.tex-3 {
+  position: relative;
+  background: var(--paper);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0.10 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  background-size: 260px 260px;
+  overflow: hidden;
+}
+.tex-3::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(40% 35% at 22% 30%, rgba(232, 179, 58, 0.22), transparent 70%),
+    radial-gradient(50% 40% at 78% 72%, rgba(195, 52, 43, 0.12), transparent 70%),
+    radial-gradient(35% 30% at 55% 10%, rgba(79, 108, 142, 0.10), transparent 70%);
+  animation: drift-warmth 55s ease-in-out infinite alternate;
+  filter: blur(10px);
+}
+/* Motif layer: small SVG pattern drifting slowly across */
+.tex-3::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke='%23C3342B' stroke-width='1' opacity='0.35'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23C3342B' opacity='0.45' stroke='none'/><circle cx='160' cy='120' r='1.8' fill='%234F6C8E' opacity='0.55' stroke='none'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' /><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7' stroke='none'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4' stroke='none'/><circle cx='220' cy='280' r='2' fill='%23C3342B' opacity='0.35' stroke='none'/><path d='M320 310 q5 -7 10 0 q5 7 10 0' /><circle cx='80' cy='360' r='1.4' fill='%234F6C8E' opacity='0.5' stroke='none'/><path d='M190 380 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23C3342B' opacity='0.3' stroke='none'/></g></svg>");
+  background-size: 420px 420px;
+  animation: drift-motifs 70s linear infinite;
+}
+.tex-3 > * { position: relative; z-index: 1; }
+
+@keyframes drift-motifs {
+  from { background-position: 0 0; }
+  to   { background-position: -420px -420px; }
+}
+
+/* ── TEX-4: animated grain shimmer (film grain) ── */
+.tex-4 {
+  position: relative;
+  background: var(--paper);
+  overflow: hidden;
+}
+.tex-4::before,
+.tex-4::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch' seed='1'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0.12 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  background-size: 240px 240px;
+  mix-blend-mode: multiply;
+}
+.tex-4::before {
+  animation: grain-shimmer-a 0.8s steps(3) infinite;
+}
+.tex-4::after {
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch' seed='7'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0.12 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  animation: grain-shimmer-b 1.1s steps(3) infinite;
+}
+.tex-4 > * { position: relative; z-index: 1; }
+
+@keyframes grain-shimmer-a {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(-2%, 1%); }
+  66%  { transform: translate(1%, -2%); }
+  100% { transform: translate(-1%, 2%); }
+}
+@keyframes grain-shimmer-b {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(2%, -1%); }
+  66%  { transform: translate(-1%, 2%); }
+  100% { transform: translate(1%, -2%); }
+}
+
+/* Users who prefer reduced motion: kill all animation */
+@media (prefers-reduced-motion: reduce) {
+  .tex-2::before,
+  .tex-3::before,
+  .tex-3::after,
+  .tex-4::before,
+  .tex-4::after {
+    animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE SHELL
+   ═══════════════════════════════════════════════ */
+.mx-page {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.mx-intro {
+  text-align: center;
+  margin-bottom: 56px;
+  padding-bottom: 40px;
+  border-bottom: 1px dashed var(--hairline);
+}
+
+.mx-intro h1 {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 1.9rem;
+  letter-spacing: -0.03em;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+.mx-intro h1 span { color: var(--red); }
+
+.mx-intro .mx-kicker {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: var(--yellow-wash);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+.mx-intro p {
+  max-width: 560px;
+  margin: 0 auto;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.mx-section {
+  margin-bottom: 72px;
+}
+
+.mx-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--hairline);
+}
+
+.mx-section-num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--red);
+  font-weight: 500;
+}
+
+.mx-section-title {
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.mx-section-sub {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+.mx-notes {
+  background: var(--yellow-wash);
+  border: 1px dashed var(--yellow);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  position: relative;
+}
+.mx-notes::before {
+  content: "reading notes";
+  position: absolute;
+  top: -9px; left: 14px;
+  background: var(--paper);
+  padding: 0 8px;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-style: normal;
+}
+.mx-notes strong { color: var(--red); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════
+   TEXTURE PANEL -- reusable frame with a label
+   ═══════════════════════════════════════════════ */
+.tex-panel {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+}
+
+.tex-panel-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.tex-panel-label .tag {
+  background: var(--red);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+}
+.tex-panel-label .desc {
+  color: rgba(244, 236, 216, 0.7);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  margin-left: 14px;
+  text-transform: none;
+  font-style: italic;
+}
+
+.tex-stage {
+  min-height: 360px;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tex-stage-inner {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-card);
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+}
+
+.tex-stage-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.tex-stage-title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--red);
+}
+.tex-stage-sub {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.tex-stage-body {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+/* ═══════════════════════════════════════════════
+   FINAL COMBINED PREVIEW -- chosen texture + nav + tracker
+   (uses TEX-2 by default, swap class to preview others)
+   ═══════════════════════════════════════════════ */
+.mx-full-preview {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.mx-opt1-frame {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 680px;
+}
+
+.mx-opt1-sidebar {
+  background: var(--paper-deep);
+  border-right: 1px solid var(--hairline);
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  position: relative;
+}
+
+.mx-opt1-sidebar::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--red) 0 33%, var(--yellow) 33% 66%, var(--blue) 66% 100%);
+}
+
+.mx-opt1-logo {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1;
+  padding-top: 6px;
+}
+.mx-opt1-logo span { color: var(--red); }
+
+.mx-opt1-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mx-opt1-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+  color: inherit;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+.mx-opt1-nav-item:hover { background: rgba(195,52,43,0.06); }
+
+.mx-opt1-nav-item.active {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.mx-opt1-nav-indicator {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--hairline);
+  flex-shrink: 0;
+}
+.mx-opt1-nav-item.active .mx-opt1-nav-indicator { background: var(--red); }
+
+.mx-opt1-section-head {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.mx-opt1-sidebar-foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--hairline);
+}
+
+.mx-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: var(--r-md);
+}
+
+.mx-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--red);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+
+.mx-user-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.mx-user-handle {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--ink-faint);
+}
+
+.mx-theme-toggle {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 6px 10px;
+  border: 1px dashed var(--hairline);
+  border-radius: 99px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mx-theme-toggle:hover {
+  border-color: var(--red);
+  color: var(--red);
+  border-style: solid;
+}
+.mx-theme-toggle strong { color: var(--ink); font-weight: 700; }
+
+.mx-opt1-main {
+  padding: 28px 32px 36px;
+  min-width: 0;
+}
+
+/* ── tracker (simplified from v1) ── */
+.mx-tracker-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.mx-month {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.mx-month em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--red);
+}
+
+.mx-tracker-stats { display: flex; gap: 18px; }
+.mx-stat { text-align: right; }
+.mx-stat-num {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.55rem;
+  color: var(--ink);
+  line-height: 1;
+}
+.mx-stat-num em { color: var(--red); font-size: 1rem; margin-left: 2px; }
+.mx-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+.mx-tracker-card {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.mx-tracker-badge {
+  background: var(--red);
+  color: var(--paper);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 0 0 var(--r-md) 0;
+  width: fit-content;
+}
+
+.mx-tb-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 0.78rem;
+}
+
+.mx-tb-text {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+
+.mx-trk-daybar {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px 6px;
+}
+.mx-trk-daybar-label { width: 180px; flex-shrink: 0; }
+
+.mx-trk-daynum-row {
+  display: flex;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.mx-trk-daynum-row::-webkit-scrollbar { display: none; }
+
+.mx-trk-day {
+  flex: 0 0 34px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--ink-faint);
+  padding: 3px 0 2px;
+}
+.mx-trk-day.sun {
+  color: var(--red);
+  background: var(--red-wash);
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+}
+.mx-trk-day.today {
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: var(--r-sm);
+  font-weight: 700;
+}
+
+.mx-trk-row {
+  display: flex;
+  align-items: center;
+  padding: 2px 20px;
+  border-top: 1px dashed var(--hairline);
+}
+.mx-trk-row:first-of-type { border-top: none; }
+
+.mx-trk-lbl {
+  width: 180px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 8px 10px 0;
+  flex-shrink: 0;
+}
+
+.mx-trk-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.mx-trk-name { font-weight: 600; font-size: 0.88rem; color: var(--ink); }
+.mx-trk-cad {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  background: var(--paper-deep);
+  border: 1px solid var(--hairline);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--ink-soft);
+}
+
+.mx-trk-cells {
+  display: flex;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.mx-trk-cells::-webkit-scrollbar { display: none; }
+
+.mx-trk-cell {
+  flex: 0 0 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 0;
+}
+
+.mx-trk-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--hairline);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.mx-trk-mark:hover { transform: scale(1.15); border-color: var(--ink-soft); }
+.mx-trk-mark.done { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.mx-trk-mark.today { border-color: var(--red); border-width: 2px; }
+.mx-trk-mark.future { opacity: 0.4; border-style: dashed; }
+
+/* ═══════════════════════════════════════════════
+   BODY FONT COMPARE (Inter vs Manrope)
+   ═══════════════════════════════════════════════ */
+.mx-body-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.mx-body-card {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+}
+
+.mx-body-card h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+.mx-body-card .tag {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 14px;
+  display: block;
+}
+
+.mx-body-sample p {
+  margin: 0 0 10px;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+.mx-body-sample small {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+}
+
+.mx-body-a .mx-body-sample { font-family: 'Inter', sans-serif; }
+.mx-body-b .mx-body-sample { font-family: 'Manrope', sans-serif; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .mx-body-compare { grid-template-columns: 1fr; }
+  .mx-opt1-frame { grid-template-columns: 1fr; }
+  .mx-opt1-sidebar { border-right: none; border-bottom: 1px solid var(--hairline); }
+}
+</style>
+</head>
+
+<body class="tex-1">
+<div class="mx-page">
+
+  <!-- ── intro ───────────────────────────────────── -->
+  <section class="mx-intro">
+    <span class="mx-kicker">Mixtape · v2 · texture + body font</span>
+    <h1>showup<span>.</span> <span style="color:var(--ink-soft); font-weight:500; font-size:0.75em;">/ texture & body comparison</span></h1>
+    <p>Four texture levels stacked so you can scroll and compare. Inter vs Manrope for body. Nav A with mixtape slang removed. Pick what feels right.</p>
+  </section>
+
+  <!-- ── 01. TEXTURE LEVELS ─────────────────────── -->
+  <section class="mx-section">
+    <div class="mx-section-head">
+      <div class="mx-section-num">01</div>
+      <div class="mx-section-title">Texture levels · scroll and compare</div>
+      <div class="mx-section-sub">four panels, same content, different background treatment</div>
+    </div>
+
+    <div class="mx-notes">
+      <strong>How to read this.</strong> Each panel has the same little card centered inside. Only the background changes. Look at the area <em>around</em> the card. Level 1 is static and grainy. Level 2 adds a slow, almost imperceptible warmth drifting across. Level 3 adds tiny drifting motifs (stars, dots, squiggles in faint brand colors). Level 4 is animated film grain. Pick what you want for showup.
+    </div>
+
+    <!-- LEVEL 1 -->
+    <div class="tex-panel">
+      <div class="tex-panel-label">
+        <div>
+          LEVEL 1 · Strong paper grain, static
+          <span class="desc">baseline, no motion, just visible paper texture</span>
+        </div>
+        <span class="tag">TEX-1</span>
+      </div>
+      <div class="tex-stage tex-1">
+        <div class="tex-stage-inner">
+          <div class="tex-stage-title">April <em>2026</em></div>
+          <div class="tex-stage-sub">day 18 of 30 · side A</div>
+          <div class="tex-stage-body">The paper feels like paper. Nothing moves. Your eye finds the content and rests. This is the safest choice and the lightest on battery.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEVEL 2 -->
+    <div class="tex-panel">
+      <div class="tex-panel-label">
+        <div>
+          LEVEL 2 · Grain + slow drifting warmth
+          <span class="desc">my recommendation · grain plus very slow color wash</span>
+        </div>
+        <span class="tag">TEX-2</span>
+      </div>
+      <div class="tex-stage tex-2">
+        <div class="tex-stage-inner">
+          <div class="tex-stage-title">April <em>2026</em></div>
+          <div class="tex-stage-sub">day 18 of 30 · side A</div>
+          <div class="tex-stage-body">Same grain as Level 1, plus a very slow warm gradient drifting across the background. You only notice it subconsciously. The page breathes.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEVEL 3 -->
+    <div class="tex-panel">
+      <div class="tex-panel-label">
+        <div>
+          LEVEL 3 · Grain + warmth + drifting motifs
+          <span class="desc">tiny stars, dots, and squiggles scattered sparsely, drifting slowly</span>
+        </div>
+        <span class="tag">TEX-3</span>
+      </div>
+      <div class="tex-stage tex-3">
+        <div class="tex-stage-inner">
+          <div class="tex-stage-title">April <em>2026</em></div>
+          <div class="tex-stage-sub">day 18 of 30 · side A</div>
+          <div class="tex-stage-body">Level 2 plus faint brand-color motifs scattered across the background, drifting slowly. Closer to what Neithan is doing on Hara. More atmosphere, but also more to look at.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEVEL 4 -->
+    <div class="tex-panel">
+      <div class="tex-panel-label">
+        <div>
+          LEVEL 4 · Animated film grain
+          <span class="desc">the grain itself shimmers, like old film · loudest option</span>
+        </div>
+        <span class="tag">TEX-4</span>
+      </div>
+      <div class="tex-stage tex-4">
+        <div class="tex-stage-inner">
+          <div class="tex-stage-title">April <em>2026</em></div>
+          <div class="tex-stage-sub">day 18 of 30 · side A</div>
+          <div class="tex-stage-body">Grain shimmers like old film. Noisiest, most alive, most likely to annoy or distract over time. Honest option: probably too much for a daily tracker, but good to see for comparison.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-notes" style="margin-top: 24px;">
+      <strong>Accessibility note.</strong> All animated levels (2, 3, 4) respect <em>prefers-reduced-motion</em>. Users who've set their OS to reduce motion will get the static version automatically. Nobody gets nauseated. Nobody gets battery-drained.
+    </div>
+  </section>
+
+  <!-- ── 02. BODY FONT COMPARE ─────────────────────── -->
+  <section class="mx-section">
+    <div class="mx-section-head">
+      <div class="mx-section-num">02</div>
+      <div class="mx-section-title">Body font · Inter vs Manrope</div>
+      <div class="mx-section-sub">same copy, same size, different body face</div>
+    </div>
+
+    <div class="mx-notes">
+      Inter is quieter and more screen-optimized. Manrope is slightly warmer and more geometric, with softer letterforms. Read both passages out loud in your head. Pick the one that sits better for daily reading.
+    </div>
+
+    <div class="mx-body-compare">
+      <div class="mx-body-card mx-body-a">
+        <h3>April 2026</h3>
+        <span class="tag">A · Inter</span>
+        <div class="mx-body-sample">
+          <p>You've shown up <strong>18 out of 30 days</strong> this month. That's a rhythm. Keep going.</p>
+          <p>Your longest streak is <strong>12 days</strong>, set during the week of April 6. You were reading every night before bed and running three times that week. Something clicked.</p>
+          <p>You're on pace for <strong>74%</strong> on your calendar goals. If the next four days go well, you'll match your best month this year.</p>
+          <small>— your log, apr 18</small>
+        </div>
+      </div>
+
+      <div class="mx-body-card mx-body-b">
+        <h3>April 2026</h3>
+        <span class="tag">B · Manrope</span>
+        <div class="mx-body-sample">
+          <p>You've shown up <strong>18 out of 30 days</strong> this month. That's a rhythm. Keep going.</p>
+          <p>Your longest streak is <strong>12 days</strong>, set during the week of April 6. You were reading every night before bed and running three times that week. Something clicked.</p>
+          <p>You're on pace for <strong>74%</strong> on your calendar goals. If the next four days go well, you'll match your best month this year.</p>
+          <small>— your log, apr 18</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 03. NAV A (cleaned, no slang) ─────────────── -->
+  <section class="mx-section">
+    <div class="mx-section-head">
+      <div class="mx-section-num">03</div>
+      <div class="mx-section-title">Nav A · cleaned up</div>
+      <div class="mx-section-sub">mixtape vocabulary removed · side A wink lives only in the theme pill</div>
+    </div>
+
+    <div class="mx-notes">
+      <strong>What changed from v1.</strong> Gone: Tracklist header, A1/A2 numbers, runtime column, Liner Notes footer, SIDE A decorative tag on the tracker card. Kept: the three-stripe cassette band at the top of the sidebar (visual only, no words), the red accent dot on the active nav item. Added: a small theme pill at the bottom of the sidebar showing <em>Side A</em> as the current theme, which is the one surviving mixtape wink. Applied with Level 2 texture.
+    </div>
+
+    <div class="mx-full-preview">
+      <div class="tex-panel-label">
+        <div>PREVIEW · NAV A · CLEAN + TEX-2</div>
+        <span class="tag">DESKTOP</span>
+      </div>
+      <div class="mx-opt1-frame tex-2">
+
+        <!-- Sidebar -->
+        <aside class="mx-opt1-sidebar">
+          <div class="mx-opt1-logo">showup<span>.</span></div>
+
+          <nav>
+            <div class="mx-opt1-section-head">Your space</div>
+            <div class="mx-opt1-nav">
+              <div class="mx-opt1-nav-item active">
+                <span class="mx-opt1-nav-indicator"></span>
+                My log
+              </div>
+              <div class="mx-opt1-nav-item">
+                <span class="mx-opt1-nav-indicator"></span>
+                Diary
+              </div>
+            </div>
+          </nav>
+
+          <nav>
+            <div class="mx-opt1-section-head">Community</div>
+            <div class="mx-opt1-nav">
+              <div class="mx-opt1-nav-item">
+                <span class="mx-opt1-nav-indicator"></span>
+                Following
+              </div>
+              <div class="mx-opt1-nav-item">
+                <span class="mx-opt1-nav-indicator"></span>
+                All
+              </div>
+            </div>
+          </nav>
+
+          <nav>
+            <div class="mx-opt1-section-head">Extras</div>
+            <div class="mx-opt1-nav">
+              <div class="mx-opt1-nav-item">
+                <span class="mx-opt1-nav-indicator"></span>
+                Shop
+              </div>
+              <div class="mx-opt1-nav-item">
+                <span class="mx-opt1-nav-indicator"></span>
+                Settings
+              </div>
+            </div>
+          </nav>
+
+          <div class="mx-opt1-sidebar-foot">
+            <div class="mx-user-chip">
+              <div class="mx-user-avatar">J</div>
+              <div>
+                <div class="mx-user-name">Jeni</div>
+                <div class="mx-user-handle">@jencasano</div>
+              </div>
+            </div>
+            <div class="mx-theme-toggle">Theme · <strong>Side A</strong></div>
+          </div>
+        </aside>
+
+        <!-- Main -->
+        <div class="mx-opt1-main">
+          <div class="mx-tracker-head">
+            <div>
+              <div class="mx-month">April <em>2026</em></div>
+              <div class="mx-stat-label" style="margin-top:6px;">day 18 of 30</div>
+            </div>
+            <div class="mx-tracker-stats">
+              <div class="mx-stat">
+                <div class="mx-stat-num">74<em>%</em></div>
+                <div class="mx-stat-label">on pace</div>
+              </div>
+              <div class="mx-stat">
+                <div class="mx-stat-num">5</div>
+                <div class="mx-stat-label">habits</div>
+              </div>
+              <div class="mx-stat">
+                <div class="mx-stat-num">12</div>
+                <div class="mx-stat-label">streak</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mx-tracker-card">
+            <div class="mx-tracker-badge">
+              <div class="mx-tb-avatar">J</div>
+              <div class="mx-tb-text">Jeni's April</div>
+            </div>
+
+            <div class="mx-trk-daybar">
+              <div class="mx-trk-daybar-label">&nbsp;</div>
+              <div class="mx-trk-daynum-row">
+                <div class="mx-trk-day">14</div>
+                <div class="mx-trk-day">15</div>
+                <div class="mx-trk-day">16</div>
+                <div class="mx-trk-day">17</div>
+                <div class="mx-trk-day today">18</div>
+                <div class="mx-trk-day">19</div>
+                <div class="mx-trk-day sun">20</div>
+                <div class="mx-trk-day">21</div>
+                <div class="mx-trk-day">22</div>
+                <div class="mx-trk-day">23</div>
+                <div class="mx-trk-day">24</div>
+                <div class="mx-trk-day">25</div>
+                <div class="mx-trk-day">26</div>
+                <div class="mx-trk-day sun">27</div>
+              </div>
+            </div>
+
+            <div class="mx-trk-row">
+              <div class="mx-trk-lbl">
+                <span class="mx-trk-dot" style="background:var(--red);"></span>
+                <span class="mx-trk-name">Running</span>
+                <span class="mx-trk-cad">3x/wk</span>
+              </div>
+              <div class="mx-trk-cells">
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark today done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+              </div>
+            </div>
+
+            <div class="mx-trk-row">
+              <div class="mx-trk-lbl">
+                <span class="mx-trk-dot" style="background:var(--blue);"></span>
+                <span class="mx-trk-name">Reading</span>
+                <span class="mx-trk-cad">daily</span>
+              </div>
+              <div class="mx-trk-cells">
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark today done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+              </div>
+            </div>
+
+            <div class="mx-trk-row">
+              <div class="mx-trk-lbl">
+                <span class="mx-trk-dot" style="background:var(--yellow);"></span>
+                <span class="mx-trk-name">Stretching</span>
+                <span class="mx-trk-cad">5x/wk</span>
+              </div>
+              <div class="mx-trk-cells">
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark today"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+              </div>
+            </div>
+
+            <div class="mx-trk-row">
+              <div class="mx-trk-lbl">
+                <span class="mx-trk-dot" style="background:var(--green);"></span>
+                <span class="mx-trk-name">Drawing</span>
+                <span class="mx-trk-cad">3x/wk</span>
+              </div>
+              <div class="mx-trk-cells">
+                <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark today"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+              </div>
+            </div>
+
+            <div class="mx-trk-row">
+              <div class="mx-trk-lbl">
+                <span class="mx-trk-dot" style="background:var(--blue);"></span>
+                <span class="mx-trk-name">No sugar</span>
+                <span class="mx-trk-cad">daily</span>
+              </div>
+              <div class="mx-trk-cells">
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark today done">&#10003;</div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+                <div class="mx-trk-cell"><div class="mx-trk-mark future"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── closing ─────────────────────────────────────── -->
+  <section class="mx-section" style="margin-bottom:0;">
+    <div class="mx-section-head">
+      <div class="mx-section-num">04</div>
+      <div class="mx-section-title">What to react to</div>
+      <div class="mx-section-sub">three decisions, then we lock the foundation</div>
+    </div>
+
+    <div class="mx-notes">
+      <strong>Texture:</strong> which level? 1 (grain only), 2 (grain + drifting warmth), 3 (grain + warmth + motifs), or 4 (animated grain). My vote: <em>2</em>.<br><br>
+      <strong>Body font:</strong> Inter or Manrope? My vote: <em>Manrope</em>, because the slight warmth pairs better with Fraunces and the paper base. But honestly, both work.<br><br>
+      <strong>Nav A cleanup:</strong> the sidebar is now organized into <em>Your space</em> (My log, Diary), <em>Community</em> (Following, All), <em>Extras</em> (Shop, Settings), with the Side A theme pill at the bottom. Sections feel right? Naming feel right? Should Settings be here, or in a gear icon elsewhere?
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
