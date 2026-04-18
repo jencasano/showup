@@ -83,11 +83,26 @@
       <!-- HEADER (mobile only; hidden on desktop) -->
       <header>
         <h1>show<span>up</span>.</h1>
-        <div id="user-info">
-          <span id="user-name"></span>
-          <button id="privacy-settings-btn" title="Update your privacy settings">Privacy</button>
-          <button id="theme-toggle" title="Toggle dark mode"><img src="/assets/icons/moon.svg" width="16" height="16" alt="moon" draggable="false" class="showup-icon" /></button>
-          <button id="signout-btn">Sign out</button>
+        <div class="header-actions">
+          <button class="header-icon-btn" id="header-shop-btn" title="Shop" aria-label="Shop">
+            <img src="assets/icons/shop.svg" width="20" height="20" alt="" draggable="false" class="showup-icon" />
+          </button>
+          <button class="header-icon-btn" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme"></button>
+          <button class="header-avatar-btn" id="header-avatar-btn" aria-label="Account menu" aria-expanded="false">
+            <span class="header-avatar-initial" id="header-avatar-initial"></span>
+          </button>
+        </div>
+        <!-- Mobile account menu popover (opens from avatar tap) -->
+        <div class="avatar-menu" id="avatar-menu" hidden>
+          <div class="avatar-menu-user">
+            <span class="avatar-menu-avatar" id="avatar-menu-avatar"></span>
+            <span class="avatar-menu-name" id="user-name"></span>
+          </div>
+          <div class="avatar-menu-actions">
+            <button id="privacy-settings-btn" class="avatar-menu-item">Privacy</button>
+            <button id="signout-btn" class="avatar-menu-item">Sign out</button>
+          </div>
+          <div class="avatar-menu-footer">more coming soon.</div>
         </div>
       </header>
 
@@ -118,19 +133,23 @@
         <div id="tab-all" class="tab-panel" style="display:none;"></div>
       </main>
 
-      <!-- MOBILE BOTTOM NAV -->
+      <!-- MOBILE BOTTOM NAV (M3 variant: Mine · Diary · Following · All) -->
       <nav id="bottom-nav">
         <button class="bottom-tab active" data-tab="mylog">
-          <img src="assets/icons/my-log.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="Mine" draggable="false" />
-          <span>Mine</span>
+          <img src="assets/icons/my-log.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="" draggable="false" />
+          <span>mine</span>
+        </button>
+        <button class="bottom-tab" data-action="diary">
+          <img src="assets/icons/diary.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="" draggable="false" />
+          <span>diary</span>
         </button>
         <button class="bottom-tab" data-tab="following">
-          <img src="assets/icons/following.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="Following" draggable="false" />
-          <span>Following</span>
+          <img src="assets/icons/following.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="" draggable="false" />
+          <span>following</span>
         </button>
         <button class="bottom-tab" data-tab="all">
-          <img src="assets/icons/all.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="All" draggable="false" />
-          <span>All</span>
+          <img src="assets/icons/all.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="" draggable="false" />
+          <span>all</span>
         </button>
       </nav>
 

@@ -10,6 +10,8 @@ import { getUserStats } from "./stats.js";
 import { toggleMonthPicker, closeMonthPicker } from "./month-picker.js";
 import { icon } from "./icons.js";
 import { openPrivacySettingsModal } from "./privacy-settings.js";
+import { getDiaryDays, getDiaryTheme } from "./diary.js";
+import { openMobileDiarySheet } from "./diary-mobile.js";
 
 // ── Elements ──────────────────────────────────
 const loginScreen  = document.getElementById("login-screen");
@@ -134,6 +136,7 @@ export function switchTab(tab) {
   }
 
   closeMonthPicker();
+  closeAvatarMenu();
 
   const monthBar = document.getElementById("month-bar");
   if (monthBar) monthBar.style.display = (tab === "following" || tab === "all") ? "none" : "";
@@ -177,10 +180,28 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => switchTab(btn.dataset.tab));
 });
 
-// Tab click handlers — mobile
+// Tab click handlers — mobile (Diary uses data-action; others use data-tab)
 document.querySelectorAll(".bottom-tab").forEach(btn => {
-  btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+  btn.addEventListener("click", () => {
+    if (btn.dataset.tab) {
+      switchTab(btn.dataset.tab);
+    } else if (btn.dataset.action === "diary") {
+      openDiaryFromNav();
+    }
+  });
 });
+
+// Open the mobile diary sheet from the bottom-nav Diary tab.
+async function openDiaryFromNav() {
+  if (!currentUser) return;
+  try {
+    const theme = await getDiaryTheme(currentUser.uid);
+    const diaryDays = await getDiaryDays(currentUser.uid, activeYearMonth);
+    openMobileDiarySheet(currentUser.uid, activeYearMonth, diaryDays, theme);
+  } catch {
+    showToast("Couldn't open diary. Try again.", "error");
+  }
+}
 
 // Tab click handlers — desktop sidebar
 document.querySelectorAll(".sb-nav-item").forEach(btn => {
@@ -207,6 +228,51 @@ document.querySelectorAll("#privacy-settings-btn, #sb-privacy-btn").forEach(el =
   el.addEventListener("click", () => {
     if (currentUser) openPrivacySettingsModal(currentUser);
   });
+});
+
+// ── Mobile header: Shop + Avatar menu ─────────
+document.getElementById("header-shop-btn")?.addEventListener("click", () => {
+  showToast("coming soon.");
+});
+
+const avatarBtn = document.getElementById("header-avatar-btn");
+const avatarMenu = document.getElementById("avatar-menu");
+let avatarMenuDismiss = null;
+
+function closeAvatarMenu() {
+  if (!avatarMenu || avatarMenu.hasAttribute("hidden")) return;
+  avatarMenu.setAttribute("hidden", "");
+  avatarBtn?.setAttribute("aria-expanded", "false");
+  if (avatarMenuDismiss) {
+    document.removeEventListener("click", avatarMenuDismiss);
+    avatarMenuDismiss = null;
+  }
+}
+
+function openAvatarMenu() {
+  if (!avatarMenu) return;
+  avatarMenu.removeAttribute("hidden");
+  avatarBtn?.setAttribute("aria-expanded", "true");
+  avatarMenuDismiss = (e) => {
+    if (!avatarMenu.contains(e.target) && e.target !== avatarBtn && !avatarBtn.contains(e.target)) {
+      closeAvatarMenu();
+    }
+  };
+  setTimeout(() => document.addEventListener("click", avatarMenuDismiss), 0);
+}
+
+avatarBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (avatarMenu?.hasAttribute("hidden")) {
+    openAvatarMenu();
+  } else {
+    closeAvatarMenu();
+  }
+});
+
+// Close the menu when any action item fires (Privacy, Sign out).
+avatarMenu?.querySelectorAll(".avatar-menu-item").forEach(btn => {
+  btn.addEventListener("click", () => closeAvatarMenu());
 });
 
 // ── Dark mode toggle ──────────────────────────
@@ -240,10 +306,15 @@ onAuthReady(async (user) => {
     loginScreen.style.display = "none";
     appScreen.style.display   = "";
     userName.textContent      = user.displayName;
+    const initial = (user.displayName || "?").charAt(0).toUpperCase();
     const sbUserName = document.getElementById("sb-user-name");
     if (sbUserName) sbUserName.textContent = user.displayName || "";
     const sbAvatar = document.getElementById("sb-avatar");
-    if (sbAvatar) sbAvatar.textContent = (user.displayName || "?").charAt(0).toUpperCase();
+    if (sbAvatar) sbAvatar.textContent = initial;
+    const headerAvatarInitial = document.getElementById("header-avatar-initial");
+    if (headerAvatarInitial) headerAvatarInitial.textContent = initial;
+    const menuAvatar = document.getElementById("avatar-menu-avatar");
+    if (menuAvatar) menuAvatar.textContent = initial;
     updateMonthNav();
     hideLoader();
 
