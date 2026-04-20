@@ -589,7 +589,7 @@
       <span class="entry-code">UI03</span>
     </div>
     <div class="entry-title">Mixtape · Phase 2 shipped</div>
-    <p class="entry-desc">Side B is live on the preview channel. Warm leather maroon, salmon red, teal accent, cream text -- a quiet evening companion to Side A's daytime cream. The theme pill, Firestore persistence, and per-theme motif SVG all landed across four focused commits on the mixtape branch. Production still untouched; next move is the merge plus one production deploy that flips from pre-Mixtape straight to full Side A + Side B.</p>
+    <p class="entry-desc">Mixtape is live in production. showup-jenirocks.web.app flipped from pre-Mixtape to full Side A + Side B in one deploy. Side B: warm leather maroon, salmon red, teal accent, cream text -- a quiet evening companion to Side A's daytime cream. Theme pill, Firestore persistence, per-theme motif SVG, and a cleanup pass on the setup flow (decoration palette, activity rotation, setup.html fonts, setup.css tokens) all shipped alongside.</p>
     <div class="entry-items">
       <div class="entry-item">
         <div class="item-name">Side B token layer</div>
@@ -617,8 +617,13 @@
         <div class="item-spec"></div>
       </div>
       <div class="entry-item">
+        <div class="item-name">Setup flow polish</div>
+        <div class="item-desc">Post-ship audit surfaced six gaps the migration missed in the first-time setup + decoration picker. Decoration color palette in js/month-setup.js swapped from the pre-Mixtape coral / amber / pink / sage set to a Mixtape-harmonious eight-color palette -- the four spec section 4 chromatics (red, blue, yellow, green), both Side B hero colors (salmon, teal), plus cognac and plum as warm/cool bridging tones that echo spec section 11's paid-theme candidates. Activity default rotation in js/utils.js + js/manage-activities.js now uses red / blue / yellow / green / teal straight from the spec. Default decoration fallback #FF6B6B retired in favor of Mixtape red. setup.html's fonts link gained Manrope + DM Mono so the display-name step stops falling back to system sans-serif. css/setup.css dropped a stale @import and swapped its legacy alias tokens for direct Mixtape ones.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
         <div class="item-name">What's next</div>
-        <div class="item-desc">Merge mixtape into main and one production deploy. Every visitor to showup-jenirocks.web.app flips from pre-Mixtape to full Side A + Side B in one cut. Post-launch: diary theme reharmonization (coral / cream / indigo retuned to the Mixtape palette, or expanded into warm + cool sets per side) and the hand-drawn motif art pass that spec section 14 flags as a future exploration.</div>
+        <div class="item-desc">Post-launch backlog: diary theme reharmonization (coral / cream / indigo retuned to the Mixtape palette, or expanded into warm + cool sets per side), the hand-drawn motif art pass that spec section 14 flags as a future exploration, warmth-glow per-theme tuning, state-color tokens for pace badges and tier chips, and the Phase 3 Settings panel + Phase 4 Shop (each gets its own plan).</div>
         <div class="item-spec"></div>
       </div>
     </div>
