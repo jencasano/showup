@@ -275,19 +275,26 @@ avatarMenu?.querySelectorAll(".avatar-menu-item").forEach(btn => {
   btn.addEventListener("click", () => closeAvatarMenu());
 });
 
-// ── Dark mode toggle ──────────────────────────
+// ── Side A / Side B theme toggle ──────────────
+// Step 8 will replace the moon/sun icon button with a Side A / Side B pill.
+// For now we keep the binary toggle wired to the new attribute values.
 const themeToggles = document.querySelectorAll("#theme-toggle, #sb-theme-toggle");
-const savedTheme  = localStorage.getItem("theme") || "light";
+const THEME_MIGRATE = { light: "side-a", dark: "side-b" };
+const VALID_THEMES = new Set(["side-a", "side-b"]);
+const rawSaved = localStorage.getItem("theme");
+const migrated = THEME_MIGRATE[rawSaved] || rawSaved;
+const savedTheme = VALID_THEMES.has(migrated) ? migrated : "side-a";
 document.documentElement.setAttribute("data-theme", savedTheme);
+if (savedTheme !== rawSaved) localStorage.setItem("theme", savedTheme);
 const setThemeIcon = (name) => themeToggles.forEach(el => el.innerHTML = icon(name, 16));
-setThemeIcon(savedTheme === "dark" ? "sun" : "moon");
+setThemeIcon(savedTheme === "side-b" ? "sun" : "moon");
 
 themeToggles.forEach(el => el.addEventListener("click", () => {
   const current = document.documentElement.getAttribute("data-theme");
-  const next = current === "dark" ? "light" : "dark";
+  const next = current === "side-b" ? "side-a" : "side-b";
   document.documentElement.setAttribute("data-theme", next);
   localStorage.setItem("theme", next);
-  setThemeIcon(next === "dark" ? "sun" : "moon");
+  setThemeIcon(next === "side-b" ? "sun" : "moon");
 }));
 
 // ── Auth state ────────────────────────────────

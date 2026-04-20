@@ -3,7 +3,8 @@
    Source of truth: MIXTAPE_SPEC.md §4
    ═══════════════════════════════════════════════ */
 
-:root {
+:root,
+:root[data-theme="side-a"] {
   /* ── Side A palette ──────────────────────────── */
   --paper:       #F4ECD8;
   --paper-deep:  #ECE1C6;
@@ -75,10 +76,29 @@
   --transition: 0.2s ease;
 }
 
-/* ── Dark mode (temporary pass-through)
-   Phase 2 Step 7 replaces this with real Side B tokens.
-   Per MIXTAPE_SPEC §13: "Side B toggle shows Side A until Phase 2."
-   ─────────────────────────────────────────────── */
-[data-theme="dark"] {
-  /* Intentionally empty. Inherits Side A from :root. */
+/* ═══════════════════════════════════════════════
+   Side B — Warm leather (dark theme)
+   Source of truth: MIXTAPE_SPEC.md §4
+   Every consumer-facing token gets overridden so component CSS
+   does not need to change identifiers (e.g. var(--ink) still works).
+   ═══════════════════════════════════════════════ */
+[data-theme="side-b"] {
+  --paper:       #2A1518;
+  --paper-deep:  #1D0E10;
+  --paper-edge:  #3A1D20;
+  --ink:         #F0DCCF;
+  --ink-soft:    #B18A84;
+  --ink-faint:   #6E504B;
+  --red:         #F07A5E;
+  --red-hover:   #D85A3E;
+  --red-wash:    rgba(240, 122, 94, 0.18);
+  --blue:        #5EAAA8;
+  --yellow:      #E8B33A;
+  --green:       #5EAAA8;
+  --hairline:    #4A2025;
+
+  /* Side B shadow tuning — maroon absorbs shadow, use lower opacity */
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.18);
+  --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.32), 0 8px 24px rgba(0, 0, 0, 0.22);
+  --shadow-lg:   0 8px 32px rgba(0, 0, 0, 0.4);
 }

@@ -460,7 +460,7 @@ header h1 span { color: var(--color-primary); }
     z-index: 50;
   }
 
-  [data-theme="dark"] .sidebar {
+  [data-theme="side-b"] .sidebar {
     background: rgba(46, 27, 26, 0.78);
     border-right-color: var(--hairline);
   }

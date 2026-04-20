@@ -52,7 +52,7 @@
 }
 
 
-[data-theme="dark"] .all-search-input::-webkit-search-cancel-button {
+[data-theme="side-b"] .all-search-input::-webkit-search-cancel-button {
   filter: invert(75%);
 }
 
@@ -1174,7 +1174,7 @@
 }
 
 /* ── Dark mode: keep notebook paper aesthetic ──── */
-[data-theme="dark"] .diary-page-overlay {
+[data-theme="side-b"] .diary-page-overlay {
   color: #2A2218;
 }
 

@@ -757,7 +757,7 @@
   outline-offset: 0px;
 }
 
-[data-theme="dark"] .fw-week--full {
+[data-theme="side-b"] .fw-week--full {
   background: rgba(99, 102, 241, 0.14);
   outline-color: rgba(165, 180, 252, 0.45);
 }
@@ -1044,11 +1044,11 @@
   border-color: rgba(20, 184, 166, 0.40);
 }
 
-[data-theme="dark"] .pace-badge--ahead    { color: #4ade80; }
-[data-theme="dark"] .pace-badge--on-track { color: #67e8f9; }
-[data-theme="dark"] .pace-badge--behind   { color: #f87171; }
-[data-theme="dark"] .pace-badge--early    { color: #a5b4fc; }
-[data-theme="dark"] .pace-badge--started  { color: #5eead4; }
+[data-theme="side-b"] .pace-badge--ahead    { color: #4ade80; }
+[data-theme="side-b"] .pace-badge--on-track { color: #67e8f9; }
+[data-theme="side-b"] .pace-badge--behind   { color: #f87171; }
+[data-theme="side-b"] .pace-badge--early    { color: #a5b4fc; }
+[data-theme="side-b"] .pace-badge--started  { color: #5eead4; }
 
 .pace-message {
   font-size: 0.68rem;

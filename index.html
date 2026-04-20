@@ -1,9 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="side-a">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>showup.</title>
+  <script>
+    // Set data-theme before first paint so Side B users don't see a flash of Side A.
+    // Mirrors the migration logic in js/app.js; keep them in sync.
+    (function () {
+      try {
+        var raw = localStorage.getItem("theme");
+        var migrated = { light: "side-a", dark: "side-b" }[raw] || raw;
+        var theme = (migrated === "side-a" || migrated === "side-b") ? migrated : "side-a";
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) { /* localStorage blocked — default side-a already on <html> */ }
+    })();
+  </script>
   <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

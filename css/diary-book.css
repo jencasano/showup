@@ -377,7 +377,7 @@
   transform: scale(1.1);
 }
 
-[data-theme="dark"] .diary-modal-swatch--active { border-color: #FBDFCB; }
+[data-theme="side-b"] .diary-modal-swatch--active { border-color: #FBDFCB; }
 
 /* ── Open notebook modal ───────────────────────────── */
 .diary-modal-overlay,
@@ -1832,23 +1832,23 @@
   color: white;
 }
 
-[data-theme="dark"] .mob-diary-sheet,
-[data-theme="dark"] .mob-diary-nb-body {
+[data-theme="side-b"] .mob-diary-sheet,
+[data-theme="side-b"] .mob-diary-nb-body {
   color: #2A2218;
 }
 
-[data-theme="dark"] .mob-diary-strip-row {
+[data-theme="side-b"] .mob-diary-strip-row {
   background: rgba(235,227,206,0.97);
   border-bottom-color: rgba(139,100,60,0.28);
 }
 
-[data-theme="dark"] .mob-diary-pip {
+[data-theme="side-b"] .mob-diary-pip {
   background: #F5EDE0;
   border-color: rgba(139,100,60,0.45);
   color: #2A2218;
 }
 
-[data-theme="dark"] .mob-diary-cal-btn {
+[data-theme="side-b"] .mob-diary-cal-btn {
   background: #F5EDE0;
   border-color: rgba(139,100,60,0.45);
   color: rgba(42,34,24,0.6);
