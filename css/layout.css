@@ -590,11 +590,11 @@ header h1 span { color: var(--color-primary); }
 
 .sb-foot-actions {
   display: flex;
-  flex-wrap: wrap;
   gap: 6px;
 }
 
 .sb-foot-btn {
+  flex: 1;
   padding: 4px 10px;
   font-family: var(--font-body);
   font-size: 0.7rem;
@@ -612,11 +612,54 @@ header h1 span { color: var(--color-primary); }
   color: var(--red);
 }
 
-.sb-theme-btn {
-  width: 28px;
-  height: 26px;
-  padding: 0;
+/* ── Side A / Side B theme pill (Step 8) ────────
+   Two-segment pill used in sidebar foot (desktop) and mobile header.
+   Active segment = ink fill + paper text, same vocabulary as sidebar
+   nav active pill per spec §6. */
+.theme-pill {
+  display: flex;
+  padding: 2px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-full);
+  background: transparent;
+  align-self: stretch;
+}
+
+.theme-pill-seg {
+  flex: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 6px 10px;
+  color: var(--ink-soft);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  line-height: 0;
+  transition: background var(--transition), color var(--transition);
+}
+
+.theme-pill-seg:hover {
+  color: var(--ink);
+}
+
+.theme-pill-seg[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.theme-pill-seg[aria-pressed="true"]:hover {
+  color: var(--paper);
+}
+
+/* Mobile header variant: content-sized (not stretched), tighter padding */
+.theme-pill--header {
+  display: inline-flex;
+  align-self: auto;
+}
+
+.theme-pill--header .theme-pill-seg {
+  flex: 0 0 auto;
+  padding: 5px 9px;
 }

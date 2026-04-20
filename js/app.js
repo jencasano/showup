@@ -8,7 +8,6 @@ import { showToast, showLoader, hideLoader } from "./ui.js";
 import { checkMonthlySetup } from "./month-setup.js";
 import { getUserStats } from "./stats.js";
 import { toggleMonthPicker, closeMonthPicker } from "./month-picker.js";
-import { icon } from "./icons.js";
 import { openPrivacySettingsModal } from "./privacy-settings.js";
 import { getDiaryDays, getDiaryTheme } from "./diary.js";
 import { openMobileDiarySheet } from "./diary-mobile.js";
@@ -275,26 +274,33 @@ avatarMenu?.querySelectorAll(".avatar-menu-item").forEach(btn => {
   btn.addEventListener("click", () => closeAvatarMenu());
 });
 
-// ── Side A / Side B theme toggle ──────────────
-// Step 8 will replace the moon/sun icon button with a Side A / Side B pill.
-// For now we keep the binary toggle wired to the new attribute values.
-const themeToggles = document.querySelectorAll("#theme-toggle, #sb-theme-toggle");
+// ── Side A / Side B theme pill ────────────────
+// Two-segment pill in sidebar foot (desktop) and mobile header. An inline
+// pre-paint script in index.html sets data-theme synchronously so Side B
+// users see no flash. Here we handle persistence + aria-pressed sync.
 const THEME_MIGRATE = { light: "side-a", dark: "side-b" };
 const VALID_THEMES = new Set(["side-a", "side-b"]);
+const themePillSegs = document.querySelectorAll(".theme-pill-seg");
+
 const rawSaved = localStorage.getItem("theme");
 const migrated = THEME_MIGRATE[rawSaved] || rawSaved;
 const savedTheme = VALID_THEMES.has(migrated) ? migrated : "side-a";
 document.documentElement.setAttribute("data-theme", savedTheme);
 if (savedTheme !== rawSaved) localStorage.setItem("theme", savedTheme);
-const setThemeIcon = (name) => themeToggles.forEach(el => el.innerHTML = icon(name, 16));
-setThemeIcon(savedTheme === "side-b" ? "sun" : "moon");
 
-themeToggles.forEach(el => el.addEventListener("click", () => {
-  const current = document.documentElement.getAttribute("data-theme");
-  const next = current === "side-b" ? "side-a" : "side-b";
+const syncThemePill = (theme) => {
+  themePillSegs.forEach(el => {
+    el.setAttribute("aria-pressed", el.dataset.themeSet === theme ? "true" : "false");
+  });
+};
+syncThemePill(savedTheme);
+
+themePillSegs.forEach(el => el.addEventListener("click", () => {
+  const next = el.dataset.themeSet;
+  if (!VALID_THEMES.has(next)) return;
   document.documentElement.setAttribute("data-theme", next);
   localStorage.setItem("theme", next);
-  setThemeIcon(next === "side-b" ? "sun" : "moon");
+  syncThemePill(next);
 }));
 
 // ── Auth state ────────────────────────────────
