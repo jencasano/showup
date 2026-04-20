@@ -11,6 +11,7 @@ import { toggleMonthPicker, closeMonthPicker } from "./month-picker.js";
 import { openPrivacySettingsModal } from "./privacy-settings.js";
 import { getDiaryDays, getDiaryTheme } from "./diary.js";
 import { openMobileDiarySheet } from "./diary-mobile.js";
+import { getUserTheme, setUserTheme } from "./theme.js";
 
 // ── Elements ──────────────────────────────────
 const loginScreen  = document.getElementById("login-screen");
@@ -301,6 +302,7 @@ themePillSegs.forEach(el => el.addEventListener("click", () => {
   document.documentElement.setAttribute("data-theme", next);
   localStorage.setItem("theme", next);
   syncThemePill(next);
+  if (currentUser?.uid) setUserTheme(currentUser.uid, next);
 }));
 
 // ── Auth state ────────────────────────────────
@@ -314,6 +316,18 @@ onAuthReady(async (user) => {
     if (!setupDone) {
       window.location.href = "setup.html";
       return;
+    }
+
+    // Sync theme from Firestore if the user has a preference stored.
+    // Runs under the loader so any swap is invisible.
+    const cloudTheme = await getUserTheme(user.uid);
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    if (cloudTheme && cloudTheme !== currentTheme) {
+      document.documentElement.setAttribute("data-theme", cloudTheme);
+      localStorage.setItem("theme", cloudTheme);
+      syncThemePill(cloudTheme);
+    } else if (!cloudTheme) {
+      setUserTheme(user.uid, currentTheme); // fire-and-forget backfill
     }
 
     loginScreen.style.display = "none";
