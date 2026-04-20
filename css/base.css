@@ -94,7 +94,9 @@ a {
 }
 
 /* Ambient texture layer — grain + drifting warmth + drifting motifs.
-   Fixed-position, covers the viewport, behind all app content. */
+   Fixed-position, covers the viewport, behind all app content.
+   --side-motif-svg is the per-theme drifting motif pattern (Step 10).
+   Side A default lives here; Side B override is below. */
 .ambient {
   position: fixed;
   inset: 0;
@@ -103,6 +105,12 @@ a {
   overflow: hidden;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0.08 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
   background-size: 260px 260px;
+  --side-motif-svg: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke-width='1'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23C3342B' opacity='0.45'/><circle cx='160' cy='120' r='1.8' fill='%234F6C8E' opacity='0.55'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' stroke='%23C3342B' opacity='0.35'/><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4'/><circle cx='220' cy='280' r='2' fill='%23C3342B' opacity='0.35'/><path d='M320 310 q5 -7 10 0 q5 7 10 0' stroke='%234F6C8E' opacity='0.4'/><circle cx='80' cy='360' r='1.4' fill='%234F6C8E' opacity='0.5'/><path d='M190 380 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23C3342B' opacity='0.3'/></g></svg>");
+}
+
+/* Side B motif: salmon + teal + yellow, tuned to read on maroon. */
+[data-theme="side-b"] .ambient {
+  --side-motif-svg: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke-width='1'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23F07A5E' opacity='0.45'/><circle cx='160' cy='120' r='1.8' fill='%235EAAA8' opacity='0.55'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' stroke='%23F07A5E' opacity='0.35'/><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4'/><circle cx='220' cy='280' r='2' fill='%23F07A5E' opacity='0.35'/><path d='M320 310 q5 -7 10 0 q5 7 10 0' stroke='%235EAAA8' opacity='0.4'/><circle cx='80' cy='360' r='1.4' fill='%235EAAA8' opacity='0.5'/><path d='M190 380 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23F07A5E' opacity='0.3'/></g></svg>");
 }
 
 /* Warmth glow — radial gradients drifting 55s per spec §5. */
@@ -119,14 +127,14 @@ a {
   pointer-events: none;
 }
 
-/* Drifting motif pattern — stars, dots, squiggles in Side A theme colors.
-   Step 10 adds a Side B variant via [data-theme="side-b"] override. */
+/* Drifting motif pattern — stars, dots, squiggles.
+   Palette comes from --side-motif-svg (defined on .ambient above). */
 .ambient::after {
   content: "";
   position: absolute;
   inset: 0;
   opacity: 0.5;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke-width='1'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23C3342B' opacity='0.45'/><circle cx='160' cy='120' r='1.8' fill='%234F6C8E' opacity='0.55'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' stroke='%23C3342B' opacity='0.35'/><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4'/><circle cx='220' cy='280' r='2' fill='%23C3342B' opacity='0.35'/><path d='M320 310 q5 -7 10 0 q5 7 10 0' stroke='%234F6C8E' opacity='0.4'/><circle cx='80' cy='360' r='1.4' fill='%234F6C8E' opacity='0.5'/><path d='M190 380 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23C3342B' opacity='0.3'/></g></svg>");
+  background-image: var(--side-motif-svg);
   background-size: 420px 420px;
   animation: drift-motifs 70s linear infinite;
   pointer-events: none;
