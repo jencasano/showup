@@ -538,7 +538,7 @@ export async function renderMobileDiaryCard(userId, yearMonth, theme = DEFAULT_D
   const t = DIARY_THEMES[theme] || DIARY_THEMES[DEFAULT_DIARY_THEME];
   const [year, month] = yearMonth.split("-").map(Number);
   const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
-  const swatchColors = { coral: "#D8584E", cream: "#ede2d0", indigo: "#2A2E45" };
+  const swatchColors = { coral: "#C3342B", cream: "#ede2d0", indigo: "#2A2E45" };
 
   const card = document.createElement("div");
   card.className = "mob-diary-card";
@@ -682,7 +682,7 @@ export async function renderMobileDiaryCard(userId, yearMonth, theme = DEFAULT_D
 // ─── MOBILE DIARY SHEET (open notebook) ──────────────────────
 export function openMobileDiarySheet(userId, yearMonth, diaryDays, theme = DEFAULT_DIARY_THEME, initialDay = null, fadeIn = false) {
   const t = DIARY_THEMES[theme] || DIARY_THEMES[DEFAULT_DIARY_THEME];
-  const swatchColors = { coral: "#D8584E", cream: "#ede2d0", indigo: "#2A2E45" };
+  const swatchColors = { coral: "#C3342B", cream: "#ede2d0", indigo: "#2A2E45" };
   const [year, month] = yearMonth.split("-").map(Number);
   const daysInMonth = getDaysInMonth(yearMonth);
   const isCurrentMonth = yearMonth === getCurrentYearMonth();

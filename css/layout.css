@@ -9,6 +9,15 @@
   flex-direction: column;
 }
 
+/* Main column — wraps everything right of the sidebar on desktop,
+   full width on mobile. */
+.main-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
 /* ── Header ────────────────────────────────────── */
 header {
   display: flex;
@@ -76,53 +85,145 @@ header h1 span { color: var(--color-primary); }
   border-bottom: 2px solid var(--color-primary);
 }
 
-/* ── User Info ─────────────────────────────────── */
-#user-info {
+/* ── Mobile header actions (Shop · Theme · Avatar) ─ */
+.header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
 }
 
-#user-name {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-#signout-btn {
-  padding: 5px 12px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  transition: all var(--transition);
-}
-
-#signout-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-#theme-toggle {
-  width: 28px;
-  height: 28px;
+.header-icon-btn {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--text);
-  border: 1px solid var(--text);
-  display: flex;
+  background: transparent;
+  border: 1px solid var(--hairline);
+  color: var(--ink-soft);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
-  transition: all var(--transition);
+  padding: 0;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
 }
 
-#theme-toggle:hover { border-color: var(--color-primary); }
+.header-icon-btn:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
 
-[data-theme="dark"] #theme-toggle {
-  background: var(--bg-subtle);
-  border-color: var(--border-faint);
+.header-icon-btn img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.header-avatar-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: var(--red);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease;
+}
+
+.header-avatar-btn:hover { transform: scale(1.04); }
+
+.header-avatar-initial {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: var(--paper);
+  line-height: 1;
+  user-select: none;
+}
+
+/* ── Mobile account menu popover ──────────────── */
+.avatar-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 12px;
+  min-width: 180px;
+  background: var(--paper-deep);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-card);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 110;
+}
+
+.avatar-menu[hidden] { display: none; }
+
+.avatar-menu-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 8px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.avatar-menu-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--red);
+  color: var(--paper);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.avatar-menu-name {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.avatar-menu-item {
+  text-align: left;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: var(--r-sm);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.avatar-menu-item:hover { background: rgba(42, 31, 26, 0.06); }
+
+.avatar-menu-footer {
+  padding: 6px 10px 2px;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  color: var(--ink-faint);
+  border-top: 1px solid var(--hairline);
 }
 
 /* ── Month Bar ─────────────────────────────────── */
@@ -195,7 +296,7 @@ header h1 span { color: var(--color-primary); }
 #app-content {
   flex: 1;
   padding: 24px 28px;
-  background: var(--bg);
+  /* No background: lets the ambient texture show through around cards. */
 }
 
 .tab-panel {
@@ -208,17 +309,32 @@ header h1 span { color: var(--color-primary); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Mobile Bottom Nav ─────────────────────────── */
+/* ── Mobile Bottom Nav (M3 variant) ────────────── */
 #bottom-nav {
   display: none;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: var(--bg-surface);
-  border-top: 1px solid var(--border);
+  background: var(--paper);
   z-index: 100;
   box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+  padding: 6px 6px 8px;
+  gap: 4px;
+}
+
+/* Stripe top border — red / yellow / blue gradient per spec §6 */
+#bottom-nav::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right,
+    var(--red) 0 33%,
+    var(--yellow) 33% 66%,
+    var(--blue) 66% 100%);
 }
 
 .bottom-tab {
@@ -226,20 +342,30 @@ header h1 span { color: var(--color-primary); }
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8px 4px;
-  font-size: 0.6rem;
-  font-weight: 600;
-  color: var(--text-faint);
+  justify-content: center;
+  padding: 5px 4px;
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: var(--ink-faint);
   background: none;
   border: none;
-  gap: 2px;
+  gap: 3px;
   cursor: pointer;
-  transition: color var(--transition);
-  font-family: var(--font-base);
+  transition: color var(--transition), background var(--transition);
+  font-family: var(--font-body);
+  border-radius: var(--r-md);
 }
 
-.bottom-tab.active { color: var(--color-primary); }
-.bottom-tab-icon { width: 24px; height: 24px; display: block; }
+.bottom-tab.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.bottom-tab-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
 
 /* ── Month Heading ─────────────────────────────── */
 .month-heading {
@@ -280,19 +406,260 @@ header h1 span { color: var(--color-primary); }
 }
 
 .back-to-top:hover {
-  background: var(--color-primary);
-  color: #fff;
-  border-color: var(--color-primary);
+  background: var(--red);
+  color: var(--paper);
+  border-color: var(--red);
 }
 
 /* ── Responsive ──────────────────────────────────── */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   #tab-row { display: none; }
   #bottom-nav { display: flex; }
   #app-content { padding: 16px 16px 80px; }
-  #user-name { display: none; }
-  header { padding: 0 16px; height: 48px; }
-  #month-bar { padding: 6px 16px; top: 48px; }
-  .back-to-top { bottom: 72px; right: 16px; }
+  header { padding: 0 14px; height: 52px; }
+  #month-bar { padding: 6px 16px; top: 52px; }
+  .back-to-top { bottom: 76px; right: 16px; }
   #global-loader { top: 93px; }
+  .sidebar { display: none; }
+}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR (desktop V3 Hybrid 1)
+   Per MIXTAPE_SPEC §6.
+   ═══════════════════════════════════════════════ */
+
+.sidebar { display: none; } /* default: hidden until desktop */
+
+@media (min-width: 768px) {
+  #app-screen {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    grid-template-rows: auto;
+    align-items: stretch;
+  }
+
+  /* Hide legacy header + tab row on desktop; sidebar replaces them.
+     Month-bar sticks directly to the top instead of below the header. */
+  .main-col > header,
+  .main-col > #tab-row { display: none; }
+  #month-bar { top: 0; }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px 14px 16px;
+    background: rgba(236, 225, 198, 0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-right: 1px solid var(--hairline);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 50;
+  }
+
+  [data-theme="side-b"] .sidebar {
+    background: rgba(46, 27, 26, 0.78);
+    border-right-color: var(--hairline);
+  }
+}
+
+/* ── Sidebar top (motif + logo) ───────────────── */
+.sb-top {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 6px 0;
+}
+
+.sb-motif {
+  width: 44px;
+  height: 12px;
+  display: block;
+}
+
+.sb-motif-squiggle { stroke: var(--red); }
+.sb-motif-dot      { fill:   var(--yellow); }
+.sb-motif-star     { fill:   var(--red); }
+
+.sb-logo {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.sb-logo span { color: var(--red); }
+
+/* ── Sidebar nav ──────────────────────────────── */
+.sb-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sb-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sb-nav-item:hover {
+  background: rgba(42, 31, 26, 0.05);
+  color: var(--ink);
+}
+
+.sb-nav-item.active {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.sb-nav-item.active:hover {
+  background: var(--ink);
+}
+
+.sb-nav-num {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  min-width: 18px;
+}
+
+.sb-nav-item.active .sb-nav-num {
+  color: var(--red);
+}
+
+/* ── Sidebar foot ─────────────────────────────── */
+.sb-foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 6px 4px;
+  border-top: 1px solid var(--hairline);
+}
+
+.sb-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.sb-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--red);
+  color: var(--paper);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sb-user-name {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sb-foot-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.sb-foot-btn {
+  flex: 1;
+  padding: 4px 10px;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.sb-foot-btn:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* ── Side A / Side B theme pill (Step 8) ────────
+   Two-segment pill used in sidebar foot (desktop) and mobile header.
+   Active segment = ink fill + paper text, same vocabulary as sidebar
+   nav active pill per spec §6. */
+.theme-pill {
+  display: flex;
+  padding: 2px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-full);
+  background: transparent;
+  align-self: stretch;
+}
+
+.theme-pill-seg {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  color: var(--ink-soft);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  line-height: 0;
+  transition: background var(--transition), color var(--transition);
+}
+
+.theme-pill-seg:hover {
+  color: var(--ink);
+}
+
+.theme-pill-seg[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.theme-pill-seg[aria-pressed="true"]:hover {
+  color: var(--paper);
+}
+
+/* Mobile header variant: content-sized (not stretched), tighter padding */
+.theme-pill--header {
+  display: inline-flex;
+  align-self: auto;
+}
+
+.theme-pill--header .theme-pill-seg {
+  flex: 0 0 auto;
+  padding: 5px 9px;
 }

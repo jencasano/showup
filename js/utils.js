@@ -74,7 +74,7 @@ function hslToHex(h, s, l) {
 
 // Activity colors palette (shared across tracker modules)
 export const ACTIVITY_COLORS = [
-  "#D8584E",
+  "#C3342B",
   "#80B9B9",
   "#F8C08A",
   "#A29BFE",

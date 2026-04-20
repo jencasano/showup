@@ -581,8 +581,141 @@
     </details>
   </div>
 
-  <!-- ── Apr 18, 2026 — Mixtape Redesign · Design locked ── -->
+  <!-- ── Apr 20, 2026 — Mixtape · Phase 2 shipped ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 20, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">UI03</span>
+    </div>
+    <div class="entry-title">Mixtape · Phase 2 shipped</div>
+    <p class="entry-desc">Side B is live on the preview channel. Warm leather maroon, salmon red, teal accent, cream text -- a quiet evening companion to Side A's daytime cream. The theme pill, Firestore persistence, and per-theme motif SVG all landed across four focused commits on the mixtape branch. Production still untouched; next move is the merge plus one production deploy that flips from pre-Mixtape straight to full Side A + Side B.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Side B token layer</div>
+        <div class="item-desc">css/variables.css got the real Side B palette: paper #2A1518, paper-deep #1D0E10, ink #F0DCCF (cream text), salmon red #F07A5E, teal #5EAAA8, hairline #4A2025. Every consumer-facing token gets overridden inside [data-theme="side-b"] so component CSS keeps reading var(--ink), var(--red), etc. without a rename. Eighteen [data-theme="dark"] selectors across six CSS files flipped to [data-theme="side-b"] so dark-mode overrides activate with the new attribute. --blue remaps to teal on Side B so the stripe auto-flips to red / yellow / teal.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Boot-time flash fixes</div>
+        <div class="item-desc">Caught during Side B verification: reloading on Side B flashed the cream paper for a frame before js/app.js could catch up. Fixed with an inline pre-paint script in index.html's head that reads localStorage and sets data-theme synchronously, before any CSS paints. Found two more pre-Mixtape rgba leftovers while we were in there: #global-loader was showing old navy indigo on Side B; the month-setup modal backdrop same. Both now use color-mix on --paper / --ink tokens so they auto-theme.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Side A / Side B theme pill</div>
+        <div class="item-desc">The binary moon/sun toggle is gone. Two-segment pill in the sidebar foot and mobile header, with sun + moon icons (inline SVG, currentColor) inside each segment. Active segment gets the ink fill with paper icon -- the same vocabulary as the sidebar nav active pill. Inline SVG with currentColor instead of the existing sun.svg / moon.svg assets because the existing files hardcode old amber that would clash. Sidebar foot stretches both action rows (Privacy + Sign out, and the pill) to full width so the column has a tidy horizontal rhythm.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Firestore theme persistence</div>
+        <div class="item-desc">Theme choice follows the user across devices via users/{uid}.theme. A tiny js/theme.js module mirrors the js/diary.js getDiaryTheme / setDiaryTheme pattern. Cold boot still reads localStorage pre-paint; after auth (under the loader), we read the Firestore value and apply it if it differs, or backfill the field if missing. Pill clicks fire-and-forget the Firestore write. Offline writes queue in the SDK and flush on reconnect.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Per-theme motif SVG</div>
+        <div class="item-desc">The drifting motif layer now swaps palette with the theme. --side-motif-svg custom property on .ambient holds the Side A motif (red, blue, yellow sparkles + dots); [data-theme="side-b"] .ambient overrides with salmon, teal, and yellow. Shape positions, sizes, and opacities identical between themes -- only the three hex values change. Warmth glow and grain stay untouched; they already read fine on both themes.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">What's next</div>
+        <div class="item-desc">Merge mixtape into main and one production deploy. Every visitor to showup-jenirocks.web.app flips from pre-Mixtape to full Side A + Side B in one cut. Post-launch: diary theme reharmonization (coral / cream / indigo retuned to the Mixtape palette, or expanded into warm + cool sets per side) and the hand-drawn motif art pass that spec section 14 flags as a future exploration.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/UI03/01.png" alt="Mixtape Phase 2 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI03/02.png" alt="Mixtape Phase 2 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI03/03.png" alt="Mixtape Phase 2 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI03/04.png" alt="Mixtape Phase 2 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI03/05.png" alt="Mixtape Phase 2 shipped" onerror="this.style.display='none'">
+        <video src="assets/build-log/UI03/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 19, 2026 — Mixtape · Phase 1 shipped ── -->
+  <div class="tl-section">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 19, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">UI02</span>
+    </div>
+    <div class="entry-title">Mixtape · Phase 1 shipped</div>
+    <p class="entry-desc">Side A is live on a preview channel. The full token system, desktop V3 sidebar, mobile M3 bottom nav, and the Level 3 ambient texture all landed on the mixtape branch across eleven focused commits. Production stays on pre-Mixtape until Phase 2 (Side B) ships alongside it -- one production deploy at the end, zero half-migrated days.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Side A tokens + fonts</div>
+        <div class="item-desc">css/variables.css rewritten with the Mixtape palette: paper, ink, red, yellow, blue, hairline. Added Manrope, DM Mono, expanded Fraunces and Caveat weights. Dropped Inter then put it back once we caught that it is a load-bearing user-selectable badge font. Legacy token names alias to Mixtape tokens so every component keeps rendering while we migrate.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Theme-semantic hex sweep</div>
+        <div class="item-desc">~118 hardcoded hex values in tracker.css, cal-card.css, following.css, layout.css replaced with tokens. Nine JS files updated so new-user decoration defaults land on Mixtape red instead of old coral. State colors (pace badges, following status chips) and diary book illustration hexes intentionally left alone per MIXTAPE_SPEC section 14.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">tracker.css modularization</div>
+        <div class="item-desc">tracker.css had ballooned to 3,534 lines covering five concerns. Split along existing section boundaries into tracker.css (1,130 lines, core), diary-book.css (2,040 lines, desktop + mobile diary widget), and feed-view.css (362 lines, ALL tab + feed stream). Pure line-range move, no content edits.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Desktop V3 sidebar</div>
+        <div class="item-desc">The canonical Mixtape sidebar, per the playbook's V3 Hybrid 1. Frosted translucent 240px column. Six nav pills with DM Mono track numbers (01-06) and Manrope labels. Active state is a full ink pill with cream text and a red track number -- never a color swap or an underline. Foot section with user chip, Privacy, Sign out, and the binary theme toggle (Side A / Side B pill lands in Phase 2 Step 8).</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Mobile M3 variant</div>
+        <div class="item-desc">Mobile header: Logo, Shop, Theme, Avatar. Avatar opens a small account menu with Privacy and Sign out (a temporary stand-in until the full Settings panel lands in Phase 3). Bottom nav grew from three tabs to four -- mine, diary, following, all -- all lowercase per spec. Stripe sits as a 2px top border on the nav bar. Active state is the same ink pill treatment as desktop.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Level 3 ambient texture</div>
+        <div class="item-desc">Single fixed layer behind all app content: paper grain, drifting warmth glow (55s ease-in-out), drifting motifs (70s linear). Motifs are Side A SVGs for now -- Phase 2 Step 10 adds a Side B variant tuned to salmon and teal. Fully respects prefers-reduced-motion.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Page ribbon stripe</div>
+        <div class="item-desc">5px red / yellow / blue gradient pinned to the top of the viewport on desktop via body::before so it escapes the textured frame's overflow clip. Mobile keeps its own 2px stripe on the bottom nav per the M3 variant.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Privacy modal mobile fix</div>
+        <div class="item-desc">Caught during Step 4 review: the tier list overflowed small phones, leaving the Save button unreachable. The panel is now internally scrollable, with the header pinned at top and Save pinned at bottom. Token restyle landed in the same step. Full Phase 3 Settings panel still comes later.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Diary theme minimal retune</div>
+        <div class="item-desc">Coral theme first gradient stop and the cream theme's red accents swapped from old coral to Mixtape red. Swatch previews in the picker now match. Indigo theme left alone per spec section 14. Full reharmonization of all three themes stays parked for a post-migration sprint.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Brand mark assets</div>
+        <div class="item-desc">New favicon replaces the coral-on-navy mark with Mixtape red on ink. Added assets/icons/app-icon.svg (512 master for future PWA install) and assets/icons/mark.svg (generic standalone mark for social avatars and anywhere else the brand needs to live in a square frame). Sharp corners, no rounding, per Sora's square period.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">What's next</div>
+        <div class="item-desc">Phase 2 (Side B): real Side B token layer, the Side A / Side B theme pill replacing the binary moon icon, Firestore persistence of the user's theme choice, and per-theme motif SVG variants. Once Phase 2 ships and both themes pass smoke test on the preview channel, the mixtape branch merges to main and production flips to full Mixtape in one deploy.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/UI02/01.png" alt="Mixtape Phase 1 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI02/02.png" alt="Mixtape Phase 1 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI02/03.png" alt="Mixtape Phase 1 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI02/04.png" alt="Mixtape Phase 1 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI02/05.png" alt="Mixtape Phase 1 shipped" onerror="this.style.display='none'">
+        <video src="assets/build-log/UI02/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 18, 2026 — Mixtape Redesign · Design locked ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 18, 2026</span>
       <span class="entry-badge badge-ongoing">Ongoing</span>

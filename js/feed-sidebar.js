@@ -62,7 +62,7 @@ function renderPinCard(uid, model) {
   const displayName = user.displayName || "Unknown";
   const privacy = getPrivacy(user);
   const tier = privacy.calendar;
-  const deco = log?.decoration || user?.decoration || { color: "#D8584E", fontColor: "#FFFFFF" };
+  const deco = log?.decoration || user?.decoration || { color: "#C3342B", fontColor: "#FFFFFF" };
 
   const tierClass = {
     sharing:   "fsd-pin-card--sharing",

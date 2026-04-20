@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- showup. mark — PWA app icon master (512×512).
+       Same composition as favicon, scaled up for home-screen install.
+       Spec §10: ink background + Mixtape-red square (~40% of canvas). -->
+  <rect width="512" height="512" fill="#2A1F1A"/>
+  <rect x="153.5" y="169.5" width="205" height="205" fill="#C3342B"/>
+</svg>

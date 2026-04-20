@@ -8,8 +8,10 @@ import { showToast, showLoader, hideLoader } from "./ui.js";
 import { checkMonthlySetup } from "./month-setup.js";
 import { getUserStats } from "./stats.js";
 import { toggleMonthPicker, closeMonthPicker } from "./month-picker.js";
-import { icon } from "./icons.js";
 import { openPrivacySettingsModal } from "./privacy-settings.js";
+import { getDiaryDays, getDiaryTheme } from "./diary.js";
+import { openMobileDiarySheet } from "./diary-mobile.js";
+import { getUserTheme, setUserTheme } from "./theme.js";
 
 // ── Elements ──────────────────────────────────
 const loginScreen  = document.getElementById("login-screen");
@@ -118,6 +120,9 @@ export function switchTab(tab) {
   document.querySelectorAll(".bottom-tab").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.tab === tab);
   });
+  document.querySelectorAll(".sb-nav-item").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.tab === tab);
+  });
 
   if (tab !== "all" && allLogsUnsub) {
     allLogsUnsub();
@@ -131,6 +136,7 @@ export function switchTab(tab) {
   }
 
   closeMonthPicker();
+  closeAvatarMenu();
 
   const monthBar = document.getElementById("month-bar");
   if (monthBar) monthBar.style.display = (tab === "following" || tab === "all") ? "none" : "";
@@ -174,36 +180,130 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => switchTab(btn.dataset.tab));
 });
 
-// Tab click handlers — mobile
+// Tab click handlers — mobile (Diary uses data-action; others use data-tab)
 document.querySelectorAll(".bottom-tab").forEach(btn => {
-  btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+  btn.addEventListener("click", () => {
+    if (btn.dataset.tab) {
+      switchTab(btn.dataset.tab);
+    } else if (btn.dataset.action === "diary") {
+      openDiaryFromNav();
+    }
+  });
+});
+
+// Open the mobile diary sheet from the bottom-nav Diary tab.
+async function openDiaryFromNav() {
+  if (!currentUser) return;
+  try {
+    const theme = await getDiaryTheme(currentUser.uid);
+    const diaryDays = await getDiaryDays(currentUser.uid, activeYearMonth);
+    openMobileDiarySheet(currentUser.uid, activeYearMonth, diaryDays, theme);
+  } catch {
+    showToast("Couldn't open diary. Try again.", "error");
+  }
+}
+
+// Tab click handlers — desktop sidebar
+document.querySelectorAll(".sb-nav-item").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (btn.dataset.tab) {
+      switchTab(btn.dataset.tab);
+    } else if (btn.dataset.action) {
+      showToast("coming soon.");
+    }
+  });
 });
 
 // ── Auth + sign in/out ────────────────────────
 document.getElementById("google-signin-btn").addEventListener("click", signIn);
-document.getElementById("signout-btn").addEventListener("click", async () => {
-  await signOutUser();
-  showToast("Signed out!", "info");
+document.querySelectorAll("#signout-btn, #sb-signout-btn").forEach(el => {
+  el.addEventListener("click", async () => {
+    await signOutUser();
+    showToast("Signed out!", "info");
+  });
 });
 
 // ── Privacy settings ──────────────────────────
-document.getElementById("privacy-settings-btn").addEventListener("click", () => {
-  if (currentUser) openPrivacySettingsModal(currentUser);
+document.querySelectorAll("#privacy-settings-btn, #sb-privacy-btn").forEach(el => {
+  el.addEventListener("click", () => {
+    if (currentUser) openPrivacySettingsModal(currentUser);
+  });
 });
 
-// ── Dark mode toggle ──────────────────────────
-const themeToggle = document.getElementById("theme-toggle");
-const savedTheme  = localStorage.getItem("theme") || "light";
-document.documentElement.setAttribute("data-theme", savedTheme);
-themeToggle.innerHTML = icon(savedTheme === "dark" ? "sun" : "moon", 16);
+// ── Mobile header: Shop + Avatar menu ─────────
+document.getElementById("header-shop-btn")?.addEventListener("click", () => {
+  showToast("coming soon.");
+});
 
-themeToggle.addEventListener("click", () => {
-  const current = document.documentElement.getAttribute("data-theme");
-  const next = current === "dark" ? "light" : "dark";
+const avatarBtn = document.getElementById("header-avatar-btn");
+const avatarMenu = document.getElementById("avatar-menu");
+let avatarMenuDismiss = null;
+
+function closeAvatarMenu() {
+  if (!avatarMenu || avatarMenu.hasAttribute("hidden")) return;
+  avatarMenu.setAttribute("hidden", "");
+  avatarBtn?.setAttribute("aria-expanded", "false");
+  if (avatarMenuDismiss) {
+    document.removeEventListener("click", avatarMenuDismiss);
+    avatarMenuDismiss = null;
+  }
+}
+
+function openAvatarMenu() {
+  if (!avatarMenu) return;
+  avatarMenu.removeAttribute("hidden");
+  avatarBtn?.setAttribute("aria-expanded", "true");
+  avatarMenuDismiss = (e) => {
+    if (!avatarMenu.contains(e.target) && e.target !== avatarBtn && !avatarBtn.contains(e.target)) {
+      closeAvatarMenu();
+    }
+  };
+  setTimeout(() => document.addEventListener("click", avatarMenuDismiss), 0);
+}
+
+avatarBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (avatarMenu?.hasAttribute("hidden")) {
+    openAvatarMenu();
+  } else {
+    closeAvatarMenu();
+  }
+});
+
+// Close the menu when any action item fires (Privacy, Sign out).
+avatarMenu?.querySelectorAll(".avatar-menu-item").forEach(btn => {
+  btn.addEventListener("click", () => closeAvatarMenu());
+});
+
+// ── Side A / Side B theme pill ────────────────
+// Two-segment pill in sidebar foot (desktop) and mobile header. An inline
+// pre-paint script in index.html sets data-theme synchronously so Side B
+// users see no flash. Here we handle persistence + aria-pressed sync.
+const THEME_MIGRATE = { light: "side-a", dark: "side-b" };
+const VALID_THEMES = new Set(["side-a", "side-b"]);
+const themePillSegs = document.querySelectorAll(".theme-pill-seg");
+
+const rawSaved = localStorage.getItem("theme");
+const migrated = THEME_MIGRATE[rawSaved] || rawSaved;
+const savedTheme = VALID_THEMES.has(migrated) ? migrated : "side-a";
+document.documentElement.setAttribute("data-theme", savedTheme);
+if (savedTheme !== rawSaved) localStorage.setItem("theme", savedTheme);
+
+const syncThemePill = (theme) => {
+  themePillSegs.forEach(el => {
+    el.setAttribute("aria-pressed", el.dataset.themeSet === theme ? "true" : "false");
+  });
+};
+syncThemePill(savedTheme);
+
+themePillSegs.forEach(el => el.addEventListener("click", () => {
+  const next = el.dataset.themeSet;
+  if (!VALID_THEMES.has(next)) return;
   document.documentElement.setAttribute("data-theme", next);
   localStorage.setItem("theme", next);
-  themeToggle.innerHTML = icon(next === "dark" ? "sun" : "moon", 16);
-});
+  syncThemePill(next);
+  if (currentUser?.uid) setUserTheme(currentUser.uid, next);
+}));
 
 // ── Auth state ────────────────────────────────
 showLoader();
@@ -218,9 +318,30 @@ onAuthReady(async (user) => {
       return;
     }
 
+    // Sync theme from Firestore if the user has a preference stored.
+    // Runs under the loader so any swap is invisible.
+    const cloudTheme = await getUserTheme(user.uid);
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    if (cloudTheme && cloudTheme !== currentTheme) {
+      document.documentElement.setAttribute("data-theme", cloudTheme);
+      localStorage.setItem("theme", cloudTheme);
+      syncThemePill(cloudTheme);
+    } else if (!cloudTheme) {
+      setUserTheme(user.uid, currentTheme); // fire-and-forget backfill
+    }
+
     loginScreen.style.display = "none";
-    appScreen.style.display   = "block";
+    appScreen.style.display   = "";
     userName.textContent      = user.displayName;
+    const initial = (user.displayName || "?").charAt(0).toUpperCase();
+    const sbUserName = document.getElementById("sb-user-name");
+    if (sbUserName) sbUserName.textContent = user.displayName || "";
+    const sbAvatar = document.getElementById("sb-avatar");
+    if (sbAvatar) sbAvatar.textContent = initial;
+    const headerAvatarInitial = document.getElementById("header-avatar-initial");
+    if (headerAvatarInitial) headerAvatarInitial.textContent = initial;
+    const menuAvatar = document.getElementById("avatar-menu-avatar");
+    if (menuAvatar) menuAvatar.textContent = initial;
     updateMonthNav();
     hideLoader();
 

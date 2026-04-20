@@ -5,7 +5,7 @@
 #privacy-settings-modal {
   position: fixed;
   inset: 0;
-  background: rgba(29, 33, 66, 0.6);
+  background: rgba(42, 31, 26, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,7 +15,7 @@
 }
 
 .ps-panel {
-  background: var(--bg-surface);
+  background: var(--paper-deep);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   width: 100%;
@@ -24,6 +24,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
 }
 
 .ps-header {
@@ -31,18 +33,25 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  position: sticky;
+  top: 0;
+  margin: -24px -24px 0;
+  padding: 20px 24px 12px;
+  background: var(--paper-deep);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  z-index: 2;
 }
 
 .ps-heading {
-  font-family: var(--font-heading);
+  font-family: var(--font-display);
   font-size: 1.35rem;
-  color: var(--text);
+  color: var(--ink);
   margin: 0 0 4px;
 }
 
 .ps-subheading {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--ink-soft);
   margin: 0;
 }
 
@@ -52,14 +61,14 @@
   border: none;
   font-size: 1.4rem;
   line-height: 1;
-  color: var(--text-faint);
+  color: var(--ink-faint);
   cursor: pointer;
   padding: 0 2px;
   transition: color var(--transition);
 }
 
 .ps-close:hover {
-  color: var(--text);
+  color: var(--ink);
 }
 
 .ps-section-label {
@@ -67,13 +76,13 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-faint);
+  color: var(--ink-faint);
   margin-bottom: 8px;
 }
 
 .ps-divider {
   border: none;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--hairline);
   margin: 0;
 }
 
@@ -89,11 +98,11 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  border: 1px solid var(--border);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
   padding: 12px 16px;
   cursor: pointer;
-  background: var(--bg-surface);
+  background: var(--paper-deep);
   text-align: left;
   transition: background var(--transition), border-color var(--transition);
   border-left-width: 3px;
@@ -101,39 +110,42 @@
 }
 
 .ps-tier-option:hover {
-  background: var(--bg-subtle);
+  background: var(--paper-deep);
 }
 
 .ps-tier-option.tier-option-active {
-  border-left-color: var(--color-primary);
-  background: var(--bg-subtle);
+  border-left-color: var(--red);
+  background: var(--paper-deep);
 }
 
 .ps-tier-name {
   font-weight: 600;
   font-size: 0.95rem;
-  color: var(--text);
+  color: var(--ink);
 }
 
 .ps-tier-desc {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--ink-soft);
   margin-top: 2px;
 }
 
 .ps-save {
   width: 100%;
   padding: 13px;
-  background: var(--color-primary);
-  color: #fff;
+  background: var(--red);
+  color: var(--paper);
   border-radius: var(--radius-full);
   font-size: 0.95rem;
   font-weight: 600;
   transition: background var(--transition);
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
 }
 
 .ps-save:hover {
-  background: var(--color-primary-hover);
+  background: var(--red-hover);
 }
 
 .ps-tier-icon {
@@ -159,5 +171,13 @@
 @media (max-width: 480px) {
   #privacy-settings-modal {
     padding: 12px;
+  }
+  .ps-panel {
+    padding: 18px;
+    max-height: calc(100vh - 24px);
+  }
+  .ps-header {
+    margin: -18px -18px 0;
+    padding: 14px 18px 10px;
   }
 }

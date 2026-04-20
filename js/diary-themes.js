@@ -1,6 +1,6 @@
 export const DIARY_THEMES = {
   coral: {
-    coverGradient:     "linear-gradient(160deg, #D8584E 0%, #C43C30 45%, #b83228 100%)",
+    coverGradient:     "linear-gradient(160deg, #C3342B 0%, #C43C30 45%, #b83228 100%)",
     spineBg:           "linear-gradient(90deg, #8B2218, #A83428 60%, #C43C30)",
     spineRightBorder:  "rgba(0,0,0,0.2)",
     bookBorder:        "#A83428",
@@ -22,8 +22,8 @@ export const DIARY_THEMES = {
     spineBg:           "linear-gradient(90deg, #c4b49a, #d4c4a8 60%, #e8ddc8)",
     spineRightBorder:  "rgba(0,0,0,0.1)",
     bookBorder:        "#d4c4a8",
-    cornerColor:       "linear-gradient(135deg, #D8584E, #e87870)",
-    ribbonBg:          "linear-gradient(180deg, #D8584E, #c4473d)",
+    cornerColor:       "linear-gradient(135deg, #C3342B, #e87870)",
+    ribbonBg:          "linear-gradient(180deg, #C3342B, #c4473d)",
     holeBg:            "radial-gradient(circle at 35% 35%, #c4b49a, #b8a488)",
     gutterBg:          "linear-gradient(90deg, rgba(0,0,0,0.07), transparent)",
     titleColor:        "#2A2218",

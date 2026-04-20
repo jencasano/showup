@@ -203,7 +203,7 @@
   justify-content: center;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--paper);
 }
 
 .fsd-pin-avatar img {
@@ -473,7 +473,7 @@
   font-family: 'Caveat', cursive;
   font-size: 0.92rem;
   font-weight: 600;
-  color: #2A2E45;
+  color: var(--ink);
   flex: 1;
 }
 
@@ -644,7 +644,7 @@
 .fw-tier-badge { font-size: 0.52rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: var(--radius-full); }
 .fw-tier-sharing { background: rgba(128,185,185,0.18); color: var(--color-teal); border: 1px solid rgba(128,185,185,0.3); }
 .fw-tier-followers { background: rgba(248,192,138,0.2); color: #a06820; border: 1px solid rgba(248,192,138,0.4); }
-[data-theme="dark"] .fw-tier-followers { color: var(--color-amber); }
+[data-theme="side-b"] .fw-tier-followers { color: var(--color-amber); }
 .fw-tier-lowkey { background: rgba(90,96,136,0.14); color: var(--text-muted); border: 1px solid var(--border); }
 .fw-tier-ghost { background: rgba(42,46,69,0.08); color: var(--text-faint); border: 1px solid var(--border); }
 .fw-tier-private { background: rgba(216,88,78,0.1); color: var(--color-primary); border: 1px solid rgba(216,88,78,0.22); }

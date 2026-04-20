@@ -136,7 +136,7 @@ export async function renderDiaryNotebook(userId, yearMonth, theme = DEFAULT_DIA
   paletteBtn.title = "Change diary color";
   wrap.appendChild(paletteBtn);
 
-  const swatchColors = { coral: "#D8584E", cream: "#ede2d0", indigo: "#2A2E45" };
+  const swatchColors = { coral: "#C3342B", cream: "#ede2d0", indigo: "#2A2E45" };
 
   paletteBtn.addEventListener("click", async (e) => {
     e.stopPropagation();
@@ -223,7 +223,7 @@ export function openDiaryModal(userId, yearMonth, diaryDays, theme = DEFAULT_DIA
     <div class="diary-modal-left-head-sub">${monthName} ${year} \u00b7 ${diaryDays.size} pages filled</div>
   `;
 
-  const swatchColors = { coral: "#D8584E", cream: "#ede2d0", indigo: "#2A2E45" };
+  const swatchColors = { coral: "#C3342B", cream: "#ede2d0", indigo: "#2A2E45" };
   const swatchRow = document.createElement("div");
   swatchRow.className = "diary-modal-swatch-row";
   for (const key of Object.keys(DIARY_THEMES)) {

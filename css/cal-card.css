@@ -52,7 +52,7 @@
 }
 
 
-[data-theme="dark"] .all-search-input::-webkit-search-cancel-button {
+[data-theme="side-b"] .all-search-input::-webkit-search-cancel-button {
   filter: invert(75%);
 }
 
@@ -164,26 +164,26 @@
   white-space: nowrap;
   font-family: var(--font-base);
   letter-spacing: 0.01em;
-  background: #FFFAF5;
-  color: #2A2E45;
-  border: 1.5px solid #D8584E;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1.5px solid var(--red);
 }
 
 .cal-follow-btn:hover:not(:disabled) {
-  background: #FFF0EC;
-  border-color: #C4473D;
-  color: #C4473D;
+  background: var(--red-wash);
+  border-color: var(--red-hover);
+  color: var(--red-hover);
 }
 
 .cal-follow-btn.following {
-  background: #D8584E;
-  color: #FFFAF5;
-  border-color: #D8584E;
+  background: var(--red);
+  color: var(--paper);
+  border-color: var(--red);
 }
 
 .cal-follow-btn.following:hover:not(:disabled) {
-  background: #C4473D;
-  border-color: #C4473D;
+  background: var(--red-hover);
+  border-color: var(--red-hover);
 }
 
 .cal-follow-btn.loading { opacity: 0.65; cursor: wait; }
@@ -289,7 +289,7 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--color-amber, #F8C08A);
+  background: var(--yellow);
   margin: 1px auto 0;
   flex-shrink: 0;
 }
@@ -731,7 +731,7 @@
   align-self: flex-start;
   font-size: 0.72rem;
   font-weight: 700;
-  color: var(--color-amber, #F8C08A);
+  color: var(--yellow);
   background: transparent;
   border: 1px solid rgba(248, 192, 138, 0.35);
   border-radius: 6px;
@@ -1174,7 +1174,7 @@
 }
 
 /* ── Dark mode: keep notebook paper aesthetic ──── */
-[data-theme="dark"] .diary-page-overlay {
+[data-theme="side-b"] .diary-page-overlay {
   color: #2A2218;
 }
 

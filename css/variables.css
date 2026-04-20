@@ -1,67 +1,104 @@
 /* ═══════════════════════════════════════════════
-   SHOWUP — DESIGN TOKENS
-   All colors, typography, and spacing live here.
+   SHOWUP — DESIGN TOKENS (Mixtape Side A)
+   Source of truth: MIXTAPE_SPEC.md §4
    ═══════════════════════════════════════════════ */
 
-:root {
-  /* ── Brand ───────────────────────────────────── */
-  --color-primary:       #D8584E;
-  --color-primary-hover: #C4473D;
-  --color-teal:          #80B9B9;
-  --color-amber:         #F8C08A;
+:root,
+:root[data-theme="side-a"] {
+  /* ── Side A palette ──────────────────────────── */
+  --paper:       #F4ECD8;
+  --paper-deep:  #ECE1C6;
+  --paper-edge:  #DCCFA6;
+  --ink:         #2A1F1A;
+  --ink-soft:    #5A463A;
+  --ink-faint:   #9C8874;
+  --red:         #C3342B;
+  --red-hover:   #A62822;
+  --red-wash:    #F5D9D5;
+  --blue:        #4F6C8E;
+  --yellow:      #E8B33A;
+  --green:       #3E5C3A;
+  --hairline:    #D4C3A1;
 
-  /* ── Light Mode ──────────────────────────────── */
-  --bg:               #FFFAF5;
-  --bg-surface:       #FFFFFF;
-  --bg-surface-rgb:   255 255 255;
-  --bg-subtle:    #F5EFE8;
-  --border:       #EDE5DA;
-  --border-faint: #F5EFE8;
-  --text:         #2A2E45;
-  --text-muted:   #596088;
-  --text-faint:   #B3A1B4;
+  /* ── Legacy color aliases (retired in Step 2) ── */
+  --color-primary:       var(--red);
+  --color-primary-hover: var(--red-hover);
+  --color-teal:          #80B9B9;
+  --color-amber:         var(--yellow);
+  --bg:                  var(--paper);
+  --bg-surface:          var(--paper-deep);
+  --bg-subtle:           var(--paper-edge);
+  --border:              var(--hairline);
+  --border-faint:        var(--paper-edge);
+  --text:                var(--ink);
+  --text-muted:          var(--ink-soft);
+  --text-faint:          var(--ink-faint);
 
   /* ── Typography ──────────────────────────────── */
-  --font-logo:        'Sora', sans-serif;
-  --font-heading:     'Fraunces', serif;
-  --font-base:        'Inter', sans-serif;
+  --font-logo:    'Sora', sans-serif;
+  --font-display: 'Fraunces', serif;
+  --font-body:    'Manrope', sans-serif;
+  --font-hand:    'Caveat', cursive;
+  --font-mono:    'DM Mono', monospace;
 
-  /* User badge fonts */
+  /* Legacy font aliases (retired in Step 2) */
+  --font-heading: var(--font-display);
+  --font-base:    var(--font-body);
+
+  /* User-selectable badge fonts (monthly setup) */
   --font-handwritten: 'Caveat', cursive;
   --font-chunky:      'Fredoka One', cursive;
   --font-elegant:     'Playfair Display', serif;
+  --font-pixel:       'Pixelify Sans', sans-serif;
 
   /* ── Spacing ─────────────────────────────────── */
-  --radius-sm:   6px;
-  --radius-md:   10px;
-  --radius-lg:   16px;
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   16px;
+
+  /* Legacy radius aliases */
+  --radius-sm:   var(--r-sm);
+  --radius-md:   var(--r-md);
+  --radius-lg:   var(--r-lg);
   --radius-xl:   24px;
   --radius-full: 99px;
 
   /* ── Shadows ─────────────────────────────────── */
-  --shadow-sm: 0 1px 4px rgba(42, 46, 69, 0.06);
-  --shadow-md: 0 4px 16px rgba(42, 46, 69, 0.10);
-  --shadow-lg: 0 8px 32px rgba(42, 46, 69, 0.14);
+  --shadow-soft: 0 1px 2px rgba(42, 31, 26, 0.06), 0 2px 6px rgba(42, 31, 26, 0.04);
+  --shadow-card: 0 2px 4px rgba(42, 31, 26, 0.08), 0 8px 24px rgba(42, 31, 26, 0.06);
+
+  /* Legacy shadow aliases */
+  --shadow-sm: var(--shadow-soft);
+  --shadow-md: var(--shadow-card);
+  --shadow-lg: 0 8px 32px rgba(42, 31, 26, 0.14);
 
   /* ── Transitions ─────────────────────────────── */
   --transition: 0.2s ease;
 }
 
-/* ── Dark Mode ───────────────────────────────────
-   Applied when <html> has data-theme="dark"
-   ─────────────────────────────────────────────── */
-[data-theme="dark"] {
-  --bg:               #1D2142;
-  --bg-surface:       #2A2E45;
-  --bg-surface-rgb:   42 46 69;
-  --bg-subtle:    #353B5C;
-  --border:       #3D4468;
-  --border-faint: #2F3456;
-  --text:         #FBDFCB;
-  --text-muted:   #B3A1B4;
-  --text-faint:   #596088;
+/* ═══════════════════════════════════════════════
+   Side B — Warm leather (dark theme)
+   Source of truth: MIXTAPE_SPEC.md §4
+   Every consumer-facing token gets overridden so component CSS
+   does not need to change identifiers (e.g. var(--ink) still works).
+   ═══════════════════════════════════════════════ */
+[data-theme="side-b"] {
+  --paper:       #2A1518;
+  --paper-deep:  #1D0E10;
+  --paper-edge:  #3A1D20;
+  --ink:         #F0DCCF;
+  --ink-soft:    #B18A84;
+  --ink-faint:   #6E504B;
+  --red:         #F07A5E;
+  --red-hover:   #D85A3E;
+  --red-wash:    rgba(240, 122, 94, 0.18);
+  --blue:        #5EAAA8;
+  --yellow:      #E8B33A;
+  --green:       #5EAAA8;
+  --hairline:    #4A2025;
 
-  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+  /* Side B shadow tuning — maroon absorbs shadow, use lower opacity */
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.18);
+  --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.32), 0 8px 24px rgba(0, 0, 0, 0.22);
+  --shadow-lg:   0 8px 32px rgba(0, 0, 0, 0.4);
 }
