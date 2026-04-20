@@ -581,8 +581,62 @@
     </details>
   </div>
 
-  <!-- ── Apr 19, 2026 — Mixtape · Phase 1 shipped ── -->
+  <!-- ── Apr 20, 2026 — Mixtape · Phase 2 shipped ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 20, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">UI03</span>
+    </div>
+    <div class="entry-title">Mixtape · Phase 2 shipped</div>
+    <p class="entry-desc">Side B is live on the preview channel. Warm leather maroon, salmon red, teal accent, cream text -- a quiet evening companion to Side A's daytime cream. The theme pill, Firestore persistence, and per-theme motif SVG all landed across four focused commits on the mixtape branch. Production still untouched; next move is the merge plus one production deploy that flips from pre-Mixtape straight to full Side A + Side B.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Side B token layer</div>
+        <div class="item-desc">css/variables.css got the real Side B palette: paper #2A1518, paper-deep #1D0E10, ink #F0DCCF (cream text), salmon red #F07A5E, teal #5EAAA8, hairline #4A2025. Every consumer-facing token gets overridden inside [data-theme="side-b"] so component CSS keeps reading var(--ink), var(--red), etc. without a rename. Eighteen [data-theme="dark"] selectors across six CSS files flipped to [data-theme="side-b"] so dark-mode overrides activate with the new attribute. --blue remaps to teal on Side B so the stripe auto-flips to red / yellow / teal.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Boot-time flash fixes</div>
+        <div class="item-desc">Caught during Side B verification: reloading on Side B flashed the cream paper for a frame before js/app.js could catch up. Fixed with an inline pre-paint script in index.html's head that reads localStorage and sets data-theme synchronously, before any CSS paints. Found two more pre-Mixtape rgba leftovers while we were in there: #global-loader was showing old navy indigo on Side B; the month-setup modal backdrop same. Both now use color-mix on --paper / --ink tokens so they auto-theme.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Side A / Side B theme pill</div>
+        <div class="item-desc">The binary moon/sun toggle is gone. Two-segment pill in the sidebar foot and mobile header, with sun + moon icons (inline SVG, currentColor) inside each segment. Active segment gets the ink fill with paper icon -- the same vocabulary as the sidebar nav active pill. Inline SVG with currentColor instead of the existing sun.svg / moon.svg assets because the existing files hardcode old amber that would clash. Sidebar foot stretches both action rows (Privacy + Sign out, and the pill) to full width so the column has a tidy horizontal rhythm.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Firestore theme persistence</div>
+        <div class="item-desc">Theme choice follows the user across devices via users/{uid}.theme. A tiny js/theme.js module mirrors the js/diary.js getDiaryTheme / setDiaryTheme pattern. Cold boot still reads localStorage pre-paint; after auth (under the loader), we read the Firestore value and apply it if it differs, or backfill the field if missing. Pill clicks fire-and-forget the Firestore write. Offline writes queue in the SDK and flush on reconnect.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Per-theme motif SVG</div>
+        <div class="item-desc">The drifting motif layer now swaps palette with the theme. --side-motif-svg custom property on .ambient holds the Side A motif (red, blue, yellow sparkles + dots); [data-theme="side-b"] .ambient overrides with salmon, teal, and yellow. Shape positions, sizes, and opacities identical between themes -- only the three hex values change. Warmth glow and grain stay untouched; they already read fine on both themes.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">What's next</div>
+        <div class="item-desc">Merge mixtape into main and one production deploy. Every visitor to showup-jenirocks.web.app flips from pre-Mixtape to full Side A + Side B in one cut. Post-launch: diary theme reharmonization (coral / cream / indigo retuned to the Mixtape palette, or expanded into warm + cool sets per side) and the hand-drawn motif art pass that spec section 14 flags as a future exploration.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/UI03/01.png" alt="Mixtape Phase 2 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI03/02.png" alt="Mixtape Phase 2 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI03/03.png" alt="Mixtape Phase 2 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI03/04.png" alt="Mixtape Phase 2 shipped" onerror="this.style.display='none'">
+        <img src="assets/build-log/UI03/05.png" alt="Mixtape Phase 2 shipped" onerror="this.style.display='none'">
+        <video src="assets/build-log/UI03/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 19, 2026 — Mixtape · Phase 1 shipped ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 19, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
