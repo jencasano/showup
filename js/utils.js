@@ -73,12 +73,13 @@ function hslToHex(h, s, l) {
 }
 
 // Activity colors palette (shared across tracker modules)
+// Sourced from MIXTAPE_SPEC §4: red / blue / yellow / green + teal.
 export const ACTIVITY_COLORS = [
   "#C3342B",
-  "#80B9B9",
-  "#F8C08A",
-  "#A29BFE",
-  "#1DD1A1",
+  "#4F6C8E",
+  "#E8B33A",
+  "#3E5C3A",
+  "#5EAAA8",
 ];
 
 export function getActivityColor(index) {

@@ -3,7 +3,7 @@ import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase
 import { showToast } from "./ui.js";
 
 const ACTIVITY_COLORS = [
-  "#C3342B", "#80B9B9", "#F8C08A", "#A29BFE", "#1DD1A1",
+  "#C3342B", "#4F6C8E", "#E8B33A", "#3E5C3A", "#5EAAA8",
 ];
 function getActivityColor(index) {
   return ACTIVITY_COLORS[index % ACTIVITY_COLORS.length];

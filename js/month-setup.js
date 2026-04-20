@@ -13,7 +13,7 @@ const FONTS = [
   { value: "Pixelify Sans", label: "Aa — Pixel" }
 ];
 
-const COLORS = ["#F46D6A", "#D97A5E", "#F2A65A", "#E9C46A", "#E89AA8", "#C97C8D", "#8FAF8F", "#8D6A9F"];
+const COLORS = ["#C3342B", "#F07A5E", "#E8B33A", "#A65E3A", "#4F6C8E", "#5EAAA8", "#3E5C3A", "#8A6585"];
 const STICKERS = [
   "sunflower2",
   "muscle",
@@ -55,7 +55,7 @@ export function showMonthSetup(userId, avatarUrl, prevData = null, displayName =
     const yearMonth = getCurrentYearMonth();
 
     const state = {
-      color:      prevData?.decoration?.color     || "#FF6B6B",
+      color:      prevData?.decoration?.color     || "#C3342B",
       fontColor:  prevData?.decoration?.fontColor || "#FFFFFF",
       font:       prevData?.decoration?.font      || "Inter",
       sticker:    prevData?.decoration?.sticker   || "sunflower2",
