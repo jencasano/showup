@@ -608,8 +608,13 @@
         <div class="item-spec"></div>
       </div>
       <div class="entry-item">
+        <div class="item-name">Diary-strip toast, voice outlier</div>
+        <div class="item-desc">js/diary-strip.js was firing "Coming soon!" with an exclamation when someone tapped the "view full diary" button on a feed diary strip. Stale voice that slipped past earlier passes; other coming-soon toasts in the app (sidebar action items, mobile header shop button) were already lowercase with a period. Normalized to coming soon. to match. Spec §3.2 explicitly covered this as "anywhere else the app currently shows a capitalized-exclamation toast for a non-celebratory event."</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
         <div class="item-name">Logout-race toast fix</div>
-        <div class="item-desc">Signing out from the Following or All tab was producing a "Failed to load following." (or "Failed to load trackers.") toast on the login screen, because the live Firestore onSnapshot listener was still subscribed when auth flipped to null. Fix is layered: js/app.js sign-out handler now tears down followingUnsub and allLogsUnsub before signOutUser() returns so Firestore has no live listeners at the auth boundary. The tracker-following.js and tracker-all.js error handlers also gate on auth.currentUser; if it's null at error time, we swallow silently. Genuine load failures still surface with voice-corrected copy: couldn't load following. try again? and couldn't load trackers. try again?</div>
+        <div class="item-desc">Signing out from the Following, All, or My Log tab was producing a "Failed to load following." / "Failed to load trackers." / "Failed to load tracker." toast on the login screen, because the live Firestore onSnapshot listener was still subscribed when auth flipped to null. Fix is layered: js/app.js sign-out handler now tears down followingUnsub and allLogsUnsub before signOutUser() returns so Firestore has no live listeners at the auth boundary. The tracker-following.js, tracker-all.js, and tracker-mylog.js error handlers all gate on auth.currentUser; if it's null at error time, we swallow silently. Genuine load failures still surface with voice-corrected copy: couldn't load following. try again? / couldn't load trackers. try again? / couldn't load tracker. try again?</div>
         <div class="item-spec"></div>
       </div>
       <div class="entry-item">
