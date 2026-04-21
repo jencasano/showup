@@ -594,7 +594,7 @@
       <div class="entry-item">
         <div class="item-name">Side B token layer</div>
         <div class="item-desc">css/variables.css got the real Side B palette: paper #2A1518, paper-deep #1D0E10, ink #F0DCCF (cream text), salmon red #F07A5E, teal #5EAAA8, hairline #4A2025. Every consumer-facing token gets overridden inside [data-theme="side-b"] so component CSS keeps reading var(--ink), var(--red), etc. without a rename. Eighteen [data-theme="dark"] selectors across six CSS files flipped to [data-theme="side-b"] so dark-mode overrides activate with the new attribute. --blue remaps to teal on Side B so the stripe auto-flips to red / yellow / teal.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Boot-time flash fixes</div>
@@ -653,7 +653,7 @@
       <div class="entry-item">
         <div class="item-name">Side A tokens + fonts</div>
         <div class="item-desc">css/variables.css rewritten with the Mixtape palette: paper, ink, red, yellow, blue, hairline. Added Manrope, DM Mono, expanded Fraunces and Caveat weights. Dropped Inter then put it back once we caught that it is a load-bearing user-selectable badge font. Legacy token names alias to Mixtape tokens so every component keeps rendering while we migrate.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Theme-semantic hex sweep</div>
@@ -698,7 +698,7 @@
       <div class="entry-item">
         <div class="item-name">Brand mark assets</div>
         <div class="item-desc">New favicon replaces the coral-on-navy mark with Mixtape red on ink. Added assets/icons/app-icon.svg (512 master for future PWA install) and assets/icons/mark.svg (generic standalone mark for social avatars and anywhere else the brand needs to live in a square frame). Sharp corners, no rounding, per Sora's square period.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">What's next</div>
@@ -727,7 +727,7 @@
       <span class="entry-code">UI01</span>
     </div>
     <div class="entry-title">The Mixtape Redesign · Design locked</div>
-    <p class="entry-desc">A full-session design lock for the showup. redesign. Warm mid-century book meets cassette tape. Side A (cream paper, deep ink, confident red) and Side B (warm leather maroon, salmon red, teal accent) both locked. Mobile M3 variant, brand identity, and theme system architecture all locked. Two canonical artifacts committed: MIXTAPE_SPEC.md as source of truth, docs/playbook.html as visual showcase. Implementation phase (Phase 1: Side A migration) comes next.</p>
+    <p class="entry-desc">A full-session design lock for the showup. redesign. Warm mid-century book meets cassette tape. Side A (cream paper, deep ink, confident red) and Side B (warm leather maroon, salmon red, teal accent) both locked. Mobile M3 variant, brand identity, and theme system architecture all locked. Two canonical artifacts committed: docs/MIXTAPE_SPEC.md as source of truth, docs/playbook.html as visual showcase. Implementation phase (Phase 1: Side A migration) comes next.</p>
     <div class="entry-items">
       <div class="entry-item">
         <div class="item-name">Aesthetic direction</div>
@@ -737,12 +737,12 @@
       <div class="entry-item">
         <div class="item-name">Side A palette</div>
         <div class="item-desc">Paper #F4ECD8, paper-deep #ECE1C6, ink #2A1F1A, red #C3342B (hero), blue #4F6C8E, yellow #E8B33A, green #3E5C3A, hairline #D4C3A1. Derived from six palette studies across sunset, forest, ice cream, and poolside moods.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Side B palette · Warm leather</div>
         <div class="item-desc">Paper #2A1518 maroon, text #F0DCCF warm cream, red #F07A5E salmon (tuned for dark bg), teal #5EAAA8 (replaces blue), hairline #4A2025. Sidebar rgba(46,27,26,0.78) with 6px blur. Option 8d won from a three-way final between Option 7 (magenta bruise), Option 8c (teal-tinted shadow), and Option 8d. Stripe: red / yellow / teal.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Level 3 texture</div>
@@ -767,12 +767,12 @@
       <div class="entry-item">
         <div class="item-name">Mobile layout (M3 Balanced)</div>
         <div class="item-desc">Locked from three mobile variants (M1 Quiet / M2 Loud / M3 Balanced) shown at both 390px and 360px widths. Header: Logo · Shop · Theme · Avatar. Bottom nav with four tabs: Mine · Diary · Following · All. Active state is an ink pill with red icon accent (same logic as desktop). Stripe sits above the bottom nav as a 2px top border.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Brand identity</div>
         <div class="item-desc">Wordmark: show[up]. with "up" in theme red, period in normal text color. Tagline: "Show up. Period." Standalone mark: red #C3342B square on ink #2A1F1A background, using Sora's square period shape. Universal across themes. Used for favicon (16-32px), app icon (PWA), and social avatars.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Five brand pillars</div>
@@ -782,7 +782,7 @@
       <div class="entry-item">
         <div class="item-name">Tone &amp; voice + hard rules</div>
         <div class="item-desc">Five voice traits (warm, specific, quietly observant, a little sarcastic, never performative). Voice calibration table per context. Do's and don'ts with concrete copy pairs. Forbidden patterns documented (no em-dashes, no AI-ish phrasing, no "the user"). Copy review checklist for every string.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/MIXTAPE_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Theme system architecture</div>
@@ -791,8 +791,8 @@
       </div>
       <div class="entry-item">
         <div class="item-name">Canonical artifacts</div>
-        <div class="item-desc">MIXTAPE_SPEC.md is the source of truth: 14 sections covering philosophy, tone &amp; voice, hard rules, tokens, motion, components, empty/error states, responsive, mobile, brand, theme system, iconography stub, migration plan, open questions. docs/playbook.html is the visual companion: sticky TOC, live swatches with click-to-copy hex, typography specimens in real fonts, component previews, motion demos, texture with live drift animation.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/MIXTAPE_SPEC.md" target="_blank">spec</a> <a class="spec-link" href="https://showup.jeni.rocks/docs/playbook.html" target="_blank">playbook</a></div>
+        <div class="item-desc">docs/MIXTAPE_SPEC.md is the source of truth: 14 sections covering philosophy, tone &amp; voice, hard rules, tokens, motion, components, empty/error states, responsive, mobile, brand, theme system, iconography stub, migration plan, open questions. docs/playbook.html is the visual companion: sticky TOC, live swatches with click-to-copy hex, typography specimens in real fonts, component previews, motion demos, texture with live drift animation.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/MIXTAPE_SPEC.md" target="_blank">spec</a> <a class="spec-link" href="https://showup.jeni.rocks/docs/playbook.html" target="_blank">playbook</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">What's next</div>
@@ -826,7 +826,7 @@
       <div class="entry-item">
         <div class="item-name">Event-stream model</div>
         <div class="item-desc">Unit is the event, not the day. Each meaningful write (log or diary) generates one feed event. Replaces the old day-card that showed chips, 7-day strips, and diary previews per user per day.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/FEED_EVENT_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/FEED_EVENT_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">10-second debounce</div>
@@ -942,9 +942,9 @@
     <p class="entry-desc">A single-column chronological feed replacing the "Feed coming soon" stub. Fully tier-aware cards with per-zone privacy badges, ghost copy, low key signal copy, activity chips, 7-day strip, and diary zone. Feed spec locked and committed to repo.</p>
     <div class="entry-items">
       <div class="entry-item">
-        <div class="item-name">Feed spec (FEED_SPEC.md)</div>
+        <div class="item-name">Feed spec (docs/FEED_SPEC.md)</div>
         <div class="item-desc">Full feed behavior locked: one card per person per day, upgrades/downgrades in real time, four log/diary states, changed message copy for removed log or diary, all five privacy tiers specified for the feed context.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/FEED_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/FEED_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Shared utils module</div>
@@ -963,8 +963,8 @@
       </div>
       <div class="entry-item">
         <div class="item-name">Low key / Ghost distinction</div>
-        <div class="item-desc">Design principle locked: Low key copy uses {firstName} and is warm and observational. Ghost copy names nobody and speaks as the feed itself. This distinction is a named design principle in FEED_SPEC.md.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/FEED_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-desc">Design principle locked: Low key copy uses {firstName} and is warm and observational. Ghost copy names nobody and speaks as the feed itself. This distinction is a named design principle in docs/FEED_SPEC.md.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/FEED_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Changed message copy</div>
@@ -998,7 +998,7 @@
       <div class="entry-item">
         <div class="item-name">Four card types</div>
         <div class="item-desc">Sharing (full calendar + diary strip), Locked (Followers tier, stranger view), Low key (signal copy), Ghost (moon treatment, gold glow). Private users excluded entirely.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/ALL_TAB_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/ALL_TAB_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Per-card month nav</div>
@@ -1008,7 +1008,7 @@
       <div class="entry-item">
         <div class="item-name">Tier-aware diary strip</div>
         <div class="item-desc">Diary zone renders for all visible card types (not just Sharing). Diary privacy is independent of calendar privacy. Ghost diary shows moon treatment. Low key diary shows signal copy. Followers diary respects follow status.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/FOLLOWING_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/FOLLOWING_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Search</div>
@@ -1057,7 +1057,7 @@
       <div class="entry-item">
         <div class="item-name">Five privacy tiers</div>
         <div class="item-desc">Sharing, Followers, Low key, Ghost, Private, set independently for Calendar and Diary. Private cascades both. Ghost is per-zone and doesn't cascade.</div>
-        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/FOLLOWING_SPEC.md" target="_blank">spec</a></div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/FOLLOWING_SPEC.md" target="_blank">spec</a></div>
       </div>
       <div class="entry-item">
         <div class="item-name">Ghost cards</div>
