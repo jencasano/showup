@@ -43,7 +43,7 @@ document.getElementById("next-btn").addEventListener("click", async () => {
     console.error("Error saving profile:", error);
     alert("Something went wrong. Please try again.");
     setupContainer.style.visibility = "";
-    btn.textContent = "Next →";
+    btn.textContent = "Next, →";
     btn.disabled = false;
   }
 });

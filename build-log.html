@@ -548,7 +548,7 @@
   <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Up next</span>
-      <span class="entry-badge badge-deck">19 items</span>
+      <span class="entry-badge badge-deck">20 items</span>
     </div>
     <details class="on-deck-details">
       <summary class="on-deck-summary">
@@ -577,13 +577,58 @@
           <li class="deck-item"><span class="deck-num">17</span>Custom spinner / loader</li>
           <li class="deck-item"><span class="deck-num">18</span>Polish + landing screen</li>
           <li class="deck-item"><span class="deck-num">19</span>Firestore rules, enforce privacy tiers server-side (diary private / ghost / lowkey are UI-only right now)</li>
+          <li class="deck-item"><span class="deck-num">20</span>Edit display name, back button from monthly setup Step 1 to setup.html so first-time users can fix a typo; settings entry point when that lands</li>
         </ul>
       </div>
     </details>
   </div>
 
-  <!-- ── Apr 21, 2026 — Polish · Login (Round 1) ── -->
+  <!-- ── Apr 21, 2026 — Polish · Monthly Setup (Round 1) ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 21, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">PO02</span>
+    </div>
+    <div class="entry-title">Polish · Monthly setup, round 1</div>
+    <p class="entry-desc">Second polish pass of the day. Cleans the monthly setup modal's Step 1 (decoration) into Mixtape alignment: per-theme badge palettes so each side leads with its own hero red, markers reordered with the Mixtape 4-point sparkle taking the star slot, and voice-corrected Next / Save button copy. setup.html picked up the same button-voice fix on the way through. Step 2 (activities + cadence) and the stickers themselves stay untouched — stickers wait on their own dedicated repaint pass.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Badge palette, per-theme</div>
+        <div class="item-desc">js/month-setup.js replaced the single hardcoded COLORS array with two per-theme palettes (COLORS_SIDE_A and COLORS_SIDE_B, seven swatches each) and a getActivePalette() helper that reads document.documentElement.getAttribute("data-theme") and defaults to Side A. Side A leads with Mixtape red #C3342B, Side B with salmon #F07A5E — each side excludes the other's hero red so the lead swatch stays decisive. Side B drops Side A blue (reads cool/muddy on maroon) and substitutes a warm dusty rose #D2937A. Yellow, cognac, teal, green, mauve are the shared supporting colors that work on both sides. Schema unchanged — decoration.color is still just a hex string; users who previously saved #F07A5E on Side A keep it, they just won't see that swatch as an option next month on Side A. If a saved color isn't in the active palette the preview still renders with the saved color and no swatch highlights in the picker.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/polish/MONTHLY_SETUP_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Markers, reordered with Mixtape sparkle</div>
+        <div class="item-desc">MARKERS reordered from square / circle / star / heart / check / x / scribble to square / star / circle / heart / check / x / scribble. Square moves to slot 1 because the red filled square is the visual echo of the wordmark period — the most Mixtape-specific shape in the set. The star slot now renders the Mixtape 4-point sparkle (same path as the sidebar motif in index.html), not the generic Unicode 5-point star. Stored values stay "star" and "scribble" for back-compat with existing user selections — renaming them to sparkle and squiggle would force a data migration we don't want. Also swapped Unicode-glyph rendering for inline SVG (24x24 viewBox, currentColor), which lets the picker inherit theme tokens correctly and let us drop the font-size styling that was only there to size Unicode characters.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Button voice, comma before arrow</div>
+        <div class="item-desc">"Next →" and "Save &amp; Start Tracking →" read with an em-dash cadence because of the space-then-arrow construction, which fights the Mixtape voice rule against em-dashes. Changed to "Next, →" and "Save &amp; Start Tracking, →" so the comma anchors the arrow as a continuation marker rather than a dash substitute. Three spots in js/month-setup.js (the modal HTML and the error-recovery textContent reset) plus two spots in the first-time setup flow (setup.html and js/setup.js error-recovery) all picked up the same fix for consistency.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">What's next</div>
+        <div class="item-desc">Stickers come next via a dedicated sticker-repaint pass — the fourteen sticker SVGs get re-authored in a fixed Mixtape sticker palette (red, yellow, cognac, green, blue / teal, mauve, ink, paper), two or three hand-picked colors per sticker. Decision locked already: stickers don't react to badge color, they're authored objects that live inside the Mixtape palette. After stickers: diary polish (coral accents to Mixtape red), the diary cover system as a paid-architecture sibling to app themes, then the toast spec that retires --color-teal and establishes a full neutral / info / success / error hierarchy per theme. Scrollbars, empty states with Mixtape flourish, modal audit follow. Icons and landing page stay deferred.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/PO02/01.png" alt="Polish · Monthly setup round 1" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO02/02.png" alt="Polish · Monthly setup round 1" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO02/03.png" alt="Polish · Monthly setup round 1" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO02/04.png" alt="Polish · Monthly setup round 1" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO02/05.png" alt="Polish · Monthly setup round 1" onerror="this.style.display='none'">
+        <video src="assets/build-log/PO02/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 21, 2026 — Polish · Login (Round 1) ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 21, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
