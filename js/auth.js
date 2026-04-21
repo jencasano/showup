@@ -9,12 +9,19 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase
 
 const provider = new GoogleAuthProvider();
 
+let signInInFlight = false;
+
 // Sign in with Google
 export async function signIn() {
+  if (signInInFlight) return;
+  signInInFlight = true;
   try {
     await signInWithPopup(auth, provider);
   } catch (error) {
+    if (error?.code === "auth/cancelled-popup-request") return;
     console.error("Sign in error:", error);
+  } finally {
+    signInInFlight = false;
   }
 }
 
