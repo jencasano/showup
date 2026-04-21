@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="side-a">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monthly Setup Polish — Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Sora:wght@800&family=Caveat:wght@400;600&family=Fredoka+One&family=Playfair+Display:wght@600&family=Pixelify+Sans&display=swap" rel="stylesheet">
+<style>
+:root,
+:root[data-theme="side-a"] {
+  --paper:       #F4ECD8;
+  --paper-deep:  #ECE1C6;
+  --paper-edge:  #DCCFA6;
+  --ink:         #2A1F1A;
+  --ink-soft:    #5A463A;
+  --ink-faint:   #9C8874;
+  --red:         #C3342B;
+  --red-hover:   #A62822;
+  --blue:        #4F6C8E;
+  --yellow:      #E8B33A;
+  --green:       #3E5C3A;
+  --hairline:    #D4C3A1;
+}
+[data-theme="side-b"] {
+  --paper:       #2A1518;
+  --paper-deep:  #1D0E10;
+  --paper-edge:  #3A1D20;
+  --ink:         #F0DCCF;
+  --ink-soft:    #B18A84;
+  --ink-faint:   #6E504B;
+  --red:         #F07A5E;
+  --red-hover:   #D85A3E;
+  --blue:        #5EAAA8;
+  --yellow:      #E8B33A;
+  --green:       #5EAAA8;
+  --hairline:    #4A2025;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #3E3A33; color: #F0DCCF; font-family: 'Manrope', sans-serif; min-height: 100vh; }
+body { padding: 32px 24px 80px; }
+
+.page-hd {
+  max-width: 1280px; margin: 0 auto 24px;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+}
+.page-hd h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.6rem; color: #F0DCCF; letter-spacing: -0.01em; }
+.page-hd .sub { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: #B18A84; letter-spacing: 0.08em; text-transform: uppercase; }
+.theme-switch { display: inline-flex; background: rgba(0,0,0,0.3); border: 1px solid #5a5148; border-radius: 99px; padding: 4px; }
+.theme-switch button { background: none; border: none; color: #B18A84; padding: 6px 16px; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 0.8rem; border-radius: 99px; cursor: pointer; }
+.theme-switch button.active { background: #F0DCCF; color: #1D0E10; }
+
+.section-lbl { max-width: 900px; margin: 28px auto 10px; font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #B18A84; }
+
+.ms-modal { background: var(--paper); color: var(--ink); border-radius: 16px; padding: 32px 36px 28px; box-shadow: 0 12px 40px rgba(0,0,0,0.35); max-width: 900px; margin: 0 auto; border: 1px solid var(--hairline); }
+.ms-progress-bar { height: 3px; background: var(--paper-edge); border-radius: 2px; overflow: hidden; margin-bottom: 10px; }
+.ms-progress-fill { height: 100%; width: 50%; background: var(--red); }
+.ms-step-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 18px; }
+.ms-modal h2 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.75rem; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 6px; }
+.ms-modal .intro { color: var(--ink-soft); font-size: 0.95rem; margin-bottom: 24px; }
+.ms-modal .intro strong { font-weight: 600; color: var(--ink); }
+.ms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.ms-section-label { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); margin-top: 18px; margin-bottom: 10px; }
+.ms-section-label:first-child { margin-top: 0; }
+
+.swatch-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.swatch { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08); }
+.swatch.selected { border-color: var(--ink); }
+
+.font-color-row { display: flex; gap: 8px; }
+.font-color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+.font-color-swatch.selected { border-color: var(--ink); }
+
+.font-stack { display: flex; flex-direction: column; gap: 6px; }
+.font-opt { background: var(--paper-deep); border: 1.5px solid var(--hairline); border-radius: 10px; padding: 12px 14px; cursor: pointer; color: var(--ink); font-size: 1rem; }
+.font-opt.selected { border-color: var(--red); background: var(--paper); }
+
+.sticker-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+.sticker-opt { width: 44px; height: 44px; border-radius: 10px; border: 1.5px solid var(--hairline); background: var(--paper-deep); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.sticker-opt.selected { border-color: var(--red); background: var(--paper); }
+.sticker-opt img { width: 26px; height: 26px; display: block; }
+
+.marker-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.marker-opt { width: 44px; height: 44px; border-radius: 10px; border: 1.5px solid var(--hairline); background: var(--paper-deep); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink); }
+.marker-opt.selected { border-color: var(--red); background: var(--paper); }
+.marker-opt svg { width: 22px; height: 22px; }
+
+.ms-preview-wrap { margin-top: 6px; }
+.ms-badge { display: inline-flex; align-items: center; gap: 10px; background: var(--red); color: #fff; padding: 12px 22px; border-radius: 99px; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 1.05rem; box-shadow: 0 2px 8px rgba(195, 52, 43, 0.2); }
+.ms-badge img { width: 24px; height: 24px; }
+
+.ms-nav { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 28px; }
+.ms-btn { background: var(--red); color: #fff; border: none; padding: 12px 24px; border-radius: 10px; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
+.ms-btn:hover { background: var(--red-hover); }
+
+.notes-panel { max-width: 900px; margin: 32px auto 0; background: rgba(0,0,0,0.2); border: 1px solid #5a5148; border-radius: 14px; padding: 24px 28px; color: #F0DCCF; }
+.notes-panel h3 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.1rem; margin-bottom: 12px; }
+.notes-panel ul { list-style: none; padding: 0; margin: 0; }
+.notes-panel li { padding: 6px 0 6px 20px; position: relative; font-size: 0.9rem; line-height: 1.55; color: #D4BFB4; }
+.notes-panel li::before { content: "·"; position: absolute; left: 4px; top: 4px; color: var(--red); font-size: 1.4rem; }
+.notes-panel li strong { color: #F0DCCF; font-weight: 600; }
+.notes-panel code { font-family: 'DM Mono', monospace; font-size: 0.82rem; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 4px; color: #F0DCCF; }
+.notes-panel .deferred { margin-top: 18px; padding-top: 18px; border-top: 1px solid #5a5148; font-style: italic; color: #B18A84; }
+</style>
+</head>
+<body data-theme="side-a">
+
+<div class="page-hd">
+  <div>
+    <h1>Monthly setup polish — mockup</h1>
+    <div class="sub">PO02 · final · ready for spec</div>
+  </div>
+  <div class="theme-switch" id="themeSwitch">
+    <button class="active" data-theme="side-a">Side A</button>
+    <button data-theme="side-b">Side B</button>
+  </div>
+</div>
+
+<div class="section-lbl">Step 1 — proposed</div>
+
+<div class="ms-modal">
+  <div class="ms-progress-bar"><div class="ms-progress-fill"></div></div>
+  <div class="ms-step-label">Step 1 of 2</div>
+
+  <h2>Make it yours.</h2>
+  <p class="intro">Customize your section for <strong>April 2026</strong>.</p>
+
+  <div class="ms-grid">
+    <div>
+      <div class="ms-section-label">Badge color</div>
+      <div class="swatch-row" id="badgeSwatches"></div>
+
+      <div class="ms-section-label">Font color</div>
+      <div class="font-color-row">
+        <div class="font-color-swatch selected" style="background:#FFFFFF; border-color:#ddd;"></div>
+        <div class="font-color-swatch" style="background:#2A1F1A;"></div>
+        <div class="font-color-swatch" style="background:#F4ECD8; border-color:#ddd;"></div>
+        <div class="font-color-swatch" style="background:#4A1815;"></div>
+      </div>
+
+      <div class="ms-section-label">Sticker</div>
+      <div class="sticker-row" id="stickerRow"></div>
+
+      <div class="ms-section-label">Marker</div>
+      <div class="marker-row" id="markerRow"></div>
+    </div>
+
+    <div>
+      <div class="ms-section-label">Font</div>
+      <div class="font-stack">
+        <div class="font-opt selected" style="font-family:'Manrope';">Aa, Clean</div>
+        <div class="font-opt" style="font-family:'Caveat';">Aa, Handwritten</div>
+        <div class="font-opt" style="font-family:'Fredoka One';">Aa, Chunky</div>
+        <div class="font-opt" style="font-family:'Playfair Display';">Aa, Elegant</div>
+        <div class="font-opt" style="font-family:'Pixelify Sans';">Aa, Pixel</div>
+      </div>
+
+      <div class="ms-section-label">Preview</div>
+      <div class="ms-preview-wrap">
+        <div class="ms-badge" id="previewBadge">
+          <span>Jen Casano (jeni)</span>
+          <img id="previewSticker" src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/sunflower2.svg" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-nav">
+    <button class="ms-btn">Next, →</button>
+  </div>
+</div>
+
+<div class="section-lbl">What this spec covers</div>
+<div class="notes-panel">
+  <h3>Summary of changes</h3>
+  <ul>
+    <li><strong>Badge palette.</strong> Coral dropped from Side A. 7 swatches. Side A leads with Mixtape red (<code>#C3342B</code>), Side B leads with salmon (<code>#F07A5E</code>). Each side excludes the other side's hero red.</li>
+    <li><strong>Side A palette:</strong> red, yellow, cognac, blue, teal, green, mauve.</li>
+    <li><strong>Side B palette:</strong> salmon, yellow, cognac, teal, green, mauve, dusty rose.</li>
+    <li><strong>Markers reordered.</strong> Square first (Mixtape red period feel). Mixtape 4-point sparkle second. Then circle, heart, check, x, squiggle.</li>
+    <li><strong>Sparkle star.</strong> Uses the exact path from the sidebar motif in <code>index.html</code>. Matches the floating bg motifs and the motif above the wordmark.</li>
+    <li><strong>Next button.</strong> "Next →" becomes "Next, →" with a comma. No em-dash, no dash-feel.</li>
+    <li><strong>Tokens.</strong> All modal colors already read from tokens. Palette swap is a code-level change in <code>js/month-setup.js</code>, per-theme.</li>
+  </ul>
+  <div class="deferred">
+    <strong>Deferred to STICKER_REPAINT_SPEC.md:</strong> the stickers (sunflower, muscle, flame, etc.) stay as-is in this spec. They will be repainted in the Mixtape palette in a separate, focused pass. This keeps the monthly setup polish shippable without gating on artwork.
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute;" aria-hidden="true">
+  <defs>
+    <symbol id="mkr-square" viewBox="0 0 24 24">
+      <rect x="7" y="7" width="10" height="10" fill="currentColor"/>
+    </symbol>
+    <symbol id="mkr-star4" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 3 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2 z"/>
+    </symbol>
+    <symbol id="mkr-circle" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="5" fill="currentColor"/>
+    </symbol>
+    <symbol id="mkr-heart" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 19s-7-4.5-7-9.5c0-2.5 2-4.5 4.5-4.5c1.5 0 2.5 0.8 2.5 2c0-1.2 1-2 2.5-2c2.5 0 4.5 2 4.5 4.5c0 5-7 9.5-7 9.5z"/>
+    </symbol>
+    <symbol id="mkr-check" viewBox="0 0 24 24">
+      <path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5l9-10"/>
+    </symbol>
+    <symbol id="mkr-x" viewBox="0 0 24 24">
+      <path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/>
+    </symbol>
+    <symbol id="mkr-squiggle" viewBox="0 0 24 24">
+      <path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M3 12c2 -3 4 -3 6 0s4 3 6 0s4 -3 6 0"/>
+    </symbol>
+  </defs>
+</svg>
+
+<script>
+const themeSwitch = document.getElementById('themeSwitch');
+themeSwitch.addEventListener('click', (e) => {
+  if (e.target.tagName !== 'BUTTON') return;
+  const theme = e.target.dataset.theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  document.body.setAttribute('data-theme', theme);
+  themeSwitch.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.theme === theme));
+  renderBadgeSwatches();
+});
+
+const PALETTE_SIDE_A = ['#C3342B', '#E8B33A', '#A65E3A', '#4F6C8E', '#5EAAA8', '#3E5C3A', '#8A6585'];
+const PALETTE_SIDE_B = ['#F07A5E', '#E8B33A', '#A65E3A', '#5EAAA8', '#3E5C3A', '#8A6585', '#D2937A'];
+
+let currentBadgeColor = '#C3342B';
+function renderBadgeSwatches() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const palette = theme === 'side-b' ? PALETTE_SIDE_B : PALETTE_SIDE_A;
+  currentBadgeColor = palette[0];
+  const row = document.getElementById('badgeSwatches');
+  row.innerHTML = '';
+  palette.forEach((hex, i) => {
+    const sw = document.createElement('div');
+    sw.className = 'swatch' + (i === 0 ? ' selected' : '');
+    sw.style.background = hex;
+    sw.dataset.color = hex;
+    sw.addEventListener('click', () => {
+      row.querySelectorAll('.swatch').forEach(x => x.classList.remove('selected'));
+      sw.classList.add('selected');
+      currentBadgeColor = hex;
+      document.getElementById('previewBadge').style.background = hex;
+    });
+    row.appendChild(sw);
+  });
+  document.getElementById('previewBadge').style.background = currentBadgeColor;
+}
+
+const STICKERS = [
+  'sunflower2', 'muscle', 'star', 'run', 'brain', 'bacon', 'steak',
+  'butter', 'sprout', 'boom', 'headphones', 'dumbbell', 'flame', 'target'
+];
+function renderStickersInModal() {
+  const row = document.getElementById('stickerRow');
+  row.innerHTML = '';
+  STICKERS.slice(0, 7).forEach((name, i) => {
+    const opt = document.createElement('div');
+    opt.className = 'sticker-opt' + (i === 0 ? ' selected' : '');
+    opt.innerHTML = `<img src="https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/${name}.svg" alt="${name}">`;
+    opt.addEventListener('click', () => {
+      row.querySelectorAll('.sticker-opt').forEach(x => x.classList.remove('selected'));
+      opt.classList.add('selected');
+      document.getElementById('previewSticker').src =
+        `https://raw.githubusercontent.com/jencasano/showup/main/assets/icons/${name}.svg`;
+    });
+    row.appendChild(opt);
+  });
+}
+
+const MARKERS = ['mkr-square', 'mkr-star4', 'mkr-circle', 'mkr-heart', 'mkr-check', 'mkr-x', 'mkr-squiggle'];
+function renderMarkers() {
+  const row = document.getElementById('markerRow');
+  row.innerHTML = '';
+  MARKERS.forEach((id, i) => {
+    const opt = document.createElement('div');
+    opt.className = 'marker-opt' + (i === 0 ? ' selected' : '');
+    opt.innerHTML = `<svg viewBox="0 0 24 24"><use href="#${id}"/></svg>`;
+    opt.addEventListener('click', () => {
+      row.querySelectorAll('.marker-opt').forEach(x => x.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+    row.appendChild(opt);
+  });
+}
+
+renderBadgeSwatches();
+renderStickersInModal();
+renderMarkers();
+</script>
+
+</body>
+</html>
