@@ -92,7 +92,7 @@ export function renderDiaryStrip(entry, privacy, signal, { isFollowing = true } 
   viewBtn.textContent = "view full diary \u2192";
   viewBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    showToast("Coming soon!");
+    showToast("coming soon.");
   });
   footer.appendChild(viewBtn);
   strip.append(header, body, footer);

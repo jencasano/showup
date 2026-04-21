@@ -170,8 +170,11 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
   }, (error) => {
     console.error("Snapshot error:", error);
-    showToast("Failed to load tracker.", "error");
     hideLoader();
+    // Logout race: the listener is still live when auth flips to null,
+    // which surfaces as permission-denied. Swallow silently.
+    if (!auth.currentUser) return;
+    showToast("couldn't load tracker. try again?", "error");
   });
 }
 

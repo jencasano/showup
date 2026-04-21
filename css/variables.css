@@ -20,6 +20,10 @@
   --green:       #3E5C3A;
   --hairline:    #D4C3A1;
 
+  /* Role-based supporting accent. Side B overrides --blue to #5EAAA8,
+     so this token auto-resolves per theme. */
+  --accent-support: var(--blue);
+
   /* ── Legacy color aliases (retired in Step 2) ── */
   --color-primary:       var(--red);
   --color-primary-hover: var(--red-hover);

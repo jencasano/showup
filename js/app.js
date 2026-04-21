@@ -218,8 +218,12 @@ document.querySelectorAll(".sb-nav-item").forEach(btn => {
 document.getElementById("google-signin-btn").addEventListener("click", signIn);
 document.querySelectorAll("#signout-btn, #sb-signout-btn").forEach(el => {
   el.addEventListener("click", async () => {
+    // Tear down live listeners before auth flips to null so Firestore
+    // doesn't fire permission-denied errors on the way out.
+    if (followingUnsub) { followingUnsub(); followingUnsub = null; }
+    if (allLogsUnsub)   { allLogsUnsub();   allLogsUnsub   = null; }
     await signOutUser();
-    showToast("Signed out!", "info");
+    showToast("signed out.", "info");
   });
 });
 

@@ -1,4 +1,4 @@
-import { db } from "./firebase-config.js";
+import { db, auth } from "./firebase-config.js";
 import {
   collection, doc, getDoc, getDocs, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -300,8 +300,11 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
     hideLoader();
   }, (error) => {
     console.error("Snapshot error:", error);
-    showToast("Failed to load trackers.", "error");
     hideLoader();
+    // Logout race: the listener is still live when auth flips to null,
+    // which surfaces as permission-denied. Swallow silently.
+    if (!auth.currentUser) return;
+    showToast("couldn't load trackers. try again?", "error");
   });
 
   return () => {

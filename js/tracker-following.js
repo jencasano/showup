@@ -1,4 +1,4 @@
-import { db } from "./firebase-config.js";
+import { db, auth } from "./firebase-config.js";
 import {
   doc, getDoc, setDoc, onSnapshot, arrayUnion, arrayRemove,
   collection, getDocs
@@ -368,8 +368,11 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
 
   }, (err) => {
     console.error("User snapshot error:", err);
-    showToast("Failed to load following.", "error");
     hideLoader();
+    // Logout race: the listener is still live when auth flips to null,
+    // which surfaces as permission-denied. Swallow silently.
+    if (!auth.currentUser) return;
+    showToast("couldn't load following. try again?", "error");
   });
 
   return () => {
