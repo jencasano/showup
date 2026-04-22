@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diary Cover System — Mockup v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Sora:wght@700;800&family=Manrope:wght@400;500;600;700&family=Caveat:wght@400;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #F4ECD8;
+      --paper-deep: #ECE1C6;
+      --paper-edge: #DCCFA6;
+      --ink: #2A1F1A;
+      --ink-soft: #5A463A;
+      --ink-faint: #9C8874;
+      --red: #C3342B;
+      --red-hover: #A62822;
+      --red-wash: #F5D9D5;
+      --blue: #4F6C8E;
+      --yellow: #E8B33A;
+      --green: #3E5C3A;
+      --hairline: #D4C3A1;
+      --font-logo: 'Sora', sans-serif;
+      --font-display: 'Fraunces', serif;
+      --font-body: 'Manrope', sans-serif;
+      --font-hand: 'Caveat', cursive;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    [data-theme="side-b"] {
+      --paper: #2A1518;
+      --paper-deep: #1D0E10;
+      --ink: #F0DCCF;
+      --ink-soft: #B18A84;
+      --ink-faint: #6E504B;
+      --red: #F07A5E;
+      --yellow: #E8B33A;
+      --teal: #5EAAA8;
+      --blue: #5EAAA8;
+      --hairline: #4A2025;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: #171012;
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .page-header {
+      max-width: 1200px;
+      margin: 0 auto 48px;
+      text-align: center;
+      color: #F0DCCF;
+    }
+
+    .page-header h1 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 700;
+      font-size: 2.4rem;
+      margin-bottom: 6px;
+    }
+
+    .page-header .sub {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1rem;
+      color: #B18A84;
+      margin-bottom: 16px;
+    }
+
+    .page-header .flag {
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      color: #B18A84;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .section {
+      max-width: 1200px;
+      margin: 0 auto 72px;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #9C8874;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(156, 136, 116, 0.2);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.5rem;
+      color: #F0DCCF;
+      margin-bottom: 8px;
+    }
+
+    .section-sub {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: #B18A84;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .frame {
+      background: var(--paper);
+      border-radius: 20px;
+      padding: 48px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .frame-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .theme-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    .theme-label span {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .nb {
+      position: relative;
+      display: flex;
+      border-radius: 6px;
+      overflow: visible;
+    }
+
+    .nb-inner {
+      flex: 1;
+      display: flex;
+      border: 3px solid;
+      border-radius: 6px;
+      box-shadow: 4px 6px 20px rgba(0,0,0,0.28), 8px 12px 40px rgba(0,0,0,0.18);
+      position: relative;
+    }
+
+    .nb-inner::before,
+    .nb-inner::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      z-index: 10;
+    }
+    .nb-inner::before { top: -4px; left: -4px; clip-path: polygon(0 0, 100% 0, 0 100%); }
+    .nb-inner::after { bottom: -4px; right: -4px; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+
+    .nb-spine {
+      width: 26px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+      padding: 22px 0;
+      border-radius: 3px 0 0 3px;
+      border-right: 2px solid rgba(0,0,0,0.2);
+    }
+
+    .nb-hole {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,0,0,0.35);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .nb-cover {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      border-radius: 0 3px 3px 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px 22px 28px 18px;
+    }
+
+    .nb-cover::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0,0,0,0.03) 4px, rgba(0,0,0,0.03) 8px);
+      pointer-events: none;
+    }
+
+    .nb-cover::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 40%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), transparent);
+      pointer-events: none;
+    }
+
+    .nb-pages-edge {
+      position: absolute;
+      right: -5px;
+      top: 5px;
+      bottom: 5px;
+      width: 6px;
+      background: repeating-linear-gradient(to bottom, #E8DFC4 0px, #E8DFC4 2px, #F2EDD8 2px, #F2EDD8 4px);
+      border-radius: 0 3px 3px 0;
+      box-shadow: 2px 0 4px rgba(0,0,0,0.15);
+      z-index: 3;
+    }
+
+    .nb-ribbon {
+      position: absolute;
+      top: -4px;
+      right: 18px;
+      width: 13px;
+      height: 32px;
+      clip-path: polygon(0 0, 100% 0, 100% 78%, 50% 100%, 0 78%);
+      z-index: 5;
+    }
+
+    .nb-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    .nb-title {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 700;
+      font-size: 2.3rem;
+      line-height: 1;
+    }
+
+    .nb-month {
+      font-family: var(--font-mono);
+      font-size: 0.56rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      margin-top: 8px;
+    }
+
+    .nb-tagline {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 0.5rem;
+      margin-top: 10px;
+    }
+
+    .nb-rule {
+      width: 100%;
+      height: 1px;
+      margin: 16px 0;
+    }
+
+    .nb-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .nb-stat strong {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 2.8rem;
+      line-height: 1;
+      display: block;
+    }
+
+    .nb-stat span {
+      font-family: var(--font-mono);
+      font-size: 0.54rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .nb-hint {
+      font-family: var(--font-mono);
+      font-size: 0.54rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .nb-desktop { width: 240px; height: 300px; }
+
+    .nb-bold .nb-inner { border-color: #8B2218; background: #A83428; }
+    .nb-bold .nb-inner::before, .nb-bold .nb-inner::after { background: linear-gradient(135deg, #E8C97A, #F8D98A); }
+    .nb-bold .nb-spine { background: linear-gradient(90deg, #6B1810, #8B2218 60%, #A83428); }
+    .nb-bold .nb-hole { background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08); }
+    .nb-bold .nb-cover { background: linear-gradient(160deg, #C3342B 0%, #B22D25 45%, #9A241C 100%); }
+    .nb-bold .nb-ribbon { background: linear-gradient(180deg, #E8C97A, #C9A855); }
+    .nb-bold .nb-title { color: white; text-shadow: 0 2px 12px rgba(0,0,0,0.35); }
+    .nb-bold .nb-month { color: rgba(255,255,255,0.5); }
+    .nb-bold .nb-tagline { color: rgba(255,255,255,0.35); }
+    .nb-bold .nb-rule { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent); }
+    .nb-bold .nb-stat strong { color: white; }
+    .nb-bold .nb-stat span { color: rgba(255,255,255,0.45); }
+    .nb-bold .nb-hint { color: rgba(255,255,255,0.38); }
+
+    .nb-quiet .nb-inner { border-color: #C9B890; background: #ECE1C6; }
+    .nb-quiet .nb-inner::before, .nb-quiet .nb-inner::after { background: linear-gradient(135deg, #C3342B, #D85F54); }
+    .nb-quiet .nb-spine { background: linear-gradient(90deg, #C9B890, #D4C3A1 60%, #E0D3B5); border-right-color: rgba(0,0,0,0.08); }
+    .nb-quiet .nb-hole { background: radial-gradient(circle at 35% 35%, #C9B890, #B09D75); }
+    .nb-quiet .nb-cover { background: linear-gradient(160deg, #F4ECD8 0%, #ECE1C6 45%, #DCCFA6 100%); }
+    .nb-quiet .nb-ribbon { background: linear-gradient(180deg, #C3342B, #A62822); }
+    .nb-quiet .nb-title { color: #2A1F1A; }
+    .nb-quiet .nb-month { color: rgba(42,31,26,0.4); }
+    .nb-quiet .nb-tagline { color: rgba(42,31,26,0.28); }
+    .nb-quiet .nb-rule { background: linear-gradient(90deg, transparent, rgba(195,52,43,0.3), transparent); }
+    .nb-quiet .nb-stat strong { color: #2A1F1A; }
+    .nb-quiet .nb-stat span { color: rgba(42,31,26,0.4); }
+    .nb-quiet .nb-hint { color: rgba(42,31,26,0.35); }
+
+    .nb-moody .nb-inner { border-color: #1A1F38; background: #252A48; }
+    .nb-moody .nb-inner::before, .nb-moody .nb-inner::after { background: linear-gradient(135deg, #C8972A, #E8C050); }
+    .nb-moody .nb-spine { background: linear-gradient(90deg, #12162E, #1A1F38 60%, #252A48); }
+    .nb-moody .nb-hole { background: radial-gradient(circle at 35% 35%, #1A1F38, #0A0E22); }
+    .nb-moody .nb-cover { background: linear-gradient(160deg, #2D3354 0%, #1F2442 45%, #161A34 100%); }
+    .nb-moody .nb-ribbon { background: linear-gradient(180deg, #C8972A, #9A7020); }
+    .nb-moody .nb-title { color: #F0DCCF; text-shadow: 0 2px 12px rgba(0,0,0,0.45); }
+    .nb-moody .nb-month { color: rgba(240,220,207,0.42); }
+    .nb-moody .nb-tagline { color: rgba(240,220,207,0.3); }
+    .nb-moody .nb-rule { background: linear-gradient(90deg, transparent, rgba(200,151,42,0.42), transparent); }
+    .nb-moody .nb-stat strong { color: #F0DCCF; }
+    .nb-moody .nb-stat span { color: rgba(240,220,207,0.4); }
+    .nb-moody .nb-hint { color: rgba(240,220,207,0.32); }
+
+    .covers-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      position: relative;
+      z-index: 2;
+      justify-items: center;
+    }
+
+    .cover-slot { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .cover-label-wrap { text-align: center; }
+    .cover-label { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 1.05rem; color: var(--ink); margin-bottom: 2px; }
+    .cover-sub { font-family: var(--font-mono); font-size: 0.6rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.1em; }
+
+    .modal-book { width: 960px; height: 600px; display: flex; position: relative; border-radius: 4px 14px 14px 4px; box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
+
+    .modal-corner { position: absolute; width: 22px; height: 22px; z-index: 20; background: linear-gradient(135deg, #C8972A, #e8c050); }
+    .modal-corner.tl { top: -3px; left: -3px; clip-path: polygon(0 0, 100% 0, 0 100%); }
+    .modal-corner.tr { top: -3px; right: -3px; clip-path: polygon(0 0, 100% 0, 100% 100%); }
+    .modal-corner.bl { bottom: -3px; left: -3px; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+    .modal-corner.br { bottom: -3px; right: -3px; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+
+    .modal-spine { width: 30px; flex-shrink: 0; border-radius: 4px 0 0 4px; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; padding: 22px 0; background: linear-gradient(90deg, #6B1810, #8B2218 60%, #A83428); }
+    .modal-spine .nb-hole { background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08); }
+
+    .modal-left {
+      width: 300px; flex-shrink: 0; background: #F2EDD8; position: relative; overflow: hidden; display: flex; flex-direction: column;
+      background-image: radial-gradient(circle, #C8BD9C 0.9px, transparent 1px);
+      background-size: 18px 18px;
+      background-position: 8px 8px;
+    }
+    .modal-left::before { content: ""; position: absolute; top: 0; left: 44px; bottom: 0; width: 1px; background: color-mix(in srgb, #C3342B 25%, transparent); pointer-events: none; z-index: 1; }
+
+    .modal-right {
+      flex: 1; min-width: 0; background: #FAF7ED; overflow: hidden; position: relative; border-radius: 0 14px 14px 0; display: flex; flex-direction: column;
+      background-image: radial-gradient(circle, #D5C9A8 0.9px, transparent 1px);
+      background-size: 18px 18px;
+      background-position: 8px 8px;
+    }
+    .modal-right::before { content: ""; position: absolute; top: 0; left: 48px; bottom: 0; width: 1px; background: color-mix(in srgb, #C3342B 22%, transparent); pointer-events: none; z-index: 1; }
+
+    .modal-crease { width: 14px; flex-shrink: 0; background: linear-gradient(90deg, rgba(0,0,0,0.18), rgba(0,0,0,0.04) 60%, transparent); pointer-events: none; }
+
+    .ml-head { padding: 14px 14px 10px 52px; flex-shrink: 0; position: relative; z-index: 2; }
+    .ml-title { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 1.1rem; color: #2A1F1A; line-height: 1; }
+    .ml-sub { font-size: 0.62rem; color: #7A6F55; margin-top: 4px; }
+    .ml-swatch-row { display: flex; gap: 7px; align-items: center; margin-top: 10px; }
+    .ml-swatch { width: 16px; height: 20px; border-radius: 2px; border: 1.5px solid transparent; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .ml-swatch.bold { background: linear-gradient(160deg, #C3342B, #9A241C); }
+    .ml-swatch.quiet { background: linear-gradient(160deg, #F4ECD8, #DCCFA6); }
+    .ml-swatch.moody { background: linear-gradient(160deg, #2D3354, #161A34); }
+    .ml-swatch.active { border-color: #2A1F1A; transform: scale(1.08); }
+
+    .ml-toggle { display: flex; padding: 0 14px 0 52px; border-bottom: 1px solid #D5C9A8; flex-shrink: 0; position: relative; z-index: 2; }
+    .ml-toggle button { background: none; border: none; border-bottom: 2.5px solid transparent; font-size: 0.72rem; font-weight: 600; color: #7A6F55; padding: 8px 10px 8px 0; margin-right: 12px; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 5px; margin-bottom: -1px; }
+    .ml-toggle button.active { border-bottom-color: #8B5E3C; color: #2A1F1A; }
+
+    .ml-cal { flex: 1; padding: 12px 14px 12px 52px; position: relative; z-index: 2; }
+    .ml-cal-month { font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; font-style: italic; color: #2A1F1A; margin-bottom: 8px; }
+    .ml-cal-headers { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+    .ml-cal-header { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; color: #7A6F55; text-align: center; padding: 2px 0; }
+    .ml-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+    .ml-cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 4px; font-size: 0.68rem; color: #7A6F55; position: relative; cursor: pointer; }
+    .ml-cal-day.has-entry { font-weight: 700; color: #2A1F1A; }
+    .ml-cal-day.active { background: color-mix(in srgb, #C3342B 12%, transparent); outline: 1.5px solid #C3342B; color: #C3342B; font-weight: 700; }
+    .ml-cal-day.future { opacity: 0.3; }
+    .ml-cal-dot { width: 5px; height: 5px; border-radius: 50%; background: #E8B33A; margin-top: 1px; }
+
+    .mr-close { position: absolute; top: 10px; right: 12px; z-index: 10; width: 26px; height: 26px; border-radius: 50%; border: 1px solid #C3342B; color: #C3342B; background: transparent; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+    .mr-content { flex: 1; overflow-y: auto; padding: 14px 20px 16px 60px; position: relative; z-index: 2; }
+
+    .entry-date { font-family: var(--font-display); font-style: italic; font-size: 1.1rem; color: #2A1F1A; line-height: 28px; margin-bottom: 8px; }
+    .entry-date strong { color: #C3342B; font-weight: 700; font-style: normal; }
+
+    .entry-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 18px; }
+    .chip { font-size: 0.6rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; color: white; font-family: var(--font-body); }
+    .chip--undone { background: transparent !important; color: #7A6F55 !important; border: 1px solid #D5C9A8; }
+
+    .entry-note { font-family: var(--font-hand); font-size: 1.15rem; color: #2A1F1A; line-height: 28px; white-space: pre-wrap; margin-bottom: 14px; }
+
+    .polaroid { display: inline-block; background: white; padding: 8px 8px 28px 8px; transform: rotate(-1.5deg); box-shadow: 2px 4px 12px rgba(0,0,0,0.18); margin-bottom: 12px; position: relative; }
+    .polaroid::before { content: ""; position: absolute; top: -5px; left: 20%; right: 20%; height: 9px; background: rgba(248,192,138,0.55); border-radius: 2px; }
+    .polaroid-inner { width: 180px; height: 180px; background: linear-gradient(135deg, #8a9fb5, #6b8296 40%, #4a5f72 100%); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.6); font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .edit-btn { background: #C3342B; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 0.78rem; font-weight: 700; font-family: var(--font-body); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; margin-top: 6px; }
+
+    .empty-date { font-family: var(--font-display); font-style: italic; font-size: 1.05rem; color: #7A6F55; margin-bottom: 8px; }
+    .empty-date strong { color: #C3342B; font-style: normal; font-weight: 700; }
+    .empty-text { font-family: var(--font-hand); font-size: 1.15rem; color: #B5A88A; margin-bottom: 16px; }
+    .write-btn { background: #C3342B; color: white; border: none; border-radius: 8px; padding: 9px 18px; font-size: 0.8rem; font-weight: 700; font-family: var(--font-body); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+
+    .mr-page-nav { display: flex; justify-content: center; align-items: center; gap: 16px; padding: 10px 20px 12px; border-top: 1px solid rgba(197, 185, 156, 0.5); background: rgba(250, 247, 237, 0.92); flex-shrink: 0; position: relative; z-index: 3; }
+    .mr-page-nav::before { content: ""; display: block; width: 6px; height: 6px; border-radius: 1px; background: #C3342B; opacity: 0.65; flex-shrink: 0; order: 2; }
+    .pf-btn { background: none; border: none; font-size: 0.68rem; font-weight: 700; color: #C3342B; cursor: pointer; font-family: inherit; padding: 2px 0; min-width: 80px; }
+    .pf-btn:first-child { order: 1; text-align: right; }
+    .pf-btn:last-child { order: 3; text-align: left; }
+    .pf-btn:disabled { opacity: 0.25; }
+
+    .modal-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 40px; }
+    .modal-pair .modal-book { width: 100%; max-width: 560px; height: 420px; margin: 0 auto; }
+    .modal-pair .modal-left { width: 180px; }
+    .modal-pair .ml-head { padding: 10px 10px 8px 36px; }
+    .modal-pair .ml-title { font-size: 0.95rem; }
+    .modal-pair .ml-sub { font-size: 0.55rem; }
+    .modal-pair .ml-swatch { width: 13px; height: 17px; }
+    .modal-pair .ml-toggle { padding: 0 10px 0 36px; }
+    .modal-pair .ml-toggle button { font-size: 0.62rem; padding: 6px 8px 6px 0; }
+    .modal-pair .ml-cal { padding: 8px 10px 8px 36px; }
+    .modal-pair .ml-cal-month { font-size: 0.7rem; }
+    .modal-pair .ml-cal-header { font-size: 0.48rem; }
+    .modal-pair .ml-cal-day { font-size: 0.58rem; }
+    .modal-pair .ml-cal-dot { width: 4px; height: 4px; }
+    .modal-pair .modal-left::before { left: 30px; }
+    .modal-pair .modal-right::before { left: 34px; }
+    .modal-pair .mr-content { padding: 10px 14px 12px 44px; }
+    .modal-pair .entry-date { font-size: 0.9rem; line-height: 22px; }
+    .modal-pair .chip { font-size: 0.52rem; padding: 2px 7px; }
+    .modal-pair .entry-note { font-size: 0.95rem; line-height: 22px; }
+    .modal-pair .polaroid-inner { width: 110px; height: 110px; }
+    .modal-pair .polaroid { padding: 5px 5px 18px 5px; }
+    .modal-pair .edit-btn, .modal-pair .write-btn { padding: 6px 12px; font-size: 0.68rem; }
+    .modal-pair .empty-date { font-size: 0.88rem; }
+    .modal-pair .empty-text { font-size: 0.95rem; }
+    .modal-pair .pf-btn { font-size: 0.58rem; min-width: 60px; }
+    .modal-pair .mr-close { width: 22px; height: 22px; font-size: 0.65rem; top: 8px; right: 10px; }
+
+    .modal-pair-label { text-align: center; font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 16px; }
+    .modal-pair-col { display: flex; flex-direction: column; }
+
+    .pages-modal { width: 900px; height: 540px; background: #F5EDE0; border: 4px solid #6B4423; border-radius: 8px; box-shadow: 0 0 0 1.5px #C8972A, 0 24px 64px rgba(0,0,0,0.5); display: flex; flex-direction: column; position: relative; overflow: hidden; margin: 16px auto 0; }
+    .pages-corner { position: absolute; width: 22px; height: 22px; z-index: 20; background: linear-gradient(135deg, #C8972A, #e8c050); }
+    .pages-corner.tl { top: -3px; left: -3px; clip-path: polygon(0 0, 100% 0, 0 100%); }
+    .pages-corner.tr { top: -3px; right: -3px; clip-path: polygon(0 0, 100% 0, 100% 100%); }
+    .pages-corner.bl { bottom: -3px; left: -3px; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+    .pages-corner.br { bottom: -3px; right: -3px; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+    .pages-head { background: #F5EDE0; border-bottom: 1px solid #D4C3A1; padding: 16px 22px 14px; flex-shrink: 0; display: flex; align-items: center; gap: 12px; }
+    .pages-head-text { flex: 1; }
+    .pages-head-title { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 1.15rem; color: #2A1F1A; }
+    .pages-head-sub { font-size: 0.66rem; color: #9C8874; margin-top: 3px; }
+    .pages-back { background: none; border: none; font-size: 0.74rem; font-weight: 600; color: #C3342B; cursor: pointer; }
+    .pages-close { width: 28px; height: 28px; border-radius: 50%; background: none; border: 1px solid #D4C3A1; color: #9C8874; font-size: 0.75rem; cursor: pointer; }
+    .pages-grid-wrap { flex: 1; overflow-y: auto; padding: 18px 22px; }
+    .pages-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+
+    .mini-page {
+      background: #FAF7ED;
+      background-image: radial-gradient(circle, #D5C9A8 0.6px, transparent 0.7px);
+      background-size: 10px 10px;
+      background-position: 5px 5px;
+      aspect-ratio: 3/4;
+      border-radius: 6px;
+      border: 1.5px solid #E8DFC4;
+      box-shadow: 1px 2px 6px rgba(0,0,0,0.12);
+      padding: 9px 7px 7px 16px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .mini-page::before { content: ""; position: absolute; top: 0; left: 12px; bottom: 0; width: 1px; background: color-mix(in srgb, #C3342B 20%, transparent); pointer-events: none; }
+    .mini-page.empty { opacity: 0.3; }
+    .mini-page.today { outline: 2px solid #C3342B; }
+    .mini-day { font-family: var(--font-display); font-style: italic; font-size: 0.9rem; font-weight: 700; color: #2A1F1A; line-height: 1; margin-bottom: 4px; }
+    .mini-note { font-family: var(--font-hand); font-size: 0.62rem; color: #5A4F38; line-height: 1.3; overflow: hidden; flex: 1; }
+    .mini-polaroid { background: white; padding: 3px 3px 10px 3px; transform: rotate(-1deg); box-shadow: 1px 2px 5px rgba(0,0,0,0.18); margin-top: 6px; width: calc(100% - 4px); position: relative; }
+    .mini-polaroid::before { content: ""; position: absolute; top: -2px; left: 20%; right: 20%; height: 5px; background: rgba(248,192,138,0.55); border-radius: 2px; }
+    .mini-polaroid-inner { width: 100%; aspect-ratio: 1; background: linear-gradient(135deg, #9fb5a5, #7a998b 40%, #5a7a6b 100%); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.5); font-family: var(--font-mono); font-size: 0.45rem; text-transform: uppercase; }
+
+    .mobile-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; justify-items: center; margin-top: 16px; }
+    .phone { width: 340px; height: 700px; background: #0A0506; border-radius: 44px; padding: 12px; box-shadow: 0 24px 64px rgba(0,0,0,0.5), inset 0 0 0 2px #2a1518; position: relative; }
+    .phone::before { content: ""; position: absolute; top: 18px; left: 50%; transform: translateX(-50%); width: 100px; height: 24px; background: #0A0506; border-radius: 12px; z-index: 20; }
+    .phone-screen { width: 100%; height: 100%; border-radius: 32px; background: var(--paper); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+    .phone-statusbar { height: 44px; flex-shrink: 0; }
+    .phone-label { text-align: center; font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-top: 12px; }
+
+    .mob-diary-card { width: 100%; border-radius: 10px; overflow: visible; position: relative; border: 2px solid; margin: 16px 0 0; }
+    .mob-diary-spine { padding: 7px 0 6px; display: flex; flex-direction: row; align-items: center; justify-content: space-evenly; border-radius: 8px 8px 0 0; }
+    .mob-hole-outer { width: 9px; height: 9px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.35); box-shadow: inset 0 1px 3px rgba(0,0,0,0.5); flex-shrink: 0; }
+    .mob-diary-cover { min-height: 160px; padding: 18px 20px 14px; border-radius: 0 0 8px 8px; position: relative; overflow: hidden; }
+    .mob-diary-cover::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0,0,0,0.03) 4px, rgba(0,0,0,0.03) 8px); pointer-events: none; }
+    .mob-diary-content { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
+    .mob-diary-title { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 2rem; line-height: 1; }
+    .mob-diary-month { font-family: var(--font-mono); font-size: 0.54rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; margin-top: 6px; }
+    .mob-diary-tagline { font-family: var(--font-display); font-style: italic; font-size: 0.48rem; margin-top: 8px; }
+    .mob-diary-rule { width: 100%; height: 1px; margin: 14px 0; }
+    .mob-diary-bottom { display: flex; align-items: flex-end; justify-content: space-between; }
+    .mob-diary-stat strong { font-family: var(--font-display); font-style: italic; font-size: 2.4rem; line-height: 1; display: block; }
+    .mob-diary-stat span { font-family: var(--font-mono); font-size: 0.5rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; }
+
+    .mob-bold { border-color: #8B2218; }
+    .mob-bold .mob-diary-spine { background: linear-gradient(90deg, #6B1810, #8B2218 60%, #A83428); }
+    .mob-bold .mob-hole-outer { background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08); }
+    .mob-bold .mob-diary-cover { background: linear-gradient(160deg, #C3342B 0%, #B22D25 45%, #9A241C 100%); }
+    .mob-bold .mob-diary-title { color: white; }
+    .mob-bold .mob-diary-month { color: rgba(255,255,255,0.5); }
+    .mob-bold .mob-diary-tagline { color: rgba(255,255,255,0.35); }
+    .mob-bold .mob-diary-rule { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent); }
+    .mob-bold .mob-diary-stat strong { color: white; }
+    .mob-bold .mob-diary-stat span { color: rgba(255,255,255,0.45); }
+
+    .mob-header { padding: 14px 18px 10px; display: flex; justify-content: space-between; align-items: center; background: rgba(244,236,216,0.85); border-bottom: 1px solid #D4C3A1; flex-shrink: 0; }
+    .mob-logo { font-family: var(--font-logo); font-weight: 800; font-size: 1.2rem; color: #2A1F1A; }
+    .mob-logo span { color: #C3342B; }
+    .mob-header-actions { display: flex; gap: 8px; align-items: center; }
+    .mob-icon-btn { width: 28px; height: 28px; border-radius: 50%; background: var(--paper-deep); border: none; font-size: 0.7rem; cursor: pointer; }
+    .mob-body { flex: 1; padding: 0 18px; overflow-y: auto; }
+
+    .mob-sheet { width: 100%; height: 100%; background: #F5EDE0; display: flex; flex-direction: column; }
+    .mob-sheet-spine { display: flex; align-items: center; justify-content: space-evenly; padding: 8px 0 6px; background: linear-gradient(90deg, #6B1810, #8B2218 60%, #A83428); }
+    .mob-sheet-topbar { padding: 10px 16px 8px; display: flex; justify-content: space-between; align-items: flex-start; background: linear-gradient(160deg, #C3342B 0%, #B22D25 45%, #9A241C 100%); }
+    .mob-sheet-title { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 1.2rem; color: white; line-height: 1; }
+    .mob-sheet-sub { font-family: var(--font-mono); font-size: 0.55rem; color: rgba(255,255,255,0.6); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.1em; }
+    .mob-sheet-close { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.18); border: none; color: white; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .mob-sheet-palette { padding: 6px 16px 8px; background: linear-gradient(160deg, #C3342B 0%, #B22D25 45%, #9A241C 100%); display: flex; gap: 6px; }
+
+    .mob-swatch { width: 22px; height: 22px; border-radius: 50%; background: transparent; border: none; position: relative; cursor: pointer; }
+    .mob-swatch::before { content: ""; position: absolute; width: 14px; height: 14px; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--dot-bg); border: 1.5px solid rgba(255,255,255,0.35); }
+    .mob-swatch.active::before { border-color: white; transform: translate(-50%, -50%) scale(1.25); }
+
+    .mob-strip-row { height: 32px; display: flex; align-items: center; gap: 3px; padding: 0 6px; background: rgba(242,237,216,0.96); border-bottom: 1px solid rgba(139,100,60,0.18); flex-shrink: 0; }
+    .mob-strip { flex: 1; display: flex; gap: 3px; overflow-x: auto; align-items: center; }
+    .mob-pip { width: 26px; height: 22px; border-radius: 5px; border: 1px solid rgba(139,100,60,0.2); background: #F5EDE0; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; flex-shrink: 0; }
+    .mob-pip.active { background: #C3342B; border-color: #C3342B; color: white; }
+    .mob-pip.has-entry::after { content: ""; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 3px; height: 3px; border-radius: 50%; background: #E8B33A; }
+    .mob-pip.active.has-entry::after { background: rgba(255,255,255,0.7); }
+    .mob-pip.future { opacity: 0.3; }
+    .mob-pip-num { font-size: 0.6rem; font-weight: 700; line-height: 1; }
+    .mob-pip-dow { font-size: 0.38rem; font-weight: 700; text-transform: uppercase; opacity: 0.65; line-height: 1; }
+    .mob-cal-btn { width: 22px; height: 22px; border-radius: 5px; border: 1px solid rgba(139,100,60,0.2); background: #F5EDE0; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; cursor: pointer; flex-shrink: 0; }
+
+    .mob-nb-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 18px 24px;
+      background-image: radial-gradient(circle, #C8BD9C 0.8px, transparent 0.9px);
+      background-size: 18px 18px;
+      background-position: 8px 8px;
+      background-color: #F5EDE0;
+      position: relative;
+    }
+    .mob-nb-body::before { content: ""; position: absolute; top: 0; left: 18px; bottom: 0; width: 1px; background: color-mix(in srgb, #C3342B 22%, transparent); pointer-events: none; z-index: 1; }
+    .mob-entry { position: relative; z-index: 2; padding-left: 14px; }
+    .mob-entry-date { font-family: var(--font-display); font-style: italic; font-size: 1.05rem; color: #2A1F1A; margin-bottom: 6px; }
+    .mob-entry-date strong { color: #C3342B; font-style: normal; font-weight: 700; }
+    .mob-entry-chips { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 14px; }
+    .mob-entry-note { font-family: var(--font-hand); font-size: 1.05rem; color: #2A1F1A; line-height: 24px; margin-bottom: 12px; }
+    .mob-entry-polaroid { display: inline-block; background: white; padding: 5px 5px 18px 5px; transform: rotate(-1deg); box-shadow: 2px 3px 10px rgba(0,0,0,0.15); position: relative; }
+    .mob-entry-polaroid::before { content: ""; position: absolute; top: -3px; left: 20%; right: 20%; height: 6px; background: rgba(248,192,138,0.55); border-radius: 2px; }
+    .mob-entry-polaroid-inner { width: 200px; height: 200px; background: linear-gradient(135deg, #8a9fb5, #6b8296 40%, #4a5f72 100%); }
+
+    .mob-setup-body { padding: 24px 22px; display: flex; flex-direction: column; height: 100%; }
+    .mob-setup-step { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 12px; }
+    .mob-setup-title { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 1.8rem; color: var(--ink); margin-bottom: 8px; }
+    .mob-setup-desc { font-family: var(--font-display); font-style: italic; font-size: 0.85rem; color: var(--ink-soft); line-height: 1.4; margin-bottom: 3px; }
+    .mob-setup-desc-soft { font-family: var(--font-display); font-style: italic; font-size: 0.72rem; color: var(--ink-faint); line-height: 1.4; margin-bottom: 24px; }
+    .mob-setup-covers { display: flex; flex-direction: column; gap: 12px; flex: 1; overflow-y: auto; }
+    .mob-setup-cover { padding: 10px; border-radius: 12px; border: 2px solid transparent; cursor: pointer; display: flex; gap: 14px; align-items: center; }
+    .mob-setup-cover.selected { border-color: var(--red); background: var(--paper-deep); }
+    .mob-mini-cover { width: 64px; height: 82px; border-radius: 4px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; }
+    .mob-mini-cover .title { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 0.9rem; line-height: 1; }
+    .mob-mini-bold { background: linear-gradient(160deg, #C3342B, #9A241C); }
+    .mob-mini-bold .title { color: white; }
+    .mob-mini-quiet { background: linear-gradient(160deg, #F4ECD8, #DCCFA6); }
+    .mob-mini-quiet .title { color: #2A1F1A; }
+    .mob-mini-moody { background: linear-gradient(160deg, #2D3354, #161A34); }
+    .mob-mini-moody .title { color: #F0DCCF; }
+    .mob-setup-cover-meta { flex: 1; }
+    .mob-setup-cover-name { font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 1rem; color: var(--ink); margin-bottom: 2px; }
+    .mob-setup-cover-sub { font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); }
+    .mob-setup-nav { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--hairline); margin-top: 16px; }
+    .mob-setup-back { font-family: var(--font-body); font-size: 0.75rem; font-weight: 600; color: var(--ink-soft); background: none; border: none; cursor: pointer; }
+    .mob-setup-next { background: var(--red); color: white; border: none; border-radius: 10px; padding: 10px 18px; font-family: var(--font-body); font-weight: 700; font-size: 0.78rem; cursor: pointer; }
+    .mob-setup-pips { display: flex; gap: 6px; }
+    .mob-setup-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--hairline); }
+    .mob-setup-pip.active { background: var(--red); }
+    .mob-stripe { height: 3px; background: linear-gradient(90deg, var(--red) 0 33%, var(--yellow) 33% 66%, var(--blue) 66% 100%); flex-shrink: 0; }
+
+    .callout { max-width: 800px; margin: 16px auto 0; padding: 14px 18px; background: rgba(240, 220, 207, 0.06); border-left: 2px solid var(--red); border-radius: 4px; color: #B18A84; font-size: 0.8rem; line-height: 1.55; }
+    .callout strong { color: #F0DCCF; font-weight: 600; }
+
+    @media (max-width: 1200px) { .mobile-row { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 800px) { .mobile-row { grid-template-columns: 1fr; } .modal-pair { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Diary Cover System</h1>
+  <p class="sub">Mockup v2 · Accurate open modal, Pages view with dots, mobile mockups</p>
+  <p class="flag">PO04 · Mockup v2</p>
+</div>
+
+<div class="section">
+  <div class="section-label">01 · Three retuned covers · Side A</div>
+  <h2 class="section-title">Bold, Quiet, Moody</h2>
+  <p class="section-sub">Red leather, cream linen, navy with brass. Each one a different kind of object.</p>
+  <div class="frame" data-theme="side-a">
+    <div class="frame-header">
+      <span class="theme-label">Theme: <span>Side A</span></span>
+      <span class="theme-label">At real size</span>
+    </div>
+    <div class="covers-row">
+      <div class="cover-slot">
+        <div class="nb nb-desktop nb-bold">
+          <div class="nb-inner">
+            <div class="nb-spine">
+              <span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span>
+            </div>
+            <div class="nb-cover">
+              <div class="nb-pages-edge"></div>
+              <div class="nb-ribbon"></div>
+              <div class="nb-content">
+                <div>
+                  <div class="nb-title">diary.</div>
+                  <div class="nb-month">APRIL 2026</div>
+                  <div class="nb-tagline">i show up. period.</div>
+                  <div class="nb-rule"></div>
+                </div>
+                <div class="nb-bottom">
+                  <div class="nb-stat"><strong>5</strong><span>ENTRIES</span></div>
+                  <div class="nb-hint">READ IT →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cover-label-wrap">
+          <div class="cover-label">Bold</div>
+          <div class="cover-sub">RED LEATHER</div>
+        </div>
+      </div>
+      <div class="cover-slot">
+        <div class="nb nb-desktop nb-quiet">
+          <div class="nb-inner">
+            <div class="nb-spine">
+              <span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span>
+            </div>
+            <div class="nb-cover">
+              <div class="nb-pages-edge"></div>
+              <div class="nb-ribbon"></div>
+              <div class="nb-content">
+                <div>
+                  <div class="nb-title">diary.</div>
+                  <div class="nb-month">APRIL 2026</div>
+                  <div class="nb-tagline">i show up. period.</div>
+                  <div class="nb-rule"></div>
+                </div>
+                <div class="nb-bottom">
+                  <div class="nb-stat"><strong>5</strong><span>ENTRIES</span></div>
+                  <div class="nb-hint">READ IT →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cover-label-wrap">
+          <div class="cover-label">Quiet</div>
+          <div class="cover-sub">CREAM LINEN</div>
+        </div>
+      </div>
+      <div class="cover-slot">
+        <div class="nb nb-desktop nb-moody">
+          <div class="nb-inner">
+            <div class="nb-spine">
+              <span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span>
+            </div>
+            <div class="nb-cover">
+              <div class="nb-pages-edge"></div>
+              <div class="nb-ribbon"></div>
+              <div class="nb-content">
+                <div>
+                  <div class="nb-title">diary.</div>
+                  <div class="nb-month">APRIL 2026</div>
+                  <div class="nb-tagline">i show up. period.</div>
+                  <div class="nb-rule"></div>
+                </div>
+                <div class="nb-bottom">
+                  <div class="nb-stat"><strong>5</strong><span>ENTRIES</span></div>
+                  <div class="nb-hint">READ IT →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cover-label-wrap">
+          <div class="cover-label">Moody</div>
+          <div class="cover-sub">NAVY AND BRASS</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">02 · Open modal · Accurate · Dotted paper</div>
+  <h2 class="section-title">Everything that's there today, on dotted paper</h2>
+  <p class="section-sub">Left: entry with chips, note, polaroid, edit button. Right: empty state for a blank day. Both keep the left calendar with Calendar/Pages toggle, the red margin rule, and the bottom page nav with red pip separator. Only the paper changes.</p>
+  <div class="modal-pair">
+    <div class="modal-pair-col">
+      <div class="modal-pair-label">With entry</div>
+      <div class="modal-book">
+        <div class="modal-corner tl"></div><div class="modal-corner tr"></div><div class="modal-corner bl"></div><div class="modal-corner br"></div>
+        <div class="modal-spine">
+          <span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span>
+        </div>
+        <div class="modal-left">
+          <div class="ml-head">
+            <div class="ml-title">diary.</div>
+            <div class="ml-sub">Apr 2026 · 5</div>
+            <div class="ml-swatch-row">
+              <div class="ml-swatch bold active"></div>
+              <div class="ml-swatch quiet"></div>
+              <div class="ml-swatch moody"></div>
+            </div>
+          </div>
+          <div class="ml-toggle">
+            <button class="active">📅 Calendar</button>
+            <button>📄 Pages</button>
+          </div>
+          <div class="ml-cal">
+            <div class="ml-cal-month">April 2026</div>
+            <div class="ml-cal-headers">
+              <div class="ml-cal-header">S</div><div class="ml-cal-header">M</div><div class="ml-cal-header">T</div><div class="ml-cal-header">W</div><div class="ml-cal-header">T</div><div class="ml-cal-header">F</div><div class="ml-cal-header">S</div>
+            </div>
+            <div class="ml-cal-grid">
+              <div class="ml-cal-day" style="visibility:hidden"></div><div class="ml-cal-day" style="visibility:hidden"></div><div class="ml-cal-day" style="visibility:hidden"></div>
+              <div class="ml-cal-day">1</div><div class="ml-cal-day">2</div><div class="ml-cal-day">3</div>
+              <div class="ml-cal-day has-entry">4<div class="ml-cal-dot"></div></div>
+              <div class="ml-cal-day has-entry">5<div class="ml-cal-dot"></div></div>
+              <div class="ml-cal-day">6</div><div class="ml-cal-day">7</div><div class="ml-cal-day">8</div><div class="ml-cal-day">9</div>
+              <div class="ml-cal-day has-entry">10<div class="ml-cal-dot"></div></div>
+              <div class="ml-cal-day">11</div><div class="ml-cal-day">12</div><div class="ml-cal-day">13</div><div class="ml-cal-day">14</div>
+              <div class="ml-cal-day">15</div><div class="ml-cal-day">16</div><div class="ml-cal-day">17</div><div class="ml-cal-day">18</div>
+              <div class="ml-cal-day">19</div><div class="ml-cal-day">20</div><div class="ml-cal-day">21</div>
+              <div class="ml-cal-day active">22</div>
+              <div class="ml-cal-day future">23</div><div class="ml-cal-day future">24</div><div class="ml-cal-day future">25</div>
+              <div class="ml-cal-day future">26</div><div class="ml-cal-day future">27</div><div class="ml-cal-day future">28</div>
+              <div class="ml-cal-day future">29</div><div class="ml-cal-day future">30</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-crease"></div>
+        <div class="modal-right">
+          <button class="mr-close">✕</button>
+          <div class="mr-content">
+            <div class="entry-date">Friday, <strong>10</strong></div>
+            <div class="entry-chips">
+              <span class="chip" style="background:#C3342B">✓ Workout</span>
+              <span class="chip" style="background:#4F6C8E">✓ Paldo</span>
+              <span class="chip chip--undone">8-Hour Sleep</span>
+              <span class="chip chip--undone">No-Phone Day</span>
+              <span class="chip" style="background:#5EAAA8">✓ No rice</span>
+            </div>
+            <div class="entry-note">Testing the feed out...</div>
+            <div class="polaroid">
+              <div class="polaroid-inner">PHOTO</div>
+            </div>
+            <button class="edit-btn">✏ Edit entry</button>
+          </div>
+          <div class="mr-page-nav">
+            <button class="pf-btn">← Apr 9</button>
+            <button class="pf-btn">Apr 11 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-pair-col">
+      <div class="modal-pair-label">Empty day</div>
+      <div class="modal-book">
+        <div class="modal-corner tl"></div><div class="modal-corner tr"></div><div class="modal-corner bl"></div><div class="modal-corner br"></div>
+        <div class="modal-spine">
+          <span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span><span class="nb-hole"></span>
+        </div>
+        <div class="modal-left">
+          <div class="ml-head">
+            <div class="ml-title">diary.</div>
+            <div class="ml-sub">Apr 2026 · 5</div>
+            <div class="ml-swatch-row">
+              <div class="ml-swatch bold active"></div>
+              <div class="ml-swatch quiet"></div>
+              <div class="ml-swatch moody"></div>
+            </div>
+          </div>
+          <div class="ml-toggle">
+            <button class="active">📅 Calendar</button>
+            <button>📄 Pages</button>
+          </div>
+          <div class="ml-cal">
+            <div class="ml-cal-month">April 2026</div>
+            <div class="ml-cal-headers">
+              <div class="ml-cal-header">S</div><div class="ml-cal-header">M</div><div class="ml-cal-header">T</div><div class="ml-cal-header">W</div><div class="ml-cal-header">T</div><div class="ml-cal-header">F</div><div class="ml-cal-header">S</div>
+            </div>
+            <div class="ml-cal-grid">
+              <div class="ml-cal-day" style="visibility:hidden"></div><div class="ml-cal-day" style="visibility:hidden"></div><div class="ml-cal-day" style="visibility:hidden"></div>
+              <div class="ml-cal-day">1</div><div class="ml-cal-day">2</div><div class="ml-cal-day">3</div>
+              <div class="ml-cal-day has-entry">4<div class="ml-cal-dot"></div></div>
+              <div class="ml-cal-day has-entry">5<div class="ml-cal-dot"></div></div>
+              <div class="ml-cal-day">6</div><div class="ml-cal-day">7</div><div class="ml-cal-day">8</div><div class="ml-cal-day">9</div>
+              <div class="ml-cal-day has-entry">10<div class="ml-cal-dot"></div></div>
+              <div class="ml-cal-day">11</div><div class="ml-cal-day">12</div><div class="ml-cal-day">13</div><div class="ml-cal-day">14</div>
+              <div class="ml-cal-day">15</div><div class="ml-cal-day">16</div><div class="ml-cal-day">17</div><div class="ml-cal-day">18</div>
+              <div class="ml-cal-day">19</div><div class="ml-cal-day">20</div><div class="ml-cal-day active">21</div>
+              <div class="ml-cal-day">22</div>
+              <div class="ml-cal-day future">23</div><div class="ml-cal-day future">24</div><div class="ml-cal-day future">25</div>
+              <div class="ml-cal-day future">26</div><div class="ml-cal-day future">27</div><div class="ml-cal-day future">28</div>
+              <div class="ml-cal-day future">29</div><div class="ml-cal-day future">30</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-crease"></div>
+        <div class="modal-right">
+          <button class="mr-close">✕</button>
+          <div class="mr-content">
+            <div class="empty-date">Tuesday, <strong>21</strong></div>
+            <div class="empty-text">this page is blank...</div>
+            <button class="write-btn">✏ Write something</button>
+          </div>
+          <div class="mr-page-nav">
+            <button class="pf-btn">← Apr 20</button>
+            <button class="pf-btn">Apr 22 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="callout">
+    <strong>Nothing removed:</strong> activity chips still there (with their actual activity colors), note still handwritten in Caveat, polaroid with amber tape still there, edit button still red, left calendar with yellow dots on filled days still there, Calendar/Pages toggle still there, bottom page nav with red pip still there. Only the paper surface is dotted now instead of lined.
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">03 · Pages view · 10px dots</div>
+  <h2 class="section-title">Mini pages, tighter dot grid</h2>
+  <p class="section-sub">10px dots on mini pages. The main modal has roomy 18px dots because you write on that paper. Mini pages are previews, and at 18px they'd read as sparse polka dots on a small card. 10px reads as notebook paper texture at a glance.</p>
+  <div class="pages-modal">
+    <div class="pages-corner tl"></div><div class="pages-corner tr"></div><div class="pages-corner bl"></div><div class="pages-corner br"></div>
+    <div class="pages-head">
+      <div class="pages-head-text">
+        <div class="pages-head-title">diary. — All Pages</div>
+        <div class="pages-head-sub">April 2026 · 5 of 22 filled</div>
+      </div>
+      <button class="pages-back">← back to diary</button>
+      <button class="pages-close">✕</button>
+    </div>
+    <div class="pages-grid-wrap">
+      <div class="pages-grid">
+        <div class="mini-page empty"><div class="mini-day">1</div></div>
+        <div class="mini-page empty"><div class="mini-day">2</div></div>
+        <div class="mini-page empty"><div class="mini-day">3</div></div>
+        <div class="mini-page">
+          <div class="mini-day">4</div>
+          <div class="mini-note">Test please!</div>
+          <div class="mini-polaroid"><div class="mini-polaroid-inner">PHOTO</div></div>
+        </div>
+        <div class="mini-page">
+          <div class="mini-day">5</div>
+          <div class="mini-note">Ued!</div>
+          <div class="mini-polaroid"><div class="mini-polaroid-inner">PHOTO</div></div>
+        </div>
+        <div class="mini-page empty"><div class="mini-day">6</div></div>
+        <div class="mini-page empty"><div class="mini-day">7</div></div>
+        <div class="mini-page empty"><div class="mini-day">8</div></div>
+        <div class="mini-page empty"><div class="mini-day">9</div></div>
+        <div class="mini-page">
+          <div class="mini-day">10</div>
+          <div class="mini-note">Testing the feed out...</div>
+          <div class="mini-polaroid"><div class="mini-polaroid-inner">PHOTO</div></div>
+        </div>
+        <div class="mini-page empty"><div class="mini-day">11</div></div>
+        <div class="mini-page empty"><div class="mini-day">12</div></div>
+        <div class="mini-page empty"><div class="mini-day">13</div></div>
+        <div class="mini-page empty"><div class="mini-day">14</div></div>
+        <div class="mini-page empty"><div class="mini-day">15</div></div>
+        <div class="mini-page empty"><div class="mini-day">16</div></div>
+        <div class="mini-page empty"><div class="mini-day">17</div></div>
+        <div class="mini-page empty"><div class="mini-day">18</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout">
+    <strong>Spec detail:</strong> Mini page dots are #D5C9A8 at 0.6px on a 10px grid. The red margin rule (at left:12px, not left:48px like the main page) stays. Everything else (polaroid, handwritten Caveat preview, today outline) unchanged.
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">04 · Mobile mockups</div>
+  <h2 class="section-title">Mobile closed card, open sheet, and setup step</h2>
+  <p class="section-sub">The mobile diary card is a smaller version of the closed notebook. The mobile sheet is a full-screen takeover. The setup cover step stacks vertically so each option fits the phone width.</p>
+  <div class="mobile-row">
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-statusbar"></div>
+          <div class="mob-header">
+            <div class="mob-logo">show<span>up</span>.</div>
+            <div class="mob-header-actions">
+              <button class="mob-icon-btn">🛒</button>
+              <button class="mob-icon-btn">◐</button>
+              <button class="mob-icon-btn">J</button>
+            </div>
+          </div>
+          <div class="mob-body">
+            <div class="mob-diary-card mob-bold">
+              <div class="mob-diary-spine">
+                <span class="mob-hole-outer"></span><span class="mob-hole-outer"></span><span class="mob-hole-outer"></span><span class="mob-hole-outer"></span><span class="mob-hole-outer"></span><span class="mob-hole-outer"></span><span class="mob-hole-outer"></span><span class="mob-hole-outer"></span>
+              </div>
+              <div class="mob-diary-cover">
+                <div class="mob-diary-content">
+                  <div>
+                    <div class="mob-diary-title">diary.</div>
+                    <div class="mob-diary-month">APRIL 2026</div>
+                    <div class="mob-diary-tagline">i show up. period.</div>
+                    <div class="mob-diary-rule"></div>
+                  </div>
+                  <div class="mob-diary-bottom">
+                    <div class="mob-diary-stat"><strong>5</strong><span>ENTRIES</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">Closed card · Bold cover</div>
+    </div>
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-statusbar"></div>
+          <div class="mob-sheet">
+            <div class="mob-sheet-spine">
+              <span class="mob-hole-outer" style="background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08);"></span>
+              <span class="mob-hole-outer" style="background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08);"></span>
+              <span class="mob-hole-outer" style="background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08);"></span>
+              <span class="mob-hole-outer" style="background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08);"></span>
+              <span class="mob-hole-outer" style="background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08);"></span>
+              <span class="mob-hole-outer" style="background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08);"></span>
+              <span class="mob-hole-outer" style="background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08);"></span>
+              <span class="mob-hole-outer" style="background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08);"></span>
+            </div>
+            <div class="mob-sheet-topbar">
+              <div>
+                <div class="mob-sheet-title">diary.</div>
+                <div class="mob-sheet-sub">APR 2026 · 5 ENTRIES</div>
+              </div>
+              <button class="mob-sheet-close">✕</button>
+            </div>
+            <div class="mob-sheet-palette">
+              <button class="mob-swatch active" style="--dot-bg: #C3342B"></button>
+              <button class="mob-swatch" style="--dot-bg: #ede2d0"></button>
+              <button class="mob-swatch" style="--dot-bg: #2A2E45"></button>
+            </div>
+            <div class="mob-strip-row">
+              <div class="mob-strip">
+                <div class="mob-pip has-entry"><span class="mob-pip-num">4</span><span class="mob-pip-dow">S</span></div>
+                <div class="mob-pip has-entry"><span class="mob-pip-num">5</span><span class="mob-pip-dow">S</span></div>
+                <div class="mob-pip"><span class="mob-pip-num">6</span><span class="mob-pip-dow">M</span></div>
+                <div class="mob-pip"><span class="mob-pip-num">7</span><span class="mob-pip-dow">T</span></div>
+                <div class="mob-pip"><span class="mob-pip-num">8</span><span class="mob-pip-dow">W</span></div>
+                <div class="mob-pip"><span class="mob-pip-num">9</span><span class="mob-pip-dow">T</span></div>
+                <div class="mob-pip active has-entry"><span class="mob-pip-num">10</span><span class="mob-pip-dow">F</span></div>
+                <div class="mob-pip"><span class="mob-pip-num">11</span><span class="mob-pip-dow">S</span></div>
+              </div>
+              <button class="mob-cal-btn">📅</button>
+            </div>
+            <div class="mob-nb-body">
+              <div class="mob-entry">
+                <div class="mob-entry-date">Friday, <strong>10</strong></div>
+                <div class="mob-entry-chips">
+                  <span class="chip" style="background:#C3342B">✓ Workout</span>
+                  <span class="chip" style="background:#4F6C8E">✓ Paldo</span>
+                </div>
+                <div class="mob-entry-note">Testing the feed out...</div>
+                <div class="mob-entry-polaroid">
+                  <div class="mob-entry-polaroid-inner"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">Open sheet · Dotted paper</div>
+    </div>
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="mob-stripe"></div>
+          <div class="phone-statusbar" style="height: 24px;"></div>
+          <div class="mob-setup-body">
+            <div class="mob-setup-step">STEP 2 OF 2</div>
+            <h3 class="mob-setup-title">Pick your diary.</h3>
+            <p class="mob-setup-desc">You'll be writing a lot in here, so pick one you won't get sick of.</p>
+            <p class="mob-setup-desc-soft">Don't overthink it, you can swap it anytime.</p>
+            <div class="mob-setup-covers">
+              <div class="mob-setup-cover">
+                <div class="mob-mini-cover mob-mini-bold"><div class="title">diary.</div></div>
+                <div class="mob-setup-cover-meta">
+                  <div class="mob-setup-cover-name">Bold</div>
+                  <div class="mob-setup-cover-sub">RED LEATHER</div>
+                </div>
+              </div>
+              <div class="mob-setup-cover selected">
+                <div class="mob-mini-cover mob-mini-quiet"><div class="title">diary.</div></div>
+                <div class="mob-setup-cover-meta">
+                  <div class="mob-setup-cover-name">Quiet</div>
+                  <div class="mob-setup-cover-sub">CREAM LINEN</div>
+                </div>
+              </div>
+              <div class="mob-setup-cover">
+                <div class="mob-mini-cover mob-mini-moody"><div class="title">diary.</div></div>
+                <div class="mob-setup-cover-meta">
+                  <div class="mob-setup-cover-name">Moody</div>
+                  <div class="mob-setup-cover-sub">NAVY AND BRASS</div>
+                </div>
+              </div>
+            </div>
+            <div class="mob-setup-nav">
+              <button class="mob-setup-back">← Back</button>
+              <div class="mob-setup-pips">
+                <div class="mob-setup-pip"></div>
+                <div class="mob-setup-pip active"></div>
+              </div>
+              <button class="mob-setup-next">Continue, →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">Setup step · Cover picker</div>
+    </div>
+  </div>
+  <div class="callout">
+    <strong>Mobile setup:</strong> covers stack vertically as rows (mini cover + name + label). Tapping a row selects it, showing the red-bordered selected state. Back goes to display name step, Continue advances to the handoff moment.
+  </div>
+</div>
+
+<div class="page-header" style="margin-top: 80px;">
+  <p class="flag">Mockup v2 · Feedback welcome</p>
+</div>
+
+</body>
+</html>
