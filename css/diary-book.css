@@ -461,7 +461,7 @@
   position: absolute;
   top: 0; left: 44px; bottom: 0;
   width: 1px;
-  background: rgba(216,88,78,.25);
+  background: color-mix(in srgb, var(--red) 25%, transparent);
   pointer-events: none;
   z-index: 1;
 }
@@ -517,7 +517,7 @@
   position: absolute;
   top: 0; left: 48px; bottom: 0;
   width: 1px;
-  background: rgba(216,88,78,.22);
+  background: color-mix(in srgb, var(--red) 22%, transparent);
   pointer-events: none;
   z-index: 1;
 }
@@ -651,7 +651,7 @@
 }
 
 .diary-modal-cal-day.active {
-  background: rgba(216,88,78,.12);
+  background: color-mix(in srgb, var(--red) 12%, transparent);
   outline: 1.5px solid var(--color-primary);
   color: var(--color-primary);
   font-weight: 700;
@@ -667,7 +667,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #D97706;
+  background: var(--yellow);
   margin-top: 1px;
 }
 
@@ -723,7 +723,7 @@
   width: 6px;
   height: 6px;
   border-radius: 1px;
-  background: #D8584E;
+  background: var(--red);
   opacity: 0.65;
   flex-shrink: 0;
   order: 2;
@@ -745,7 +745,7 @@
 .diary-modal-pf-btn:first-child { order: 1; text-align: right; }
 .diary-modal-pf-btn:last-child  { order: 3; text-align: left; }
 .diary-modal-pf-btn:disabled { opacity: 0.2; pointer-events: none; }
-.diary-modal-pf-btn:hover:not(:disabled) { color: #C4473D; }
+.diary-modal-pf-btn:hover:not(:disabled) { color: var(--red-hover); }
 
 .diary-modal-entry-date {
   font-family: 'Fraunces', serif;
@@ -825,7 +825,7 @@
   display: inline-block;
 }
 
-.diary-modal-edit-btn:hover, .diary-modal-write-btn:hover { background: #C4473D; }
+.diary-modal-edit-btn:hover, .diary-modal-write-btn:hover { background: var(--red-hover); }
 
 .diary-modal-polaroid {
   display: block;
@@ -964,7 +964,7 @@
   position: absolute;
   top: 0; left: 10px; bottom: 0;
   width: 1px;
-  background: rgba(216,88,78,.2);
+  background: color-mix(in srgb, var(--red) 20%, transparent);
   pointer-events: none;
 }
 
@@ -1780,7 +1780,7 @@
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: #C8972A;
+  background: var(--yellow);
 }
 
 .mob-diary-pip.active.has-entry::after {
@@ -1987,7 +1987,7 @@
 }
 
 .mob-diary-cal-cell.active {
-  background: rgba(216,88,78,.12);
+  background: color-mix(in srgb, var(--red) 12%, transparent);
   outline: 1.5px solid var(--red);
 }
 
@@ -2031,10 +2031,10 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #D97706;
+  background: var(--yellow);
   margin-top: 1px;
 }
 
 .mob-diary-cal-cell.active .mob-diary-cal-dot {
-  background: rgba(216,88,78,0.6);
+  background: color-mix(in srgb, var(--red) 60%, transparent);
 }
