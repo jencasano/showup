@@ -583,8 +583,57 @@
     </details>
   </div>
 
-  <!-- ── Apr 21, 2026 — Polish · Monthly Setup (Round 1) ── -->
+  <!-- ── Apr 22, 2026 — Polish · Diary tokenization ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 22, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">PO03</span>
+    </div>
+    <div class="entry-title">Polish · Diary tokenization</div>
+    <p class="entry-desc">Third polish pass, and the first one that touches the diary. A scoped CSS-only tokenization sweep of css/diary-book.css and the diary-adjacent rules in css/tracker.css: pre-Mixtape coral hardcodes (#D8584E, rgba(216,88,78,X), #C4473D) swap to var(--red) and var(--red-hover), amber highlights (#D97706, #C8972A) swap to var(--yellow), and paper surfaces stay exactly as they are. The diary now reads from the active theme's Mixtape tokens for its red and yellow accents, while paper stays paper on both Side A and Side B. No JS changes, no schema changes, no layout changes.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Coral to red, full sweep</div>
+        <div class="item-desc">Every rgba(216, 88, 78, X) occurrence in css/diary-book.css and css/tracker.css swapped to color-mix(in srgb, var(--red) Y%, transparent) where Y is X×100. The technique works because on Side A var(--red) resolves to Mixtape red #C3342B and on Side B it resolves to salmon #F07A5E, so a single declaration handles both themes. Hit ten selectors in diary-book.css (.diary-modal-left::before margin rule at 25%, .diary-modal-right::before at 22%, .diary-modal-cal-day.active bg at 12%, .diary-modal-page-nav::before pip to solid var(--red), .diary-modal-pf-btn:hover and .diary-modal-edit-btn:hover and .diary-modal-write-btn:hover all to var(--red-hover), .diary-mini-page::before at 20%, .mob-diary-cal-cell.active at 12%, .mob-diary-cal-cell.active .mob-diary-cal-dot at 60%) plus four in tracker.css (.fw-day:has(.fw-join-indicator) bg and border at 15% and 50%, .fw-overlay-join-note bg and border at 12% and 30%). color-mix is modern CSS but universally supported in current browsers (Safari 16.2+, Chrome 111+, Firefox 113+) so no polyfill or fallback needed.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/polish/DIARY_POLISH_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Amber to yellow</div>
+        <div class="item-desc">The diary's "there is an entry on this day" signal is a small dot on the calendar cell. Previously hardcoded as amber #D97706 (desktop and mobile calendar dots) and #C8972A (mobile pip has-entry after), all three now read var(--yellow) which resolves to Mixtape yellow #E8B33A on both sides. The amber hex values were pre-Mixtape approximations of the intended yellow; swapping to the token lines them up with the rest of the Mixtape palette.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Paper stays paper</div>
+        <div class="item-desc">Deliberately untouched this pass: .diary-modal-left #F2EDD8, .diary-modal-right #FAF7ED, .mob-diary-sheet #F5EDE0, all rule-line colors (#C8BD9C, #D5C9A8, #E8DFC4), polaroid white, and every notebook spine/ribbon/cover gradient. Those are the diary's aesthetic identity, not Mixtape tokens in disguise. The diary is paper regardless of what theme the rest of the app is on. If you're reading your diary on Side B, you still see light cream paper with red ink and yellow dots, because that's what a diary is.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">"Coral" theme key is a misnomer now</div>
+        <div class="item-desc">Small flag for future reference: the theme key "coral" in js/diary-themes.js already defines its cover gradient with #C3342B (Mixtape red), not coral. The label is historical. Renaming it to "red" would force a data migration (every user doc with diaryTheme: "coral" would need a backfill), which we don't want to chase right now. Stays as "coral" in code; users see the cover as Mixtape red. We'll revisit naming when the DIARY_COVER_SYSTEM_SPEC writes up next, since that spec is going to architect how covers work for the paid cover system later.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">What's next</div>
+        <div class="item-desc">The diary cover system redesign comes next. The three default covers (coral / cream / indigo) get retuned to the Mixtape palette and the architecture gets structured to support paid covers later without a rewrite. Will need a mockup and some creative decisions since this one isn't just a tokenization pass. After that: the toast spec (retires the legacy --color-teal alias and establishes a proper neutral / info / success / error hierarchy per theme), scrollbar polish, and an empty-states pass with Mixtape flourish. Icons and landing page stay deferred. Also added to the on-deck list this round: display name editing, currently a first-time-setup-only field that users can't change afterward.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/PO03/01.png" alt="Polish · Diary tokenization" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO03/02.png" alt="Polish · Diary tokenization" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO03/03.png" alt="Polish · Diary tokenization" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO03/04.png" alt="Polish · Diary tokenization" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO03/05.png" alt="Polish · Diary tokenization" onerror="this.style.display='none'">
+        <video src="assets/build-log/PO03/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 21, 2026 — Polish · Monthly Setup (Round 1) ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 21, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
