@@ -2,6 +2,7 @@ import { getDaysInMonth, getCurrentYearMonth, getActivityColor } from "./utils.j
 import { getDiaryDays, getDiaryEntry, getDiaryTheme, saveDiaryTheme } from "./diary.js";
 import { openDiaryPage } from "./mobile-tracker.js";
 import { DIARY_COVERS, DEFAULT_DIARY_COVER } from "./diary-covers.js";
+import { renderCoverPopover, renderMiniCover } from "./diary-picker.js";
 
 // ─── MODULE-LEVEL DIARY ENTRY CACHE ───────────────────────────
 const _diaryEntryCache = new Map();
@@ -138,38 +139,33 @@ export async function renderDiaryNotebook(userId, yearMonth, cover = DEFAULT_DIA
   wrap.appendChild(paletteBtn);
 
 
-  paletteBtn.addEventListener("click", async (e) => {
+  paletteBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    wrap.classList.toggle("diary-nb-palette-open");
-    const existing = wrap.querySelector(".diary-nb-palette-popover");
+    const existing = wrap.querySelector(".diary-cover-popover");
     if (existing) { existing.remove(); return; }
 
-    const popover = document.createElement("div");
-    popover.className = "diary-nb-palette-popover";
-
-    for (const key of Object.keys(DIARY_COVERS)) {
-      const btn = document.createElement("button");
-      btn.className = "diary-nb-swatch";
-      btn.style.background = DIARY_COVERS[key].swatch;
-      if (key === cover) btn.classList.add("diary-nb-swatch--active");
-      btn.addEventListener("click", async (ev) => {
-        ev.stopPropagation();
-        await saveDiaryTheme(userId, key);
-        wrap.querySelector(".diary-nb-palette-popover").remove();
-        wrap.classList.remove("diary-nb-palette-open");
-        const col = wrap.closest(".mylog-diary-col");
-        const newNb = await renderDiaryNotebook(userId, yearMonth, key);
-        col.style.transition = "opacity 0.3s ease";
-        col.style.opacity = "0";
-        setTimeout(() => {
-          col.innerHTML = "";
-          col.appendChild(newNb);
-          requestAnimationFrame(() => { col.style.opacity = "1"; });
-        }, 300);
-      });
-      popover.appendChild(btn);
-    }
+    const popover = renderCoverPopover(cover, async (key) => {
+      await saveDiaryTheme(userId, key);
+      popover.remove();
+      const col = wrap.closest(".mylog-diary-col");
+      const newNb = await renderDiaryNotebook(userId, yearMonth, key);
+      col.style.transition = "opacity 0.3s ease";
+      col.style.opacity = "0";
+      setTimeout(() => {
+        col.innerHTML = "";
+        col.appendChild(newNb);
+        requestAnimationFrame(() => { col.style.opacity = "1"; });
+      }, 300);
+    });
     wrap.appendChild(popover);
+
+    const onOutsideClick = (ev) => {
+      if (!popover.contains(ev.target) && ev.target !== paletteBtn) {
+        popover.remove();
+        document.removeEventListener("click", onOutsideClick);
+      }
+    };
+    setTimeout(() => document.addEventListener("click", onOutsideClick), 0);
   });
 
   wrap.addEventListener("click", () => openDiaryModal(userId, yearMonth, diaryDays, cover));
@@ -223,15 +219,22 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
     <div class="diary-modal-left-head-sub">${monthName} ${year} \u00b7 ${diaryDays.size} pages filled</div>
   `;
 
-  const swatchRow = document.createElement("div");
-  swatchRow.className = "diary-modal-swatch-row";
-  for (const key of Object.keys(DIARY_COVERS)) {
-    const btn = document.createElement("button");
-    btn.className = "diary-modal-swatch";
-    btn.style.background = DIARY_COVERS[key].swatch;
-    if (key === cover) btn.classList.add("diary-modal-swatch--active");
-    btn.addEventListener("click", async () => {
+  const coverTrigger = document.createElement("button");
+  coverTrigger.className = "diary-modal-cover-trigger";
+  coverTrigger.type = "button";
+  coverTrigger.appendChild(renderMiniCover(cover, { width: 44, height: 56 }));
+  const caret = document.createElement("span");
+  caret.className = "diary-modal-cover-trigger-caret";
+  caret.textContent = "▾";
+  coverTrigger.appendChild(caret);
+  coverTrigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const existing = overlay.querySelector(".diary-cover-popover");
+    if (existing) { existing.remove(); return; }
+
+    const popover = renderCoverPopover(cover, async (key) => {
       await saveDiaryTheme(userId, key);
+      popover.remove();
       crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays, key, activeDay));
       const col = document.querySelector(".mylog-diary-col");
       if (col) {
@@ -245,9 +248,20 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
         }, 300);
       }
     });
-    swatchRow.appendChild(btn);
-  }
-  leftHead.appendChild(swatchRow);
+    const rect = coverTrigger.getBoundingClientRect();
+    popover.style.top = `${rect.bottom + 6}px`;
+    popover.style.left = `${rect.left}px`;
+    overlay.appendChild(popover);
+
+    const onOutsideClick = (ev) => {
+      if (!popover.contains(ev.target) && !coverTrigger.contains(ev.target)) {
+        popover.remove();
+        document.removeEventListener("click", onOutsideClick);
+      }
+    };
+    setTimeout(() => document.addEventListener("click", onOutsideClick), 0);
+  });
+  leftHead.appendChild(coverTrigger);
   leftPage.appendChild(leftHead);
 
   const toggle = document.createElement("div");

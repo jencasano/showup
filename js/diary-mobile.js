@@ -1,5 +1,6 @@
 import { getDiaryDays, getDiaryEntry, saveDiaryEntry, saveDiaryTheme, uploadDiaryPhoto, deleteDiaryPhoto } from "./diary.js";
 import { DIARY_COVERS, DEFAULT_DIARY_COVER } from "./diary-covers.js";
+import { renderCoverRow } from "./diary-picker.js";
 import { getDaysInMonth, getCurrentYearMonth, getActivityColor } from "./utils.js";
 import { showToast } from "./ui.js";
 
@@ -634,34 +635,11 @@ export async function renderMobileDiaryCard(userId, yearMonth, cover = DEFAULT_D
   const rightGroup = document.createElement("div");
   rightGroup.className = "mob-diary-bottom-right";
 
-  // Palette swatches
-  const swatchRow = document.createElement("div");
-  swatchRow.className = "mob-diary-swatch-row";
-  for (const key of Object.keys(DIARY_COVERS)) {
-    const sw = document.createElement("button");
-    sw.className = "mob-diary-swatch" + (key === cover ? " active" : "");
-    sw.style.setProperty("--swatch-bg", DIARY_COVERS[key].swatch);
-    sw.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      await saveDiaryTheme(userId, key);
-      const col = card.closest(".mob-diary-col") || card.parentElement;
-      const newCard = await renderMobileDiaryCard(userId, yearMonth, key);
-      col.style.transition = "opacity 0.3s ease";
-      col.style.opacity = "0";
-      setTimeout(() => {
-        card.replaceWith(newCard);
-        col.style.opacity = "1";
-      }, 300);
-    });
-    swatchRow.appendChild(sw);
-  }
-
   const hint = document.createElement("span");
   hint.className = "mob-diary-hint";
   hint.textContent = "read it \u2192";
   hint.style.color = t.hintColor;
 
-  rightGroup.appendChild(swatchRow);
   rightGroup.appendChild(hint);
   bottom.appendChild(stat);
   bottom.appendChild(rightGroup);
@@ -744,29 +722,23 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
   const paletteBar = document.createElement("div");
   paletteBar.className = "mob-diary-sheet-palette";
   paletteBar.style.background = t.coverGradient;
-  for (const key of Object.keys(DIARY_COVERS)) {
-    const sw = document.createElement("button");
-    sw.className = "mob-diary-swatch" + (key === cover ? " active" : "");
-    sw.style.setProperty("--swatch-bg", DIARY_COVERS[key].swatch);
-    sw.addEventListener("click", async () => {
-      await saveDiaryTheme(userId, key);
-      dismiss();
-      // Re-render closed card
-      const col = document.querySelector(".mob-diary-col") || document.querySelector(".mob-diary-card")?.parentElement;
-      if (col) {
-        const newCard = await renderMobileDiaryCard(userId, yearMonth, key);
-        col.style.transition = "opacity 0.3s ease";
-        col.style.opacity = "0";
-        setTimeout(() => {
-          const oldCard = col.querySelector(".mob-diary-card");
-          if (oldCard) oldCard.replaceWith(newCard);
-          col.style.opacity = "1";
-        }, 300);
-      }
-      openMobileDiarySheet(userId, yearMonth, diaryDays, key, activeDay);
-    });
-    paletteBar.appendChild(sw);
-  }
+  const coverRow = renderCoverRow(cover, async (key) => {
+    await saveDiaryTheme(userId, key);
+    dismiss();
+    const col = document.querySelector(".mob-diary-col") || document.querySelector(".mob-diary-card")?.parentElement;
+    if (col) {
+      const newCard = await renderMobileDiaryCard(userId, yearMonth, key);
+      col.style.transition = "opacity 0.3s ease";
+      col.style.opacity = "0";
+      setTimeout(() => {
+        const oldCard = col.querySelector(".mob-diary-card");
+        if (oldCard) oldCard.replaceWith(newCard);
+        col.style.opacity = "1";
+      }, 300);
+    }
+    openMobileDiarySheet(userId, yearMonth, diaryDays, key, activeDay);
+  });
+  paletteBar.appendChild(coverRow);
   sheet.appendChild(paletteBar);
 
   // ── Notebook body ─────────────────────────────────────────
