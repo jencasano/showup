@@ -441,15 +441,10 @@
 .diary-modal-left {
   width: 300px;
   flex-shrink: 0;
-  background: #F2EDD8;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 27px,
-    #C8BD9C 27px,
-    #C8BD9C 28px
-  );
-  background-position: 0 80px;
+  background-color: #F2EDD8;
+  background-image: radial-gradient(circle, #C8BD9C 0.9px, transparent 1px);
+  background-size: 18px 18px;
+  background-position: 8px 8px;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -496,15 +491,10 @@
 .diary-modal-right {
   flex: 1;
   min-width: 0;
-  background: #FAF7ED;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 27px,
-    #D5C9A8 27px,
-    #D5C9A8 28px
-  );
-  background-position: 0 80px;
+  background-color: #FAF7ED;
+  background-image: radial-gradient(circle, #D5C9A8 0.9px, transparent 1px);
+  background-size: 18px 18px;
+  background-position: 8px 8px;
   overflow: hidden;
   position: relative;
   border-radius: 0 14px 14px 0;
@@ -943,9 +933,10 @@
 }
 
 .diary-mini-page {
-  background: #FAF7ED;
-  background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 13px, #D5C9A8 13px, #D5C9A8 14px);
-  background-position: 0 32px;
+  background-color: #FAF7ED;
+  background-image: radial-gradient(circle, #D5C9A8 0.6px, transparent 0.7px);
+  background-size: 10px 10px;
+  background-position: 5px 5px;
   aspect-ratio: 3/4;
   border-radius: 6px;
   border: 1.5px solid #E8DFC4;
@@ -1714,13 +1705,23 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: repeating-linear-gradient(
-    to bottom,
-    #F5EDE0 0px,
-    #F5EDE0 26px,
-    rgba(139,100,60,0.15) 26px,
-    rgba(139,100,60,0.15) 27px
-  );
+  background-color: #F5EDE0;
+  background-image: radial-gradient(circle, #C8BD9C 0.8px, transparent 0.9px);
+  background-size: 18px 18px;
+  background-position: 8px 8px;
+  position: relative;
+}
+
+.mob-diary-nb-body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 18px;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--red) 22%, transparent);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .mob-diary-strip-row {
