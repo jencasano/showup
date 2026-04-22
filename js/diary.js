@@ -45,9 +45,16 @@ export async function deleteDiaryPhoto(userId, yearMonth, day) {
   }
 }
 
+const LEGACY_COVER_KEY_MAP = { coral: "bold", cream: "quiet", indigo: "moody" };
+function mapLegacyCoverKey(value) {
+  if (!value) return null;
+  return LEGACY_COVER_KEY_MAP[value] ?? value;
+}
+
 export async function getDiaryTheme(userId) {
   const snap = await getDoc(doc(db, "users", userId));
-  return snap.exists() ? (snap.data().diaryTheme ?? null) : null;
+  if (!snap.exists()) return null;
+  return mapLegacyCoverKey(snap.data().diaryTheme);
 }
 
 export async function saveDiaryTheme(userId, theme) {

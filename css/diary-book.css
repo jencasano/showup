@@ -277,20 +277,20 @@
   50%       { opacity: 0.6; }
 }
 
-/* ── Theme corner overrides ────────────────────────── */
-.diary-theme-coral .diary-nb-book::before,
-.diary-theme-coral .diary-nb-book::after {
-  background: linear-gradient(135deg, #F8C08A, #ffd4a0);
+/* ── Cover corner overrides ────────────────────────── */
+.diary-cover-bold  .diary-nb-book::before,
+.diary-cover-bold  .diary-nb-book::after {
+  background: linear-gradient(135deg, #E8C97A, #F8D98A);
 }
 
-.diary-theme-cream .diary-nb-book::before,
-.diary-theme-cream .diary-nb-book::after {
-  background: linear-gradient(135deg, #D8584E, #e87870);
+.diary-cover-quiet .diary-nb-book::before,
+.diary-cover-quiet .diary-nb-book::after {
+  background: linear-gradient(135deg, #C3342B, #D85F54);
 }
 
-.diary-theme-indigo .diary-nb-book::before,
-.diary-theme-indigo .diary-nb-book::after {
-  background: linear-gradient(135deg, #F8C08A, #ffd4a0);
+.diary-cover-moody .diary-nb-book::before,
+.diary-cover-moody .diary-nb-book::after {
+  background: linear-gradient(135deg, #C8972A, #E8C050);
 }
 
 /* ── Tagline ────────────────────────────────────────── */
