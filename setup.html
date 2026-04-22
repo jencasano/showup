@@ -12,24 +12,51 @@
   <link rel="stylesheet" href="css/modals.css" />
   <link rel="stylesheet" href="css/icons.css" />
   <link rel="stylesheet" href="css/ui.css" />
+  <link rel="stylesheet" href="css/diary-book.css" />
   <link rel="stylesheet" href="css/setup.css" />
 </head>
 <body>
 
   <div id="setup-container">
     <div id="progress-bar"><div id="progress-fill"></div></div>
-    <div id="step-label">Step 1 of 1</div>
+    <div id="step-label">Step 1 of 2</div>
 
     <!-- STEP 1: Display Name -->
-    <div class="step" id="step-1">
+    <div class="step step--active" id="step-1">
       <h2>What should we call you?</h2>
       <p>This is how your name will appear on the tracker.</p>
       <input type="text" id="display-name-input" placeholder="e.g. Jen" maxlength="20" />
     </div>
 
+    <!-- STEP 2: Diary Cover -->
+    <div class="step" id="step-2">
+      <h2>Pick your diary.</h2>
+      <p class="setup-subtitle">You'll be writing a lot in here, so pick one you won't get sick of.</p>
+      <p class="setup-subtitle setup-subtitle--soft">Don't overthink it, you can swap it anytime.</p>
+      <div id="cover-grid"></div>
+      <div id="step-pips" aria-hidden="true">
+        <span class="step-pip"></span>
+        <span class="step-pip step-pip--active"></span>
+      </div>
+    </div>
+
     <!-- NAVIGATION -->
     <div id="step-nav">
-      <button id="next-btn">Next, →</button>
+      <button id="back-btn" type="button" hidden>← Back</button>
+      <button id="next-btn" type="button">Next, →</button>
+    </div>
+  </div>
+
+  <!-- HANDOFF SCREEN -->
+  <div id="handoff-screen" hidden>
+    <div class="handoff-stripe"></div>
+    <div class="handoff-body">
+      <svg class="handoff-sparkle" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2L13.2 10.8L22 12L13.2 13.2L12 22L10.8 13.2L2 12L10.8 10.8Z"/>
+      </svg>
+      <h1>You're in.</h1>
+      <p>Now let's plan your first month.</p>
+      <button id="plan-month-btn" type="button">Plan <span id="plan-month-name">April</span>, →</button>
     </div>
   </div>
 
