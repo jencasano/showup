@@ -1,4 +1,4 @@
-import { getDiaryDays, getDiaryEntry, saveDiaryEntry, saveDiaryTheme, uploadDiaryPhoto, deleteDiaryPhoto } from "./diary.js";
+import { getDiaryDays, getDiaryEntry, saveDiaryEntry, getDiaryTheme, saveMonthCover, uploadDiaryPhoto, deleteDiaryPhoto } from "./diary.js";
 import { DIARY_COVERS, DEFAULT_DIARY_COVER } from "./diary-covers.js";
 import { renderCoverRow } from "./diary-picker.js";
 import { getOwnedCovers } from "./entitlements.js";
@@ -726,7 +726,7 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
   sheet.appendChild(paletteBar);
 
   const onCoverSelect = async (key) => {
-    await saveDiaryTheme(userId, key);
+    await saveMonthCover(userId, yearMonth, key);
     dismiss();
     const col = document.querySelector(".mob-diary-col") || document.querySelector(".mob-diary-card")?.parentElement;
     if (col) {
@@ -742,8 +742,9 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
     openMobileDiarySheet(userId, yearMonth, diaryDays, key, activeDay);
   };
 
-  getOwnedCovers(userId).then(ownedCovers => {
-    const coverRow = renderCoverRow(cover, onCoverSelect, { ownedCovers });
+  const monthName = new Date(`${yearMonth}-01T12:00:00`).toLocaleString("default", { month: "long" });
+  Promise.all([getOwnedCovers(userId), getDiaryTheme(userId)]).then(([ownedCovers, defaultCover]) => {
+    const coverRow = renderCoverRow(cover, onCoverSelect, { ownedCovers, defaultCover, monthName });
     paletteBar.appendChild(coverRow);
   });
 

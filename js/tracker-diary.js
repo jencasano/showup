@@ -1,5 +1,5 @@
 import { getDaysInMonth, getCurrentYearMonth, getActivityColor } from "./utils.js";
-import { getDiaryDays, getDiaryEntry, getDiaryTheme, saveDiaryTheme } from "./diary.js";
+import { getDiaryDays, getDiaryEntry, getDiaryTheme, getMonthCover, saveMonthCover } from "./diary.js";
 import { openDiaryPage } from "./mobile-tracker.js";
 import { DIARY_COVERS, DEFAULT_DIARY_COVER } from "./diary-covers.js";
 import { renderCoverPopover, renderMiniCover } from "./diary-picker.js";
@@ -145,9 +145,14 @@ export async function renderDiaryNotebook(userId, yearMonth, cover = DEFAULT_DIA
     const existing = wrap.querySelector(".diary-cover-popover");
     if (existing) { existing.remove(); return; }
 
-    const ownedCovers = await getOwnedCovers(userId);
+    const [ownedCovers, defaultCover] = await Promise.all([
+      getOwnedCovers(userId),
+      getDiaryTheme(userId)
+    ]);
+    const monthName = new Date(`${yearMonth}-01T12:00:00`).toLocaleString("default", { month: "long" });
+
     const popover = renderCoverPopover(cover, async (key) => {
-      await saveDiaryTheme(userId, key);
+      await saveMonthCover(userId, yearMonth, key);
       popover.remove();
       const col = wrap.closest(".mylog-diary-col");
       const newNb = await renderDiaryNotebook(userId, yearMonth, key);
@@ -158,7 +163,7 @@ export async function renderDiaryNotebook(userId, yearMonth, cover = DEFAULT_DIA
         col.appendChild(newNb);
         requestAnimationFrame(() => { col.style.opacity = "1"; });
       }, 300);
-    }, { ownedCovers });
+    }, { ownedCovers, defaultCover, monthName });
     wrap.appendChild(popover);
 
     const onOutsideClick = (ev) => {
@@ -234,9 +239,14 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
     const existing = overlay.querySelector(".diary-cover-popover");
     if (existing) { existing.remove(); return; }
 
-    const ownedCovers = await getOwnedCovers(userId);
+    const [ownedCovers, defaultCover] = await Promise.all([
+      getOwnedCovers(userId),
+      getDiaryTheme(userId)
+    ]);
+    const monthName = new Date(`${yearMonth}-01T12:00:00`).toLocaleString("default", { month: "long" });
+
     const popover = renderCoverPopover(cover, async (key) => {
-      await saveDiaryTheme(userId, key);
+      await saveMonthCover(userId, yearMonth, key);
       popover.remove();
       crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays, key, activeDay));
       const col = document.querySelector(".mylog-diary-col");
@@ -250,7 +260,7 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
           requestAnimationFrame(() => { col.style.opacity = "1"; });
         }, 300);
       }
-    }, { ownedCovers });
+    }, { ownedCovers, defaultCover, monthName });
     const rect = coverTrigger.getBoundingClientRect();
     popover.style.top = `${rect.bottom + 6}px`;
     popover.style.left = `${rect.left}px`;

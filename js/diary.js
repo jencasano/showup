@@ -61,6 +61,24 @@ export async function saveDiaryTheme(userId, theme) {
   await setDoc(doc(db, "users", userId), { diaryTheme: theme }, { merge: true });
 }
 
+export async function getMonthCover(userId, yearMonth) {
+  const snap = await getDoc(doc(db, "logs", yearMonth, "entries", userId));
+  if (!snap.exists()) return null;
+  return mapLegacyCoverKey(snap.data().diaryCover) || null;
+}
+
+export async function saveMonthCover(userId, yearMonth, coverKey) {
+  await setDoc(
+    doc(db, "logs", yearMonth, "entries", userId),
+    { diaryCover: coverKey },
+    { merge: true }
+  );
+}
+
+export function getActiveCover(monthCover, userDefaultCover) {
+  return monthCover || userDefaultCover || null;
+}
+
 export async function getDiaryDays(userId, yearMonth) {
   // List all docs in the entries subcollection and filter by yearMonth in JS.
   // Avoids __name__ query which requires a Firestore index and causes permission errors.

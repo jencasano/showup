@@ -417,6 +417,17 @@
 
 .diary-cover-slot--selected .diary-cover-slot-name { color: var(--ink); }
 
+/* Per-month override caption */
+.diary-cover-slot-override {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.66rem;
+  color: var(--ink-faint);
+  margin-top: 2px;
+  line-height: 1.1;
+}
+
 /* Modal left page trigger button (replaces the old swatch row) */
 .diary-modal-cover-trigger {
   background: none;

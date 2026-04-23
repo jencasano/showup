@@ -9,7 +9,7 @@ import { checkMonthlySetup } from "./month-setup.js";
 import { getUserStats } from "./stats.js";
 import { toggleMonthPicker, closeMonthPicker } from "./month-picker.js";
 import { openPrivacySettingsModal } from "./privacy-settings.js";
-import { getDiaryDays, getDiaryTheme } from "./diary.js";
+import { getDiaryDays, getDiaryTheme, getMonthCover, getActiveCover } from "./diary.js";
 import { openMobileDiarySheet } from "./diary-mobile.js";
 import { getUserTheme, setUserTheme } from "./theme.js";
 
@@ -195,9 +195,13 @@ document.querySelectorAll(".bottom-tab").forEach(btn => {
 async function openDiaryFromNav() {
   if (!currentUser) return;
   try {
-    const theme = await getDiaryTheme(currentUser.uid);
-    const diaryDays = await getDiaryDays(currentUser.uid, activeYearMonth);
-    openMobileDiarySheet(currentUser.uid, activeYearMonth, diaryDays, theme);
+    const [savedCover, monthCover, diaryDays] = await Promise.all([
+      getDiaryTheme(currentUser.uid),
+      getMonthCover(currentUser.uid, activeYearMonth),
+      getDiaryDays(currentUser.uid, activeYearMonth)
+    ]);
+    const cover = getActiveCover(monthCover, savedCover);
+    openMobileDiarySheet(currentUser.uid, activeYearMonth, diaryDays, cover);
   } catch {
     showToast("Couldn't open diary. Try again.", "error");
   }

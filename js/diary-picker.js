@@ -21,9 +21,15 @@ export function renderMiniCover(coverKey, { width = 70, height = 90 } = {}) {
   return el;
 }
 
-export function renderCoverPopover(currentCover, onSelect, { ownedCovers = null } = {}) {
+export function renderCoverPopover(currentCover, onSelect, {
+  ownedCovers = null,
+  defaultCover = null,
+  monthName = null
+} = {}) {
   const popover = document.createElement("div");
   popover.className = "diary-cover-popover";
+
+  const showOverrideCaption = defaultCover && monthName && currentCover !== defaultCover;
 
   for (const key of Object.keys(DIARY_COVERS)) {
     const cover = DIARY_COVERS[key];
@@ -51,6 +57,13 @@ export function renderCoverPopover(currentCover, onSelect, { ownedCovers = null 
     name.textContent = cover.displayName;
     slot.appendChild(name);
 
+    if (key === currentCover && showOverrideCaption) {
+      const caption = document.createElement("span");
+      caption.className = "diary-cover-slot-override";
+      caption.textContent = `just for ${monthName}`;
+      slot.appendChild(caption);
+    }
+
     slot.addEventListener("click", (e) => {
       e.stopPropagation();
       if (isLocked) return;
@@ -63,8 +76,12 @@ export function renderCoverPopover(currentCover, onSelect, { ownedCovers = null 
   return popover;
 }
 
-export function renderCoverRow(currentCover, onSelect, { ownedCovers = null } = {}) {
-  const row = renderCoverPopover(currentCover, onSelect, { ownedCovers });
+export function renderCoverRow(currentCover, onSelect, {
+  ownedCovers = null,
+  defaultCover = null,
+  monthName = null
+} = {}) {
+  const row = renderCoverPopover(currentCover, onSelect, { ownedCovers, defaultCover, monthName });
   row.classList.remove("diary-cover-popover");
   row.classList.add("diary-cover-row");
   return row;

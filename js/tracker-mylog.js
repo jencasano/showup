@@ -11,7 +11,7 @@ import { icon, STICKER_ICONS } from "./icons.js";
 import { openManageActivitiesModal } from "./manage-activities.js";
 import { renderMonthlySummary } from "./tracker-summary.js";
 import { renderDiaryNotebook } from "./tracker-diary.js";
-import { getDiaryTheme } from "./diary.js";
+import { getDiaryTheme, getMonthCover, getActiveCover } from "./diary.js";
 import { DEFAULT_DIARY_COVER } from "./diary-covers.js";
 
 const MARKER_SYMBOLS = {
@@ -115,8 +115,11 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
           renderMobileCard(entry, yearMonth, user, { onMarkToggled })
         );
         window._currentEntry = entry;
-        const savedCover = await getDiaryTheme(uid);
-        const cover = savedCover || DEFAULT_DIARY_COVER;
+        const [savedCover, monthCover] = await Promise.all([
+          getDiaryTheme(uid),
+          getMonthCover(uid, yearMonth)
+        ]);
+        const cover = getActiveCover(monthCover, savedCover) || DEFAULT_DIARY_COVER;
         const diaryCard = await renderMobileDiaryCard(uid, yearMonth, cover);
         container.appendChild(diaryCard);
         const stats = (!hasUsedInitialStats && initialStatsPromise)
@@ -149,8 +152,8 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
         const diaryCol = document.createElement("div");
         diaryCol.className = "mylog-diary-col";
-        getDiaryTheme(uid).then(savedCover => {
-          const cover = savedCover || DEFAULT_DIARY_COVER;
+        Promise.all([getDiaryTheme(uid), getMonthCover(uid, yearMonth)]).then(([savedCover, monthCover]) => {
+          const cover = getActiveCover(monthCover, savedCover) || DEFAULT_DIARY_COVER;
           renderDiaryNotebook(uid, yearMonth, cover).then(nb => diaryCol.appendChild(nb));
         });
 
