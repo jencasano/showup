@@ -432,6 +432,110 @@ export const adminDeleteDummyBatch = onCall({ region: "asia-southeast1", timeout
 });
 
 // ═══════════════════════════════════════════════
+// PO04 migrations: diary cover key/field + entitlements backfill
+// Both gated by requireAdminAuth, dry-run on by default.
+// Invoke from browser devtools via httpsCallable (see docs/DUMMY_DATA.md
+// for the callable pattern).
+// ═══════════════════════════════════════════════
+
+const LEGACY_DIARY_COVER_KEY_MAP = { coral: "bold", cream: "quiet", indigo: "moody" };
+const DEFAULT_DIARY_COVERS  = ["bold", "quiet", "moody"];
+const DEFAULT_APP_THEMES    = ["side-a", "side-b"];
+
+async function commitInChunks(ops) {
+  const CHUNK = 400;
+  for (let i = 0; i < ops.length; i += CHUNK) {
+    const wb = db.batch();
+    for (const op of ops.slice(i, i + CHUNK)) op(wb);
+    await wb.commit();
+  }
+}
+
+export const adminMigrateDiaryCovers = onCall({ region: "asia-southeast1", timeoutSeconds: 120, invoker: "public" }, async (request) => {
+  requireAdminAuth(request);
+  const payload = request.data || {};
+  const dryRun = payload.dryRun !== false; // default true
+
+  const usersSnap = await db.collection("users").get();
+  const changes = [];
+  let scanned = 0;
+  let skippedAlreadyMigrated = 0;
+  let skippedNoCover = 0;
+
+  for (const doc of usersSnap.docs) {
+    scanned++;
+    const data = doc.data() || {};
+    if (typeof data.diaryCover === "string" && data.diaryCover) {
+      skippedAlreadyMigrated++;
+      continue;
+    }
+    const oldVal = data.diaryTheme;
+    if (typeof oldVal !== "string" || !oldVal) {
+      skippedNoCover++;
+      continue;
+    }
+    const mapped = LEGACY_DIARY_COVER_KEY_MAP[oldVal] || oldVal;
+    changes.push({ uid: doc.id, ref: doc.ref, from: oldVal, to: mapped });
+  }
+
+  if (!dryRun && changes.length) {
+    await commitInChunks(changes.map(c => (wb) => wb.update(c.ref, { diaryCover: c.to })));
+  }
+
+  return {
+    ok: true,
+    dryRun,
+    scanned,
+    migrated: changes.length,
+    skippedAlreadyMigrated,
+    skippedNoCover,
+    sample: changes.slice(0, 25).map(c => ({ uid: c.uid, from: c.from, to: c.to })),
+    completedAt: new Date().toISOString()
+  };
+});
+
+export const adminBackfillEntitlements = onCall({ region: "asia-southeast1", timeoutSeconds: 120, invoker: "public" }, async (request) => {
+  requireAdminAuth(request);
+  const payload = request.data || {};
+  const dryRun = payload.dryRun !== false; // default true
+
+  const usersSnap = await db.collection("users").get();
+  const toSeed = [];
+  let scanned = 0;
+  let skippedExisting = 0;
+
+  for (const doc of usersSnap.docs) {
+    scanned++;
+    const uid = doc.id;
+    const entRef = db.doc(`entitlements/${uid}`);
+    const entSnap = await entRef.get();
+    if (entSnap.exists) {
+      skippedExisting++;
+      continue;
+    }
+    toSeed.push({ uid, ref: entRef });
+  }
+
+  if (!dryRun && toSeed.length) {
+    await commitInChunks(toSeed.map(e => (wb) => wb.set(e.ref, {
+      diaryCovers:  [...DEFAULT_DIARY_COVERS],
+      appThemes:    [...DEFAULT_APP_THEMES],
+      stickerPacks: []
+    })));
+  }
+
+  return {
+    ok: true,
+    dryRun,
+    scanned,
+    seeded: toSeed.length,
+    skippedExisting,
+    sample: toSeed.slice(0, 25).map(e => e.uid),
+    completedAt: new Date().toISOString()
+  };
+});
+
+// ═══════════════════════════════════════════════
 // Admin Test Harness
 // Console-driven tool for testing feed, privacy, and diary scenarios.
 // Accepts actions: markToday, writeDiary, setPrivacy
