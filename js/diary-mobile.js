@@ -1,6 +1,7 @@
 import { getDiaryDays, getDiaryEntry, saveDiaryEntry, saveDiaryTheme, uploadDiaryPhoto, deleteDiaryPhoto } from "./diary.js";
 import { DIARY_COVERS, DEFAULT_DIARY_COVER } from "./diary-covers.js";
 import { renderCoverRow } from "./diary-picker.js";
+import { getOwnedCovers } from "./entitlements.js";
 import { getDaysInMonth, getCurrentYearMonth, getActivityColor } from "./utils.js";
 import { showToast } from "./ui.js";
 
@@ -722,7 +723,9 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
   const paletteBar = document.createElement("div");
   paletteBar.className = "mob-diary-sheet-palette";
   paletteBar.style.background = t.coverGradient;
-  const coverRow = renderCoverRow(cover, async (key) => {
+  sheet.appendChild(paletteBar);
+
+  const onCoverSelect = async (key) => {
     await saveDiaryTheme(userId, key);
     dismiss();
     const col = document.querySelector(".mob-diary-col") || document.querySelector(".mob-diary-card")?.parentElement;
@@ -737,9 +740,12 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
       }, 300);
     }
     openMobileDiarySheet(userId, yearMonth, diaryDays, key, activeDay);
+  };
+
+  getOwnedCovers(userId).then(ownedCovers => {
+    const coverRow = renderCoverRow(cover, onCoverSelect, { ownedCovers });
+    paletteBar.appendChild(coverRow);
   });
-  paletteBar.appendChild(coverRow);
-  sheet.appendChild(paletteBar);
 
   // ── Notebook body ─────────────────────────────────────────
   const nbBody = document.createElement("div");

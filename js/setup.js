@@ -4,6 +4,7 @@ import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs
 import { showMonthSetup } from "./month-setup.js";
 import { DIARY_COVERS, DEFAULT_DIARY_COVER } from "./diary-covers.js";
 import { renderMiniCover } from "./diary-picker.js";
+import { seedEntitlementsIfMissing } from "./entitlements.js";
 
 let currentUser = null;
 const state = { step: 1, name: "", cover: DEFAULT_DIARY_COVER };
@@ -119,6 +120,7 @@ nextBtn.addEventListener("click", async () => {
       setupComplete: true,
       createdAt: serverTimestamp()
     });
+    await seedEntitlementsIfMissing(currentUser.uid);
     history.pushState({ step: "handoff", name: state.name, cover: state.cover }, "", "");
     renderHandoff();
   } catch (error) {

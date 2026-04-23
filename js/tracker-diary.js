@@ -3,6 +3,7 @@ import { getDiaryDays, getDiaryEntry, getDiaryTheme, saveDiaryTheme } from "./di
 import { openDiaryPage } from "./mobile-tracker.js";
 import { DIARY_COVERS, DEFAULT_DIARY_COVER } from "./diary-covers.js";
 import { renderCoverPopover, renderMiniCover } from "./diary-picker.js";
+import { getOwnedCovers } from "./entitlements.js";
 
 // ─── MODULE-LEVEL DIARY ENTRY CACHE ───────────────────────────
 const _diaryEntryCache = new Map();
@@ -139,11 +140,12 @@ export async function renderDiaryNotebook(userId, yearMonth, cover = DEFAULT_DIA
   wrap.appendChild(paletteBtn);
 
 
-  paletteBtn.addEventListener("click", (e) => {
+  paletteBtn.addEventListener("click", async (e) => {
     e.stopPropagation();
     const existing = wrap.querySelector(".diary-cover-popover");
     if (existing) { existing.remove(); return; }
 
+    const ownedCovers = await getOwnedCovers(userId);
     const popover = renderCoverPopover(cover, async (key) => {
       await saveDiaryTheme(userId, key);
       popover.remove();
@@ -156,7 +158,7 @@ export async function renderDiaryNotebook(userId, yearMonth, cover = DEFAULT_DIA
         col.appendChild(newNb);
         requestAnimationFrame(() => { col.style.opacity = "1"; });
       }, 300);
-    });
+    }, { ownedCovers });
     wrap.appendChild(popover);
 
     const onOutsideClick = (ev) => {
@@ -227,11 +229,12 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
   caret.className = "diary-modal-cover-trigger-caret";
   caret.textContent = "▾";
   coverTrigger.appendChild(caret);
-  coverTrigger.addEventListener("click", (e) => {
+  coverTrigger.addEventListener("click", async (e) => {
     e.stopPropagation();
     const existing = overlay.querySelector(".diary-cover-popover");
     if (existing) { existing.remove(); return; }
 
+    const ownedCovers = await getOwnedCovers(userId);
     const popover = renderCoverPopover(cover, async (key) => {
       await saveDiaryTheme(userId, key);
       popover.remove();
@@ -247,7 +250,7 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
           requestAnimationFrame(() => { col.style.opacity = "1"; });
         }, 300);
       }
-    });
+    }, { ownedCovers });
     const rect = coverTrigger.getBoundingClientRect();
     popover.style.top = `${rect.bottom + 6}px`;
     popover.style.left = `${rect.left}px`;

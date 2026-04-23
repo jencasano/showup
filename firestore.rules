@@ -30,5 +30,16 @@ service cloud.firestore {
       }
     }
 
+    // ENTITLEMENTS
+    // Only the user can read their own entitlements.
+    // Clients can CREATE their own initial entitlements doc (signup seed)
+    // but cannot update or delete. Future paid-cover purchases will be
+    // written by a Cloud Function with admin rights.
+    match /entitlements/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update, delete: if false;
+    }
+
   }
 }
