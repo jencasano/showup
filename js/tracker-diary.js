@@ -149,7 +149,6 @@ export async function renderDiaryNotebook(userId, yearMonth, cover = DEFAULT_DIA
       getOwnedCovers(userId),
       getDiaryTheme(userId)
     ]);
-    const monthName = new Date(`${yearMonth}-01T12:00:00`).toLocaleString("default", { month: "long" });
 
     const popover = renderCoverPopover(cover, async (key) => {
       await saveMonthCover(userId, yearMonth, key);
@@ -243,7 +242,6 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
       getOwnedCovers(userId),
       getDiaryTheme(userId)
     ]);
-    const monthName = new Date(`${yearMonth}-01T12:00:00`).toLocaleString("default", { month: "long" });
 
     const popover = renderCoverPopover(cover, async (key) => {
       await saveMonthCover(userId, yearMonth, key);

@@ -742,7 +742,6 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
     openMobileDiarySheet(userId, yearMonth, diaryDays, key, activeDay);
   };
 
-  const monthName = new Date(`${yearMonth}-01T12:00:00`).toLocaleString("default", { month: "long" });
   Promise.all([getOwnedCovers(userId), getDiaryTheme(userId)]).then(([ownedCovers, defaultCover]) => {
     const coverRow = renderCoverRow(cover, onCoverSelect, { ownedCovers, defaultCover, monthName });
     paletteBar.appendChild(coverRow);
