@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toast System — Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Manrope:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: #171012;
+  color: #F0DCCF;
+  min-height: 100vh;
+  padding: 40px 20px 80px;
+}
+
+.page-header {
+  max-width: 1200px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 2.4rem;
+  margin-bottom: 6px;
+}
+
+.page-header .sub {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  color: #B18A84;
+  margin-bottom: 16px;
+}
+
+.page-header .flag {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: #B18A84;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section {
+  max-width: 1200px;
+  margin: 0 auto 64px;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #9C8874;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(156, 136, 116, 0.2);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.5rem;
+  color: #F0DCCF;
+  margin-bottom: 8px;
+}
+
+.section-sub {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: #B18A84;
+  margin-bottom: 24px;
+  line-height: 1.55;
+}
+
+/* Side A / Side B frames */
+.frames {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.frame {
+  padding: 28px 20px 48px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.frame-a {
+  background: #F4ECD8;
+  color: #2A1F1A;
+}
+
+.frame-b {
+  background: #2A1518;
+  color: #F0DCCF;
+}
+
+.frame-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+/* Toast base */
+.toast {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  padding: 11px 22px;
+  border-radius: 99px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  box-shadow: 0 2px 4px rgba(42, 31, 26, 0.08), 0 8px 24px rgba(42, 31, 26, 0.1);
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.frame-b .toast {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.32), 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+/* NEUTRAL */
+.toast-neutral-a {
+  background: #ECE1C6;
+  color: #2A1F1A;
+  border: 1px solid #D4C3A1;
+}
+.toast-neutral-b {
+  background: #1D0E10;
+  color: #F0DCCF;
+  border: 1px solid #4A2025;
+}
+
+/* INFO */
+.toast-info-a {
+  background: #ECE1C6;
+  color: #2A1F1A;
+  border: 1px solid #D4C3A1;
+  border-left: 3px solid #4F6C8E;
+  border-radius: 10px 99px 99px 10px;
+  padding-left: 20px;
+}
+.toast-info-b {
+  background: #1D0E10;
+  color: #F0DCCF;
+  border: 1px solid #4A2025;
+  border-left: 3px solid #5EAAA8;
+  border-radius: 10px 99px 99px 10px;
+  padding-left: 20px;
+}
+
+/* SUCCESS variants */
+.toast-success-red-a {
+  background: #C3342B;
+  color: white;
+}
+.toast-success-red-b {
+  background: #F07A5E;
+  color: #2A1518;
+}
+
+.toast-success-green-a {
+  background: #3E5C3A;
+  color: #F4ECD8;
+}
+.toast-success-green-b {
+  background: #5EAAA8;
+  color: #2A1518;
+}
+
+.toast-success-yellow-a {
+  background: #E8B33A;
+  color: #2A1F1A;
+}
+.toast-success-yellow-b {
+  background: #E8B33A;
+  color: #2A1518;
+}
+
+/* ERROR */
+.toast-error-a {
+  background: #C3342B;
+  color: white;
+}
+.toast-error-b {
+  background: #F07A5E;
+  color: #2A1518;
+}
+
+/* Callout */
+.callout {
+  max-width: 900px;
+  margin: 16px auto 0;
+  padding: 14px 18px;
+  background: rgba(240, 220, 207, 0.06);
+  border-left: 2px solid #C3342B;
+  border-radius: 4px;
+  color: #B18A84;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.callout strong {
+  color: #F0DCCF;
+  font-weight: 600;
+}
+
+.callout ul {
+  margin: 8px 0 0 16px;
+  padding-left: 8px;
+}
+
+.callout li {
+  margin-bottom: 4px;
+}
+
+/* Success grid */
+.success-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.success-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.success-col-label {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #F0DCCF;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.success-col-sub {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: #9C8874;
+  text-align: center;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.success-pair {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.mini-frame {
+  padding: 16px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80px;
+  position: relative;
+}
+
+.mini-frame-a { background: #F4ECD8; }
+.mini-frame-b { background: #2A1518; }
+
+.mini-frame-label {
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.45;
+}
+
+.mini-frame-a .mini-frame-label { color: #2A1F1A; }
+.mini-frame-b .mini-frame-label { color: #F0DCCF; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Toast System</h1>
+  <p class="sub">PO05 · Retiring --color-teal, tuning for both themes</p>
+  <p class="flag">Mockup · Success color exploration</p>
+</div>
+
+<div class="section">
+  <div class="section-label">01 · Decided types</div>
+  <h2 class="section-title">Neutral, Info, Error</h2>
+  <p class="section-sub">Three of the four types are already resolved. Neutral is the default (most toasts are confirmations, not celebrations). Info gets a colored left border so it's distinguishable from neutral at a glance. Error keeps its current red-and-white treatment.</p>
+
+  <div class="frames">
+    <div class="frame frame-a">
+      <div class="frame-label">Side A · Cream paper</div>
+      <div class="toast toast-neutral-a">signed out.</div>
+      <div class="toast toast-info-a">coming soon.</div>
+      <div class="toast toast-error-a">couldn't save. try again?</div>
+    </div>
+    <div class="frame frame-b">
+      <div class="frame-label">Side B · Warm leather</div>
+      <div class="toast toast-neutral-b">signed out.</div>
+      <div class="toast toast-info-b">coming soon.</div>
+      <div class="toast toast-error-b">couldn't save. try again?</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>What changed from today:</strong>
+    <ul>
+      <li>Neutral is new (today's default is "success" which was wrong for most toasts).</li>
+      <li>Info no longer uses the broken --color-teal #80B9B9. Now a paper-deep body with a theme-aware left accent (--blue on Side A, --blue remaps to teal on Side B).</li>
+      <li>Error on Side B was using Side A red which clashed with maroon paper. Now uses Side B salmon (--red is already theme-overridden, no new logic needed).</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">02 · Success color · Three directions</div>
+  <h2 class="section-title">Which success feels like showup?</h2>
+  <p class="section-sub">Success toasts are rare. They fire on real celebration moments (streak hits, first entry, milestone shipped). Three directions, each with both themes shown. Copy used: "streak saved." as a representative happy confirmation.</p>
+
+  <div class="success-grid">
+
+    <div class="success-col">
+      <div class="success-col-label">Red</div>
+      <div class="success-col-sub">BRAND HERO</div>
+      <div class="success-pair">
+        <div class="mini-frame mini-frame-a">
+          <span class="mini-frame-label">SIDE A</span>
+          <div class="toast toast-success-red-a">streak saved.</div>
+        </div>
+        <div class="mini-frame mini-frame-b">
+          <span class="mini-frame-label">SIDE B</span>
+          <div class="toast toast-success-red-b">streak saved.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="success-col">
+      <div class="success-col-label">Green</div>
+      <div class="success-col-sub">TRADITIONAL</div>
+      <div class="success-pair">
+        <div class="mini-frame mini-frame-a">
+          <span class="mini-frame-label">SIDE A</span>
+          <div class="toast toast-success-green-a">streak saved.</div>
+        </div>
+        <div class="mini-frame mini-frame-b">
+          <span class="mini-frame-label">SIDE B</span>
+          <div class="toast toast-success-green-b">streak saved.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="success-col">
+      <div class="success-col-label">Yellow</div>
+      <div class="success-col-sub">WARM GLOW</div>
+      <div class="success-pair">
+        <div class="mini-frame mini-frame-a">
+          <span class="mini-frame-label">SIDE A</span>
+          <div class="toast toast-success-yellow-a">streak saved.</div>
+        </div>
+        <div class="mini-frame mini-frame-b">
+          <span class="mini-frame-label">SIDE B</span>
+          <div class="toast toast-success-yellow-b">streak saved.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout">
+    <strong>The tradeoffs:</strong>
+    <ul>
+      <li><strong>Red.</strong> Conflicts with error which also uses red. Success and error would be the same color, distinguishable only by copy. Bad signal hierarchy. Unless we downgrade error to something else, red is out for success.</li>
+      <li><strong>Green.</strong> On Side A, --green #3E5C3A is a deep forest that reads confident without shouting. On Side B, --green auto-remaps to #5EAAA8 (teal) which is the warmer companion. Works on both. Traditional but not dated.</li>
+      <li><strong>Yellow.</strong> Same hex (#E8B33A) on both themes, which is unusual but the yellow was chosen to work on both paper colors. Reads as "nice" rather than "pass/fail." Risk: conflicts with the future warning type (which is also yellow).</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">03 · All four types together · For context</div>
+  <h2 class="section-title">The full vocabulary with green success picked</h2>
+  <p class="section-sub">Showing green as a placeholder so you can see the full system at a glance. Final color is your call.</p>
+
+  <div class="frames">
+    <div class="frame frame-a">
+      <div class="frame-label">Side A · All types</div>
+      <div class="toast toast-neutral-a">signed out.</div>
+      <div class="toast toast-info-a">coming soon.</div>
+      <div class="toast toast-success-green-a">streak saved.</div>
+      <div class="toast toast-error-a">couldn't save. try again?</div>
+    </div>
+    <div class="frame frame-b">
+      <div class="frame-label">Side B · All types</div>
+      <div class="toast toast-neutral-b">signed out.</div>
+      <div class="toast toast-info-b">coming soon.</div>
+      <div class="toast toast-success-green-b">streak saved.</div>
+      <div class="toast toast-error-b">couldn't save. try again?</div>
+    </div>
+  </div>
+</div>
+
+<div class="page-header" style="margin-top: 64px;">
+  <p class="flag">Mockup · Feedback welcome</p>
+</div>
+
+</body>
+</html>
