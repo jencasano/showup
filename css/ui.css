@@ -79,3 +79,250 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════════════
+   EMPTY STATES — the Quiet Room (PO07)
+   Three tiers: .quiet-room (full), .nudge-card (persistent CTA),
+   .inline-empty (small section empties).
+   See docs/polish/EMPTY_STATES_SPEC.md.
+   ═══════════════════════════════════════════════ */
+
+/* Motif SVG backdrop, mirrors base.css .ambient motifs so
+   empty states share the app's drifting-texture language.
+   drift-motifs + drift-warmth keyframes are defined in base.css. */
+:root {
+  --empty-motif-svg: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke-width='1'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23C3342B' opacity='0.45'/><circle cx='160' cy='120' r='1.8' fill='%234F6C8E' opacity='0.55'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' stroke='%23C3342B' opacity='0.35'/><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4'/><circle cx='220' cy='280' r='2' fill='%23C3342B' opacity='0.35'/><path d='M320 310 q5 -7 10 0 q5 7 10 0' stroke='%234F6C8E' opacity='0.4'/><circle cx='80' cy='360' r='1.4' fill='%234F6C8E' opacity='0.5'/><path d='M190 380 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23C3342B' opacity='0.3'/></g></svg>");
+}
+
+[data-theme="side-b"] {
+  --empty-motif-svg: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke-width='1'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23F07A5E' opacity='0.45'/><circle cx='160' cy='120' r='1.8' fill='%235EAAA8' opacity='0.55'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' stroke='%23F07A5E' opacity='0.35'/><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4'/><circle cx='220' cy='280' r='2' fill='%23F07A5E' opacity='0.35'/><path d='M320 310 q5 -7 10 0 q5 7 10 0' stroke='%235EAAA8' opacity='0.4'/><circle cx='80' cy='360' r='1.4' fill='%235EAAA8' opacity='0.5'/><path d='M190 380 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23F07A5E' opacity='0.3'/></g></svg>");
+}
+
+/* ── Full Quiet Room ─────────────────────────── */
+.quiet-room {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 52px 32px 44px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-height: 220px;
+}
+
+.quiet-room::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  pointer-events: none;
+  background-image: var(--empty-motif-svg);
+  background-size: 420px 420px;
+  animation: drift-motifs 70s linear infinite;
+}
+
+.quiet-room::after {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  background:
+    radial-gradient(45% 40% at 25% 35%, rgba(232, 179, 58, 0.18), transparent 70%),
+    radial-gradient(50% 45% at 75% 65%, rgba(195, 52, 43, 0.10), transparent 70%);
+  animation: drift-warmth 55s ease-in-out infinite alternate;
+  filter: blur(20px);
+}
+
+[data-theme="side-b"] .quiet-room::after {
+  background:
+    radial-gradient(45% 40% at 25% 35%, rgba(232, 179, 58, 0.12), transparent 70%),
+    radial-gradient(50% 45% at 75% 65%, rgba(240, 122, 94, 0.08), transparent 70%);
+}
+
+.quiet-room > * {
+  position: relative;
+  z-index: 1;
+}
+
+.qr-headline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.15rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+}
+
+.qr-sub {
+  font-family: var(--font-base);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--ink-faint);
+  margin-bottom: 18px;
+}
+
+.qr-action-frame {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1.5px dashed var(--hairline);
+  border-radius: 10px;
+  padding: 14px 20px;
+}
+
+.qr-action-btn {
+  font-family: var(--font-base);
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 8px 18px;
+  background: var(--red);
+  color: white;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.qr-action-btn:hover { background: var(--red-hover); }
+
+[data-theme="side-b"] .qr-action-btn { color: var(--paper); }
+
+.qr-action-hint {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.68rem;
+  color: var(--ink-faint);
+}
+
+@media (max-width: 767px) {
+  .quiet-room {
+    padding: 40px 20px 36px;
+    min-height: 200px;
+  }
+  .qr-headline { font-size: 1.05rem; }
+  .qr-sub { font-size: 0.74rem; }
+  .qr-action-hint { display: none; }
+}
+
+/* ── Inline empty ───────────────────────────── */
+.inline-empty {
+  padding: 16px 14px;
+  text-align: center;
+}
+
+.inline-empty-text {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
+
+/* ── Nudge card ─────────────────────────────── */
+.nudge-card {
+  position: relative;
+  overflow: hidden;
+  border: 1.5px dashed var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 20px 18px;
+  text-align: center;
+  background: color-mix(in srgb, var(--paper-deep) 40%, transparent);
+}
+
+.nudge-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  pointer-events: none;
+  background-image: var(--empty-motif-svg);
+  background-size: 420px 420px;
+  animation: drift-motifs 70s linear infinite;
+}
+
+.nudge-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.nudge-headline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+.nudge-sub {
+  font-family: var(--font-base);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  margin-bottom: 14px;
+}
+
+.nudge-btn {
+  font-family: var(--font-base);
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 7px 16px;
+  background: var(--red);
+  color: white;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.nudge-btn:hover { background: var(--red-hover); }
+
+[data-theme="side-b"] .nudge-btn { color: var(--paper); }
+
+/* ── Diary empty: ruled lines + dashed write button ── */
+.diary-empty-lines {
+  width: 80%;
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 12px 0 16px;
+}
+
+.diary-empty-line {
+  height: 1px;
+  border-radius: 1px;
+  background: var(--hairline);
+  opacity: 0.5;
+}
+
+.diary-write-btn {
+  font-family: var(--font-base);
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: 1.5px dashed var(--hairline);
+  border-radius: 8px;
+  padding: 8px 16px;
+  background: none;
+  color: var(--red);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.diary-write-btn:hover {
+  background: var(--red);
+  color: white;
+}
+
+[data-theme="side-b"] .diary-write-btn:hover { color: var(--paper); }
+
+/* Respect reduced motion — disable drift animations on empty states. */
+@media (prefers-reduced-motion: reduce) {
+  .quiet-room::before,
+  .quiet-room::after,
+  .nudge-card::before {
+    animation: none !important;
+  }
+}
