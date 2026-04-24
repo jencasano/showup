@@ -110,7 +110,7 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
   function clearRenderedResults() {
     if (gridEl) gridEl.innerHTML = "";
     const target = wrapperEl || container;
-    target.querySelectorAll(".all-search-empty, .empty-state").forEach(node => node.remove());
+    target.querySelectorAll(".all-tab-empty, .all-search-empty, .empty-state").forEach(node => node.remove());
   }
 
   function ensureWrapper() {
@@ -165,12 +165,29 @@ export function loadAllLogs(yearMonth, container, currentUser, silent = false) {
     const grid = ensureGrid();
 
     if (visibleEntries.length === 0) {
-      const empty = document.createElement("p");
-      empty.className = "empty-state all-search-empty";
-      empty.textContent = normalizeText(searchQuery)
-        ? `No matches for "${searchQuery.trim()}".`
-        : "No other trackers yet for this month.";
-      ensureWrapper().appendChild(empty);
+      const wrap = document.createElement("div");
+      wrap.className = "quiet-room all-tab-empty";
+
+      const copy = document.createElement("div");
+      copy.className = "qr-copy";
+
+      const headline = document.createElement("div");
+      headline.className = "qr-headline";
+
+      const sub = document.createElement("div");
+      sub.className = "qr-sub";
+
+      if (normalizeText(searchQuery)) {
+        headline.textContent = "nothing matching that.";
+        sub.textContent = "try a different name or activity.";
+      } else {
+        headline.textContent = "no other trackers yet for this month.";
+        sub.textContent = "give it a few days.";
+      }
+
+      copy.append(headline, sub);
+      wrap.appendChild(copy);
+      ensureWrapper().appendChild(wrap);
       return;
     }
 

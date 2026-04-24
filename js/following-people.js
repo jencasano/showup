@@ -38,21 +38,26 @@ function shortMonthLabel(yearMonth) {
 
 function renderBrowseNudge(onSwitchToAll) {
   const card = document.createElement("div");
-  card.className = "fw-nudge-card";
-  const iconEl = document.createElement("div");
-  iconEl.className = "fw-nudge-icon";
-  iconEl.textContent = "\uD83D\uDC65";
-  const title = document.createElement("div");
-  title.className = "fw-nudge-title";
-  title.textContent = "Find people to follow";
+  card.className = "nudge-card";
+
+  const copy = document.createElement("div");
+  copy.className = "nudge-copy";
+
+  const headline = document.createElement("div");
+  headline.className = "nudge-headline";
+  headline.textContent = "find more people to follow.";
+
   const sub = document.createElement("div");
-  sub.className = "fw-nudge-sub";
-  sub.textContent = "Head to the All tab to discover who else is showing up.";
+  sub.className = "nudge-sub";
+  sub.textContent = "see who else is showing up this month.";
+
   const btn = document.createElement("button");
-  btn.className = "fw-nudge-btn";
+  btn.className = "nudge-btn";
   btn.textContent = "Browse All";
   btn.addEventListener("click", onSwitchToAll);
-  card.append(iconEl, title, sub, btn);
+
+  copy.append(headline, sub, btn);
+  card.appendChild(copy);
   return card;
 }
 
@@ -367,76 +372,111 @@ export function renderPeopleView(container, model) {
   const side = document.createElement("div"); side.className = "fw-people-side";
 
   if (allEmpty) {
-    main.appendChild(renderBrowseNudge(onSwitchToAll));
-  } else {
-    if (pinnedActive.length > 0) {
-      const pinnedLbl = renderSectionLbl("\uD83D\uDCCC Pinned");
-      const unpinAllBtn = document.createElement("button");
-      unpinAllBtn.className = "fw-unpin-all-btn";
-      const pinnedCount = pinnedActive.length;
-      const unpinLabel = pinnedCount === 1 ? "Unpin" : pinnedCount === 2 ? "Unpin both" : `Unpin all ${pinnedCount}`;
-      unpinAllBtn.textContent = unpinLabel;
-      let confirmTimer = null;
-      unpinAllBtn.addEventListener("click", async () => {
-        if (!unpinAllBtn.classList.contains("fw-unpin-all-btn--confirm")) {
-          unpinAllBtn.textContent = "Sure?";
-          unpinAllBtn.classList.add("fw-unpin-all-btn--confirm");
-          confirmTimer = setTimeout(() => {
-            unpinAllBtn.textContent = unpinLabel;
-            unpinAllBtn.classList.remove("fw-unpin-all-btn--confirm");
-          }, 2500);
-          return;
-        }
-        clearTimeout(confirmTimer);
-        try {
-          await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: [] }, { merge: true });
-          showToast("All unpinned.");
-        } catch { showToast("Couldn't unpin. Try again.", "error"); }
-      });
-      pinnedLbl.appendChild(unpinAllBtn);
-      main.appendChild(pinnedLbl);
-      // Interleave for CSS columns: column-count fills top-to-bottom per column,
-      // so reorder so that visual left-to-right reading matches pin order.
-      const n = pinnedActive.length;
-      const half = Math.ceil(n / 2);
-      const interleaved = new Array(n);
-      for (let i = 0; i < n; i++) {
-        const col = i % 2;
-        const row = Math.floor(i / 2);
-        interleaved[col * half + row] = pinnedActive[i];
-      }
-      const pinnedGrid = document.createElement("div");
-      pinnedGrid.className = "fw-pinned-grid";
-      for (const { uid, user, log, diaryEntry } of interleaved) {
-        pinnedGrid.appendChild(renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
-      }
-      main.appendChild(pinnedGrid);
-    }
-
-    side.appendChild(renderSectionLbl("Showing Up", activeUnpinned.length));
-    if (activeUnpinned.length === 0) {
-      const empty = document.createElement("p"); empty.className = "fw-section-empty";
-      empty.textContent = "No one else showing up this month.";
-      side.appendChild(empty);
-    } else {
-      for (const { uid, user, log, diaryEntry } of activeUnpinned) {
-        side.appendChild(renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
-      }
-    }
-
-    side.appendChild(renderSectionLbl("Crickets... \uD83E\uDD97", crickets.length));
-    if (crickets.length === 0) {
-      const empty = document.createElement("p"); empty.className = "fw-section-empty";
-      empty.textContent = "Everyone\u2019s showing up!";
-      side.appendChild(empty);
-    } else {
-      for (const { uid, user, diaryEntry } of crickets) {
-        side.appendChild(renderCompactRow(uid, user, null, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
-      }
-    }
-
-    side.appendChild(renderBrowseNudge(onSwitchToAll));
+    const wrap = document.createElement("div");
+    wrap.className = "quiet-room";
+    const qrCopy = document.createElement("div");
+    qrCopy.className = "qr-copy";
+    const headline = document.createElement("div");
+    headline.className = "qr-headline";
+    headline.textContent = "nobody here yet.";
+    const sub = document.createElement("div");
+    sub.className = "qr-sub";
+    sub.textContent = "head to the All tab to find people who are showing up.";
+    const frame = document.createElement("div");
+    frame.className = "qr-action-frame";
+    const btn = document.createElement("button");
+    btn.className = "qr-action-btn";
+    btn.textContent = "Browse All";
+    btn.addEventListener("click", onSwitchToAll);
+    const hint = document.createElement("span");
+    hint.className = "qr-action-hint";
+    hint.textContent = "discover who's tracking";
+    frame.append(btn, hint);
+    qrCopy.append(headline, sub, frame);
+    wrap.appendChild(qrCopy);
+    const card = document.createElement("div");
+    card.className = "fw-container";
+    card.appendChild(wrap);
+    container.appendChild(card);
+    return;
   }
+
+  if (pinnedActive.length > 0) {
+    const pinnedLbl = renderSectionLbl("\uD83D\uDCCC Pinned");
+    const unpinAllBtn = document.createElement("button");
+    unpinAllBtn.className = "fw-unpin-all-btn";
+    const pinnedCount = pinnedActive.length;
+    const unpinLabel = pinnedCount === 1 ? "Unpin" : pinnedCount === 2 ? "Unpin both" : `Unpin all ${pinnedCount}`;
+    unpinAllBtn.textContent = unpinLabel;
+    let confirmTimer = null;
+    unpinAllBtn.addEventListener("click", async () => {
+      if (!unpinAllBtn.classList.contains("fw-unpin-all-btn--confirm")) {
+        unpinAllBtn.textContent = "Sure?";
+        unpinAllBtn.classList.add("fw-unpin-all-btn--confirm");
+        confirmTimer = setTimeout(() => {
+          unpinAllBtn.textContent = unpinLabel;
+          unpinAllBtn.classList.remove("fw-unpin-all-btn--confirm");
+        }, 2500);
+        return;
+      }
+      clearTimeout(confirmTimer);
+      try {
+        await setDoc(doc(db, "users", currentUser.uid), { pinnedFollowing: [] }, { merge: true });
+        showToast("All unpinned.");
+      } catch { showToast("Couldn't unpin. Try again.", "error"); }
+    });
+    pinnedLbl.appendChild(unpinAllBtn);
+    main.appendChild(pinnedLbl);
+    // Interleave for CSS columns: column-count fills top-to-bottom per column,
+    // so reorder so that visual left-to-right reading matches pin order.
+    const n = pinnedActive.length;
+    const half = Math.ceil(n / 2);
+    const interleaved = new Array(n);
+    for (let i = 0; i < n; i++) {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+      interleaved[col * half + row] = pinnedActive[i];
+    }
+    const pinnedGrid = document.createElement("div");
+    pinnedGrid.className = "fw-pinned-grid";
+    for (const { uid, user, log, diaryEntry } of interleaved) {
+      pinnedGrid.appendChild(renderPinnedCard(uid, user, log, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
+    }
+    main.appendChild(pinnedGrid);
+  } else {
+    main.appendChild(renderSectionLbl("\uD83D\uDCCC Pinned"));
+    const pinnedEmpty = document.createElement("div");
+    pinnedEmpty.className = "inline-empty";
+    const pinnedEmptyText = document.createElement("div");
+    pinnedEmptyText.className = "inline-empty-text";
+    pinnedEmptyText.textContent = "pin someone to keep them here.";
+    pinnedEmpty.appendChild(pinnedEmptyText);
+    main.appendChild(pinnedEmpty);
+  }
+
+  side.appendChild(renderSectionLbl("Showing Up", activeUnpinned.length));
+  if (activeUnpinned.length === 0) {
+    const empty = document.createElement("div"); empty.className = "inline-empty";
+    const text = document.createElement("div"); text.className = "inline-empty-text";
+    text.textContent = pinnedActive.length > 0
+      ? "all pinned."
+      : "no one else showing up this month.";
+    empty.appendChild(text);
+    side.appendChild(empty);
+  } else {
+    for (const { uid, user, log, diaryEntry } of activeUnpinned) {
+      side.appendChild(renderCompactRow(uid, user, log, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
+    }
+  }
+
+  if (crickets.length > 0) {
+    side.appendChild(renderSectionLbl("Crickets... \uD83E\uDD97", crickets.length));
+    for (const { uid, user, diaryEntry } of crickets) {
+      side.appendChild(renderCompactRow(uid, user, null, yearMonth, currentUser, pinnedFollowingIds, diaryEntry));
+    }
+  }
+
+  side.appendChild(renderBrowseNudge(onSwitchToAll));
 
   layout.append(main, side);
   const card = document.createElement("div");

@@ -102,21 +102,32 @@ function makeDateSection(dateStr, isFirst, isNew) {
 function renderEmptyState(container, model) {
   container.innerHTML = "";
   const wrap = document.createElement("div");
-  wrap.className = "following-empty";
-  const icon = document.createElement("div");
-  icon.style.fontSize = "2rem";
-  icon.textContent = "\uD83D\uDCF0";
-  const heading = document.createElement("h3");
-  heading.className = "following-empty-title";
-  heading.textContent = "Nothing in your feed yet";
-  const sub = document.createElement("p");
-  sub.className = "following-empty-sub";
-  sub.textContent = "Head to the All tab to find people to follow.";
+  wrap.className = "quiet-room";
+
+  const copy = document.createElement("div");
+  copy.className = "qr-copy";
+
+  const headline = document.createElement("div");
+  headline.className = "qr-headline";
+  headline.textContent = "nothing new. everyone's quiet today.";
+
+  const sub = document.createElement("div");
+  sub.className = "qr-sub";
+  sub.textContent = "check back later, or find more people to follow.";
+
+  const frame = document.createElement("div");
+  frame.className = "qr-action-frame";
   const btn = document.createElement("button");
-  btn.className = "following-browse-btn";
-  btn.textContent = "Browse All \u2192";
+  btn.className = "qr-action-btn";
+  btn.textContent = "Browse All";
   btn.addEventListener("click", model.onSwitchToAll);
-  wrap.append(icon, heading, sub, btn);
+  const hint = document.createElement("span");
+  hint.className = "qr-action-hint";
+  hint.textContent = "see who else is showing up";
+  frame.append(btn, hint);
+
+  copy.append(headline, sub, frame);
+  wrap.appendChild(copy);
   container.appendChild(wrap);
 }
 

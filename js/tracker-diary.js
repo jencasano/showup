@@ -482,26 +482,38 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
         });
         rightContent.appendChild(editBtn);
       } else {
+        const quiet = document.createElement("div");
+        quiet.className = "quiet-room";
+        quiet.style.borderRadius = "0";
+
         const emptyDate = document.createElement("div");
         emptyDate.className = "diary-modal-empty-date";
         emptyDate.innerHTML = `${dayOfWeek}, <strong style="color:var(--color-primary)">${d}</strong>`;
-        rightContent.appendChild(emptyDate);
 
         const emptyText = document.createElement("div");
         emptyText.className = "diary-modal-empty-text";
         emptyText.textContent = "this page is blank...";
-        rightContent.appendChild(emptyText);
+
+        const lines = document.createElement("div");
+        lines.className = "diary-empty-lines";
+        for (let i = 0; i < 3; i++) {
+          const line = document.createElement("div");
+          line.className = "diary-empty-line";
+          lines.appendChild(line);
+        }
 
         const writeBtn = document.createElement("button");
-        writeBtn.className = "diary-modal-write-btn";
-        writeBtn.textContent = "\u270f\ufe0f Write something";
+        writeBtn.className = "diary-write-btn";
+        writeBtn.textContent = "\u270f\ufe0f write something";
         writeBtn.addEventListener("click", () => {
           crossfadeDiaryOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, null, () => {
             _diaryEntryCache.delete(_cacheKey(userId, yearMonth, d));
             openDiaryModal(userId, yearMonth, diaryDays, cover);
           }));
         });
-        rightContent.appendChild(writeBtn);
+
+        quiet.append(emptyDate, emptyText, lines, writeBtn);
+        rightContent.appendChild(quiet);
       }
 
       rightContent.style.opacity = "1";
