@@ -584,8 +584,57 @@
     </details>
   </div>
 
-  <!-- ── Apr 24, 2026 — Polish · Diary cover system ── -->
+  <!-- ── Apr 24, 2026 — Polish · Toast system ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 24, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">PO05</span>
+    </div>
+    <div class="entry-title">Polish · Toast system</div>
+    <p class="entry-desc">Small-surface-area round that closes two long-standing items in one pass. The toast system grows a proper four-role hierarchy (neutral, info, success, error) with neutral as the new default, fixing a long-running misuse where every quiet confirmation ("coming soon.", "signed out.", "Pinned!") was falling through to the success treatment because success was the default type. Success becomes reserved for genuine celebrations, which the app doesn't fire yet. Every role class is rewritten to read from existing Mixtape tokens so both themes auto-resolve; no new custom properties were added. In the same round, the legacy --color-teal #80B9B9 alias (sitting in variables.css since the pre-Mixtape era) gets fully retired. PO01 started this cleanup with the login dot; this round sweeps the six remaining consumers across following.css and feed-view.css onto var(--accent-support) and removes the alias definition.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Four roles, neutral as the workhorse</div>
+        <div class="item-desc">The toast system used to offer three types (success, error, info) but had no neutral default, so showToast("message") with no type argument was going to success. Most toasts are not celebrations. The new hierarchy is neutral (quiet confirmations: "saved.", "signed out.", "copied."), info (contextual notices that need slight visual distinction: "coming soon.", "link copied to clipboard."), success (genuine milestone moments: streak hits, first-entry-ever, comebacks, none of which fire yet), and error (failures, "couldn't save. try again?"). The key decision is that success is rare and reserved. Overusing it dilutes its meaning, so the spec explicitly lists what should and shouldn't trigger it.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/polish/TOAST_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Role classes, theme-aware tokens</div>
+        <div class="item-desc">All four role classes in css/ui.css resolve to existing tokens; no new custom properties were needed. .toast-neutral uses var(--paper-deep) bg, var(--ink) text, 1px var(--hairline) border. .toast-info shares the neutral body plus a 3px left accent in var(--blue) and an asymmetric pill radius (10px 99px 99px 10px) so the accent reads as a visual anchor rather than a ring. Side B auto-remaps --blue to the Mixtape teal #5EAAA8 via the existing theme override, so info looks correct on both themes without extra logic. .toast-success uses var(--green) bg with var(--paper) text, which gives cream-on-forest on Side A and dark-maroon-on-teal on Side B automatically (both correct contrast since --green and --paper both flip per theme). .toast-error keeps white text on Side A red but gets a [data-theme="side-b"] override to var(--paper) so the salmon red on Side B reads against dark text. Three candidates were explored in the mockup for success (red, green, yellow); green won because red collides with error and yellow conflicts with a future warning tier.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">The one-line default flip</div>
+        <div class="item-desc">The correctness-fixing edit in js/ui.js is literally one character: showToast's default type parameter changes from "success" to "neutral". Every call site that currently omits the second argument (nine across app.js, diary-strip.js, feed-card.js, following-people.js, privacy-settings.js) auto-corrects in place. "coming soon.", "Pinned!", "Unpinned.", "All unpinned.", "Unfollowed X.", "Privacy updated." all move from green-success to quiet-neutral, which is what they should have been all along. Audit of the full codebase confirmed no existing call site needs its explicit type argument changed; every "info" and "error" remains correct. Three "info" call sites read slightly more like neutral per the tone table ("Diary entry saved.", "Activities updated.", "Stats copied!") but stay on info for this round since they're a copy decision, not a bug.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">--color-teal retirement, full sweep</div>
+        <div class="item-desc">The legacy --color-teal: #80B9B9 hex alias has been sitting in variables.css as a pre-Mixtape holdover since before the Side A / Side B split. PO01 introduced --accent-support (which maps to var(--blue) and auto-remaps to #5EAAA8 on Side B) as the theme-correct replacement, and migrated the login dot. This round finishes the job. Six remaining consumers migrated to var(--accent-support): in following.css, .fsd-pin-card--lowkey border, .fsd-pin-link.cal:hover color, and .fw-tier-sharing (body, text, and border, with the two hardcoded rgba(128,185,185,X) values rewritten as color-mix(in srgb, var(--accent-support) N%, transparent) to match the house approach from PO03's diary tokenization). In feed-view.css, .fw-feed-evt--lowkey border, .fw-feed-evt--lowkey .fw-feed-evt-nudge color, and .fw-feed-evt-link--cal color. The --color-teal: #80B9B9 line is then removed from variables.css; a final grep confirms zero remaining references in css/ or js/. Visual effect: Side B stays in the teal family (the old #80B9B9 was an approximation; --accent-support resolves to the Mixtape-correct #5EAAA8 on Side B). Side A shifts the .cal link, .lowkey tier accent, and .fw-tier-sharing badge from the stale pre-Mixtape teal to Mixtape navy #4F6C8E, which is the intended behavior for a theme-correct cool accent on cream paper.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">What's next</div>
+        <div class="item-desc">Settings entry point is overdue: edit display name, change default diary cover, manage entitlements, toggle theme. Scrollbar polish, empty states with Mixtape flourish, modal audit follow. On-deck readability item from PO04 (no-full-weeks calendar preview copy washing out on Side A) still waiting for a dedicated pass. Icons and landing page stay deferred. Warning toast tier (fifth role, likely yellow) is logged in the toast spec's future considerations but deliberately not pre-built; it waits for a concrete trigger like a destructive-confirmation flow.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/PO05/01.png" alt="Polish · Toast system" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO05/02.png" alt="Polish · Toast system" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO05/03.png" alt="Polish · Toast system" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO05/04.png" alt="Polish · Toast system" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO05/05.png" alt="Polish · Toast system" onerror="this.style.display='none'">
+        <video src="assets/build-log/PO05/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 24, 2026 — Polish · Diary cover system ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 24, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
