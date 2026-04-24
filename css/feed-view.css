@@ -254,7 +254,7 @@
 
 .fw-feed-evt--sharing { border-left-color: var(--color-primary); }
 .fw-feed-evt--followers { border-left-color: var(--color-amber); }
-.fw-feed-evt--lowkey  { border-left-color: var(--color-teal); }
+.fw-feed-evt--lowkey  { border-left-color: var(--accent-support); }
 .fw-feed-evt--ghost   { border-left-color: var(--border); opacity: 0.78; }
 
 .fw-feed-evt-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
@@ -310,7 +310,7 @@
   color: var(--color-primary);
 }
 
-.fw-feed-evt--lowkey .fw-feed-evt-nudge { color: var(--color-teal); }
+.fw-feed-evt--lowkey .fw-feed-evt-nudge { color: var(--accent-support); }
 
 .fw-feed-evt-links { display: flex; gap: 16px; margin-top: 6px; }
 
@@ -323,7 +323,7 @@
 }
 
 .fw-feed-evt-link:hover { opacity: 0.75; }
-.fw-feed-evt-link--cal   { color: var(--color-teal); }
+.fw-feed-evt-link--cal   { color: var(--accent-support); }
 .fw-feed-evt-link--diary { color: var(--color-amber); }
 
 /* "New posts" pill */

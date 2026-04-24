@@ -181,7 +181,7 @@
 /* Tier left-border colors */
 .fsd-pin-card--sharing   { border-left: 3px solid var(--color-primary); }
 .fsd-pin-card--followers { border-left: 3px solid var(--color-amber); }
-.fsd-pin-card--lowkey    { border-left: 3px solid var(--color-teal); }
+.fsd-pin-card--lowkey    { border-left: 3px solid var(--accent-support); }
 .fsd-pin-card--ghost     { border-left: 3px solid var(--border); opacity: 0.75; }
 
 /* Card top row */
@@ -266,7 +266,7 @@
 }
 
 .fsd-pin-link:hover { background: var(--bg-subtle); }
-.fsd-pin-link.cal:hover { color: var(--color-teal); }
+.fsd-pin-link.cal:hover { color: var(--accent-support); }
 .fsd-pin-link.diary:hover { color: var(--color-amber); }
 .fsd-pin-link.profile { opacity: 0.3; cursor: not-allowed; }
 .fsd-pin-link.profile:hover { background: none; color: var(--text-faint); }
@@ -642,7 +642,7 @@
 /* ── Tier badges ───────────────────────────────────── */
 
 .fw-tier-badge { font-size: 0.52rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: var(--radius-full); }
-.fw-tier-sharing { background: rgba(128,185,185,0.18); color: var(--color-teal); border: 1px solid rgba(128,185,185,0.3); }
+.fw-tier-sharing { background: color-mix(in srgb, var(--accent-support) 18%, transparent); color: var(--accent-support); border: 1px solid color-mix(in srgb, var(--accent-support) 30%, transparent); }
 .fw-tier-followers { background: rgba(248,192,138,0.2); color: #a06820; border: 1px solid rgba(248,192,138,0.4); }
 [data-theme="side-b"] .fw-tier-followers { color: var(--color-amber); }
 .fw-tier-lowkey { background: rgba(90,96,136,0.14); color: var(--text-muted); border: 1px solid var(--border); }

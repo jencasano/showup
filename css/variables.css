@@ -27,7 +27,6 @@
   /* ── Legacy color aliases (retired in Step 2) ── */
   --color-primary:       var(--red);
   --color-primary-hover: var(--red-hover);
-  --color-teal:          #80B9B9;
   --color-amber:         var(--yellow);
   --bg:                  var(--paper);
   --bg-surface:          var(--paper-deep);
