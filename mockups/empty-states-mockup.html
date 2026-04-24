@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empty States v2 -- Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600;1,9..144,700&family=Manrope:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Sora:wght@700;800&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset + page chrome ─────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --font-logo: 'Sora', sans-serif;
+  --font-hand: 'Caveat', cursive;
+}
+
+body {
+  font-family: var(--font-body);
+  background: #131013;
+  color: #F0DCCF;
+  min-height: 100vh;
+  padding: 40px 20px 100px;
+}
+
+/* ── Page header ─────────────────────────────── */
+.page-header {
+  max-width: 1200px;
+  margin: 0 auto 56px;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 2.4rem;
+  margin-bottom: 6px;
+}
+
+.page-header .sub {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  color: #B18A84;
+  margin-bottom: 16px;
+}
+
+.page-header .flag {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: #B18A84;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Section wrappers ────────────────────────── */
+.section {
+  max-width: 1200px;
+  margin: 0 auto 72px;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #9C8874;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(156, 136, 116, 0.2);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.5rem;
+  color: #F0DCCF;
+  margin-bottom: 8px;
+}
+
+.section-sub {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: #B18A84;
+  margin-bottom: 28px;
+  line-height: 1.55;
+  max-width: 720px;
+}
+
+/* ── Callout ──────────────────────────────────── */
+.callout {
+  max-width: 900px;
+  margin: 20px auto 0;
+  padding: 14px 18px;
+  background: rgba(240, 220, 207, 0.06);
+  border-left: 2px solid #C3342B;
+  border-radius: 4px;
+  color: #B18A84;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.callout strong { color: #F0DCCF; font-weight: 600; }
+
+/* ── Theme frames ────────────────────────────── */
+.frames {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.frame {
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.frame-a { background: #F4ECD8; color: #2A1F1A; }
+.frame-b { background: #2A1518; color: #F0DCCF; }
+
+.frame-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 20px 0;
+  opacity: 0.45;
+}
+
+.frame-content {
+  padding: 20px;
+}
+
+/* ── Mobile frames (fixed sizing) ────────────── */
+.mobile-row {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mobile-frame {
+  border-radius: 32px;
+  position: relative;
+  overflow: hidden;
+  border: 3px solid rgba(255,255,255,0.08);
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.mobile-frame.frame-a { border-color: rgba(42,31,26,0.18); }
+
+.mobile-frame-notch {
+  width: 90px;
+  height: 20px;
+  border-radius: 0 0 14px 14px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.frame-a .mobile-frame-notch { background: #2A1F1A; }
+.frame-b .mobile-frame-notch { background: #0D0809; }
+
+.mobile-frame-content {
+  padding: 16px 18px 28px;
+  min-height: 440px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── The Quiet Room: shared empty state ──────── */
+.quiet-room {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 52px 32px 44px;
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 220px;
+}
+
+.mobile-frame .quiet-room {
+  padding: 40px 20px 36px;
+  min-height: 200px;
+  flex: 1;
+}
+
+/* Ambient motif backdrop */
+.quiet-room::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  pointer-events: none;
+  background-size: 420px 420px;
+  animation: drift-motifs 70s linear infinite;
+}
+
+.frame-a .quiet-room::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke-width='1'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23C3342B' opacity='0.45'/><circle cx='160' cy='120' r='1.8' fill='%234F6C8E' opacity='0.55'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' stroke='%23C3342B' opacity='0.35'/><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4'/><circle cx='220' cy='280' r='2' fill='%23C3342B' opacity='0.35'/><path d='M320 310 q5 -7 10 0 q5 7 10 0' stroke='%234F6C8E' opacity='0.4'/><circle cx='80' cy='360' r='1.4' fill='%234F6C8E' opacity='0.5'/><path d='M190 380 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23C3342B' opacity='0.3'/></g></svg>");
+}
+
+.frame-b .quiet-room::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke-width='1'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23F07A5E' opacity='0.45'/><circle cx='160' cy='120' r='1.8' fill='%235EAAA8' opacity='0.55'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' stroke='%23F07A5E' opacity='0.35'/><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4'/><circle cx='220' cy='280' r='2' fill='%23F07A5E' opacity='0.35'/><path d='M320 310 q5 -7 10 0 q5 7 10 0' stroke='%235EAAA8' opacity='0.4'/><circle cx='80' cy='360' r='1.4' fill='%235EAAA8' opacity='0.5'/><path d='M190 380 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23F07A5E' opacity='0.3'/></g></svg>");
+}
+
+/* Warmth glow */
+.quiet-room::after {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  animation: drift-warmth 55s ease-in-out infinite alternate;
+  filter: blur(20px);
+}
+
+.frame-a .quiet-room::after {
+  background:
+    radial-gradient(45% 40% at 25% 35%, rgba(232, 179, 58, 0.18), transparent 70%),
+    radial-gradient(50% 45% at 75% 65%, rgba(195, 52, 43, 0.10), transparent 70%);
+}
+
+.frame-b .quiet-room::after {
+  background:
+    radial-gradient(45% 40% at 25% 35%, rgba(232, 179, 58, 0.12), transparent 70%),
+    radial-gradient(50% 45% at 75% 65%, rgba(240, 122, 94, 0.08), transparent 70%);
+}
+
+@keyframes drift-motifs {
+  from { background-position: 0 0; }
+  to { background-position: -420px -420px; }
+}
+
+@keyframes drift-warmth {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  50%  { transform: translate(3%, -2%) rotate(1deg); }
+  100% { transform: translate(-2%, 1%) rotate(-0.5deg); }
+}
+
+/* Quiet room content */
+.qr-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.qr-headline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.15rem;
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+
+.mobile-frame .qr-headline { font-size: 1.05rem; }
+
+.frame-a .qr-headline { color: #5A463A; }
+.frame-b .qr-headline { color: #B18A84; }
+
+.qr-sub {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.mobile-frame .qr-sub { font-size: 0.74rem; }
+
+.frame-a .qr-sub { color: #9C8874; }
+.frame-b .qr-sub { color: #6E504B; }
+
+/* Dashed action frame */
+.qr-action-frame {
+  position: relative;
+  z-index: 1;
+  border: 1.5px dashed;
+  border-radius: 10px;
+  padding: 14px 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.frame-a .qr-action-frame { border-color: #D4C3A1; }
+.frame-b .qr-action-frame { border-color: #4A2025; }
+
+.qr-action-btn {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 99px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.frame-a .qr-action-btn { background: #C3342B; color: white; }
+.frame-b .qr-action-btn { background: #F07A5E; color: #2A1518; }
+
+.qr-action-hint {
+  font-size: 0.68rem;
+  font-style: italic;
+}
+
+.frame-a .qr-action-hint { color: #9C8874; }
+.frame-b .qr-action-hint { color: #6E504B; }
+
+/* ── Inline empty (small, no backdrop) ───────── */
+.inline-empty {
+  padding: 16px 14px;
+  text-align: center;
+}
+
+.inline-empty-text {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.82rem;
+}
+
+.frame-a .inline-empty-text { color: #9C8874; }
+.frame-b .inline-empty-text { color: #6E504B; }
+
+/* ── Browse Nudge card (persistent CTA) ──────── */
+.nudge-card {
+  border: 1.5px dashed;
+  border-radius: 12px;
+  padding: 20px 18px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.frame-a .nudge-card { border-color: #D4C3A1; background: rgba(236, 225, 198, 0.4); }
+.frame-b .nudge-card { border-color: #4A2025; background: rgba(29, 14, 16, 0.4); }
+
+/* Subtle motif inside the nudge card */
+.nudge-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  pointer-events: none;
+  background-size: 420px 420px;
+  animation: drift-motifs 70s linear infinite;
+}
+
+.frame-a .nudge-card::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke-width='1'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23C3342B' opacity='0.45'/><circle cx='160' cy='120' r='1.8' fill='%234F6C8E' opacity='0.55'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' stroke='%23C3342B' opacity='0.35'/><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4'/><circle cx='220' cy='280' r='2' fill='%23C3342B' opacity='0.35'/></g></svg>");
+}
+
+.frame-b .nudge-card::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'><g fill='none' stroke-width='1'><path d='M50 60 l4 -6 l2 6 l6 2 l-6 2 l-2 6 l-4 -6 l-6 -2 z' fill='%23F07A5E' opacity='0.45'/><circle cx='160' cy='120' r='1.8' fill='%235EAAA8' opacity='0.55'/><path d='M280 95 q4 -6 8 0 q4 6 8 0' stroke='%23F07A5E' opacity='0.35'/><circle cx='360' cy='180' r='1.5' fill='%23E8B33A' opacity='0.7'/><path d='M90 240 l3 -5 l1.5 5 l5 1.5 l-5 1.5 l-1.5 5 l-3 -5 l-5 -1.5 z' fill='%23E8B33A' opacity='0.4'/><circle cx='220' cy='280' r='2' fill='%23F07A5E' opacity='0.35'/></g></svg>");
+}
+
+.nudge-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.nudge-headline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.92rem;
+  margin-bottom: 6px;
+}
+
+.frame-a .nudge-headline { color: #5A463A; }
+.frame-b .nudge-headline { color: #B18A84; }
+
+.nudge-sub {
+  font-size: 0.72rem;
+  margin-bottom: 14px;
+}
+
+.frame-a .nudge-sub { color: #9C8874; }
+.frame-b .nudge-sub { color: #6E504B; }
+
+.nudge-btn {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 99px;
+  padding: 7px 16px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.frame-a .nudge-btn { background: #C3342B; color: white; }
+.frame-b .nudge-btn { background: #F07A5E; color: #2A1518; }
+
+/* ── Diary empty page ────────────────────────── */
+.diary-empty-page {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.diary-empty-date {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.frame-a .diary-empty-date { color: #9C8874; }
+.frame-b .diary-empty-date { color: #6E504B; }
+
+.diary-empty-date strong { font-weight: 700; }
+.frame-a .diary-empty-date strong { color: #C3342B; }
+.frame-b .diary-empty-date strong { color: #F07A5E; }
+
+.diary-empty-copy {
+  font-family: var(--font-hand);
+  font-size: 1.15rem;
+  font-weight: 400;
+  margin: 8px 0 4px;
+}
+
+.frame-a .diary-empty-copy { color: #5A463A; }
+.frame-b .diary-empty-copy { color: #B18A84; }
+
+.diary-empty-lines {
+  width: 80%;
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 12px 0 16px;
+}
+
+.diary-empty-line { height: 1px; border-radius: 1px; }
+.frame-a .diary-empty-line { background: #D4C3A1; opacity: 0.5; }
+.frame-b .diary-empty-line { background: #4A2025; opacity: 0.6; }
+
+.diary-write-btn {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: 1.5px dashed;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  background: none;
+}
+
+.frame-a .diary-write-btn { color: #C3342B; border-color: #D4C3A1; }
+.frame-b .diary-write-btn { color: #F07A5E; border-color: #4A2025; }
+
+/* ── Section label inside frame ──────────────── */
+.frame-section-lbl {
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  margin-bottom: 4px;
+}
+
+.frame-a .frame-section-lbl { color: #2A1F1A; border-top: 1px solid #D4C3A1; }
+.frame-b .frame-section-lbl { color: #F0DCCF; border-top: 1px solid #4A2025; }
+.frame-section-lbl:first-child { border-top: none; }
+
+.frame-section-count {
+  font-size: 0.56rem;
+  padding: 1px 6px;
+  border-radius: 99px;
+}
+
+.frame-a .frame-section-count { background: #DCCFA6; color: #5A463A; }
+.frame-b .frame-section-count { background: #3A1D20; color: #B18A84; }
+
+/* ── Search bar mock ─────────────────────────── */
+.search-bar-mock {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 0.82rem;
+  margin-bottom: 14px;
+  border: 1px solid;
+}
+
+.frame-a .search-bar-mock { background: #ECE1C6; border-color: #D4C3A1; color: #9C8874; }
+.frame-b .search-bar-mock { background: #1D0E10; border-color: #4A2025; color: #6E504B; }
+
+/* ── Diary modal mock ────────────────────────── */
+.diary-modal-mock {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-radius: 10px;
+  overflow: hidden;
+  min-height: 260px;
+}
+
+.diary-modal-left-mock {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.frame-a .diary-modal-left-mock { background: #ECE1C6; }
+.frame-b .diary-modal-left-mock { background: #1D0E10; }
+
+.diary-modal-left-title {
+  font-family: var(--font-hand);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.frame-a .diary-modal-left-title { color: #C3342B; }
+.frame-b .diary-modal-left-title { color: #F07A5E; }
+
+.diary-modal-left-sub { font-size: 0.65rem; }
+.frame-a .diary-modal-left-sub { color: #9C8874; }
+.frame-b .diary-modal-left-sub { color: #6E504B; }
+
+.diary-cal-mini {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-top: 8px;
+}
+
+.diary-cal-mini-day {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  font-size: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.frame-a .diary-cal-mini-day { background: #F4ECD8; color: #9C8874; }
+.frame-b .diary-cal-mini-day { background: #2A1518; color: #6E504B; }
+
+.diary-cal-mini-day.active-day { outline: 1.5px solid; }
+.frame-a .diary-cal-mini-day.active-day { outline-color: #C3342B; color: #C3342B; }
+.frame-b .diary-cal-mini-day.active-day { outline-color: #F07A5E; color: #F07A5E; }
+
+.diary-modal-right-mock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.frame-a .diary-modal-right-mock { background: #F4ECD8; border-left: 1px solid #D4C3A1; }
+.frame-b .diary-modal-right-mock { background: #2A1518; border-left: 1px solid #4A2025; }
+
+/* ── Type tags ───────────────────────────────── */
+.type-tag {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-bottom: 14px;
+  display: inline-block;
+}
+
+.type-tag.full { background: rgba(195, 52, 43, 0.12); color: #C3342B; }
+.type-tag.inline { background: rgba(79, 108, 142, 0.12); color: #4F6C8E; }
+.type-tag.diary { background: rgba(232, 179, 58, 0.15); color: #E8B33A; }
+.type-tag.nudge { background: rgba(62, 92, 58, 0.15); color: #5EAAA8; }
+
+/* ── Behavior labels ─────────────────────────── */
+.behavior-label {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  background: rgba(240, 220, 207, 0.08);
+  color: #B18A84;
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 900px) {
+  .frames { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Empty States</h1>
+  <p class="sub">PO07 v2 -- the Quiet Room treatment</p>
+  <p class="flag">Mockup -- Seven surfaces, two themes, desktop + mobile</p>
+</div>
+
+<!-- 00 -- DESIGN CONCEPT -->
+
+<div class="section">
+  <div class="section-label">00 -- Design concept</div>
+  <h2 class="section-title">The Quiet Room</h2>
+  <p class="section-sub">Every empty state is a room that's been set up and is waiting. Not broken, not sad, not missing data. Just quiet. Three layers, progressively applied depending on the surface.</p>
+
+  <div class="callout">
+    <strong>Three treatment tiers:</strong><br><br>
+    <strong>Full Quiet Room</strong> -- big standalone empty surfaces (feed, people tab, all tab). Gets all three layers: motif backdrop, warmth glow, Fraunces italic headline, and optional dashed action frame.<br><br>
+    <strong>Nudge card</strong> -- persistent CTA that lives inside a populated view (bottom of People sidebar). Dashed border with subtle motif, Fraunces italic copy, compact CTA button.<br><br>
+    <strong>Inline empty</strong> -- small section empties (Showing Up = 0). Just the Fraunces italic line. No backdrop, no frame.
+  </div>
+</div>
+
+<!-- 01 -- FEED EMPTY -->
+
+<div class="section">
+  <div class="section-label">01 -- Feed empty</div>
+  <h2 class="section-title">Nothing in the feed yet</h2>
+  <p class="section-sub">The user follows people but nobody has logged today. Full Quiet Room with dashed action frame pointing to the All tab.</p>
+
+  <span class="type-tag full">Full quiet room</span>
+
+  <div class="frames">
+    <div class="frame frame-a">
+      <div class="frame-label">Side A -- Desktop</div>
+      <div class="frame-content">
+        <div class="quiet-room">
+          <div class="qr-copy">
+            <div class="qr-headline">nothing new. everyone's quiet today.</div>
+            <div class="qr-sub">check back later, or find more people to follow.</div>
+            <div class="qr-action-frame">
+              <button class="qr-action-btn">Browse All</button>
+              <span class="qr-action-hint">see who else is showing up</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame frame-b">
+      <div class="frame-label">Side B -- Desktop</div>
+      <div class="frame-content">
+        <div class="quiet-room">
+          <div class="qr-copy">
+            <div class="qr-headline">nothing new. everyone's quiet today.</div>
+            <div class="qr-sub">check back later, or find more people to follow.</div>
+            <div class="qr-action-frame">
+              <button class="qr-action-btn">Browse All</button>
+              <span class="qr-action-hint">see who else is showing up</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 24px;">
+    <div class="mobile-row">
+      <div class="mobile-frame frame-a">
+        <div class="mobile-frame-notch"></div>
+        <div class="mobile-frame-content">
+          <div class="quiet-room">
+            <div class="qr-copy">
+              <div class="qr-headline">nothing new. everyone's quiet today.</div>
+              <div class="qr-sub">check back later, or find more people to follow.</div>
+              <div class="qr-action-frame">
+                <button class="qr-action-btn">Browse All</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-frame frame-b">
+        <div class="mobile-frame-notch"></div>
+        <div class="mobile-frame-content">
+          <div class="quiet-room">
+            <div class="qr-copy">
+              <div class="qr-headline">nothing new. everyone's quiet today.</div>
+              <div class="qr-sub">check back later, or find more people to follow.</div>
+              <div class="qr-action-frame">
+                <button class="qr-action-btn">Browse All</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 -- PEOPLE TAB EMPTY -->
+
+<div class="section">
+  <div class="section-label">02 -- People tab empty (zero follows)</div>
+  <h2 class="section-title">Nobody here yet</h2>
+  <p class="section-sub">Full Quiet Room. This replaces the entire People view when you haven't followed anyone.</p>
+
+  <span class="type-tag full">Full quiet room</span>
+
+  <div class="frames">
+    <div class="frame frame-a">
+      <div class="frame-label">Side A</div>
+      <div class="frame-content">
+        <div class="quiet-room">
+          <div class="qr-copy">
+            <div class="qr-headline">nobody here yet.</div>
+            <div class="qr-sub">head to the All tab to find people who are showing up.</div>
+            <div class="qr-action-frame">
+              <button class="qr-action-btn">Browse All</button>
+              <span class="qr-action-hint">discover who's tracking</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame frame-b">
+      <div class="frame-label">Side B</div>
+      <div class="frame-content">
+        <div class="quiet-room">
+          <div class="qr-copy">
+            <div class="qr-headline">nobody here yet.</div>
+            <div class="qr-sub">head to the All tab to find people who are showing up.</div>
+            <div class="qr-action-frame">
+              <button class="qr-action-btn">Browse All</button>
+              <span class="qr-action-hint">discover who's tracking</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 24px;">
+    <div class="mobile-row">
+      <div class="mobile-frame frame-a">
+        <div class="mobile-frame-notch"></div>
+        <div class="mobile-frame-content">
+          <div class="quiet-room">
+            <div class="qr-copy">
+              <div class="qr-headline">nobody here yet.</div>
+              <div class="qr-sub">head to the All tab to find people who are showing up.</div>
+              <div class="qr-action-frame">
+                <button class="qr-action-btn">Browse All</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-frame frame-b">
+        <div class="mobile-frame-notch"></div>
+        <div class="mobile-frame-content">
+          <div class="quiet-room">
+            <div class="qr-copy">
+              <div class="qr-headline">nobody here yet.</div>
+              <div class="qr-sub">head to the All tab to find people who are showing up.</div>
+              <div class="qr-action-frame">
+                <button class="qr-action-btn">Browse All</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 03 -- INLINE EMPTIES + CRICKETS -->
+
+<div class="section">
+  <div class="section-label">03 -- Showing Up empty + Crickets behavior</div>
+  <h2 class="section-title">Small section empties</h2>
+  <p class="section-sub">Two different behaviors. "Showing Up" gets an inline empty when its count is 0. "Crickets" does NOT render at all when its count is 0. The absence is the message.</p>
+
+  <div class="frames">
+    <div class="frame frame-a">
+      <div class="frame-label">Side A</div>
+      <div class="frame-content">
+        <div class="behavior-label" style="background: rgba(79,108,142,0.12); color: #4F6C8E;">Showing Up = 0</div>
+
+        <div class="frame-section-lbl">
+          Showing Up <span class="frame-section-count">0</span>
+        </div>
+        <div class="inline-empty">
+          <div class="inline-empty-text">no one else showing up this month.</div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <div class="behavior-label" style="background: rgba(195,52,43,0.08); color: #C3342B;">Crickets = 0 -- section not rendered</div>
+          <div style="padding: 14px; border: 1px dashed #D4C3A1; border-radius: 8px; text-align: center;">
+            <span style="font-family: var(--font-mono); font-size: 0.62rem; color: #9C8874; letter-spacing: 0.06em;">section hidden -- no empty state needed</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <div class="behavior-label" style="background: rgba(62,92,58,0.12); color: #3E5C3A;">Crickets >= 1 -- section renders with rows</div>
+          <div class="frame-section-lbl">
+            Crickets... &#x1F997; <span class="frame-section-count">2</span>
+          </div>
+          <div style="font-size: 0.72rem; color: #9C8874; font-style: italic; padding: 4px 0;">(compact rows render here as they do today -- not an empty state)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="frame frame-b">
+      <div class="frame-label">Side B</div>
+      <div class="frame-content">
+        <div class="behavior-label" style="background: rgba(94,170,168,0.12); color: #5EAAA8;">Showing Up = 0</div>
+
+        <div class="frame-section-lbl">
+          Showing Up <span class="frame-section-count">0</span>
+        </div>
+        <div class="inline-empty">
+          <div class="inline-empty-text">no one else showing up this month.</div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <div class="behavior-label" style="background: rgba(240,122,94,0.08); color: #F07A5E;">Crickets = 0 -- section not rendered</div>
+          <div style="padding: 14px; border: 1px dashed #4A2025; border-radius: 8px; text-align: center;">
+            <span style="font-family: var(--font-mono); font-size: 0.62rem; color: #6E504B; letter-spacing: 0.06em;">section hidden -- no empty state needed</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <div class="behavior-label" style="background: rgba(94,170,168,0.12); color: #5EAAA8;">Crickets >= 1 -- section renders with rows</div>
+          <div class="frame-section-lbl">
+            Crickets... &#x1F997; <span class="frame-section-count">2</span>
+          </div>
+          <div style="font-size: 0.72rem; color: #6E504B; font-style: italic; padding: 4px 0;">(compact rows render here as they do today -- not an empty state)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 04 -- ALL TAB SEARCH EMPTY -->
+
+<div class="section">
+  <div class="section-label">04 -- All tab: search + no-trackers</div>
+  <h2 class="section-title">Nothing matching that</h2>
+  <p class="section-sub">Two sub-states. Search empty echoes the failed query. Month has no trackers at all. Both Full Quiet Rooms, no action frame.</p>
+
+  <span class="type-tag full">Full quiet room (no action frame)</span>
+
+  <div class="frames">
+    <div class="frame frame-a">
+      <div class="frame-label">Side A -- Search empty</div>
+      <div class="frame-content">
+        <div class="search-bar-mock">yoga instructor...</div>
+        <div class="quiet-room" style="min-height: 180px; padding: 36px 28px;">
+          <div class="qr-copy">
+            <div class="qr-headline">nothing matching that.</div>
+            <div class="qr-sub">try a different name or activity.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame frame-b">
+      <div class="frame-label">Side B -- No trackers this month</div>
+      <div class="frame-content">
+        <div class="quiet-room" style="min-height: 180px; padding: 36px 28px;">
+          <div class="qr-copy">
+            <div class="qr-headline">no other trackers yet for this month.</div>
+            <div class="qr-sub">give it a few days.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 24px;">
+    <div class="mobile-row">
+      <div class="mobile-frame frame-a">
+        <div class="mobile-frame-notch"></div>
+        <div class="mobile-frame-content">
+          <div class="search-bar-mock" style="font-size: 0.75rem;">yoga instructor...</div>
+          <div class="quiet-room" style="padding: 32px 16px;">
+            <div class="qr-copy">
+              <div class="qr-headline">nothing matching that.</div>
+              <div class="qr-sub">try a different name or activity.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-frame frame-b">
+        <div class="mobile-frame-notch"></div>
+        <div class="mobile-frame-content">
+          <div class="quiet-room" style="padding: 32px 16px;">
+            <div class="qr-copy">
+              <div class="qr-headline">no other trackers yet for this month.</div>
+              <div class="qr-sub">give it a few days.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 05 -- DIARY BLANK PAGE -->
+
+<div class="section">
+  <div class="section-label">05 -- Diary blank page</div>
+  <h2 class="section-title">This page is blank</h2>
+  <p class="section-sub">Inside the open diary modal. The most intimate empty state. Caveat handwriting for the headline, faint ruled lines, dashed "write something" button.</p>
+
+  <span class="type-tag diary">Diary context</span>
+
+  <div class="frames">
+    <div class="frame frame-a">
+      <div class="frame-label">Side A -- Desktop diary modal</div>
+      <div class="frame-content">
+        <div class="diary-modal-mock">
+          <div class="diary-modal-left-mock">
+            <div class="diary-modal-left-title">diary.</div>
+            <div class="diary-modal-left-sub">April 2026 · 3 pages filled</div>
+            <div class="diary-cal-mini">
+              <div class="diary-cal-mini-day">1</div><div class="diary-cal-mini-day">2</div><div class="diary-cal-mini-day">3</div><div class="diary-cal-mini-day">4</div><div class="diary-cal-mini-day">5</div><div class="diary-cal-mini-day">6</div><div class="diary-cal-mini-day">7</div>
+              <div class="diary-cal-mini-day">8</div><div class="diary-cal-mini-day">9</div><div class="diary-cal-mini-day">10</div><div class="diary-cal-mini-day">11</div><div class="diary-cal-mini-day">12</div><div class="diary-cal-mini-day">13</div><div class="diary-cal-mini-day">14</div>
+              <div class="diary-cal-mini-day">15</div><div class="diary-cal-mini-day active-day">16</div><div class="diary-cal-mini-day">17</div><div class="diary-cal-mini-day">18</div><div class="diary-cal-mini-day">19</div><div class="diary-cal-mini-day">20</div><div class="diary-cal-mini-day">21</div>
+            </div>
+          </div>
+          <div class="diary-modal-right-mock">
+            <div class="quiet-room" style="min-height: 200px; padding: 28px 20px; border-radius: 0;">
+              <div class="diary-empty-page">
+                <div class="diary-empty-date">Wednesday, <strong>16</strong></div>
+                <div class="diary-empty-copy">this page is blank...</div>
+                <div class="diary-empty-lines">
+                  <div class="diary-empty-line"></div>
+                  <div class="diary-empty-line"></div>
+                  <div class="diary-empty-line"></div>
+                </div>
+                <button class="diary-write-btn">&#x270F;&#xFE0F; write something</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame frame-b">
+      <div class="frame-label">Side B -- Desktop diary modal</div>
+      <div class="frame-content">
+        <div class="diary-modal-mock">
+          <div class="diary-modal-left-mock">
+            <div class="diary-modal-left-title">diary.</div>
+            <div class="diary-modal-left-sub">April 2026 · 3 pages filled</div>
+            <div class="diary-cal-mini">
+              <div class="diary-cal-mini-day">1</div><div class="diary-cal-mini-day">2</div><div class="diary-cal-mini-day">3</div><div class="diary-cal-mini-day">4</div><div class="diary-cal-mini-day">5</div><div class="diary-cal-mini-day">6</div><div class="diary-cal-mini-day">7</div>
+              <div class="diary-cal-mini-day">8</div><div class="diary-cal-mini-day">9</div><div class="diary-cal-mini-day">10</div><div class="diary-cal-mini-day">11</div><div class="diary-cal-mini-day">12</div><div class="diary-cal-mini-day">13</div><div class="diary-cal-mini-day">14</div>
+              <div class="diary-cal-mini-day">15</div><div class="diary-cal-mini-day active-day">16</div><div class="diary-cal-mini-day">17</div><div class="diary-cal-mini-day">18</div><div class="diary-cal-mini-day">19</div><div class="diary-cal-mini-day">20</div><div class="diary-cal-mini-day">21</div>
+            </div>
+          </div>
+          <div class="diary-modal-right-mock">
+            <div class="quiet-room" style="min-height: 200px; padding: 28px 20px; border-radius: 0;">
+              <div class="diary-empty-page">
+                <div class="diary-empty-date">Wednesday, <strong>16</strong></div>
+                <div class="diary-empty-copy">this page is blank...</div>
+                <div class="diary-empty-lines">
+                  <div class="diary-empty-line"></div>
+                  <div class="diary-empty-line"></div>
+                  <div class="diary-empty-line"></div>
+                </div>
+                <button class="diary-write-btn">&#x270F;&#xFE0F; write something</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 24px;">
+    <div class="mobile-row">
+      <div class="mobile-frame frame-a">
+        <div class="mobile-frame-notch"></div>
+        <div class="mobile-frame-content">
+          <div style="text-align: center; margin-bottom: 10px;">
+            <div class="diary-modal-left-title" style="color: #C3342B;">diary.</div>
+            <div class="diary-modal-left-sub" style="color: #9C8874; font-size: 0.6rem;">April 2026</div>
+          </div>
+          <div class="quiet-room" style="padding: 28px 16px;">
+            <div class="diary-empty-page">
+              <div class="diary-empty-date">Wed, <strong>16</strong></div>
+              <div class="diary-empty-copy">this page is blank...</div>
+              <div class="diary-empty-lines">
+                <div class="diary-empty-line"></div>
+                <div class="diary-empty-line"></div>
+                <div class="diary-empty-line"></div>
+              </div>
+              <button class="diary-write-btn">&#x270F;&#xFE0F; write something</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-frame frame-b">
+        <div class="mobile-frame-notch"></div>
+        <div class="mobile-frame-content">
+          <div style="text-align: center; margin-bottom: 10px;">
+            <div class="diary-modal-left-title" style="color: #F07A5E;">diary.</div>
+            <div class="diary-modal-left-sub" style="color: #6E504B; font-size: 0.6rem;">April 2026</div>
+          </div>
+          <div class="quiet-room" style="padding: 28px 16px;">
+            <div class="diary-empty-page">
+              <div class="diary-empty-date">Wed, <strong>16</strong></div>
+              <div class="diary-empty-copy">this page is blank...</div>
+              <div class="diary-empty-lines">
+                <div class="diary-empty-line"></div>
+                <div class="diary-empty-line"></div>
+                <div class="diary-empty-line"></div>
+              </div>
+              <button class="diary-write-btn">&#x270F;&#xFE0F; write something</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 06 -- BROWSE NUDGE CARD -->
+
+<div class="section">
+  <div class="section-label">06 -- Browse Nudge card (persistent CTA)</div>
+  <h2 class="section-title">Find more people</h2>
+  <p class="section-sub">This sits at the bottom of the People view sidebar, always visible even when you have follows. Not technically an empty state, but it gets the Mixtape treatment: dashed border, subtle motif backdrop, Fraunces italic copy, compact CTA. Replaces the current plain .fw-nudge-card.</p>
+
+  <span class="type-tag nudge">Nudge card</span>
+
+  <div class="frames">
+    <div class="frame frame-a">
+      <div class="frame-label">Side A -- In context (sidebar bottom)</div>
+      <div class="frame-content">
+        <div class="frame-section-lbl">
+          Crickets... &#x1F997; <span class="frame-section-count">2</span>
+        </div>
+        <div style="font-size: 0.72rem; color: #9C8874; font-style: italic; padding: 4px 0 12px;">(compact rows above)</div>
+
+        <div class="nudge-card">
+          <div class="nudge-copy">
+            <div class="nudge-headline">find more people to follow.</div>
+            <div class="nudge-sub">see who else is showing up this month.</div>
+            <button class="nudge-btn">Browse All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame frame-b">
+      <div class="frame-label">Side B -- In context (sidebar bottom)</div>
+      <div class="frame-content">
+        <div class="frame-section-lbl">
+          Crickets... &#x1F997; <span class="frame-section-count">2</span>
+        </div>
+        <div style="font-size: 0.72rem; color: #6E504B; font-style: italic; padding: 4px 0 12px;">(compact rows above)</div>
+
+        <div class="nudge-card">
+          <div class="nudge-copy">
+            <div class="nudge-headline">find more people to follow.</div>
+            <div class="nudge-sub">see who else is showing up this month.</div>
+            <button class="nudge-btn">Browse All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 07 -- COPY INVENTORY -->
+
+<div class="section">
+  <div class="section-label">07 -- Copy inventory</div>
+  <h2 class="section-title">All empty state copy at a glance</h2>
+
+  <div class="callout">
+    <strong>Feed empty:</strong> "nothing new. everyone's quiet today." / "check back later, or find more people to follow."<br><br>
+    <strong>People empty (zero follows):</strong> "nobody here yet." / "head to the All tab to find people who are showing up."<br><br>
+    <strong>Showing Up section empty:</strong> "no one else showing up this month."<br><br>
+    <strong>Crickets section empty:</strong> section not rendered. no copy needed.<br><br>
+    <strong>All tab, search no results:</strong> "nothing matching that." / "try a different name or activity."<br><br>
+    <strong>All tab, no trackers:</strong> "no other trackers yet for this month." / "give it a few days."<br><br>
+    <strong>Diary blank page:</strong> "this page is blank..." / (ruled lines + "write something" button)<br><br>
+    <strong>Browse Nudge card:</strong> "find more people to follow." / "see who else is showing up this month."
+  </div>
+</div>
+
+<div class="page-header" style="margin-top: 80px;">
+  <p class="flag">PO07 v2 -- Feedback welcome &#x1FAA8;</p>
+</div>
+
+</body>
+</html>
