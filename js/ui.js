@@ -1,5 +1,5 @@
 // ─── TOAST ───────────────────────────────────────────
-export function showToast(message, type = "success") {
+export function showToast(message, type = "neutral") {
   const existing = document.querySelector(".toast");
   if (existing) existing.remove();
 
