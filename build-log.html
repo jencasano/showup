@@ -548,7 +548,7 @@
   <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Up next</span>
-      <span class="entry-badge badge-deck">20 items</span>
+      <span class="entry-badge badge-deck">21 items</span>
     </div>
     <details class="on-deck-details">
       <summary class="on-deck-summary">
@@ -578,13 +578,78 @@
           <li class="deck-item"><span class="deck-num">18</span>Polish + landing screen</li>
           <li class="deck-item"><span class="deck-num">19</span>Firestore rules, enforce privacy tiers server-side (diary private / ghost / lowkey are UI-only right now)</li>
           <li class="deck-item"><span class="deck-num">20</span>Edit display name, back button from monthly setup Step 1 to setup.html so first-time users can fix a typo; settings entry point when that lands</li>
+          <li class="deck-item"><span class="deck-num">21</span>No-full-weeks preview calendar readability on Side A, the "no full weeks this month" caption and the "you joined on X" pill wash out against paper-on-paper contrast inside the closed diary card; revisit ink tokens or add a subtle backing plate so the copy stays legible on the light theme</li>
         </ul>
       </div>
     </details>
   </div>
 
-  <!-- ── Apr 22, 2026 — Polish · Diary tokenization ── -->
+  <!-- ── Apr 24, 2026 — Polish · Diary cover system ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 24, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">PO04</span>
+    </div>
+    <div class="entry-title">Polish · Diary cover system</div>
+    <p class="entry-desc">Third polish round that touches the diary, and the biggest one. Eight slices. The three default covers get retuned as emotional registers (Bold, Quiet, Moody) rather than color swaps, and every diary paper surface converts from lined to dotted, the Ryder Carroll bullet journal gesture. The picker moves from a row of colored dots to a popover of mini cover thumbnails that scales to N covers and reserves a lock-overlay state for future paid covers. Setup gets restructured into a 2-step flow with a cover picker and a handoff screen. A full entitlements architecture (entitlements/{uid} Firestore doc, client helpers, seeding, security rules) ships even though no paid covers exist yet, so the paid slice drops in clean later. Per-month cover override lands too, written into logs/{yearMonth}/entries/{uid}.diaryCover so one month can read Moody without flipping the user default. Closed with a pair of admin-gated Cloud Functions that migrated existing users (diaryTheme to diaryCover, entitlements backfill) and cleaned up the legacy field.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Three covers, retuned as registers</div>
+        <div class="item-desc">The legacy keys coral / cream / indigo are renamed to bold / quiet / moody, and the visuals get reauthored as emotional registers rather than color swaps. Bold keeps Mixtape red but tightens the spine and ribbon contrast. Quiet reads as warm cream paper with ink-brown accents. Moody uses a deep charcoal blue-violet with a subtle matte finish. js/diary-themes.js was renamed to js/diary-covers.js; DIARY_COVERS keys each cover with fifteen visual fields plus seven new metadata fields (id, displayName, materialLabel, isPaid, price, swatch, titleTextShadow). DEFAULT_DIARY_COVER = "bold". A mapLegacyCoverKey shim bridged reads during the cutover and was removed at the end of the round after production data migrated.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/polish/DIARY_COVER_SYSTEM_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Dotted paper</div>
+        <div class="item-desc">All four diary paper surfaces (desktop left page, desktop right page, mobile card, mobile sheet) convert from repeating-linear-gradient rule lines to a radial-gradient dot grid. Dot spacing, dot size, and dot color are tuned per surface so the mobile card's smaller scale stays readable without looking busy. The gesture references Ryder Carroll's bullet journal method: a grid that suggests structure without imposing it, so writing, sketching, and sticker placement all coexist. Paper material stays theme-independent per §1.4, so Side A and Side B show the same paper; only the surrounding app chrome shifts with theme.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Popover cover picker</div>
+        <div class="item-desc">The three sites that used to show a row of colored dots (closed notebook, open modal left page, mobile sheet) converge on a shared picker module. New file js/diary-picker.js exports renderMiniCover (renders a scaled-down cover with the "diary." title), renderCoverPopover (floating popover with thumbnails, captions, selected ring, locked overlay), and renderCoverRow (the same row inline, for mobile where the sheet top bar is the surface). The closed notebook and modal open a popover on trigger click with outside-click dismiss and getBoundingClientRect positioning; the mobile sheet inlines the row with always-visible thumbnails. The mobile closed card's swatch row is deleted entirely so the card reads as pure cover art. ownedCovers accepted as an option now so the entitlements slice wires in without refactor. Lock overlay (isPaid and not owned) renders a 🔒 badge over the thumbnail; never triggers yet.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Setup flow restructure, handoff</div>
+        <div class="item-desc">setup.html becomes a 2-step state machine: Step 1 (display name) and Step 2 (cover picker), with step pips, a back button, and history.pushState so browser back works. Step 2 renders the cover grid via renderMiniCover at 140x180 so users see the real cover art at decision scale, with captions in DM Mono. Continue on Step 2 calls seedEntitlementsIfMissing(uid) before writing diaryCover, which also gates the first entitlements doc creation on the same action. The handoff screen takes the full viewport, sparkle SVG (4-point path, decorative circles stripped) pulses red, then routes to the monthly setup modal. No data field changes on the flow itself; only the shape and the field write (diaryCover, not diaryTheme).</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Entitlements architecture</div>
+        <div class="item-desc">New Firestore collection entitlements/{userId} with fields ownedCovers: string[] and ownedAppThemes: string[]. Security rules allow read and create where request.auth.uid == userId, and deny update and delete outright, so no client can mutate entitlements once seeded (future paid purchases will go through a server-side callable with admin privilege). js/entitlements.js exports DEFAULT_OWNED_COVERS = ["bold", "quiet", "moody"], DEFAULT_OWNED_APP_THEMES = ["side-a", "side-b"], getOwnedCovers(uid) with a safe fallback to defaults, and seedEntitlementsIfMissing(uid) which reads first and creates the doc only if missing. No paid cover ships in this round; the architecture is deliberately ahead of the feature so the paid slice is purely additive.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Per-month cover override</div>
+        <div class="item-desc">The picker now writes per-month, not to the user default. Path is logs/{yearMonth}/entries/{uid}.diaryCover, merged into the existing monthly entry doc. Reads use getActiveCover(monthCover, userDefaultCover) which returns the month-level value if set, otherwise the user default, otherwise null. Every render site (desktop closed notebook, modal, mobile card, mobile sheet, tracker-mylog preview) resolves the active cover through a Promise.all(getDiaryCover, getMonthCover) pair. The popover shows "just for April" in Fraunces italic below the selected thumbnail when the active cover diverges from the user default, so the per-month state is visible at a glance. User default only changes during setup; future Settings panel will expose a way to retune it.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Admin migration and legacy cleanup</div>
+        <div class="item-desc">Two admin-gated Cloud Functions on the existing requireAdminAuth + dry-run-default pattern. adminMigrateDiaryCovers scans users/{uid}, maps the legacy diaryTheme value (coral / cream / indigo) to the new key (bold / quiet / moody), writes diaryCover, and leaves diaryTheme intact so the client keeps working across the cutover. adminBackfillEntitlements seeds the default entitlements doc for every user who doesn't already have one. Batches are 400 operations via commitInChunks. Ran in production: 4 users migrated, 40 entitlements seeded (one user already had a doc from the setup slice). adminCleanupLegacyDiaryTheme followed a few minutes later, deleting diaryTheme via FieldValue.delete() for users who have diaryCover populated; skips any user with a legacy value but no new field as a safety rail against out-of-order runs. 4 users cleaned, idempotency confirmed on a second dry-run. Client-side, getDiaryTheme / saveDiaryTheme are now getDiaryCover / saveDiaryCover across five call sites, and the legacy-key fallback in getMonthCover is gone.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">What's next</div>
+        <div class="item-desc">First paid cover is the most natural next slice now that entitlements is in place, but it's a content and checkout scope, not a polish one, so probably not the immediate next round. Settings entry point is overdue: edit display name, change default cover, manage entitlements, toggle theme. Toast spec continues to sit on the bench (retires the legacy --color-teal alias and establishes the full neutral / info / success / error hierarchy per theme). Scrollbars, empty states with Mixtape flourish, modal audit follow. One item from this round surfaced a contrast issue on Side A inside the closed diary card (the "no full weeks this month" calendar preview copy washes out); logged to on-deck as a readability pass.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/PO04/01.png" alt="Polish · Diary cover system" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO04/02.png" alt="Polish · Diary cover system" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO04/03.png" alt="Polish · Diary cover system" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO04/04.png" alt="Polish · Diary cover system" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO04/05.png" alt="Polish · Diary cover system" onerror="this.style.display='none'">
+        <video src="assets/build-log/PO04/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 22, 2026 — Polish · Diary tokenization ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 22, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
