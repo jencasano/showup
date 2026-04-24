@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Month Header Polish -- showup. mockup</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600;1,9..144,700&family=Manrope:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+/* ================================================================
+   TOKENS
+   ================================================================ */
+:root {
+  --paper:       #F4ECD8;
+  --paper-deep:  #ECE1C6;
+  --paper-edge:  #DCCFA6;
+  --ink:         #2A1F1A;
+  --ink-soft:    #5A463A;
+  --ink-faint:   #9C8874;
+  --red:         #C3342B;
+  --red-hover:   #A62822;
+  --red-wash:    #F5D9D5;
+  --blue:        #4F6C8E;
+  --yellow:      #E8B33A;
+  --green:       #3E5C3A;
+  --hairline:    #D4C3A1;
+
+  --font-logo:    'Sora', sans-serif;
+  --font-display: 'Fraunces', serif;
+  --font-body:    'Manrope', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+  --font-hand:    'Caveat', cursive;
+
+  --r-sm: 6px;  --r-md: 10px;  --r-lg: 16px;
+
+  --shadow-soft: 0 1px 2px rgba(42,31,26,0.06), 0 2px 6px rgba(42,31,26,0.04);
+  --shadow-card: 0 2px 4px rgba(42,31,26,0.08), 0 8px 24px rgba(42,31,26,0.06);
+}
+
+.side-b {
+  --paper:       #2A1518;
+  --paper-deep:  #1D0E10;
+  --paper-edge:  #3A1D20;
+  --ink:         #F0DCCF;
+  --ink-soft:    #B18A84;
+  --ink-faint:   #6E504B;
+  --red:         #F07A5E;
+  --red-hover:   #D85A3E;
+  --red-wash:    rgba(240, 122, 94, 0.18);
+  --blue:        #5EAAA8;
+  --yellow:      #E8B33A;
+  --green:       #5EAAA8;
+  --hairline:    #4A2025;
+  --shadow-soft: 0 1px 2px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.18);
+  --shadow-card: 0 2px 4px rgba(0,0,0,0.32), 0 8px 24px rgba(0,0,0,0.22);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: #F4ECD8;
+  color: #2A1F1A;
+  line-height: 1.55;
+}
+
+/* ================================================================
+   PAGE SHELL
+   ================================================================ */
+.page { max-width: 1100px; margin: 0 auto; padding: 40px 32px 80px; }
+
+.intro {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px dashed #D4C3A1;
+}
+.intro h1 {
+  font-family: var(--font-logo); font-weight: 800; font-size: 1.6rem;
+  letter-spacing: -0.03em; margin: 0 0 6px; color: #2A1F1A;
+}
+.intro h1 span { color: #C3342B; }
+.intro .kicker {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.66rem;
+  letter-spacing: 0.18em; text-transform: uppercase; color: #5A463A;
+  background: rgba(246, 228, 176, 1); padding: 4px 10px; border-radius: 999px;
+  margin-bottom: 14px;
+}
+.intro p { max-width: 640px; margin: 0 auto; color: #5A463A; font-size: 0.92rem; }
+
+.section { margin-bottom: 56px; }
+.section-head {
+  display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px;
+  padding-bottom: 10px; border-bottom: 1px dashed #D4C3A1;
+}
+.section-num  { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.15em; color: #C3342B; }
+.section-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: #2A1F1A; }
+.section-sub  { margin-left: auto; font-size: 0.75rem; color: #9C8874; font-style: italic; }
+
+.notes {
+  background: rgba(246, 228, 176, 1); border: 1px dashed #E8B33A;
+  border-radius: var(--r-md); padding: 14px 16px;
+  font-family: var(--font-display); font-size: 0.9rem; font-style: italic;
+  color: #5A463A; line-height: 1.6; margin-bottom: 20px;
+}
+.notes strong { color: #C3342B; font-weight: 600; }
+
+/* ---- Layout helpers ---- */
+.theme-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;
+}
+@media (max-width: 860px) { .theme-row { grid-template-columns: 1fr; } }
+
+.mobile-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+/* ---- Compare card ---- */
+.compare {
+  border: 1px solid var(--hairline); border-radius: var(--r-lg);
+  overflow: hidden; box-shadow: var(--shadow-card); background: var(--paper);
+}
+.compare-label {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px; background: var(--ink); color: var(--paper);
+  font-family: var(--font-mono); font-size: 0.64rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+.compare-label .tag {
+  background: var(--red); padding: 2px 8px; border-radius: 999px; font-size: 0.58rem;
+}
+.compare-body { padding: 24px 28px; }
+
+/* ---- Phone frame ---- */
+.phone-frame {
+  width: 320px; border: 1px solid var(--hairline); border-radius: 24px;
+  overflow: hidden; box-shadow: var(--shadow-card); background: var(--paper);
+}
+.phone-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; background: var(--paper-deep);
+  border-bottom: 1px solid var(--hairline);
+}
+.phone-logo {
+  font-family: var(--font-logo); font-weight: 800; font-size: 0.9rem; color: var(--ink);
+}
+.phone-logo span { color: var(--red); }
+.phone-avatar {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--red); color: var(--paper);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-body); font-weight: 700; font-size: 0.6rem;
+}
+.phone-body { padding: 0; }
+.phone-label {
+  padding: 6px 12px; font-family: var(--font-mono); font-size: 0.58rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  background: var(--ink); color: var(--paper); text-align: center;
+}
+
+/* ================================================================
+   STATUS BANNER (shared)
+   ================================================================ */
+.banner {
+  display: flex; align-items: center; gap: 12px; padding: 13px 16px;
+  border-radius: var(--r-lg);
+  border: 1px solid rgba(249, 115, 22, 0.30);
+  background: rgba(249, 115, 22, 0.10);
+  margin-top: 14px;
+}
+.side-b .banner {
+  border-color: rgba(240, 122, 94, 0.30);
+  background: rgba(240, 122, 94, 0.10);
+}
+.banner-icon { font-size: 22px; flex-shrink: 0; }
+.banner-body { flex: 1; min-width: 0; }
+.banner-title { display: block; font-size: 0.8rem; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.banner-sub { font-size: 0.72rem; color: var(--ink-soft); line-height: 1.4; }
+.banner-pill {
+  flex-shrink: 0; font-size: 0.68rem; font-weight: 800; padding: 4px 10px;
+  border-radius: 20px; white-space: nowrap; background: var(--red); color: #fff;
+}
+.banner-sm { padding: 10px 12px; gap: 8px; margin-top: 10px; margin-left: 12px; margin-right: 12px; }
+.banner-sm .banner-icon { font-size: 16px; }
+.banner-sm .banner-title { font-size: 0.7rem; }
+.banner-sm .banner-sub { font-size: 0.64rem; }
+.banner-sm .banner-pill { font-size: 0.6rem; padding: 3px 8px; }
+
+/* ---- Tracker placeholder ---- */
+.tracker-placeholder {
+  margin-top: 14px; height: 80px; border: 2px dashed var(--hairline);
+  border-radius: var(--r-lg); display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-faint); letter-spacing: 0.1em;
+}
+.tracker-placeholder-sm {
+  margin: 10px 12px; height: 50px; border: 1.5px dashed var(--hairline);
+  border-radius: var(--r-md); display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 0.58rem; color: var(--ink-faint); letter-spacing: 0.08em;
+}
+
+/* ================================================================
+   CURRENT
+   ================================================================ */
+.current-bar {
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px 20px; background: var(--paper);
+  border-bottom: 1px solid var(--paper-edge); gap: 6px;
+}
+.current-bar button {
+  background: none; border: none; width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; color: var(--ink-faint); cursor: pointer;
+}
+.current-label {
+  font-family: var(--font-display); font-size: 1.15rem; font-weight: 700;
+  color: var(--ink); min-width: 130px; text-align: center;
+}
+.current-bar-m {
+  display: flex; align-items: center; justify-content: center;
+  padding: 6px 12px; border-bottom: 1px solid var(--paper-edge); gap: 4px;
+}
+.current-bar-m button {
+  background: none; border: none; width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; color: var(--ink-faint); cursor: pointer;
+}
+.current-label-m {
+  font-family: var(--font-display); font-size: 0.95rem; font-weight: 700;
+  color: var(--ink); min-width: 110px; text-align: center;
+}
+
+/* ================================================================
+   OPTION A -- Editorial inline (desktop)    ** LOCKED **
+   ================================================================ */
+.opt-a {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 18px 0 14px; border-bottom: 1px dashed var(--hairline);
+}
+.opt-a-left { display: flex; align-items: baseline; gap: 12px; }
+.opt-a-month {
+  font-family: var(--font-display); font-size: 2rem; font-weight: 600;
+  line-height: 1; color: var(--ink); letter-spacing: -0.02em;
+}
+.opt-a-month em { font-style: italic; font-weight: 400; color: var(--red); }
+.opt-a-nav { display: flex; align-items: center; gap: 4px; }
+.opt-a-nav button {
+  background: none; border: 1px solid var(--hairline);
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; color: var(--ink-faint); cursor: pointer; transition: all 0.15s;
+}
+.opt-a-nav button:hover { border-color: var(--red); color: var(--red); }
+.opt-a-sub {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  color: var(--ink-faint); letter-spacing: 0.06em; margin-top: 5px;
+}
+
+/* Option A mobile */
+.opt-a-m {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px; border-bottom: 1px solid var(--paper-edge);
+}
+.opt-a-m-left { display: flex; align-items: baseline; gap: 6px; }
+.opt-a-m-month {
+  font-family: var(--font-display); font-size: 1.15rem; font-weight: 600;
+  line-height: 1; color: var(--ink);
+}
+.opt-a-m-month em { font-style: italic; font-weight: 400; color: var(--red); font-size: 0.88rem; }
+.opt-a-m-day {
+  font-family: var(--font-mono); font-size: 0.56rem;
+  color: var(--ink-faint); letter-spacing: 0.04em;
+}
+.opt-a-m-nav { display: flex; align-items: center; gap: 3px; }
+.opt-a-m-nav button {
+  background: none; border: none; width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; color: var(--ink-faint); cursor: pointer;
+}
+
+/* ================================================================
+   OPTION B -- Compact elevated (desktop)
+   ================================================================ */
+.opt-b {
+  display: flex; align-items: center; justify-content: center;
+  padding: 10px 20px; border-bottom: 1px solid var(--hairline); gap: 8px;
+}
+.opt-b-nav {
+  background: none; border: 1px solid var(--hairline);
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; color: var(--ink-faint); cursor: pointer;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.opt-b-nav:hover { border-color: var(--red); color: var(--red); }
+.opt-b-center { display: flex; align-items: baseline; gap: 6px; }
+.opt-b-month {
+  font-family: var(--font-display); font-size: 1.45rem; font-weight: 600;
+  line-height: 1; color: var(--ink);
+}
+.opt-b-month em { font-style: italic; font-weight: 400; color: var(--red); font-size: 1.05rem; margin-left: 2px; }
+.opt-b-day {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  color: var(--ink-faint); letter-spacing: 0.06em; margin-left: 2px;
+}
+.opt-b-cal {
+  background: none; border: 1px solid var(--hairline);
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; color: var(--ink-faint); cursor: pointer;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.opt-b-cal:hover { border-color: var(--red); color: var(--red); }
+
+/* Option B mobile */
+.opt-b-m {
+  display: flex; align-items: center; justify-content: center;
+  padding: 7px 12px; border-bottom: 1px solid var(--paper-edge); gap: 5px;
+}
+.opt-b-m button {
+  background: none; border: none; width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; color: var(--ink-faint); cursor: pointer;
+}
+.opt-b-m-center { display: flex; align-items: baseline; gap: 4px; }
+.opt-b-m-month {
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; color: var(--ink);
+}
+.opt-b-m-month em { font-style: italic; font-weight: 400; color: var(--red); font-size: 0.82rem; }
+.opt-b-m-day { font-family: var(--font-mono); font-size: 0.54rem; color: var(--ink-faint); }
+
+/* ================================================================
+   OPTION C -- Left-anchored with sub-line (desktop)
+   ================================================================ */
+.opt-c { padding: 16px 0 12px; border-bottom: 1px dashed var(--hairline); }
+.opt-c-top { display: flex; align-items: center; gap: 10px; }
+.opt-c-month {
+  font-family: var(--font-display); font-size: 1.7rem; font-weight: 600;
+  line-height: 1; color: var(--ink); letter-spacing: -0.02em;
+}
+.opt-c-month em { font-style: italic; font-weight: 400; color: var(--red); }
+.opt-c-nav { display: flex; align-items: center; gap: 3px; margin-left: 2px; }
+.opt-c-nav button {
+  background: none; border: 1px solid var(--hairline);
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem; color: var(--ink-faint); cursor: pointer; transition: all 0.15s;
+}
+.opt-c-nav button:hover { border-color: var(--red); color: var(--red); }
+.opt-c-sub {
+  display: flex; align-items: center; gap: 8px; margin-top: 4px;
+  font-family: var(--font-mono); font-size: 0.62rem;
+  color: var(--ink-faint); letter-spacing: 0.06em;
+}
+
+/* Option C mobile */
+.opt-c-m { padding: 7px 14px 6px; border-bottom: 1px solid var(--paper-edge); }
+.opt-c-m-top { display: flex; align-items: center; justify-content: space-between; }
+.opt-c-m-month {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; color: var(--ink);
+}
+.opt-c-m-month em { font-style: italic; font-weight: 400; color: var(--red); font-size: 0.85rem; }
+.opt-c-m-nav { display: flex; align-items: center; gap: 2px; }
+.opt-c-m-nav button {
+  background: none; border: none; width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem; color: var(--ink-faint); cursor: pointer;
+}
+.opt-c-m-sub {
+  font-family: var(--font-mono); font-size: 0.54rem;
+  color: var(--ink-faint); letter-spacing: 0.04em; margin-top: 1px;
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <!-- ==================== INTRO ==================== -->
+  <section class="intro">
+    <span class="kicker">Month Header Polish</span>
+    <h1>showup<span>.</span></h1>
+    <p>Three options for upgrading the month header to Mixtape editorial style. Each shown in Side A, Side B, and mobile. No stats duplication. No streak in the header. Status banner stays. <strong style="color:#C3342B;">Option A locked.</strong></p>
+  </section>
+
+  <!-- ==================== 00 CURRENT ==================== -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">00</div>
+      <div class="section-title">Current</div>
+      <div class="section-sub">what we have now</div>
+    </div>
+    <div class="notes">Plain centered text in a sticky bar. Functional but doesn't match the Mixtape typography everywhere else.</div>
+
+    <div class="theme-row">
+      <div class="compare">
+        <div class="compare-label"><div>SIDE A -- CURRENT</div><span class="tag">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="current-bar">
+            <button>&larr;</button>
+            <span class="current-label">April 2026</span>
+            <button>&rarr;</button>
+            <button style="font-size:0.78rem;">&#x1F4C5;</button>
+          </div>
+          <div class="banner">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder">[ tracker grid ]</div>
+        </div>
+      </div>
+      <div class="compare side-b">
+        <div class="compare-label"><div>SIDE B -- CURRENT</div><span class="tag">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="current-bar">
+            <button>&larr;</button>
+            <span class="current-label">April 2026</span>
+            <button>&rarr;</button>
+            <button style="font-size:0.78rem;">&#x1F4C5;</button>
+          </div>
+          <div class="banner">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder">[ tracker grid ]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-row">
+      <div class="phone-frame">
+        <div class="phone-label">MOBILE -- CURRENT</div>
+        <div class="phone-top"><div class="phone-logo">show<span>up</span>.</div><div class="phone-avatar">J</div></div>
+        <div class="phone-body">
+          <div class="current-bar-m">
+            <button>&larr;</button><span class="current-label-m">April 2026</span><button>&rarr;</button><button style="font-size:0.7rem;">&#x1F4C5;</button>
+          </div>
+          <div class="banner banner-sm">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder-sm">[ tracker card ]</div>
+        </div>
+      </div>
+      <div class="phone-frame side-b">
+        <div class="phone-label">MOBILE -- CURRENT (SIDE B)</div>
+        <div class="phone-top"><div class="phone-logo">show<span>up</span>.</div><div class="phone-avatar">J</div></div>
+        <div class="phone-body">
+          <div class="current-bar-m">
+            <button>&larr;</button><span class="current-label-m">April 2026</span><button>&rarr;</button><button style="font-size:0.7rem;">&#x1F4C5;</button>
+          </div>
+          <div class="banner banner-sm">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder-sm">[ tracker card ]</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 01 OPTION A ==================== -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">01</div>
+      <div class="section-title">Option A -- Editorial inline</div>
+      <div class="section-sub">LOCKED</div>
+    </div>
+    <div class="notes">Large Fraunces heading left-aligned inside the content area. Nav arrows and calendar picker beside the month name. Small mono "day X of Y" sub-line below. <strong>Not sticky on desktop</strong> -- scrolls with content. On mobile: left-aligned with nav on the right. <strong>This is the locked direction.</strong></div>
+
+    <div class="theme-row">
+      <div class="compare">
+        <div class="compare-label"><div>SIDE A -- OPTION A</div><span class="tag">LOCKED</span></div>
+        <div class="compare-body">
+          <div class="opt-a">
+            <div>
+              <div class="opt-a-left">
+                <div class="opt-a-month">April <em>2026</em></div>
+                <div class="opt-a-nav"><button>&larr;</button><button>&rarr;</button><button>&#x1F4C5;</button></div>
+              </div>
+              <div class="opt-a-sub">day 24 of 30</div>
+            </div>
+          </div>
+          <div class="banner">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder">[ tracker grid ]</div>
+        </div>
+      </div>
+      <div class="compare side-b">
+        <div class="compare-label"><div>SIDE B -- OPTION A</div><span class="tag">LOCKED</span></div>
+        <div class="compare-body">
+          <div class="opt-a">
+            <div>
+              <div class="opt-a-left">
+                <div class="opt-a-month">April <em>2026</em></div>
+                <div class="opt-a-nav"><button>&larr;</button><button>&rarr;</button><button>&#x1F4C5;</button></div>
+              </div>
+              <div class="opt-a-sub">day 24 of 30</div>
+            </div>
+          </div>
+          <div class="banner">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder">[ tracker grid ]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-row">
+      <div class="phone-frame">
+        <div class="phone-label">MOBILE -- OPTION A</div>
+        <div class="phone-top"><div class="phone-logo">show<span>up</span>.</div><div class="phone-avatar">J</div></div>
+        <div class="phone-body">
+          <div class="opt-a-m">
+            <div class="opt-a-m-left"><div class="opt-a-m-month">April <em>2026</em></div><div class="opt-a-m-day">day 24</div></div>
+            <div class="opt-a-m-nav"><button>&larr;</button><button>&rarr;</button><button>&#x1F4C5;</button></div>
+          </div>
+          <div class="banner banner-sm">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder-sm">[ tracker card ]</div>
+        </div>
+      </div>
+      <div class="phone-frame side-b">
+        <div class="phone-label">MOBILE -- OPTION A (SIDE B)</div>
+        <div class="phone-top"><div class="phone-logo">show<span>up</span>.</div><div class="phone-avatar">J</div></div>
+        <div class="phone-body">
+          <div class="opt-a-m">
+            <div class="opt-a-m-left"><div class="opt-a-m-month">April <em>2026</em></div><div class="opt-a-m-day">day 24</div></div>
+            <div class="opt-a-m-nav"><button>&larr;</button><button>&rarr;</button><button>&#x1F4C5;</button></div>
+          </div>
+          <div class="banner banner-sm">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder-sm">[ tracker card ]</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 02 OPTION B ==================== -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">02</div>
+      <div class="section-title">Option B -- Compact elevated</div>
+      <div class="section-sub">not selected</div>
+    </div>
+    <div class="notes">Keeps the existing centered/sticky layout but upgrades typography. <strong>Not selected.</strong> Preserved for reference.</div>
+
+    <div class="theme-row">
+      <div class="compare">
+        <div class="compare-label"><div>SIDE A -- OPTION B</div><span class="tag">REJECTED</span></div>
+        <div class="compare-body">
+          <div class="opt-b">
+            <button class="opt-b-nav">&larr;</button>
+            <div class="opt-b-center"><div class="opt-b-month">April <em>2026</em></div><span class="opt-b-day">day 24</span></div>
+            <button class="opt-b-nav">&rarr;</button>
+            <button class="opt-b-cal">&#x1F4C5;</button>
+          </div>
+          <div class="banner">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder">[ tracker grid ]</div>
+        </div>
+      </div>
+      <div class="compare side-b">
+        <div class="compare-label"><div>SIDE B -- OPTION B</div><span class="tag">REJECTED</span></div>
+        <div class="compare-body">
+          <div class="opt-b">
+            <button class="opt-b-nav">&larr;</button>
+            <div class="opt-b-center"><div class="opt-b-month">April <em>2026</em></div><span class="opt-b-day">day 24</span></div>
+            <button class="opt-b-nav">&rarr;</button>
+            <button class="opt-b-cal">&#x1F4C5;</button>
+          </div>
+          <div class="banner">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder">[ tracker grid ]</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 03 OPTION C ==================== -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">03</div>
+      <div class="section-title">Option C -- Left-anchored with sub-line</div>
+      <div class="section-sub">not selected</div>
+    </div>
+    <div class="notes">Middle ground between A and B. <strong>Not selected.</strong> Preserved for reference.</div>
+
+    <div class="theme-row">
+      <div class="compare">
+        <div class="compare-label"><div>SIDE A -- OPTION C</div><span class="tag">REJECTED</span></div>
+        <div class="compare-body">
+          <div class="opt-c">
+            <div class="opt-c-top">
+              <div class="opt-c-month">April <em>2026</em></div>
+              <div class="opt-c-nav"><button>&larr;</button><button>&rarr;</button><button>&#x1F4C5;</button></div>
+            </div>
+            <div class="opt-c-sub">day 24 of 30</div>
+          </div>
+          <div class="banner">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder">[ tracker grid ]</div>
+        </div>
+      </div>
+      <div class="compare side-b">
+        <div class="compare-label"><div>SIDE B -- OPTION C</div><span class="tag">REJECTED</span></div>
+        <div class="compare-body">
+          <div class="opt-c">
+            <div class="opt-c-top">
+              <div class="opt-c-month">April <em>2026</em></div>
+              <div class="opt-c-nav"><button>&larr;</button><button>&rarr;</button><button>&#x1F4C5;</button></div>
+            </div>
+            <div class="opt-c-sub">day 24 of 30</div>
+          </div>
+          <div class="banner">
+            <span class="banner-icon">&#x1F525;</span>
+            <div class="banner-body"><strong class="banner-title">Keep the momentum rolling.</strong><span class="banner-sub">Nice start. Keep stacking wins today.</span></div>
+            <span class="banner-pill">4 left</span>
+          </div>
+          <div class="tracker-placeholder">[ tracker grid ]</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CLOSING NOTES ==================== -->
+  <section class="section" style="margin-bottom: 0;">
+    <div class="section-head">
+      <div class="section-num">NOTES</div>
+      <div class="section-title">Design decisions</div>
+    </div>
+    <div class="notes">
+      <strong>Option A locked.</strong> Editorial inline. Big Fraunces, left-aligned, not sticky on desktop. Left-aligned with nav on right for mobile.<br><br>
+      <strong>No stats in the header.</strong> The Mixtape reference had on-pace %, habits, and streak. Dropped -- they duplicate My Progress below.<br><br>
+      <strong>Streak removed from month bar.</strong> The status banner already communicates momentum.<br><br>
+      <strong>Status banner stays.</strong> Contextual (current month only), dynamic (changes per completion state), doesn't exist elsewhere.<br><br>
+      <strong>"day X of Y" replaces stats.</strong> Small mono counter gives temporal context. Hidden on past months.<br><br>
+      <strong>Nav arrows + calendar picker always present.</strong> All navigation controls preserved.
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
