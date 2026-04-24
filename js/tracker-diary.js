@@ -1,5 +1,5 @@
 import { getDaysInMonth, getCurrentYearMonth, getActivityColor } from "./utils.js";
-import { getDiaryDays, getDiaryEntry, getDiaryTheme, getMonthCover, saveMonthCover } from "./diary.js";
+import { getDiaryDays, getDiaryEntry, getDiaryCover, getMonthCover, saveMonthCover } from "./diary.js";
 import { openDiaryPage } from "./mobile-tracker.js";
 import { DIARY_COVERS, DEFAULT_DIARY_COVER } from "./diary-covers.js";
 import { renderCoverPopover, renderMiniCover } from "./diary-picker.js";
@@ -147,7 +147,7 @@ export async function renderDiaryNotebook(userId, yearMonth, cover = DEFAULT_DIA
 
     const [ownedCovers, defaultCover] = await Promise.all([
       getOwnedCovers(userId),
-      getDiaryTheme(userId)
+      getDiaryCover(userId)
     ]);
 
     const popover = renderCoverPopover(cover, async (key) => {
@@ -240,7 +240,7 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
 
     const [ownedCovers, defaultCover] = await Promise.all([
       getOwnedCovers(userId),
-      getDiaryTheme(userId)
+      getDiaryCover(userId)
     ]);
 
     const popover = renderCoverPopover(cover, async (key) => {

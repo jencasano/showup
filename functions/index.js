@@ -494,6 +494,50 @@ export const adminMigrateDiaryCovers = onCall({ region: "asia-southeast1", timeo
   };
 });
 
+export const adminCleanupLegacyDiaryTheme = onCall({ region: "asia-southeast1", timeoutSeconds: 120, invoker: "public" }, async (request) => {
+  requireAdminAuth(request);
+  const payload = request.data || {};
+  const dryRun = payload.dryRun !== false; // default true
+
+  const usersSnap = await db.collection("users").get();
+  const targets = [];
+  let scanned = 0;
+  let skippedNoLegacyField = 0;
+  let skippedMissingNewField = 0;
+
+  for (const doc of usersSnap.docs) {
+    scanned++;
+    const data = doc.data() || {};
+    if (!("diaryTheme" in data)) {
+      skippedNoLegacyField++;
+      continue;
+    }
+    // Safety: only delete the old field if the new field is present.
+    // If somehow a user has diaryTheme but not diaryCover, leave both
+    // alone so the migrate function can re-run first.
+    if (typeof data.diaryCover !== "string" || !data.diaryCover) {
+      skippedMissingNewField++;
+      continue;
+    }
+    targets.push({ uid: doc.id, ref: doc.ref, legacyValue: data.diaryTheme });
+  }
+
+  if (!dryRun && targets.length) {
+    await commitInChunks(targets.map(t => (wb) => wb.update(t.ref, { diaryTheme: FieldValue.delete() })));
+  }
+
+  return {
+    ok: true,
+    dryRun,
+    scanned,
+    cleaned: targets.length,
+    skippedNoLegacyField,
+    skippedMissingNewField,
+    sample: targets.slice(0, 25).map(t => ({ uid: t.uid, legacyValue: t.legacyValue })),
+    completedAt: new Date().toISOString()
+  };
+});
+
 export const adminBackfillEntitlements = onCall({ region: "asia-southeast1", timeoutSeconds: 120, invoker: "public" }, async (request) => {
   requireAdminAuth(request);
   const payload = request.data || {};

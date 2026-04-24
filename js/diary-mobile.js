@@ -1,4 +1,4 @@
-import { getDiaryDays, getDiaryEntry, saveDiaryEntry, getDiaryTheme, saveMonthCover, uploadDiaryPhoto, deleteDiaryPhoto } from "./diary.js";
+import { getDiaryDays, getDiaryEntry, saveDiaryEntry, getDiaryCover, saveMonthCover, uploadDiaryPhoto, deleteDiaryPhoto } from "./diary.js";
 import { DIARY_COVERS, DEFAULT_DIARY_COVER } from "./diary-covers.js";
 import { renderCoverRow } from "./diary-picker.js";
 import { getOwnedCovers } from "./entitlements.js";
@@ -742,7 +742,7 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
     openMobileDiarySheet(userId, yearMonth, diaryDays, key, activeDay);
   };
 
-  Promise.all([getOwnedCovers(userId), getDiaryTheme(userId)]).then(([ownedCovers, defaultCover]) => {
+  Promise.all([getOwnedCovers(userId), getDiaryCover(userId)]).then(([ownedCovers, defaultCover]) => {
     const coverRow = renderCoverRow(cover, onCoverSelect, { ownedCovers, defaultCover, monthName });
     paletteBar.appendChild(coverRow);
   });

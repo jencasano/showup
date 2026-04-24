@@ -116,7 +116,7 @@ nextBtn.addEventListener("click", async () => {
     await setDoc(doc(db, "users", currentUser.uid), {
       displayName: state.name,
       email: currentUser.email,
-      diaryTheme: state.cover,
+      diaryCover: state.cover,
       setupComplete: true,
       createdAt: serverTimestamp()
     });

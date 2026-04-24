@@ -9,7 +9,7 @@ import { checkMonthlySetup } from "./month-setup.js";
 import { getUserStats } from "./stats.js";
 import { toggleMonthPicker, closeMonthPicker } from "./month-picker.js";
 import { openPrivacySettingsModal } from "./privacy-settings.js";
-import { getDiaryDays, getDiaryTheme, getMonthCover, getActiveCover } from "./diary.js";
+import { getDiaryDays, getDiaryCover, getMonthCover, getActiveCover } from "./diary.js";
 import { openMobileDiarySheet } from "./diary-mobile.js";
 import { getUserTheme, setUserTheme } from "./theme.js";
 
@@ -196,7 +196,7 @@ async function openDiaryFromNav() {
   if (!currentUser) return;
   try {
     const [savedCover, monthCover, diaryDays] = await Promise.all([
-      getDiaryTheme(currentUser.uid),
+      getDiaryCover(currentUser.uid),
       getMonthCover(currentUser.uid, activeYearMonth),
       getDiaryDays(currentUser.uid, activeYearMonth)
     ]);

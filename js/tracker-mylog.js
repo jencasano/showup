@@ -11,7 +11,7 @@ import { icon, STICKER_ICONS } from "./icons.js";
 import { openManageActivitiesModal } from "./manage-activities.js";
 import { renderMonthlySummary } from "./tracker-summary.js";
 import { renderDiaryNotebook } from "./tracker-diary.js";
-import { getDiaryTheme, getMonthCover, getActiveCover } from "./diary.js";
+import { getDiaryCover, getMonthCover, getActiveCover } from "./diary.js";
 import { DEFAULT_DIARY_COVER } from "./diary-covers.js";
 
 const MARKER_SYMBOLS = {
@@ -116,7 +116,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
         );
         window._currentEntry = entry;
         const [savedCover, monthCover] = await Promise.all([
-          getDiaryTheme(uid),
+          getDiaryCover(uid),
           getMonthCover(uid, yearMonth)
         ]);
         const cover = getActiveCover(monthCover, savedCover) || DEFAULT_DIARY_COVER;
@@ -152,7 +152,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
         const diaryCol = document.createElement("div");
         diaryCol.className = "mylog-diary-col";
-        Promise.all([getDiaryTheme(uid), getMonthCover(uid, yearMonth)]).then(([savedCover, monthCover]) => {
+        Promise.all([getDiaryCover(uid), getMonthCover(uid, yearMonth)]).then(([savedCover, monthCover]) => {
           const cover = getActiveCover(monthCover, savedCover) || DEFAULT_DIARY_COVER;
           renderDiaryNotebook(uid, yearMonth, cover).then(nb => diaryCol.appendChild(nb));
         });

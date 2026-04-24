@@ -45,26 +45,20 @@ export async function deleteDiaryPhoto(userId, yearMonth, day) {
   }
 }
 
-const LEGACY_COVER_KEY_MAP = { coral: "bold", cream: "quiet", indigo: "moody" };
-function mapLegacyCoverKey(value) {
-  if (!value) return null;
-  return LEGACY_COVER_KEY_MAP[value] ?? value;
-}
-
-export async function getDiaryTheme(userId) {
+export async function getDiaryCover(userId) {
   const snap = await getDoc(doc(db, "users", userId));
   if (!snap.exists()) return null;
-  return mapLegacyCoverKey(snap.data().diaryTheme);
+  return snap.data().diaryCover || null;
 }
 
-export async function saveDiaryTheme(userId, theme) {
-  await setDoc(doc(db, "users", userId), { diaryTheme: theme }, { merge: true });
+export async function saveDiaryCover(userId, coverKey) {
+  await setDoc(doc(db, "users", userId), { diaryCover: coverKey }, { merge: true });
 }
 
 export async function getMonthCover(userId, yearMonth) {
   const snap = await getDoc(doc(db, "logs", yearMonth, "entries", userId));
   if (!snap.exists()) return null;
-  return mapLegacyCoverKey(snap.data().diaryCover) || null;
+  return snap.data().diaryCover || null;
 }
 
 export async function saveMonthCover(userId, yearMonth, coverKey) {
