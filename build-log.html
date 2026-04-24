@@ -584,8 +584,98 @@
     </details>
   </div>
 
-  <!-- ── Apr 24, 2026 — Polish · Toast system ── -->
+  <!-- ── Apr 24, 2026 — Polish · Empty states (Quiet Room) ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 24, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">PO07</span>
+    </div>
+    <div class="entry-title">Polish · Empty states (Quiet Room)</div>
+    <p class="entry-desc">Seven empty-state surfaces across the app get unified under one treatment system. Before this round each surface had its own ad-hoc copy, emoji, and markup: the feed empty was a newspaper emoji and h3, the People tab empty was a plain emoji-cluster nudge, the All tab empty was an unstyled p, the Showing Up and Crickets sections rendered "Everyone's showing up!" cheerleader copy even when the right answer was silence, and the diary blank page used a flat Caveat line with no visual suggestion that the page was waiting to be written on. The new system introduces the Quiet Room concept: every empty state is a room that's been set up and is waiting, not broken, not sad, not missing data. Three treatment tiers and one diary-context variant cover every surface, all driven by existing Mixtape tokens so both themes auto-resolve.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">The Quiet Room, three layers</div>
+        <div class="item-desc">New css/ui.css section defines .quiet-room (container), .qr-headline (Fraunces italic 500, 1.15rem, var(--ink-soft)), .qr-sub (Manrope 0.78rem, var(--ink-faint)), and .qr-action-frame (1.5px dashed var(--hairline), 10px radius) with a pill button. The container gets two pseudo-elements: ::before is the motif backdrop at 0.35 opacity on a 70s drift animation, ::after is a warmth glow of radial gradients on a 55s drift. Both reuse the drift-motifs and drift-warmth keyframes already defined on .ambient in base.css so there's no new animation code. A new --empty-motif-svg custom property is declared on :root and [data-theme="side-b"] with the two Mixtape motif SVGs (red/blue/yellow for Side A, salmon/teal/yellow for Side B) so the backdrop auto-swaps per theme without any selector overrides on the .quiet-room rules themselves. prefers-reduced-motion disables all three drift animations.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/polish/EMPTY_STATES_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Three tiers plus diary context</div>
+        <div class="item-desc">Not every empty state gets the full treatment. Full Quiet Room (motif + glow + Fraunces headline + optional dashed action frame) goes on big standalone surfaces: feed empty, People tab empty when the user has zero follows, All tab empty when search returns nothing or the month has no trackers. Nudge card (dashed border + 0.2-opacity motif + compact CTA, class .nudge-card) handles persistent CTAs like the Browse All card at the bottom of the People sidebar. Inline empty (class .inline-empty, just a Fraunces italic line in var(--ink-faint)) covers small section empties so they recede into the view without competing for attention. Diary context is a special variant that wraps the blank-page content in .quiet-room but with border-radius 0 and a Caveat handwriting headline instead of Fraunces, plus three faint ruled-line divs at 0.5 opacity that suggest a notebook page waiting to be written on.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Seven surfaces migrated</div>
+        <div class="item-desc">js/following-feed.js renderEmptyState drops the newspaper emoji and h3, renders a Full Quiet Room with "nothing new. everyone's quiet today." and a dashed frame containing Browse All plus the hint "see who else is showing up" (hidden on mobile via media query). js/following-people.js: the allEmpty branch early-returns a Full Quiet Room inside a fresh fw-container so the 3:2 grid doesn't constrain it to the left column; the Pinned section gains an else branch (when the user has follows but none pinned) that renders the 📌 Pinned label plus inline-empty "pin someone to keep them here."; the Showing Up empty is now context-aware ("all pinned." when pinnedActive.length is positive, else "no one else showing up this month."); the Crickets section behavior inverts from "render the section with Everyone's showing up! copy" to "don't render the section at all when count is zero," because the absence of a Crickets block is itself the message. js/tracker-all.js renderAllList replaces the plain p.empty-state with a Full Quiet Room carrying two copy variants (search: "nothing matching that." / "try a different name or activity."; no-trackers: "no other trackers yet for this month." / "give it a few days."), and the clearRenderedResults selector picks up the new .all-tab-empty marker class so re-renders purge cleanly. js/tracker-diary.js selectDay else branch wraps the blank page in a quiet-room, adds three diary-empty-line ruled divs, and swaps the write button from a solid Sora-font button to a dashed .diary-write-btn with lowercase "write something."</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Copy conventions across every surface</div>
+        <div class="item-desc">All empty-state copy follows the house voice from MIXTAPE_SPEC §2 and TOAST_SPEC §6: intentionally lowercase for intimacy, period at the end (diary gets an ellipsis "this page is blank..." as the one exception), no em-dashes, no exclamation points, no emoji in headlines since the motif backdrop replaces emoji as the visual element, no startup-cheerful "Oops!" or "Whoops!" tone, specific rather than generic. The Browse Nudge card, always visible at the bottom of the People sidebar even when you have follows, rewrites from "Find people to follow" / "Head to the All tab to discover who else is showing up." to "find more people to follow." / "see who else is showing up this month." with the same dashed-border + motif treatment as the other Quiet Rooms but scaled down (0.92rem headline vs 1.15rem).</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">What's next</div>
+        <div class="item-desc">Settings entry point still overdue: edit display name, change default diary cover, manage entitlements, toggle theme. Modal audit is the last outstanding polish item (unify modal dismiss affordances, scroll behavior, and overlay blur across diary, cover picker, confirm sheets). On-deck readability item from PO04 (no-full-weeks calendar preview copy washing out on Side A) still waiting. Milestone empty-states variant (celebratory Quiet Room for first-ever-entry and comeback-after-absence) logged in the empty-states spec but not built; it waits for the milestone card system from backlog item 12. Icons and landing page stay deferred.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/PO07/01.png" alt="Polish · Empty states (Quiet Room)" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO07/02.png" alt="Polish · Empty states (Quiet Room)" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO07/03.png" alt="Polish · Empty states (Quiet Room)" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO07/04.png" alt="Polish · Empty states (Quiet Room)" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO07/05.png" alt="Polish · Empty states (Quiet Room)" onerror="this.style.display='none'">
+        <video src="assets/build-log/PO07/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 24, 2026 — Polish · Theme-aware scrollbar ── -->
+  <div class="tl-section">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 24, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">PO06</span>
+    </div>
+    <div class="entry-title">Polish · Theme-aware scrollbar</div>
+    <p class="entry-desc">A tiny round that closes a single visual bug: the page scrollbar was a raw browser-default grey bar on every platform, which reads fine on Side A's cream paper but breaks atmosphere on Side B's deep maroon. html has overflow-y: scroll forced on (so the scrollbar gutter is always reserved and switching views never causes a horizontal layout jump), but zero custom styling was layered on top. This round adds the styling, resolved entirely from existing Mixtape palette tokens so both themes auto-swap with no data-theme overrides. No new tokens. One selector block for WebKit/Blink, two new properties on the existing html rule for Firefox, done.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Token mapping, three parts, zero new custom properties</div>
+        <div class="item-desc">Track resolves to var(--paper-edge), which is #DCCFA6 warm tan on Side A and #3A1D20 deep maroon on Side B. Thumb resolves to var(--ink-faint): #9C8874 muted brown on Side A, #6E504B muted rose on Side B. Thumb hover resolves to var(--ink-soft): #5A463A dark brown on Side A, #B18A84 dusty pink on Side B. Every pairing is intentionally low-contrast so the scrollbar recedes rather than competes. Because all three tokens already have per-theme overrides from the Mixtape palette, the scrollbar follows whatever side the app is on with no extra CSS.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/polish/SCROLLBAR_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">WebKit pseudo-elements with a floating thumb</div>
+        <div class="item-desc">::-webkit-scrollbar is 8px wide, thin enough to be discreet and wide enough to grab on a trackpad or touchscreen. ::-webkit-scrollbar-track paints the track background. ::-webkit-scrollbar-thumb uses a fully rounded 9999px radius plus a 2px solid transparent border and background-clip: padding-box, which is the standard trick for making the thumb appear to float inside the track with a small air-gap on both sides instead of filling edge-to-edge. ::-webkit-scrollbar-thumb:hover swaps to the hover token so the thumb darkens slightly when you grab it. Covers Chrome, Safari, and the current Blink-based Edge.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Firefox via scrollbar-width + scrollbar-color</div>
+        <div class="item-desc">Firefox doesn't support ::-webkit-scrollbar pseudo-elements, so it uses a different mechanism: scrollbar-width (auto, thin, none) and scrollbar-color (two colors, thumb first, track second). Both properties land on the existing html rule in base.css alongside overflow-y: scroll. scrollbar-width: thin matches the 8px WebKit sizing close enough; scrollbar-color: var(--ink-faint) var(--paper-edge) wires into the same tokens. Firefox doesn't support hover states or border-radius on scrollbar thumbs via these properties, which is fine; the spec explicitly accepts the reduced treatment rather than trying to ship a polyfill.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">No data-theme override needed</div>
+        <div class="item-desc">This is the point of the round. Because every part of the scrollbar resolves to a token that already auto-swaps via [data-theme="side-b"] in variables.css, the scrollbar rules themselves can stay theme-agnostic. One block of CSS handles both themes. Toggling between Side A and Side B recolors the scrollbar instantly with no flash, no layout shift, and no additional selectors. A minor detail that would have been three selectors' worth of duplication without the token discipline established in the earlier Mixtape passes.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/PO06/01.png" alt="Polish · Theme-aware scrollbar" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO06/02.png" alt="Polish · Theme-aware scrollbar" onerror="this.style.display='none'">
+        <video src="assets/build-log/PO06/clip.mp4" muted playsinline onerror="this.style.display='none'"></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 24, 2026 — Polish · Toast system ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 24, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
