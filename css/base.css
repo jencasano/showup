@@ -12,6 +12,33 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-faint) var(--paper-edge);
+}
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR — Theme-aware via design tokens (PO06)
+   Tokens auto-swap per theme; no data-theme overrides needed.
+   See docs/polish/SCROLLBAR_SPEC.md.
+   ═══════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--paper-edge);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-faint);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-soft);
 }
 
 body {
