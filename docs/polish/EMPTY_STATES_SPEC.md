@@ -35,20 +35,19 @@ Not every empty state gets all three layers.
 |------|-------------|--------|
 | **Full Quiet Room** | Big standalone empty surfaces (feed empty, people tab empty, all tab empty/search empty) | All three: motif backdrop + warmth glow + Fraunces headline + optional action frame |
 | **Nudge card** | Persistent CTA inside a populated view (bottom of People sidebar) | Dashed border + subtle motif (0.2 opacity) + Fraunces headline + compact CTA |
-| **Inline empty** | Small section empties within a populated view (Showing Up = 0) | Fraunces italic line only. No backdrop, no frame. |
+| **Inline empty** | Small section empties within a populated view (Showing Up = 0, Pinned = 0) | Fraunces italic line only. No backdrop, no frame. |
 | **Diary context** | Inside the diary modal (blank page) | Motif backdrop (subtler) + Caveat headline + ruled lines + dashed "write" button |
 
 ---
 
 ## 4. Surface inventory
 
-Seven surfaces total.
+Eight surfaces total.
 
 ### 4.1 Feed empty (Full Quiet Room)
 
 **When:** User follows people but nobody has logged today.
 **Where:** `js/following-feed.js` `renderEmptyState()`
-**Current:** Newspaper emoji, h3, subtitle, "Browse All" button.
 **New:** Full Quiet Room with dashed action frame.
 
 **Copy:**
@@ -59,9 +58,8 @@ Seven surfaces total.
 
 ### 4.2 People tab empty -- zero follows (Full Quiet Room)
 
-**When:** User hasn't followed anyone.
+**When:** User hasn't followed anyone (`allEmpty` is true).
 **Where:** `js/following-people.js` when `allEmpty` is true.
-**Current:** `renderBrowseNudge()` -- emoji, title, subtitle, button.
 **New:** Full Quiet Room with dashed action frame. Replaces the entire People view.
 
 **Copy:**
@@ -69,30 +67,39 @@ Seven surfaces total.
 - Subtitle: "head to the All tab to find people who are showing up."
 - Action frame: "Browse All" button + hint "discover who's tracking"
 
-### 4.3 Showing Up section empty (Inline empty)
+### 4.3 Showing Up section empty (Inline empty -- context-aware)
 
-**When:** All followed users have trackers this month (none are unpinned + active).
-**Where:** `js/following-people.js`, the Showing Up section.
-**Current:** Unstyled `<p>` with class `fw-section-empty`.
-**New:** Inline Fraunces italic. No backdrop.
+**When:** No unpinned active users.
+**Where:** `js/following-people.js`, the Showing Up section in the sidebar.
+**New:** Inline Fraunces italic. No backdrop. Copy depends on whether Pinned cards exist.
+
+**Copy (context-aware):**
+- If `pinnedActive.length > 0`: "all pinned."
+- If `pinnedActive.length === 0`: "no one else showing up this month."
+
+The distinction matters because "no one else showing up this month" is misleading when everyone active is simply pinned to the left. "all pinned." is factual and layout-agnostic.
+
+### 4.4 Pinned section empty (Inline empty)
+
+**When:** User has follows but none are pinned (`pinnedActive.length === 0` and `allEmpty` is false).
+**Where:** `js/following-people.js`, the Pinned section in the main column.
+**New:** Render the Pinned section label (without the Unpin All button) followed by an inline empty. This fills the left column so the two-column layout doesn't look broken, and teaches new users what pinning does.
 
 **Copy:**
-- "no one else showing up this month."
+- "pin someone to keep them here."
 
-### 4.4 Crickets section empty (Not rendered)
+### 4.5 Crickets section empty (Not rendered)
 
 **When:** All followed users have trackers this month (no crickets).
 **Where:** `js/following-people.js`, the Crickets section.
-**Current:** Renders the section with "Everyone's showing up!" copy.
 **New:** Do not render the Crickets section at all when count is 0. The absence of the section is the message. No empty state needed.
 
-**Behavior change:** In `renderPeopleView()`, wrap the Crickets section rendering in a condition: only render the section label and rows when `crickets.length > 0`.
+**Behavior:** Only render the Crickets section label and rows when `crickets.length > 0`.
 
-### 4.5 All tab empty (Full Quiet Room, no action frame)
+### 4.6 All tab empty (Full Quiet Room, no action frame)
 
 **When:** Search returned no results, or the month has zero trackers.
 **Where:** `js/tracker-all.js` `renderAllList()`.
-**Current:** Plain `<p>` with class `empty-state all-search-empty`.
 **New:** Full Quiet Room without action frame.
 
 **Copy (search empty):**
@@ -103,11 +110,10 @@ Seven surfaces total.
 - Headline: "no other trackers yet for this month."
 - Subtitle: "give it a few days."
 
-### 4.6 Diary blank page (Diary context)
+### 4.7 Diary blank page (Diary context)
 
 **When:** User taps a day with no diary entry in the open diary modal.
 **Where:** `js/tracker-diary.js` inside `selectDay()`, the `else` branch.
-**Current:** `.diary-modal-empty-date` + `.diary-modal-empty-text` "this page is blank..." + "Write something" button.
 **New:** Motif backdrop (subtler), Caveat headline, faint ruled lines suggesting a blank notebook page, dashed "write something" button.
 
 **Copy:**
@@ -116,11 +122,10 @@ Seven surfaces total.
 - Visual: three faint ruled lines in --hairline at 0.5 opacity
 - Button: dashed border, "write something" with pencil emoji
 
-### 4.7 Browse Nudge card (Nudge card)
+### 4.8 Browse Nudge card (Nudge card)
 
 **When:** Always visible at the bottom of the People view sidebar, even when user has follows.
 **Where:** `js/following-people.js` `renderBrowseNudge()`.
-**Current:** Plain `.fw-nudge-card` with emoji, title, subtitle, button.
 **New:** Dashed border, subtle motif backdrop (0.2 opacity), Fraunces italic copy, compact CTA.
 
 **Copy:**
@@ -182,14 +187,15 @@ Respect `@media (prefers-reduced-motion: reduce)` -- disable the drift animation
 
 Update `renderEmptyState()` to use the `.quiet-room` class structure instead of the current emoji + h3 approach. Remove the emoji. Add the motif backdrop via the CSS class. Add the dashed action frame with "Browse All" button.
 
-### People empty (`following-people.js`)
+### People view (`following-people.js`)
 
-Two changes:
+Five behaviors:
 
-1. When `allEmpty` is true, render a Full Quiet Room instead of `renderBrowseNudge()`.
-2. The Crickets section: only render when `crickets.length > 0`. When count is 0, skip the section label and the empty `<p>` entirely.
-3. The Showing Up section: when `activeUnpinned.length === 0`, render an `.inline-empty` instead of the current unstyled `<p>`.
-4. `renderBrowseNudge()`: update to use the `.nudge-card` class with Fraunces italic copy.
+1. When `allEmpty` is true, render a Full Quiet Room with "nobody here yet." copy and dashed action frame.
+2. When `pinnedActive.length === 0` (but not allEmpty), render the Pinned section label + inline empty "pin someone to keep them here."
+3. The Showing Up section: when `activeUnpinned.length === 0`, render context-aware inline empty. If `pinnedActive.length > 0`, copy is "all pinned." Otherwise "no one else showing up this month."
+4. The Crickets section: only render when `crickets.length > 0`. When count is 0, skip entirely.
+5. `renderBrowseNudge()`: uses `.nudge-card` class with Fraunces italic copy.
 
 ### All tab (`tracker-all.js`)
 
@@ -215,11 +221,28 @@ All empty state copy follows MIXTAPE_SPEC.md Section 2 and TOAST_SPEC.md Section
 
 ---
 
-## 8. Migration checklist
+## 8. Full copy inventory
+
+| Surface | Copy |
+|---------|------|
+| Feed empty | "nothing new. everyone's quiet today." / "check back later, or find more people to follow." |
+| People empty (zero follows) | "nobody here yet." / "head to the All tab to find people who are showing up." |
+| Showing Up = 0, has pinned | "all pinned." |
+| Showing Up = 0, no pinned | "no one else showing up this month." |
+| Pinned section empty | "pin someone to keep them here." |
+| Crickets = 0 | section not rendered. no copy needed. |
+| All tab, search no results | "nothing matching that." / "try a different name or activity." |
+| All tab, no trackers | "no other trackers yet for this month." / "give it a few days." |
+| Diary blank page | "this page is blank..." / (ruled lines + "write something" button) |
+| Browse Nudge card | "find more people to follow." / "see who else is showing up this month." |
+
+---
+
+## 9. Migration checklist
 
 ### Step 1: Add CSS
 
-Add `.quiet-room`, `.inline-empty`, and updated `.nudge-card` styles. Decide whether to add to `css/ui.css` (small, keeps toast/loader/empty together) or create `css/empty-states.css` (cleaner separation). Either works; preference is `css/ui.css` to avoid another CSS file import.
+Add `.quiet-room`, `.inline-empty`, and updated `.nudge-card` styles to `css/ui.css`.
 
 Include `[data-theme="side-b"]` variants for the motif SVG background (salmon/teal/yellow pattern instead of red/blue/yellow).
 
@@ -228,7 +251,7 @@ Include `@media (prefers-reduced-motion: reduce)` to disable drift animations.
 ### Step 2: Update JS
 
 - `following-feed.js` -- update `renderEmptyState()`
-- `following-people.js` -- update empty-state rendering, Crickets conditional, browse nudge
+- `following-people.js` -- all five behaviors from Section 6
 - `tracker-all.js` -- update empty state in `renderAllList()`
 - `tracker-diary.js` -- update blank page rendering in `selectDay()`
 
@@ -241,17 +264,19 @@ Include `@media (prefers-reduced-motion: reduce)` to disable drift animations.
 
 ### Step 4: Verify
 
-- Test all seven surfaces on Side A
-- Test all seven surfaces on Side B
+- Test all eight surfaces on Side A
+- Test all eight surfaces on Side B
 - Confirm motif backdrop animates and is theme-aware
 - Confirm Crickets section does not render when count is 0
+- Confirm Pinned empty shows "pin someone to keep them here." when no pins
+- Confirm Showing Up empty shows "all pinned." when pinned cards exist
 - Confirm reduced-motion preference disables drift animations
-- Confirm mobile sizing is correct (no squished frames)
-- Confirm copy matches the inventory in this spec
+- Confirm mobile sizing is correct
+- Confirm copy matches the inventory in Section 8
 
 ---
 
-## 9. Future considerations
+## 10. Future considerations
 
 ### More empty states
 
