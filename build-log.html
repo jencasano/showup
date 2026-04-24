@@ -548,7 +548,7 @@
   <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Up next</span>
-      <span class="entry-badge badge-deck">21 items</span>
+      <span class="entry-badge badge-deck">23 items</span>
     </div>
     <details class="on-deck-details">
       <summary class="on-deck-summary">
@@ -579,6 +579,8 @@
           <li class="deck-item"><span class="deck-num">19</span>Firestore rules, enforce privacy tiers server-side (diary private / ghost / lowkey are UI-only right now)</li>
           <li class="deck-item"><span class="deck-num">20</span>Edit display name, back button from monthly setup Step 1 to setup.html so first-time users can fix a typo; settings entry point when that lands</li>
           <li class="deck-item"><span class="deck-num">21</span>No-full-weeks preview calendar readability on Side A, the "no full weeks this month" caption and the "you joined on X" pill wash out against paper-on-paper contrast inside the closed diary card; revisit ink tokens or add a subtle backing plate so the copy stays legible on the light theme</li>
+          <li class="deck-item"><span class="deck-num">22</span>Progress + stats color audit, pace badges (ahead/on-track/behind/early/started), progress bar fills, streak pills, and "X to go" pills all use hard-coded Tailwind-ish hex values that bypass the design token system; migrate to Mixtape-derived semantic tokens that auto-swap per theme</li>
+          <li class="deck-item"><span class="deck-num">23</span>Full-week calendar theme polish, the overlay backdrop uses a dark semi-transparent that works on Side B but muds into cream on Side A; badge colors (Target hit/Close/Missed) are hard-coded greens/oranges/reds; the entire full-week calendar section needs a theme-aware pass including the "No full weeks this month" empty state</li>
         </ul>
       </div>
     </details>
