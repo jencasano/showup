@@ -579,15 +579,94 @@
           <li class="deck-item"><span class="deck-num">19</span>Firestore rules, enforce privacy tiers server-side (diary private / ghost / lowkey are UI-only right now)</li>
           <li class="deck-item"><span class="deck-num">20</span>Edit display name, back button from monthly setup Step 1 to setup.html so first-time users can fix a typo; settings entry point when that lands</li>
           <li class="deck-item"><span class="deck-num">21</span>No-full-weeks preview calendar readability on Side A, the "no full weeks this month" caption and the "you joined on X" pill wash out against paper-on-paper contrast inside the closed diary card; revisit ink tokens or add a subtle backing plate so the copy stays legible on the light theme</li>
-          <li class="deck-item"><span class="deck-num">22</span>Progress + stats color audit, pace badges (ahead/on-track/behind/early/started), progress bar fills, streak pills, and "X to go" pills all use hard-coded Tailwind-ish hex values that bypass the design token system; migrate to Mixtape-derived semantic tokens that auto-swap per theme</li>
-          <li class="deck-item"><span class="deck-num">23</span>Full-week calendar theme polish, the overlay backdrop uses a dark semi-transparent that works on Side B but muds into cream on Side A; badge colors (Target hit/Close/Missed) are hard-coded greens/oranges/reds; the entire full-week calendar section needs a theme-aware pass including the "No full weeks this month" empty state</li>
+          <li class="deck-item"><span class="deck-num">22</span><s>Progress + stats color audit, pace badges (ahead/on-track/behind/early/started), progress bar fills, streak pills, and "X to go" pills all use hard-coded Tailwind-ish hex values that bypass the design token system; migrate to Mixtape-derived semantic tokens that auto-swap per theme</s> → shipped in PO09</li>
+          <li class="deck-item"><span class="deck-num">23</span><s>Full-week calendar theme polish, the overlay backdrop uses a dark semi-transparent that works on Side B but muds into cream on Side A; badge colors (Target hit/Close/Missed) are hard-coded greens/oranges/reds; the entire full-week calendar section needs a theme-aware pass including the "No full weeks this month" empty state</s> → shipped in PO09 (indigo .fw-week--full week-highlight ring intentionally deferred, separate color system for week boundaries, not status tiers)</li>
         </ul>
       </div>
     </details>
   </div>
 
-  <!-- ── Apr 26, 2026 · Polish · Editorial month header ── -->
+  <!-- ── Apr 26, 2026 · Polish · Color audit ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 26, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">PO09</span>
+    </div>
+    <div class="entry-title">Polish · Color audit</div>
+    <p class="entry-desc">Two related deck items (#22 progress + stats color audit, #23 full-week calendar theme polish) shipped together since they share the same root cause. Dozens of hard-coded Tailwind hex values (#22C55E green-500, #F59E0B amber-500, #EF4444 red-500, #15803d, #0e7490, #4338ca, #fb923c, #86efac, etc.) bypassed the Mixtape token system, leaving Side B half-broken (badge backgrounds stayed unchanged across themes, only text color got a one-off override) and the My Progress card writing inline styles directly from JS. The done banner pill referenced var(--color-success) which was never declared, so the fallback #22C55E always fired. The fw-empty-overlay used a dark navy backdrop on both themes, looking like a bruise on Side A cream. Three rounds of cleanup: new semantic tokens in variables.css, every consumer-facing rule rewritten to use them, and the inline JS color logic replaced with class-based assignment so the cascade stays in CSS where it belongs.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">New semantic tokens, three tiers + five paces + overlay</div>
+        <div class="item-desc">css/variables.css gains a status-tier system (--status-hit/caution/miss with matching -wash and -border opacity ramps) shared across progress bar fills, fw-badges, fw-dots, summary-week-chips, and status pills. Five pace tokens (--pace-ahead/ontrack/behind/early/started, also with washes and borders) drive the pace badge row. --bar-hit/caution/miss alias the status tiers so the JS-applied fill classes resolve through one indirection. --fw-overlay holds the cream-frosted-glass value on Side A (rgba(244, 236, 216, 0.88)) and a maroon-frosted-glass value on Side B (rgba(42, 21, 24, 0.88)). Side A status-caution is #B8860B (a darkened gold) rather than --yellow #E8B33A directly, since --yellow reads too bright against cream for fills and text; on Side B --yellow works fine against the dark maroon so it's used directly. Every other token derives from existing palette colors (--green, --blue, --red, --paper). No new hex introduced beyond that one B8860B exception.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/polish/COLOR_AUDIT_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Pace badges, all five states, no more side-b text overrides</div>
+        <div class="item-desc">.pace-badge--ahead/on-track/behind/early/started each replaced their three hard-coded values (color/background/border) with var(--pace-*) references. The five [data-theme="side-b"] text-color one-offs (#4ade80, #67e8f9, #f87171, #a5b4fc, #5eead4) are gone since the tokens auto-resolve per theme. Ahead and started now share the green family on both sides; on-track and early share the blue family on Side A and consolidate to teal on Side B (since Side B's --blue is teal); behind shares the red family on both sides.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">FW badges, dots, and legend share status tokens</div>
+        <div class="item-desc">.fw-badge--hit/close/miss and .fw-dot--hit/close/miss now reference --status-hit/caution/miss tokens, the same ones the progress bar fills use, so the three-tier color system is consistent everywhere a "did you hit, get close, or miss" reads on screen. .summary-week-chip--hit/miss (currently dead code, retained for future use) also migrated to the same tokens.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Status pills split into "to go" and "met"</div>
+        <div class="item-desc">.summary-habit-streak was a single class doing two jobs: orange "X to go" pill and a green "Target met" pill that hijacked the same styling. The base rule lost its hard-coded orange (#fb923c on rgba(249, 115, 22, ...) wash and border) and now carries only layout. Two new variant classes carry the color: .summary-habit-streak--togo uses the --status-caution token family (gold on cream, yellow on maroon) and .summary-habit-streak--met uses --status-hit (forest green on cream, teal on maroon). tracker-summary.js writes the right variant directly into the markup so the cascade decides the color, no inline style needed. The old [data-theme="light"] orange override on .summary-habit-streak deleted since it described a class that no longer carries color directly.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Progress bar fills + pct text move from inline styles to classes</div>
+        <div class="item-desc">tracker-summary.js used to compute a barColor hex string in JS and apply it twice via inline style="background:..." on the fill div and style="color:..." on the pct span. That bypassed CSS entirely, so the design system had no hook to control the bar color per theme. The barColor variable is gone; in its place a tier string ("hit"/"caution"/"miss") drives class assignment: .summary-habit-fill--hit/caution/miss for the bar fill (only width stays inline) and .summary-habit-pct--hit/caution/miss for the pct text. The over-target case keeps the existing .summary-habit-pct--over class which now also resolves to --status-hit. Three new fill classes added to tracker.css that read --bar-hit/caution/miss. The phantom var(--color-success, #22C55E) / var(--color-warning, #F59E0B) / var(--color-danger, #EF4444) references both in JS and CSS are removed; var(--color-success) was never declared anywhere in variables.css so the fallback always fired.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Over-target glow simplified, done banner pill uses a real token</div>
+        <div class="item-desc">.summary-habit-pct--over dropped its #86efac color, the rgba(34, 197, 94, 0.35) text-shadow glow, the secondary 0 0 2px rgba(134, 239, 172, 0.55) sparkle, and the saturate(1.08) filter. The glow effect was a Tailwind-era visual that does not fit the Mixtape editorial aesthetic, where the visual emphasis comes from typography and color, not lit-up text. Now it's a clean color: var(--status-hit). The transition list on .summary-habit-pct trimmed accordingly (was color/text-shadow/filter, now just color). The done banner pill background switched from var(--color-success, #22C55E) to var(--status-hit), so the "All done!" pill now reads dark forest green on Side A cream and teal on Side B maroon instead of the bright Tailwind green-500 on both.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">FW empty overlay, frosted glass per theme</div>
+        <div class="item-desc">.fw-empty-overlay swapped its rgba(30, 35, 60, 0.75) dark-navy backdrop for var(--fw-overlay), which resolves to cream-frosted glass on Side A and maroon-frosted glass on Side B. The h4 and p text colors moved off var(--text-primary) (a token that was never declared) and var(--text-muted) onto var(--ink) and var(--ink-soft) directly, which auto-swap and stay readable on both backdrops. The existing [data-theme="light"] override that switched the backdrop to white-ish never fired (the active theme is "side-a", not "light") so it was deleted as dead code. The backdrop-filter blur values (formerly an inconsistent 0px on the standard property and 3px on the webkit one) are now a uniform 4px on both, matching the spec mockup.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Activity cadence tag uses the blue family</div>
+        <div class="item-desc">.activity-cad-tag was running on a hard-coded indigo (rgba(99, 102, 241, ...)) for the dark-theme treatment plus a [data-theme="light"] override with #4338ca text. Both gone; the rule now uses color: var(--blue) with color-mix(in srgb, var(--blue) 14%, transparent) for the wash and 28% for the border. On Side A that resolves to the slate-blue #4F6C8E, on Side B to the teal #5EAAA8, both readable on their respective papers without any theme override on the rule itself.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">[data-theme="light"] cleanup, fourteen blocks renamed or removed</div>
+        <div class="item-desc">"light" was the old theme name from before the Side A / Side B rename, so every [data-theme="light"] selector in tracker.css had been quietly dead code, never matching the active theme attribute. Six blocks (the activity-cad-tag override, the summary-habit-streak override, the summary-habit-pct--over glow override, the fw-empty-overlay backdrop override, plus the merged-into-base streak rule) deleted outright as part of the migrations above. The remaining blocks (.day-header-sunday, .day-header-future, .day-header.week-start/mid/end, .day-cell.future, .summary-stat__help-btn, .summary-stat__tooltip, .top-insight, .habit-insight, .tgl-sunday, .tgl-week) renamed [data-theme="light"] → [data-theme="side-a"] so they fire properly on the cream theme as originally intended. Net effect: Sunday day-headers now actually pick up their Side A darker-orange treatment (previously the dark-theme peach was leaking through), help-button outlines, tooltip backgrounds, and gradient overlays render with the values that were always meant for Side A but never reached the user.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Out of scope</div>
+        <div class="item-desc">Per-activity dot colors from getActivityColor() left alone (user-decorative, not status-semantic). Status banner border + background colors (orange for pending, green for done) left alone since they already use rgba values that work on both themes; only the "All done!" pill moved. The .fw-week--full week-highlight ring (indigo outline marking complete weeks) intentionally deferred since it's a separate color system for week boundaries rather than status tiers; future pass if needed. No new hex values introduced beyond #B8860B (a darkened gold) for Side A's caution token.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">What's next</div>
+        <div class="item-desc">Settings entry point and the modal audit are the two outstanding polish items from the running list. On-deck readability item from PO04 (no-full-weeks calendar preview copy washing out on Side A inside the closed diary card) still waiting. With deck items #22 and #23 both shipped, the on-deck list is down to legitimate forward work plus the readability ticket. Icons and landing page stay deferred.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/PO09/01.jpg" alt="Polish · Color audit" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO09/02.jpg" alt="Polish · Color audit" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO09/03.jpg" alt="Polish · Color audit" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO09/04.jpg" alt="Polish · Color audit" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO09/05.jpg" alt="Polish · Color audit" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO09/06.jpg" alt="Polish · Color audit" onerror="this.style.display='none'">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 26, 2026 · Polish · Editorial month header ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 26, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>

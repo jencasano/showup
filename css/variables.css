@@ -77,6 +77,51 @@
 
   /* ── Transitions ─────────────────────────────── */
   --transition: 0.2s ease;
+
+  /* ── Status tiers (shared by progress bars, fw-badges, fw-dots, summary-week-chips, status pills) ── */
+  --status-hit:        #3E5C3A;
+  --status-hit-wash:   rgba(62, 92, 58, 0.12);
+  --status-hit-border: rgba(62, 92, 58, 0.35);
+
+  --status-caution:        #B8860B;
+  --status-caution-wash:   rgba(184, 134, 11, 0.10);
+  --status-caution-border: rgba(184, 134, 11, 0.30);
+
+  --status-miss:        #C3342B;
+  --status-miss-wash:   rgba(195, 52, 43, 0.10);
+  --status-miss-border: rgba(195, 52, 43, 0.30);
+
+  /* ── Pace badges (5 states) ── */
+  --pace-ahead:        #3E5C3A;
+  --pace-ahead-wash:   rgba(62, 92, 58, 0.12);
+  --pace-ahead-border: rgba(62, 92, 58, 0.35);
+
+  --pace-ontrack:        #4F6C8E;
+  --pace-ontrack-wash:   rgba(79, 108, 142, 0.12);
+  --pace-ontrack-border: rgba(79, 108, 142, 0.30);
+
+  --pace-behind:        #C3342B;
+  --pace-behind-wash:   rgba(195, 52, 43, 0.10);
+  --pace-behind-border: rgba(195, 52, 43, 0.30);
+
+  --pace-early:        #4F6C8E;
+  --pace-early-wash:   rgba(79, 108, 142, 0.08);
+  --pace-early-border: rgba(79, 108, 142, 0.25);
+
+  --pace-started:        #3E5C3A;
+  --pace-started-wash:   rgba(62, 92, 58, 0.08);
+  --pace-started-border: rgba(62, 92, 58, 0.25);
+
+  /* ── Progress bar fill aliases (alias the status tiers) ── */
+  --bar-hit:     var(--status-hit);
+  --bar-caution: var(--status-caution);
+  --bar-miss:    var(--status-miss);
+
+  /* ── Full-week empty overlay ── */
+  /* 0.72 alpha + 4px backdrop blur lets the calendar grid behind the
+     overlay show through as a soft suggestion of structure, so the user
+     still gets a sense of what section is being covered. */
+  --fw-overlay: rgba(244, 236, 216, 0.72);
 }
 
 /* ═══════════════════════════════════════════════
@@ -104,4 +149,41 @@
   --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.18);
   --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.32), 0 8px 24px rgba(0, 0, 0, 0.22);
   --shadow-lg:   0 8px 32px rgba(0, 0, 0, 0.4);
+
+  /* ── Status tiers ── */
+  --status-hit:        #5EAAA8;
+  --status-hit-wash:   rgba(94, 170, 168, 0.14);
+  --status-hit-border: rgba(94, 170, 168, 0.40);
+
+  --status-caution:        #E8B33A;
+  --status-caution-wash:   rgba(232, 179, 58, 0.12);
+  --status-caution-border: rgba(232, 179, 58, 0.32);
+
+  --status-miss:        #F07A5E;
+  --status-miss-wash:   rgba(240, 122, 94, 0.12);
+  --status-miss-border: rgba(240, 122, 94, 0.32);
+
+  /* ── Pace badges ── */
+  --pace-ahead:        #5EAAA8;
+  --pace-ahead-wash:   rgba(94, 170, 168, 0.14);
+  --pace-ahead-border: rgba(94, 170, 168, 0.40);
+
+  --pace-ontrack:        #5EAAA8;
+  --pace-ontrack-wash:   rgba(94, 170, 168, 0.10);
+  --pace-ontrack-border: rgba(94, 170, 168, 0.30);
+
+  --pace-behind:        #F07A5E;
+  --pace-behind-wash:   rgba(240, 122, 94, 0.12);
+  --pace-behind-border: rgba(240, 122, 94, 0.32);
+
+  --pace-early:        #5EAAA8;
+  --pace-early-wash:   rgba(94, 170, 168, 0.08);
+  --pace-early-border: rgba(94, 170, 168, 0.25);
+
+  --pace-started:        #5EAAA8;
+  --pace-started-wash:   rgba(94, 170, 168, 0.08);
+  --pace-started-border: rgba(94, 170, 168, 0.25);
+
+  /* ── Full-week empty overlay ── */
+  --fw-overlay: rgba(42, 21, 24, 0.72);
 }

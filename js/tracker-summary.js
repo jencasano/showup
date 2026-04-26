@@ -19,16 +19,15 @@ export function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
   const barsHTML = habitStats.map((h, i) => {
     const color = getActivityColor(i);
     const displayRate = h.monthRate;
-    const barColor = displayRate >= 100 ? "var(--color-success, #22C55E)"
-      : displayRate >= 70 ? "var(--color-warning, #F59E0B)"
-      : "var(--color-danger, #EF4444)";
+    const tier = displayRate >= 100 ? "hit" : displayRate >= 70 ? "caution" : "miss";
+    const fillClass = `summary-habit-fill summary-habit-fill--${tier}`;
+    const pctTierClass = h.extra > 0 ? "summary-habit-pct--over" : `summary-habit-pct--${tier}`;
+    const pctClass = `summary-habit-pct ${pctTierClass}`;
     const statusPill = h.extra > 0
-      ? `<span class="summary-habit-streak">\u2705 Target met (+${h.extra} extra)</span>`
+      ? `<span class="summary-habit-streak summary-habit-streak--met">\u2705 Target met (+${h.extra} extra)</span>`
       : h.monthLogged >= h.monthTarget
-        ? `<span class="summary-habit-streak">\u2705 Target met</span>`
-        : `<span class="summary-habit-streak">${h.monthTarget - h.monthLogged} to go</span>`;
-    const pctClass = `summary-habit-pct${h.extra > 0 ? " summary-habit-pct--over" : ""}`;
-    const pctStyle = h.extra > 0 ? "" : `style="color:${barColor}"`;
+        ? `<span class="summary-habit-streak summary-habit-streak--met">\u2705 Target met</span>`
+        : `<span class="summary-habit-streak summary-habit-streak--togo">${h.monthTarget - h.monthLogged} to go</span>`;
 
     const paceBadgeClass = {
       ahead:      "pace-badge--ahead",
@@ -48,11 +47,11 @@ export function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
           <div class="summary-habit-meta">
             ${statusPill}
             <span class="summary-habit-cad">${h.cadenceLabel}</span>
-            <span class="${pctClass}" ${pctStyle}>${h.monthLogged}/${h.monthTarget}</span>
+            <span class="${pctClass}">${h.monthLogged}/${h.monthTarget}</span>
           </div>
         </div>
         <div class="summary-habit-track">
-          <div class="summary-habit-fill" style="width:${displayRate}%;background:${barColor}"></div>
+          <div class="${fillClass}" style="width:${displayRate}%"></div>
         </div>
         <div class="summary-habit-sub">
           <span class="pace-badge ${paceBadgeClass}">${h.paceLabel}</span>
