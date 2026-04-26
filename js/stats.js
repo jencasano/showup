@@ -141,6 +141,27 @@ const PACE_MESSAGES = {
   ]
 };
 
+const PAST_PACE_MESSAGES = {
+  ahead: [
+    "You showed up strong this month. The numbers prove it.",
+    "Ahead of target. That was a solid month.",
+    "You put in the work. It paid off.",
+    "This month belonged to you."
+  ],
+  "on-track": [
+    "You held the line. Solid month.",
+    "Right on pace. Consistent and steady.",
+    "Not flashy, but you showed up. That counts.",
+    "You did what you said you would."
+  ],
+  behind: [
+    "This month fell short. The next one is yours.",
+    "Not your best month. That is okay. Keep going.",
+    "The data does not lie. But neither does a comeback.",
+    "Missed the mark. You know what to do next."
+  ]
+};
+
 function hashString(input = "") {
   let hash = 0;
   for (let i = 0; i < input.length; i++) {
@@ -156,8 +177,9 @@ function pickDeterministic(pool, variantKey = "") {
   return pool[idx];
 }
 
-export function getPaceMessage(status, variantKey = "") {
-  const pool = PACE_MESSAGES[status] || PACE_MESSAGES["on-track"];
+export function getPaceMessage(status, variantKey = "", isCurrentMonth = true) {
+  const pastPool = !isCurrentMonth ? PAST_PACE_MESSAGES[status] : null;
+  const pool = pastPool || PACE_MESSAGES[status] || PACE_MESSAGES["on-track"];
   return pickDeterministic(pool, variantKey || status);
 }
 
@@ -259,7 +281,7 @@ async function calculateWeeklyStreak(userId, yearMonth, activities, cadences, ma
 }
 
 // ─── Shared habit stat builder ────────────────────────────
-function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks = [], habitStreak = 0, daysAvailable = null, joinDay = null) {
+function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks = [], habitStreak = 0, daysAvailable = null, joinDay = null, isCurrentMonth = true) {
   const cad    = cadences[i] ?? 7;
   const effectiveDays = daysAvailable ?? getDaysInMonth(yearMonth);
   const monthTarget = Math.max(1, Math.ceil(cad * (effectiveDays / 7)));
@@ -283,7 +305,7 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
   const isNewUser = joinDay != null && joinDay > 3 && effectiveDays < getDaysInMonth(yearMonth);
   const paceKey = getPaceStatus(logged, expectedByNow, lastDay, isNewUser);
   const variantKey = `${yearMonth}|${activity}|${paceKey}|${logged}|${lastDay}`;
-  const paceMessage = getPaceMessage(paceKey, variantKey);
+  const paceMessage = getPaceMessage(paceKey, variantKey, isCurrentMonth);
 
   // Human-readable badge label
   const paceLabel = {
@@ -367,7 +389,7 @@ export function computeStatsFromEntry(entry, yearMonth, joinDate = null) {
   const perfectDays = countPerfectDays(activities, marks, lastDay);
 
   const habitStats = activities.map((activity, i) =>
-    buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks, 0, daysAvailable, joinDay)
+    buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks, 0, daysAvailable, joinDay, isCurrentMonth)
   );
 
   const monthlyHits = habitStats.filter(h => h.monthLogged >= h.monthTarget).length;
@@ -446,7 +468,7 @@ export async function getUserStats(userId, yearMonth) {
     );
 
     const habitStats = activities.map((activity, i) =>
-      buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks, habitStreaks[i], daysAvailable, joinDay)
+      buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today, fullWeeks, habitStreaks[i], daysAvailable, joinDay, isCurrentMonth)
     );
 
     const monthlyHits = habitStats.filter(h => h.monthLogged >= h.monthTarget).length;
