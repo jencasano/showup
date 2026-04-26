@@ -586,8 +586,62 @@
     </details>
   </div>
 
-  <!-- ── Apr 24, 2026 — Polish · Empty states (Quiet Room) ── -->
+  <!-- ── Apr 26, 2026 · Polish · Editorial month header ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">Apr 26, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">PO08</span>
+    </div>
+    <div class="entry-title">Polish · Editorial month header</div>
+    <p class="entry-desc">The month bar was the last UI element still using the old plain-centered treatment, sitting as a thin sticky strip with the month name dead-center and a duplicated "12 day streak" stat in the far-right corner. Every other surface had moved to the Mixtape editorial typography (Fraunces display, italic red year, DM Mono detail) but the month bar stayed generic. This round replaces it with Option A from the spec mockup: a left-aligned editorial heading rendered inside the My Log content stack on desktop, and a Fraunces upgrade to the sticky bar on mobile. The streak stat goes away entirely since the status banner already surfaces momentum and the My Progress card carries the show-up days count, so triple-showing it added noise rather than information.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Editorial heading inside .mylog-centered-stack on desktop</div>
+        <div class="item-desc">A new renderMonthHeading() in tracker-mylog.js builds .month-heading-editorial as the first child of the centered stack, before the status banner. Layout: 2rem Fraunces month name with the year as italic em element in var(--red), plus a nav cluster of three (or four, when viewing a past month) 26px circular buttons with 1px var(--hairline) borders that hover to var(--red). A mono sub-line below reads "day X of Y" in 0.62rem var(--ink-faint) with 0.06em letter-spacing, hidden on past months since the counter is motivational rather than historical. The heading is not sticky, it scrolls with the content, since the sidebar already provides the always-visible logo and tabs. Renders even in the empty state (no tracker set up yet) so the user keeps month nav while the tracker is blank.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/polish/MONTH_HEADER_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Mobile sticky bar gets the Fraunces upgrade</div>
+        <div class="item-desc">#month-bar restructured: month label first on the left, nav cluster grouped into a new #month-bar-nav on the right, justify-content swapped from center to space-between. #current-month-label now renders the Fraunces month plus italic red year plus a small DM Mono "day N" counter inline, all built by a new renderMobileMonthLabel() helper called from updateMonthNav(). Buttons drop to 24px borderless circles in var(--ink-faint) with hover to var(--red), matching the other mobile chrome. The calendar SVG is sized to 16px so it fits the smaller button cleanly. Side B colors auto-swap via tokens with no theme overrides on the rule itself.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Streak stat and updateStat() removed</div>
+        <div class="item-desc">#month-bar-stat and #month-bar-spacer deleted from index.html. The updateStat() function in app.js and all three of its call sites are gone, along with the monthBarStat element reference and the dead branch in tracker-following.js that wrote follower counts into the same span. The streak still appears in the status banner copy ("keep the momentum rolling.") and in the My Progress Show-up Days stat, so nothing is lost from the surface, just the third copy.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Nav wired through callbacks, not duplicate handlers</div>
+        <div class="item-desc">The desktop heading lives inside tracker-mylog.js but the changeMonth() and toggleMonthPicker() logic still lives in app.js where activeYearMonth is owned. Rather than expose those as exports (which would create a circular import), app.js builds a monthNavCallbacks object (onPrev, onNext, onToday, onPicker) and passes it as the sixth arg into loadMyLog(). The heading binds those callbacks to its own buttons. The mobile bar buttons keep their existing direct event listeners on the static IDs in index.html, unchanged. Calendar picker anchors to whichever cal button was clicked, desktop or mobile, since toggleMonthPicker() already takes the anchor element as its first arg.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Picker scoped to the current year</div>
+        <div class="item-desc">Side change shipped in the same round: the month picker popover used to render the current year plus four years back, even when the user had no history that far. Now it shows the current year only, future months still greyed out. Two-line edit in month-picker.js buildContent(): the years array becomes [curYear] instead of a five-element backwards range. Less scroll, less visual noise, more accurate to the data we actually have.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">What's next</div>
+        <div class="item-desc">Settings entry point and the modal audit are still the two outstanding polish items from the running list. On-deck readability item from PO04 (no-full-weeks calendar preview copy washing out on Side A) still waiting. Items 22 and 23 on the deck (progress + stats color audit, full-week calendar theme polish) are the next two big design-system passes. Icons and landing page stay deferred.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/PO08/01.jpg" alt="Polish · Editorial month header" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO08/02.jpg" alt="Polish · Editorial month header" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO08/03.jpg" alt="Polish · Editorial month header" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO08/04.jpg" alt="Polish · Editorial month header" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO08/05.jpg" alt="Polish · Editorial month header" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO08/06.jpg" alt="Polish · Editorial month header" onerror="this.style.display='none'">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 24, 2026 — Polish · Empty states (Quiet Room) ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 24, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
