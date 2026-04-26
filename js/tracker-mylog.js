@@ -285,14 +285,14 @@ function refreshSummaryInPlace(container, entry, stats, yearMonth, isCurrentMont
 
 const STATUS_BANNER_MESSAGES = {
   noneLogged: [
-    "Hey, busy is not an excuse \u2014 no one's weak here, right?!",
+    "Hey, busy is not an excuse. No one's weak here, right?!",
     "No logs yet today. Start now and set the tone.",
     "Clock is ticking. Show up and make today count."
   ],
   someLogged: [
     "Good job! Let's get it!",
     "Nice start. Keep stacking wins today.",
-    "You're in motion now \u2014 keep going."
+    "You're in motion now. Keep going."
   ],
   allDone: [
     "All habits done. Elite consistency.",
