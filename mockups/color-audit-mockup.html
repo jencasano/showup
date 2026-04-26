@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Color Audit -- showup. mockup (PO09)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600;1,9..144,700&family=Manrope:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+/* ================================================================
+   TOKENS
+   ================================================================ */
+:root {
+  --paper:       #F4ECD8;
+  --paper-deep:  #ECE1C6;
+  --paper-edge:  #DCCFA6;
+  --ink:         #2A1F1A;
+  --ink-soft:    #5A463A;
+  --ink-faint:   #9C8874;
+  --red:         #C3342B;
+  --yellow:      #E8B33A;
+  --blue:        #4F6C8E;
+  --green:       #3E5C3A;
+  --hairline:    #D4C3A1;
+
+  --font-logo:    'Sora', sans-serif;
+  --font-display: 'Fraunces', serif;
+  --font-body:    'Manrope', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  --r-sm: 6px; --r-md: 10px; --r-lg: 16px;
+  --shadow-card: 0 2px 4px rgba(42,31,26,0.08), 0 8px 24px rgba(42,31,26,0.06);
+}
+
+.side-b {
+  --paper:       #2A1518;
+  --paper-deep:  #1D0E10;
+  --paper-edge:  #3A1D20;
+  --ink:         #F0DCCF;
+  --ink-soft:    #B18A84;
+  --ink-faint:   #6E504B;
+  --red:         #F07A5E;
+  --yellow:      #E8B33A;
+  --blue:        #5EAAA8;
+  --green:       #5EAAA8;
+  --hairline:    #4A2025;
+  --shadow-card: 0 2px 4px rgba(0,0,0,0.32), 0 8px 24px rgba(0,0,0,0.22);
+}
+
+/* ── PROPOSED semantic status tokens (Side A) ── */
+.proposed {
+  --status-hit:        #3E5C3A;
+  --status-hit-wash:   rgba(62, 92, 58, 0.12);
+  --status-hit-border: rgba(62, 92, 58, 0.35);
+
+  --status-caution:        #B8860B;
+  --status-caution-wash:   rgba(184, 134, 11, 0.10);
+  --status-caution-border: rgba(184, 134, 11, 0.30);
+
+  --status-miss:        #C3342B;
+  --status-miss-wash:   rgba(195, 52, 43, 0.10);
+  --status-miss-border: rgba(195, 52, 43, 0.30);
+
+  --pace-ahead:        #3E5C3A;
+  --pace-ahead-wash:   rgba(62, 92, 58, 0.12);
+  --pace-ahead-border: rgba(62, 92, 58, 0.35);
+
+  --pace-ontrack:        #4F6C8E;
+  --pace-ontrack-wash:   rgba(79, 108, 142, 0.12);
+  --pace-ontrack-border: rgba(79, 108, 142, 0.30);
+
+  --pace-behind:        #C3342B;
+  --pace-behind-wash:   rgba(195, 52, 43, 0.10);
+  --pace-behind-border: rgba(195, 52, 43, 0.30);
+
+  --pace-early:        #4F6C8E;
+  --pace-early-wash:   rgba(79, 108, 142, 0.08);
+  --pace-early-border: rgba(79, 108, 142, 0.25);
+
+  --pace-started:        #3E5C3A;
+  --pace-started-wash:   rgba(62, 92, 58, 0.08);
+  --pace-started-border: rgba(62, 92, 58, 0.25);
+
+  /* Progress bar fills map to the three status tiers */
+  --bar-hit:     #3E5C3A;
+  --bar-caution: #B8860B;
+  --bar-miss:    #C3342B;
+
+  /* Full-week overlay */
+  --fw-overlay: rgba(244, 236, 216, 0.88);
+
+  /* "X to go" pill */
+  --pill-togo:        #B8860B;
+  --pill-togo-wash:   rgba(184, 134, 11, 0.10);
+  --pill-togo-border: rgba(184, 134, 11, 0.22);
+
+  /* Target met pill */
+  --pill-met:        #3E5C3A;
+  --pill-met-wash:   rgba(62, 92, 58, 0.10);
+  --pill-met-border: rgba(62, 92, 58, 0.25);
+
+  /* "Done" banner pill */
+  --done-pill: #3E5C3A;
+}
+
+/* ── PROPOSED semantic status tokens (Side B) ── */
+.side-b.proposed {
+  --status-hit:        #5EAAA8;
+  --status-hit-wash:   rgba(94, 170, 168, 0.14);
+  --status-hit-border: rgba(94, 170, 168, 0.40);
+
+  --status-caution:        #E8B33A;
+  --status-caution-wash:   rgba(232, 179, 58, 0.12);
+  --status-caution-border: rgba(232, 179, 58, 0.32);
+
+  --status-miss:        #F07A5E;
+  --status-miss-wash:   rgba(240, 122, 94, 0.12);
+  --status-miss-border: rgba(240, 122, 94, 0.32);
+
+  --pace-ahead:        #5EAAA8;
+  --pace-ahead-wash:   rgba(94, 170, 168, 0.14);
+  --pace-ahead-border: rgba(94, 170, 168, 0.40);
+
+  --pace-ontrack:        #5EAAA8;
+  --pace-ontrack-wash:   rgba(94, 170, 168, 0.10);
+  --pace-ontrack-border: rgba(94, 170, 168, 0.30);
+
+  --pace-behind:        #F07A5E;
+  --pace-behind-wash:   rgba(240, 122, 94, 0.12);
+  --pace-behind-border: rgba(240, 122, 94, 0.32);
+
+  --pace-early:        #5EAAA8;
+  --pace-early-wash:   rgba(94, 170, 168, 0.08);
+  --pace-early-border: rgba(94, 170, 168, 0.25);
+
+  --pace-started:        #5EAAA8;
+  --pace-started-wash:   rgba(94, 170, 168, 0.08);
+  --pace-started-border: rgba(94, 170, 168, 0.25);
+
+  --bar-hit:     #5EAAA8;
+  --bar-caution: #E8B33A;
+  --bar-miss:    #F07A5E;
+
+  --fw-overlay: rgba(42, 21, 24, 0.88);
+
+  --pill-togo:        #E8B33A;
+  --pill-togo-wash:   rgba(232, 179, 58, 0.12);
+  --pill-togo-border: rgba(232, 179, 58, 0.25);
+
+  --pill-met:        #5EAAA8;
+  --pill-met-wash:   rgba(94, 170, 168, 0.12);
+  --pill-met-border: rgba(94, 170, 168, 0.30);
+
+  --done-pill: #5EAAA8;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: #F4ECD8; color: #2A1F1A; line-height: 1.55; }
+
+/* ================================================================
+   PAGE SHELL
+   ================================================================ */
+.page { max-width: 1200px; margin: 0 auto; padding: 40px 32px 80px; }
+
+.intro {
+  text-align: center; margin-bottom: 48px; padding-bottom: 32px;
+  border-bottom: 1px dashed #D4C3A1;
+}
+.intro h1 { font-family: var(--font-logo); font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em; margin: 0 0 6px; color: #2A1F1A; }
+.intro h1 span { color: #C3342B; }
+.intro .kicker {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.66rem;
+  letter-spacing: 0.18em; text-transform: uppercase; color: #5A463A;
+  background: rgba(246, 228, 176, 1); padding: 4px 10px; border-radius: 999px; margin-bottom: 14px;
+}
+.intro p { max-width: 700px; margin: 0 auto; color: #5A463A; font-size: 0.92rem; }
+
+.section { margin-bottom: 56px; }
+.section-head {
+  display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px;
+  padding-bottom: 10px; border-bottom: 1px dashed #D4C3A1;
+}
+.section-num  { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.15em; color: #C3342B; }
+.section-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: #2A1F1A; }
+.section-sub  { margin-left: auto; font-size: 0.75rem; color: #9C8874; font-style: italic; }
+
+.notes {
+  background: rgba(246, 228, 176, 1); border: 1px dashed #E8B33A;
+  border-radius: var(--r-md); padding: 14px 16px;
+  font-family: var(--font-display); font-size: 0.9rem; font-style: italic;
+  color: #5A463A; line-height: 1.6; margin-bottom: 20px;
+}
+.notes strong { color: #C3342B; font-weight: 600; }
+
+.theme-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+@media (max-width: 860px) { .theme-row { grid-template-columns: 1fr; } }
+
+.compare {
+  border: 1px solid var(--hairline); border-radius: var(--r-lg);
+  overflow: hidden; box-shadow: var(--shadow-card); background: var(--paper);
+}
+.compare-label {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px; background: var(--ink); color: var(--paper);
+  font-family: var(--font-mono); font-size: 0.64rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+.compare-label .tag {
+  padding: 2px 8px; border-radius: 999px; font-size: 0.58rem;
+}
+.tag-before { background: var(--red); }
+.tag-after  { background: var(--green); color: var(--paper); }
+.compare-body { padding: 20px 24px; }
+
+/* ================================================================
+   COMPONENT DEMOS
+   ================================================================ */
+
+/* -- Pace badges -- */
+.demo-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.demo-label {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px;
+}
+
+.pace-badge {
+  display: inline-flex; align-items: center;
+  font-size: 0.6rem; font-weight: 800; padding: 3px 9px;
+  border-radius: 999px; border: 1.5px solid;
+  white-space: nowrap; letter-spacing: 0.04em; text-transform: uppercase;
+}
+
+/* CURRENT: hard-coded Tailwind */
+.cur .pb-ahead    { color: #15803d; background: rgba(34, 197, 94, 0.16); border-color: rgba(34, 197, 94, 0.45); }
+.cur .pb-ontrack  { color: #0e7490; background: rgba(6, 182, 212, 0.14); border-color: rgba(6, 182, 212, 0.38); }
+.cur .pb-behind   { color: #b91c1c; background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.38); }
+.cur .pb-early    { color: #4338ca; background: rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.32); }
+.cur .pb-started  { color: #0f766e; background: rgba(20, 184, 166, 0.14); border-color: rgba(20, 184, 166, 0.40); }
+
+.side-b.cur .pb-ahead    { color: #4ade80; }
+.side-b.cur .pb-ontrack  { color: #67e8f9; }
+.side-b.cur .pb-behind   { color: #f87171; }
+.side-b.cur .pb-early    { color: #a5b4fc; }
+.side-b.cur .pb-started  { color: #5eead4; }
+
+/* PROPOSED: token-based */
+.proposed .pb-ahead    { color: var(--pace-ahead);   background: var(--pace-ahead-wash);   border-color: var(--pace-ahead-border); }
+.proposed .pb-ontrack  { color: var(--pace-ontrack); background: var(--pace-ontrack-wash); border-color: var(--pace-ontrack-border); }
+.proposed .pb-behind   { color: var(--pace-behind);  background: var(--pace-behind-wash);  border-color: var(--pace-behind-border); }
+.proposed .pb-early    { color: var(--pace-early);   background: var(--pace-early-wash);   border-color: var(--pace-early-border); }
+.proposed .pb-started  { color: var(--pace-started); background: var(--pace-started-wash); border-color: var(--pace-started-border); }
+
+/* -- Progress bars -- */
+.bar-demo { margin-bottom: 10px; }
+.bar-label {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.72rem; font-weight: 700; color: var(--ink); margin-bottom: 4px;
+}
+.bar-pct { font-weight: 800; }
+.bar-track {
+  height: 5px; background: var(--paper-edge); border-radius: 10px; overflow: hidden;
+}
+.bar-fill { height: 100%; border-radius: 10px; }
+
+/* CURRENT bars */
+.cur .bar-hit     { background: #22C55E; }
+.cur .bar-caution { background: #F59E0B; }
+.cur .bar-miss    { background: #EF4444; }
+.cur .bar-pct-hit     { color: #22C55E; }
+.cur .bar-pct-caution { color: #F59E0B; }
+.cur .bar-pct-miss    { color: #EF4444; }
+
+/* PROPOSED bars */
+.proposed .bar-hit     { background: var(--bar-hit); }
+.proposed .bar-caution { background: var(--bar-caution); }
+.proposed .bar-miss    { background: var(--bar-miss); }
+.proposed .bar-pct-hit     { color: var(--bar-hit); }
+.proposed .bar-pct-caution { color: var(--bar-caution); }
+.proposed .bar-pct-miss    { color: var(--bar-miss); }
+
+/* -- Pills (streak/to-go/target met) -- */
+.pill {
+  display: inline-flex; align-items: center; gap: 2px;
+  font-size: 0.62rem; font-weight: 700; padding: 2px 6px;
+  border-radius: 20px; border: 1px solid; white-space: nowrap;
+}
+
+.cur .pill-togo { background: rgba(249, 115, 22, 0.15); color: #fb923c; border-color: rgba(249, 115, 22, 0.25); }
+.cur .pill-met  { background: rgba(34, 197, 94, 0.15); color: #22c55e; border-color: rgba(34, 197, 94, 0.30); }
+
+.proposed .pill-togo { background: var(--pill-togo-wash); color: var(--pill-togo); border-color: var(--pill-togo-border); }
+.proposed .pill-met  { background: var(--pill-met-wash); color: var(--pill-met); border-color: var(--pill-met-border); }
+
+/* -- FW badges (hit/close/miss) -- */
+.fw-badge {
+  display: inline-flex; align-items: center;
+  font-size: 0.58rem; font-weight: 700; padding: 2px 7px;
+  border-radius: 999px; border: 1px solid;
+}
+.fw-badge i {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 4px; flex-shrink: 0;
+}
+
+.cur .fwb-hit   { color: #22c55e; border-color: rgba(34,197,94,0.35);  background: rgba(34,197,94,0.14); }
+.cur .fwb-close { color: #f59e0b; border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.14); }
+.cur .fwb-miss  { color: #ef4444; border-color: rgba(239,68,68,0.35);  background: rgba(239,68,68,0.14); }
+
+.proposed .fwb-hit   { color: var(--status-hit);     border-color: var(--status-hit-border);     background: var(--status-hit-wash); }
+.proposed .fwb-close { color: var(--status-caution);  border-color: var(--status-caution-border); background: var(--status-caution-wash); }
+.proposed .fwb-miss  { color: var(--status-miss);     border-color: var(--status-miss-border);    background: var(--status-miss-wash); }
+
+/* -- FW empty overlay -- */
+.fw-overlay-demo {
+  position: relative; border-radius: var(--r-md); overflow: hidden;
+  height: 120px; margin-top: 10px;
+}
+.fw-overlay-bg {
+  position: absolute; inset: 0;
+  background: var(--paper-edge); border: 1px solid var(--hairline);
+  border-radius: var(--r-md); padding: 10px;
+  font-family: var(--font-mono); font-size: 0.5rem; color: var(--ink-faint);
+  letter-spacing: 0.06em;
+}
+.fw-overlay-bg .grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 6px;
+}
+.fw-overlay-bg .cell {
+  height: 14px; border-radius: 3px; border: 1px solid var(--hairline);
+  background: var(--paper-deep);
+}
+
+.fw-overlay-front {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; border-radius: var(--r-md); padding: 12px;
+}
+
+/* CURRENT overlay */
+.cur .fw-overlay-front {
+  background: rgba(30, 35, 60, 0.75);
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+}
+.side-b.cur .fw-overlay-front {
+  background: rgba(30, 35, 60, 0.75);
+}
+
+/* PROPOSED overlay */
+.proposed .fw-overlay-front {
+  background: var(--fw-overlay);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+
+.fw-overlay-front h4 {
+  font-size: 0.78rem; font-weight: 700; color: var(--ink); margin: 0 0 4px;
+}
+.fw-overlay-front p {
+  font-size: 0.68rem; color: var(--ink-soft); margin: 0; line-height: 1.4;
+}
+
+/* hack: in current Side A the overlay text is barely readable */
+.cur .fw-overlay-front h4 { color: #fff; }
+.cur .fw-overlay-front p  { color: rgba(255,255,255,0.7); }
+.side-b.cur .fw-overlay-front h4 { color: #fff; }
+.side-b.cur .fw-overlay-front p  { color: rgba(255,255,255,0.7); }
+
+/* -- Done banner pill -- */
+.done-pill {
+  font-size: 0.68rem; font-weight: 800; padding: 4px 10px;
+  border-radius: 20px; white-space: nowrap; color: #fff;
+}
+
+.cur .done-pill { background: #22C55E; }
+.proposed .done-pill { background: var(--done-pill); }
+
+/* -- Over-target glow -- */
+.over-target {
+  font-size: 0.72rem; font-weight: 800;
+}
+.cur .over-target { color: #86efac; text-shadow: 0 0 10px rgba(34, 197, 94, 0.35); }
+.side-b.cur .over-target { color: #86efac; }
+.proposed .over-target { color: var(--status-hit); }
+
+/* -- Token swatch grid -- */
+.swatch-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px; margin-top: 12px;
+}
+.swatch {
+  display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+  border-radius: var(--r-sm); border: 1px solid var(--hairline);
+  background: var(--paper-deep);
+}
+.swatch-dot {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.swatch-name { font-family: var(--font-mono); font-size: 0.6rem; color: var(--ink-soft); }
+.swatch-val  { font-family: var(--font-mono); font-size: 0.56rem; color: var(--ink-faint); }
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <!-- ==================== INTRO ==================== -->
+  <section class="intro">
+    <span class="kicker">Color Audit (PO09)</span>
+    <h1>showup<span>.</span></h1>
+    <p>Progress stats + full-week calendar color migration. Every hard-coded Tailwind hex replaced with Mixtape-derived semantic tokens that auto-swap per theme. Side A vs Side B, current vs proposed.</p>
+  </section>
+
+  <!-- ==================== 01 PACE BADGES ==================== -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">01</div>
+      <div class="section-title">Pace badges</div>
+      <div class="section-sub">ahead / on-track / behind / early / started</div>
+    </div>
+    <div class="notes">
+      Currently using Tailwind greens (#15803d), cyans (#0e7490), reds (#b91c1c), indigos (#4338ca), teals (#0f766e) that don't exist in our palette. Side B overrides only swap the text color, leaving backgrounds unchanged. <strong>Proposed:</strong> map to --green, --blue, --red with proper washes per theme.
+    </div>
+
+    <div class="theme-row">
+      <div class="compare cur">
+        <div class="compare-label"><div>SIDE A -- CURRENT</div><span class="tag tag-before">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Pace badges</div>
+          <div class="demo-row">
+            <span class="pace-badge pb-ahead">Ahead</span>
+            <span class="pace-badge pb-ontrack">On Track</span>
+            <span class="pace-badge pb-behind">Behind Pace</span>
+            <span class="pace-badge pb-early">Early</span>
+            <span class="pace-badge pb-started">Started</span>
+          </div>
+        </div>
+      </div>
+      <div class="compare cur side-b">
+        <div class="compare-label"><div>SIDE B -- CURRENT</div><span class="tag tag-before">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Pace badges</div>
+          <div class="demo-row">
+            <span class="pace-badge pb-ahead">Ahead</span>
+            <span class="pace-badge pb-ontrack">On Track</span>
+            <span class="pace-badge pb-behind">Behind Pace</span>
+            <span class="pace-badge pb-early">Early</span>
+            <span class="pace-badge pb-started">Started</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theme-row">
+      <div class="compare proposed">
+        <div class="compare-label"><div>SIDE A -- PROPOSED</div><span class="tag tag-after">AFTER</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Pace badges</div>
+          <div class="demo-row">
+            <span class="pace-badge pb-ahead">Ahead</span>
+            <span class="pace-badge pb-ontrack">On Track</span>
+            <span class="pace-badge pb-behind">Behind Pace</span>
+            <span class="pace-badge pb-early">Early</span>
+            <span class="pace-badge pb-started">Started</span>
+          </div>
+        </div>
+      </div>
+      <div class="compare proposed side-b">
+        <div class="compare-label"><div>SIDE B -- PROPOSED</div><span class="tag tag-after">AFTER</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Pace badges</div>
+          <div class="demo-row">
+            <span class="pace-badge pb-ahead">Ahead</span>
+            <span class="pace-badge pb-ontrack">On Track</span>
+            <span class="pace-badge pb-behind">Behind Pace</span>
+            <span class="pace-badge pb-early">Early</span>
+            <span class="pace-badge pb-started">Started</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 02 PROGRESS BARS ==================== -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">02</div>
+      <div class="section-title">Progress bar fills + pct text</div>
+      <div class="section-sub">three status tiers</div>
+    </div>
+    <div class="notes">
+      Bar fills and X/Y text are currently hard-coded in JS as inline styles: #22C55E (Tailwind green-500), #F59E0B (amber-500), #EF4444 (red-500). <strong>Proposed:</strong> replace inline styles with CSS classes. Colors map to --green/--yellow/--red.
+    </div>
+
+    <div class="theme-row">
+      <div class="compare cur">
+        <div class="compare-label"><div>SIDE A -- CURRENT</div><span class="tag tag-before">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="bar-demo">
+            <div class="bar-label"><span>Workout</span><span class="bar-pct bar-pct-hit">8/7</span></div>
+            <div class="bar-track"><div class="bar-fill bar-hit" style="width:100%"></div></div>
+          </div>
+          <div class="bar-demo">
+            <div class="bar-label"><span>Paldo</span><span class="bar-pct bar-pct-caution">5/7</span></div>
+            <div class="bar-track"><div class="bar-fill bar-caution" style="width:71%"></div></div>
+          </div>
+          <div class="bar-demo">
+            <div class="bar-label"><span>8-Hour Sleep</span><span class="bar-pct bar-pct-miss">2/11</span></div>
+            <div class="bar-track"><div class="bar-fill bar-miss" style="width:18%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="compare cur side-b">
+        <div class="compare-label"><div>SIDE B -- CURRENT</div><span class="tag tag-before">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="bar-demo">
+            <div class="bar-label"><span>Workout</span><span class="bar-pct bar-pct-hit">8/7</span></div>
+            <div class="bar-track"><div class="bar-fill bar-hit" style="width:100%"></div></div>
+          </div>
+          <div class="bar-demo">
+            <div class="bar-label"><span>Paldo</span><span class="bar-pct bar-pct-caution">5/7</span></div>
+            <div class="bar-track"><div class="bar-fill bar-caution" style="width:71%"></div></div>
+          </div>
+          <div class="bar-demo">
+            <div class="bar-label"><span>8-Hour Sleep</span><span class="bar-pct bar-pct-miss">2/11</span></div>
+            <div class="bar-track"><div class="bar-fill bar-miss" style="width:18%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theme-row">
+      <div class="compare proposed">
+        <div class="compare-label"><div>SIDE A -- PROPOSED</div><span class="tag tag-after">AFTER</span></div>
+        <div class="compare-body">
+          <div class="bar-demo">
+            <div class="bar-label"><span>Workout</span><span class="bar-pct bar-pct-hit">8/7</span></div>
+            <div class="bar-track"><div class="bar-fill bar-hit" style="width:100%"></div></div>
+          </div>
+          <div class="bar-demo">
+            <div class="bar-label"><span>Paldo</span><span class="bar-pct bar-pct-caution">5/7</span></div>
+            <div class="bar-track"><div class="bar-fill bar-caution" style="width:71%"></div></div>
+          </div>
+          <div class="bar-demo">
+            <div class="bar-label"><span>8-Hour Sleep</span><span class="bar-pct bar-pct-miss">2/11</span></div>
+            <div class="bar-track"><div class="bar-fill bar-miss" style="width:18%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="compare proposed side-b">
+        <div class="compare-label"><div>SIDE B -- PROPOSED</div><span class="tag tag-after">AFTER</span></div>
+        <div class="compare-body">
+          <div class="bar-demo">
+            <div class="bar-label"><span>Workout</span><span class="bar-pct bar-pct-hit">8/7</span></div>
+            <div class="bar-track"><div class="bar-fill bar-hit" style="width:100%"></div></div>
+          </div>
+          <div class="bar-demo">
+            <div class="bar-label"><span>Paldo</span><span class="bar-pct bar-pct-caution">5/7</span></div>
+            <div class="bar-track"><div class="bar-fill bar-caution" style="width:71%"></div></div>
+          </div>
+          <div class="bar-demo">
+            <div class="bar-label"><span>8-Hour Sleep</span><span class="bar-pct bar-pct-miss">2/11</span></div>
+            <div class="bar-track"><div class="bar-fill bar-miss" style="width:18%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 03 STATUS PILLS ==================== -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">03</div>
+      <div class="section-title">Status pills + done banner pill</div>
+      <div class="section-sub">"X to go", "Target met", "All done!"</div>
+    </div>
+    <div class="notes">
+      The "X to go" pill uses hard-coded orange (#fb923c). "Target met" uses Tailwind green. The "All done!" banner pill uses #22C55E (a token --color-success that doesn't even exist in variables.css). <strong>Proposed:</strong> "X to go" maps to --yellow/caution, "Target met" to --green/hit, "All done!" to --green.
+    </div>
+
+    <div class="theme-row">
+      <div class="compare cur">
+        <div class="compare-label"><div>SIDE A -- CURRENT</div><span class="tag tag-before">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Habit status pills</div>
+          <div class="demo-row">
+            <span class="pill pill-togo">5 to go</span>
+            <span class="pill pill-met">&#x2705; Target met</span>
+            <span class="pill pill-met">&#x2705; Target met (+2 extra)</span>
+          </div>
+          <div class="demo-label" style="margin-top:12px">Banner "done" pill</div>
+          <div class="demo-row">
+            <span class="done-pill">All done!</span>
+          </div>
+          <div class="demo-label" style="margin-top:12px">Over-target glow text</div>
+          <div class="demo-row">
+            <span class="over-target">8/7</span>
+          </div>
+        </div>
+      </div>
+      <div class="compare cur side-b">
+        <div class="compare-label"><div>SIDE B -- CURRENT</div><span class="tag tag-before">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Habit status pills</div>
+          <div class="demo-row">
+            <span class="pill pill-togo">5 to go</span>
+            <span class="pill pill-met">&#x2705; Target met</span>
+            <span class="pill pill-met">&#x2705; Target met (+2 extra)</span>
+          </div>
+          <div class="demo-label" style="margin-top:12px">Banner "done" pill</div>
+          <div class="demo-row">
+            <span class="done-pill">All done!</span>
+          </div>
+          <div class="demo-label" style="margin-top:12px">Over-target glow text</div>
+          <div class="demo-row">
+            <span class="over-target">8/7</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theme-row">
+      <div class="compare proposed">
+        <div class="compare-label"><div>SIDE A -- PROPOSED</div><span class="tag tag-after">AFTER</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Habit status pills</div>
+          <div class="demo-row">
+            <span class="pill pill-togo">5 to go</span>
+            <span class="pill pill-met">&#x2705; Target met</span>
+            <span class="pill pill-met">&#x2705; Target met (+2 extra)</span>
+          </div>
+          <div class="demo-label" style="margin-top:12px">Banner "done" pill</div>
+          <div class="demo-row">
+            <span class="done-pill">All done!</span>
+          </div>
+          <div class="demo-label" style="margin-top:12px">Over-target glow text</div>
+          <div class="demo-row">
+            <span class="over-target">8/7</span>
+          </div>
+        </div>
+      </div>
+      <div class="compare proposed side-b">
+        <div class="compare-label"><div>SIDE B -- PROPOSED</div><span class="tag tag-after">AFTER</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Habit status pills</div>
+          <div class="demo-row">
+            <span class="pill pill-togo">5 to go</span>
+            <span class="pill pill-met">&#x2705; Target met</span>
+            <span class="pill pill-met">&#x2705; Target met (+2 extra)</span>
+          </div>
+          <div class="demo-label" style="margin-top:12px">Banner "done" pill</div>
+          <div class="demo-row">
+            <span class="done-pill">All done!</span>
+          </div>
+          <div class="demo-label" style="margin-top:12px">Over-target glow text</div>
+          <div class="demo-row">
+            <span class="over-target">8/7</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 04 FW BADGES ==================== -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">04</div>
+      <div class="section-title">Full-week badges + legend</div>
+      <div class="section-sub">Target hit / Close / Missed</div>
+    </div>
+    <div class="notes">
+      FW badges use Tailwind green-500 (#22c55e), amber-500 (#f59e0b), red-500 (#ef4444). Same three tiers as the progress bars. <strong>Proposed:</strong> share the --status-hit/caution/miss tokens so they're always consistent.
+    </div>
+
+    <div class="theme-row">
+      <div class="compare cur">
+        <div class="compare-label"><div>SIDE A -- CURRENT</div><span class="tag tag-before">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Week badges</div>
+          <div class="demo-row">
+            <span class="fw-badge fwb-hit"><i style="background:#C3342B"></i>Workout 5/4</span>
+            <span class="fw-badge fwb-close"><i style="background:#4F6C8E"></i>Paldo 3/4</span>
+            <span class="fw-badge fwb-miss"><i style="background:#E8B33A"></i>Sleep 1/7</span>
+          </div>
+          <div class="demo-label" style="margin-top: 8px">Legend</div>
+          <div class="demo-row">
+            <span class="fw-badge fwb-hit">Target hit</span>
+            <span class="fw-badge fwb-close">Close</span>
+            <span class="fw-badge fwb-miss">Missed</span>
+          </div>
+        </div>
+      </div>
+      <div class="compare cur side-b">
+        <div class="compare-label"><div>SIDE B -- CURRENT</div><span class="tag tag-before">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Week badges</div>
+          <div class="demo-row">
+            <span class="fw-badge fwb-hit"><i style="background:#F07A5E"></i>Workout 5/4</span>
+            <span class="fw-badge fwb-close"><i style="background:#5EAAA8"></i>Paldo 3/4</span>
+            <span class="fw-badge fwb-miss"><i style="background:#E8B33A"></i>Sleep 1/7</span>
+          </div>
+          <div class="demo-label" style="margin-top: 8px">Legend</div>
+          <div class="demo-row">
+            <span class="fw-badge fwb-hit">Target hit</span>
+            <span class="fw-badge fwb-close">Close</span>
+            <span class="fw-badge fwb-miss">Missed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theme-row">
+      <div class="compare proposed">
+        <div class="compare-label"><div>SIDE A -- PROPOSED</div><span class="tag tag-after">AFTER</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Week badges</div>
+          <div class="demo-row">
+            <span class="fw-badge fwb-hit"><i style="background:#C3342B"></i>Workout 5/4</span>
+            <span class="fw-badge fwb-close"><i style="background:#4F6C8E"></i>Paldo 3/4</span>
+            <span class="fw-badge fwb-miss"><i style="background:#E8B33A"></i>Sleep 1/7</span>
+          </div>
+          <div class="demo-label" style="margin-top: 8px">Legend</div>
+          <div class="demo-row">
+            <span class="fw-badge fwb-hit">Target hit</span>
+            <span class="fw-badge fwb-close">Close</span>
+            <span class="fw-badge fwb-miss">Missed</span>
+          </div>
+        </div>
+      </div>
+      <div class="compare proposed side-b">
+        <div class="compare-label"><div>SIDE B -- PROPOSED</div><span class="tag tag-after">AFTER</span></div>
+        <div class="compare-body">
+          <div class="demo-label">Week badges</div>
+          <div class="demo-row">
+            <span class="fw-badge fwb-hit"><i style="background:#F07A5E"></i>Workout 5/4</span>
+            <span class="fw-badge fwb-close"><i style="background:#5EAAA8"></i>Paldo 3/4</span>
+            <span class="fw-badge fwb-miss"><i style="background:#E8B33A"></i>Sleep 1/7</span>
+          </div>
+          <div class="demo-label" style="margin-top: 8px">Legend</div>
+          <div class="demo-row">
+            <span class="fw-badge fwb-hit">Target hit</span>
+            <span class="fw-badge fwb-close">Close</span>
+            <span class="fw-badge fwb-miss">Missed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 05 FW OVERLAY ==================== -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">05</div>
+      <div class="section-title">Full-week empty overlay</div>
+      <div class="section-sub">"No full weeks this month."</div>
+    </div>
+    <div class="notes">
+      The overlay backdrop currently uses a dark navy rgba(30, 35, 60, 0.75) on <strong>both</strong> themes. On Side A cream it looks like a bruise. On Side B it's dark-on-dark. Also references <code>[data-theme="light"]</code> (old theme name). <strong>Proposed:</strong> Side A uses cream-frosted glass, Side B uses maroon-frosted glass. Both use var(--ink) text, readable on their respective backdrops.
+    </div>
+
+    <div class="theme-row">
+      <div class="compare cur">
+        <div class="compare-label"><div>SIDE A -- CURRENT</div><span class="tag tag-before">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="fw-overlay-demo">
+            <div class="fw-overlay-bg">
+              MON TUE WED THU FRI SAT SUN
+              <div class="grid">
+                <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+              </div>
+            </div>
+            <div class="fw-overlay-front">
+              <h4>No full weeks this month.</h4>
+              <p>Show up next month and we'll clock every win.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="compare cur side-b">
+        <div class="compare-label"><div>SIDE B -- CURRENT</div><span class="tag tag-before">BEFORE</span></div>
+        <div class="compare-body">
+          <div class="fw-overlay-demo">
+            <div class="fw-overlay-bg">
+              MON TUE WED THU FRI SAT SUN
+              <div class="grid">
+                <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+              </div>
+            </div>
+            <div class="fw-overlay-front">
+              <h4>No full weeks this month.</h4>
+              <p>Show up next month and we'll clock every win.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theme-row">
+      <div class="compare proposed">
+        <div class="compare-label"><div>SIDE A -- PROPOSED</div><span class="tag tag-after">AFTER</span></div>
+        <div class="compare-body">
+          <div class="fw-overlay-demo">
+            <div class="fw-overlay-bg">
+              MON TUE WED THU FRI SAT SUN
+              <div class="grid">
+                <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+              </div>
+            </div>
+            <div class="fw-overlay-front">
+              <h4>No full weeks this month.</h4>
+              <p>Show up next month and we'll clock every win.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="compare proposed side-b">
+        <div class="compare-label"><div>SIDE B -- PROPOSED</div><span class="tag tag-after">AFTER</span></div>
+        <div class="compare-body">
+          <div class="fw-overlay-demo">
+            <div class="fw-overlay-bg">
+              MON TUE WED THU FRI SAT SUN
+              <div class="grid">
+                <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+              </div>
+            </div>
+            <div class="fw-overlay-front">
+              <h4>No full weeks this month.</h4>
+              <p>Show up next month and we'll clock every win.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 06 TOKEN MAP ==================== -->
+  <section class="section" style="margin-bottom: 0;">
+    <div class="section-head">
+      <div class="section-num">06</div>
+      <div class="section-title">Proposed token map</div>
+      <div class="section-sub">new tokens for variables.css</div>
+    </div>
+    <div class="notes">
+      All new tokens derive from existing palette colors (--green, --yellow, --red, --blue, --paper). No new hex values introduced -- only washes and border opacities of existing colors. Side B overrides auto-swap via the existing [data-theme="side-b"] block.
+    </div>
+
+    <div class="theme-row">
+      <div class="compare proposed">
+        <div class="compare-label"><div>SIDE A TOKENS</div></div>
+        <div class="compare-body">
+          <div class="demo-label">Status tiers (shared by progress bars, fw-badges, pills)</div>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-dot" style="background:#3E5C3A"></div><div><div class="swatch-name">--status-hit</div><div class="swatch-val">#3E5C3A (--green)</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#B8860B"></div><div><div class="swatch-name">--status-caution</div><div class="swatch-val">#B8860B (dark gold)</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#C3342B"></div><div><div class="swatch-name">--status-miss</div><div class="swatch-val">#C3342B (--red)</div></div></div>
+          </div>
+          <div class="demo-label" style="margin-top:14px">Pace badges</div>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-dot" style="background:#3E5C3A"></div><div><div class="swatch-name">--pace-ahead</div><div class="swatch-val">--green</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#4F6C8E"></div><div><div class="swatch-name">--pace-ontrack</div><div class="swatch-val">--blue</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#C3342B"></div><div><div class="swatch-name">--pace-behind</div><div class="swatch-val">--red</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#4F6C8E"></div><div><div class="swatch-name">--pace-early</div><div class="swatch-val">--blue (muted)</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#3E5C3A"></div><div><div class="swatch-name">--pace-started</div><div class="swatch-val">--green (muted)</div></div></div>
+          </div>
+          <div class="demo-label" style="margin-top:14px">Overlay</div>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-dot" style="background:rgba(244,236,216,0.88)"></div><div><div class="swatch-name">--fw-overlay</div><div class="swatch-val">cream frosted glass</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="compare proposed side-b">
+        <div class="compare-label"><div>SIDE B TOKENS</div></div>
+        <div class="compare-body">
+          <div class="demo-label">Status tiers</div>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-dot" style="background:#5EAAA8"></div><div><div class="swatch-name">--status-hit</div><div class="swatch-val">#5EAAA8 (--green)</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#E8B33A"></div><div><div class="swatch-name">--status-caution</div><div class="swatch-val">#E8B33A (--yellow)</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#F07A5E"></div><div><div class="swatch-name">--status-miss</div><div class="swatch-val">#F07A5E (--red)</div></div></div>
+          </div>
+          <div class="demo-label" style="margin-top:14px">Pace badges</div>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-dot" style="background:#5EAAA8"></div><div><div class="swatch-name">--pace-ahead</div><div class="swatch-val">--green/teal</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#5EAAA8"></div><div><div class="swatch-name">--pace-ontrack</div><div class="swatch-val">--blue/teal</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#F07A5E"></div><div><div class="swatch-name">--pace-behind</div><div class="swatch-val">--red/salmon</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#5EAAA8"></div><div><div class="swatch-name">--pace-early</div><div class="swatch-val">--blue/teal (muted)</div></div></div>
+            <div class="swatch"><div class="swatch-dot" style="background:#5EAAA8"></div><div><div class="swatch-name">--pace-started</div><div class="swatch-val">--green/teal (muted)</div></div></div>
+          </div>
+          <div class="demo-label" style="margin-top:14px">Overlay</div>
+          <div class="swatch-grid">
+            <div class="swatch"><div class="swatch-dot" style="background:rgba(42,21,24,0.88)"></div><div><div class="swatch-name">--fw-overlay</div><div class="swatch-val">maroon frosted glass</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
