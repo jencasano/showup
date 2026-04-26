@@ -37,8 +37,73 @@ function renderSticker(sticker) {
   return sticker || "";
 }
 
+// ─── EDITORIAL MONTH HEADING (desktop, Option A) ──────────
+// Big Fraunces month + italic red year, nav buttons inline, "day X of Y" sub.
+// Hidden on past months for the day counter (motivational, not historical).
+function renderMonthHeading(yearMonth, isCurrentMonth, navCallbacks) {
+  const [year, month] = yearMonth.split("-").map(Number);
+  const monthName = new Date(year, month - 1, 1).toLocaleDateString("en-US", { month: "long" });
+  const daysInMonth = getDaysInMonth(yearMonth);
+  const todayDate = new Date().getDate();
+
+  const heading = document.createElement("div");
+  heading.className = "month-heading-editorial";
+
+  const top = document.createElement("div");
+  top.className = "mhe-top";
+
+  const monthEl = document.createElement("h2");
+  monthEl.className = "mhe-month";
+  monthEl.innerHTML = `${monthName} <em>${year}</em>`;
+  top.appendChild(monthEl);
+
+  const nav = document.createElement("div");
+  nav.className = "mhe-nav";
+
+  const mkBtn = (label, ariaLabel, onClick, extraClass = "") => {
+    const b = document.createElement("button");
+    b.className = `mhe-btn${extraClass ? " " + extraClass : ""}`;
+    b.type = "button";
+    b.setAttribute("aria-label", ariaLabel);
+    b.innerHTML = label;
+    b.addEventListener("click", onClick);
+    return b;
+  };
+
+  const prev = mkBtn("&larr;", "Previous month", () => navCallbacks?.onPrev?.());
+  const next = mkBtn("&rarr;", "Next month", () => navCallbacks?.onNext?.());
+  next.disabled = isCurrentMonth;
+
+  const cal = mkBtn(
+    `<img src="/assets/icons/calendar.svg" width="14" height="14" alt="" draggable="false" class="showup-icon" />`,
+    "Jump to month",
+    () => navCallbacks?.onPicker?.(cal)
+  );
+
+  nav.appendChild(prev);
+  nav.appendChild(next);
+  nav.appendChild(cal);
+
+  if (!isCurrentMonth) {
+    const today = mkBtn("🎯", "Back to current month", () => navCallbacks?.onToday?.());
+    nav.appendChild(today);
+  }
+
+  top.appendChild(nav);
+  heading.appendChild(top);
+
+  if (isCurrentMonth) {
+    const sub = document.createElement("div");
+    sub.className = "mhe-sub";
+    sub.textContent = `day ${todayDate} of ${daysInMonth}`;
+    heading.appendChild(sub);
+  }
+
+  return heading;
+}
+
 // ─── LOAD MY LOG ──────────────────────────────────────────
-export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise = null, silent = false) {
+export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise = null, silent = false, navCallbacks = null) {
   if (!silent) showLoader();
   container.innerHTML = "";
 
@@ -84,7 +149,19 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
     if (!docSnap.exists() || !docSnap.data().activities?.length) {
       hideLoader();
-      container.innerHTML = `<p class="empty-state">No tracker set up for this month yet.</p>`;
+      container.innerHTML = "";
+      if (!isMobile()) {
+        const stack = document.createElement("div");
+        stack.className = "mylog-centered-stack";
+        stack.appendChild(renderMonthHeading(yearMonth, isCurrentMonth, navCallbacks));
+        const empty = document.createElement("p");
+        empty.className = "empty-state";
+        empty.textContent = "No tracker set up for this month yet.";
+        stack.appendChild(empty);
+        container.appendChild(stack);
+      } else {
+        container.innerHTML = `<p class="empty-state">No tracker set up for this month yet.</p>`;
+      }
       hasRendered = true;
       return;
     }
@@ -130,6 +207,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
       } else {
         const centeredStack = document.createElement("div");
         centeredStack.className = "mylog-centered-stack";
+        centeredStack.appendChild(renderMonthHeading(yearMonth, isCurrentMonth, navCallbacks));
         if (isCurrentMonth) {
           centeredStack.appendChild(renderStatusBanner(entry, todayDate));
         }

@@ -155,15 +155,15 @@
         </nav>
       </div>
 
-      <!-- MONTH BAR -->
+      <!-- MONTH BAR (mobile only; desktop uses the editorial heading inside My Log) -->
       <div id="month-bar">
-        <button id="prev-month-btn">←</button>
-        <span id="current-month-label">April 2026</span>
-        <button id="next-month-btn">→</button>
-        <button id="cal-picker-btn" title="Jump to month"><img src="/assets/icons/calendar.svg" width="20" height="20" alt="calendar" draggable="false" class="showup-icon" /></button>
-        <button id="today-btn" title="" hidden>🎯</button>
-        <div id="month-bar-spacer"></div>
-        <div id="month-bar-stat"></div>
+        <span id="current-month-label">April <em>2026</em></span>
+        <div id="month-bar-nav">
+          <button id="prev-month-btn" aria-label="Previous month">←</button>
+          <button id="next-month-btn" aria-label="Next month">→</button>
+          <button id="cal-picker-btn" title="Jump to month" aria-label="Jump to month"><img src="/assets/icons/calendar.svg" width="20" height="20" alt="" draggable="false" class="showup-icon" /></button>
+          <button id="today-btn" title="" aria-label="Back to current month" hidden>🎯</button>
+        </div>
       </div>
 
       <!-- MAIN CONTENT -->

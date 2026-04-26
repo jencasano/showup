@@ -22,7 +22,6 @@ const prevBtn      = document.getElementById("prev-month-btn");
 const nextBtn      = document.getElementById("next-month-btn");
 const calPickerBtn = document.getElementById("cal-picker-btn");
 const todayBtn     = document.getElementById("today-btn");
-const monthBarStat = document.getElementById("month-bar-stat");
 const tabMyLog     = document.getElementById("tab-mylog");
 const tabFollowing = document.getElementById("tab-following");
 const tabAll       = document.getElementById("tab-all");
@@ -51,11 +50,23 @@ function resetMyLogStatsCache() {
 }
 
 // ── Month nav ─────────────────────────────────
+// Mobile bar uses Fraunces-styled month + italic year + small "day N" counter.
+// Desktop heading is rendered inside the My Log content stack by tracker-mylog.
+function renderMobileMonthLabel(yearMonth) {
+  const [year, month] = yearMonth.split("-").map(Number);
+  const monthName = new Date(year, month - 1, 1).toLocaleDateString("en-US", { month: "long" });
+  const isCurrentMonth = yearMonth === getCurrentYearMonth();
+  const dayPart = isCurrentMonth
+    ? `<span class="mhe-m-day">day ${new Date().getDate()}</span>`
+    : "";
+  monthLabel.innerHTML = `${monthName} <em>${year}</em>${dayPart}`;
+}
+
 function updateMonthNav() {
   const currentYM = getCurrentYearMonth();
   const isPast    = activeYearMonth !== currentYM;
 
-  monthLabel.textContent = formatYearMonth(activeYearMonth);
+  renderMobileMonthLabel(activeYearMonth);
   nextBtn.disabled = activeYearMonth >= currentYM;
 
   // 📅 picker: highlight when viewing a past month
@@ -70,9 +81,7 @@ async function changeMonth(yearMonth) {
   activeYearMonth = yearMonth;
   resetMyLogStatsCache();
   updateMonthNav();
-  monthBarStat.textContent = "";
   await loadActiveTab();
-  await updateStat();
 }
 
 prevBtn.addEventListener("click", () => changeMonth(getPrevYearMonth(activeYearMonth)));
@@ -92,20 +101,6 @@ calPickerBtn.addEventListener("click", (e) => {
 todayBtn.addEventListener("click", () => {
   changeMonth(getCurrentYearMonth());
 });
-
-// ── Streak stat ───────────────────────────────
-async function updateStat() {
-  if (!currentUser || activeTab !== "mylog") {
-    if (activeTab !== "mylog") monthBarStat.textContent = "";
-    return;
-  }
-  const stats = await getMyLogStatsPromise();
-  if (!stats) return;
-  const { streak } = stats;
-  const parts = [];
-  if (streak > 0) parts.push(`🔥 ${streak} day streak`);
-  monthBarStat.textContent = parts.join(" · ");
-}
 
 // ── Tab switching ─────────────────────────────
 export function switchTab(tab) {
@@ -132,7 +127,6 @@ export function switchTab(tab) {
   if (tab !== "following" && followingUnsub) {
     followingUnsub();
     followingUnsub = null;
-    monthBarStat.textContent = "";
   }
 
   closeMonthPicker();
@@ -152,12 +146,24 @@ export function switchTab(tab) {
   activePanel.style.animation = "";
 
   loadActiveTab(true);
-  updateStat();
 }
+
+const monthNavCallbacks = {
+  onPrev:   () => changeMonth(getPrevYearMonth(activeYearMonth)),
+  onNext:   () => {
+    if (activeYearMonth < getCurrentYearMonth()) changeMonth(getNextYearMonth(activeYearMonth));
+  },
+  onToday:  () => changeMonth(getCurrentYearMonth()),
+  onPicker: (anchorEl) => {
+    toggleMonthPicker(anchorEl, activeYearMonth, (ym) => {
+      if (ym !== activeYearMonth) changeMonth(ym);
+    });
+  }
+};
 
 async function loadActiveTab(silent = false) {
   if (activeTab === "mylog") {
-    await loadMyLog(activeYearMonth, tabMyLog, currentUser, getMyLogStatsPromise(), silent);
+    await loadMyLog(activeYearMonth, tabMyLog, currentUser, getMyLogStatsPromise(), silent, monthNavCallbacks);
 
   } else if (activeTab === "following") {
     if (followingUnsub) { followingUnsub(); followingUnsub = null; }
@@ -355,7 +361,6 @@ onAuthReady(async (user) => {
 
     await checkMonthlySetup(user.uid, user.photoURL);
     await loadActiveTab();
-    await updateStat();
   } else {
     loginScreen.style.display = "flex";
     appScreen.style.display   = "none";

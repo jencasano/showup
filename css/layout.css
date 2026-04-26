@@ -226,71 +226,166 @@ header h1 span { color: var(--color-primary); }
   border-top: 1px solid var(--hairline);
 }
 
-/* ── Month Bar ─────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   MONTH HEADER (PO07) — Editorial Option A
+   Mobile: sticky #month-bar with Fraunces upgrade.
+   Desktop: bar is hidden; .month-heading-editorial
+   renders inside the My Log content stack.
+   ═══════════════════════════════════════════════ */
+
+/* ── Mobile sticky bar ───────────────────────── */
 #month-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 8px 28px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border-faint);
-  gap: 6px;
+  justify-content: space-between;
+  padding: 6px 16px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--paper-edge);
+  gap: 8px;
   position: sticky;
-  top: 92px;
+  top: 52px;
   z-index: 98;
 }
 
 #current-month-label {
-  font-family: var(--font-heading);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--font-display);
   font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--text);
-  min-width: 140px;
-  text-align: center;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.01em;
 }
 
-#month-bar-spacer { display: none; }
-
-#month-bar-stat {
-  position: absolute;
-  right: 28px;
-  font-size: 0.72rem;
-  color: var(--text-faint);
+#current-month-label em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--red);
+  font-size: 0.88rem;
 }
 
-/* ── Month Bar Buttons ─────────────────────────── */
+#current-month-label .mhe-m-day {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.56rem;
+  font-weight: 400;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+
+#month-bar-nav {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
 #month-bar button {
   background: none;
   border: none;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  transition: all var(--transition);
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  transition: color var(--transition);
   flex-shrink: 0;
+  cursor: pointer;
 }
 
-/* Ensure [hidden] always wins over the display:flex rule above */
-#month-bar button[hidden] {
-  display: none !important;
-}
+#month-bar button[hidden] { display: none !important; }
 
-#month-bar button:hover:not(:disabled) {
-  background: var(--bg-subtle);
-  color: var(--color-primary);
-}
+#month-bar button:hover:not(:disabled) { color: var(--red); }
 
 #month-bar button:disabled {
   opacity: 0.25;
   cursor: not-allowed;
 }
 
-#cal-picker-btn { font-size: 0.85rem; margin-left: 2px; }
-#today-btn      { font-size: 0.85rem; margin-left: 0; }
+#cal-picker-btn .showup-icon { width: 16px; height: 16px; }
+
+/* ── Desktop editorial heading ───────────────── */
+.month-heading-editorial {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 18px 0 14px;
+  margin-bottom: 12px;
+  border-bottom: 1px dashed var(--hairline);
+}
+
+.mhe-top {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.mhe-month {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.mhe-month em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--red);
+}
+
+.mhe-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  top: -2px;
+}
+
+.mhe-btn {
+  background: none;
+  border: 1px solid var(--hairline);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+  padding: 0;
+}
+
+.mhe-btn:hover:not(:disabled) {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.mhe-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.mhe-btn .showup-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.mhe-sub {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+}
 
 /* ── Main Content ───────────────────────────────── */
 #app-content {
@@ -417,7 +512,6 @@ header h1 span { color: var(--color-primary); }
   #bottom-nav { display: flex; }
   #app-content { padding: 16px 16px 80px; }
   header { padding: 0 14px; height: 52px; }
-  #month-bar { padding: 6px 16px; top: 52px; }
   .back-to-top { bottom: 76px; right: 16px; }
   #global-loader { top: 93px; }
   .sidebar { display: none; }
@@ -439,10 +533,11 @@ header h1 span { color: var(--color-primary); }
   }
 
   /* Hide legacy header + tab row on desktop; sidebar replaces them.
-     Month-bar sticks directly to the top instead of below the header. */
+     Month bar is mobile-only on desktop the editorial heading inside
+     .mylog-centered-stack carries month name + nav (PO07). */
   .main-col > header,
   .main-col > #tab-row { display: none; }
-  #month-bar { top: 0; }
+  #month-bar { display: none; }
 
   .sidebar {
     display: flex;

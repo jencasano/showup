@@ -45,10 +45,8 @@ function buildContent(activeYearMonth, onSelect) {
   const [curYear, curMonth] = currentYM.split("-").map(Number);
   const [activeYear, activeMonth] = activeYearMonth.split("-").map(Number);
 
-  // Show years from current back 5 years (or to the start), future months greyed
-  const startYear = curYear - 4;
-  const years = [];
-  for (let y = curYear; y >= startYear; y--) years.push(y);
+  // Show current year only; future months greyed
+  const years = [curYear];
 
   scroll.innerHTML = "";
 

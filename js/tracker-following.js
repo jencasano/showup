@@ -246,13 +246,6 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     followingIds       = data.following        || [];
     pinnedFollowingIds = (data.pinnedFollowing || []).filter(uid => followingIds.includes(uid));
 
-    const statEl = document.getElementById("month-bar-stat");
-    if (statEl) {
-      statEl.textContent = followingIds.length > 0
-        ? `Following ${followingIds.length} ${followingIds.length === 1 ? "person" : "people"} this month`
-        : "";
-    }
-
     // Fetch user docs for new followingIds
     const deletedUids = new Set();
     await Promise.all(followingIds.map(async (uid) => {
