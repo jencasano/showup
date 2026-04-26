@@ -26,12 +26,10 @@ async function fetchLatestDiaryEntry(uid) {
 
 async function fetchTodayDiaryEntry(uid) {
   const today = new Date().toISOString().slice(0, 10);
-  console.log("Fetching diary for", uid, "at path diary/", uid, "/entries/", today);
   const snap = await getDoc(doc(db, "diary", uid, "entries", today));
-  console.log("Diary snap exists:", snap.exists(), "data:", snap.data());
-  if (!snap.exists()) { console.log("Returning null for", uid); return null; }
+  if (!snap.exists()) return null;
   const data = snap.data();
-  if (!data.note && !data.photoUrl) { console.log("Returning null for", uid); return null; }
+  if (!data.note && !data.photoUrl) return null;
   return { docId: today, ...data };
 }
 
@@ -151,11 +149,11 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     toggle.className = "fw-view-toggle";
     pillPeopleEl = document.createElement("button");
     pillPeopleEl.className = "fw-vt-pill";
-    pillPeopleEl.textContent = "People";
+    pillPeopleEl.textContent = "people";
     pillPeopleEl.addEventListener("click", () => { currentView = "people"; renderBoard(); });
     pillFeedEl = document.createElement("button");
     pillFeedEl.className = "fw-vt-pill";
-    pillFeedEl.textContent = "Feed";
+    pillFeedEl.textContent = "feed";
     pillFeedEl.addEventListener("click", () => { currentView = "feed"; renderBoard(); });
     toggle.append(pillPeopleEl, pillFeedEl);
     titleRow.append(title, countEl, toggle);
@@ -196,8 +194,8 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_jtbfg2nb.json"
           background="transparent" speed="1" class="following-lottie-icon" loop autoplay>
         </lottie-player>
-        <h3 class="following-empty-title">See who shows up</h3>
-        <p class="following-empty-sub">Head to the All tab to find people who show up \u2192</p>`;
+        <h3 class="following-empty-title">see who shows up</h3>
+        <p class="following-empty-sub">head to the all tab to find people who show up \u2192</p>`;
       const browseBtn = document.createElement("button");
       browseBtn.className = "following-browse-btn";
       browseBtn.textContent = "Browse All \u2192";

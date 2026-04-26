@@ -115,7 +115,7 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
 
   if (!uid) {
     hideLoader();
-    container.innerHTML = `<p class="empty-state">Not logged in.</p>`;
+    container.innerHTML = `<p class="empty-state">not logged in.</p>`;
     return;
   }
 
@@ -156,11 +156,11 @@ export function loadMyLog(yearMonth, container, currentUser, initialStatsPromise
         stack.appendChild(renderMonthHeading(yearMonth, isCurrentMonth, navCallbacks));
         const empty = document.createElement("p");
         empty.className = "empty-state";
-        empty.textContent = "No tracker set up for this month yet.";
+        empty.textContent = "no tracker set up for this month yet.";
         stack.appendChild(empty);
         container.appendChild(stack);
       } else {
-        container.innerHTML = `<p class="empty-state">No tracker set up for this month yet.</p>`;
+        container.innerHTML = `<p class="empty-state">no tracker set up for this month yet.</p>`;
       }
       hasRendered = true;
       return;
@@ -285,7 +285,7 @@ function refreshSummaryInPlace(container, entry, stats, yearMonth, isCurrentMont
 
 const STATUS_BANNER_MESSAGES = {
   noneLogged: [
-    "Hey, busy is not an excuse. No one's weak here, right?!",
+    "Hey, busy isn't an excuse. No one's weak here, right?",
     "No logs yet today. Start now and set the tone.",
     "Clock is ticking. Show up and make today count."
   ],
@@ -446,7 +446,6 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
   }
 
   return section;
-  //Migoy taba!
 }
 
 function renderActivityRow(
@@ -534,6 +533,6 @@ async function toggleDay(
     }
   } catch (error) {
     console.error("Error saving log:", error);
-    showToast("Couldn't save. Try again.", "error");
+    showToast("couldn't save. try again.", "error");
   }
 }

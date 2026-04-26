@@ -209,7 +209,7 @@ async function openDiaryFromNav() {
     const cover = getActiveCover(monthCover, savedCover);
     openMobileDiarySheet(currentUser.uid, activeYearMonth, diaryDays, cover);
   } catch {
-    showToast("Couldn't open diary. Try again.", "error");
+    showToast("couldn't open diary. try again.", "error");
   }
 }
 

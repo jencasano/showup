@@ -250,7 +250,7 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
 
   function handleSaveWithConfirm() {
     const { newActivities, newCadences, originalNames, originalCadences } = collectRows();
-    if (newActivities.length === 0) { showToast("You need at least one activity.", "error"); return; }
+    if (newActivities.length === 0) { showToast("you need at least one activity.", "error"); return; }
 
     const changes = [];
     newActivities.forEach((newName, i) => {
@@ -291,10 +291,10 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
       if (onMarkToggled) onMarkToggled(entry);
       backdrop.remove();
       modal.remove();
-      showToast("Activities updated.", "info");
+      showToast("activities updated.", "info");
     } catch (err) {
       console.error("Save activities error:", err);
-      showToast("Couldn't save. Try again.", "error");
+      showToast("couldn't save. try again.", "error");
       saveBtn.disabled = false;
       saveBtn.textContent = "Save changes";
     }

@@ -118,7 +118,9 @@ export function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
       </div>
     </div>
     <div class="summary-note">
-      Your monthly goals are based on how often per week you want to show up. You set the bar. Now go hit it.
+      ${isCurrentMonth
+        ? "Your monthly goals are based on how often per week you want to show up. You set the bar. Now go hit it."
+        : "Your monthly goals are based on how often per week you want to show up. You set the bar."}
     </div>
     <div class="summary-habits">
       <div class="summary-habits__label">This Month's Progress</div>
@@ -138,7 +140,7 @@ export function renderMonthlySummary(entry, stats, yearMonth, isCurrentMonth) {
     if (navigator.share) {
       navigator.share({ text }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(text).then(() => showToast("Stats copied!", "info"));
+      navigator.clipboard.writeText(text).then(() => showToast("stats copied.", "info"));
     }
   });
 
