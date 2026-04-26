@@ -105,23 +105,23 @@ export function getPaceStatus(logged, expectedByNow, lastDay, isNewUser = false)
 // ─── Message pools ────────────────────────────────────────
 const PACE_MESSAGES = {
   ahead: [
-    "You are ahead of pace. Keep that momentum going!",
-    "Overachiever alert. Do not stop now.",
-    "You are crushing it this month. Stay consistent!",
+    "You're ahead of pace. Keep that momentum going!",
+    "Overachiever alert. Don't stop now.",
+    "You're crushing it this month. Stay consistent!",
     "Ahead of schedule. This is what showing up looks like."
   ],
   "on-track": [
-    "Steady progress. You are right where you need to be.",
-    "Holding the line. Do not let up.",
+    "Steady progress. You're right where you need to be.",
+    "Holding the line. Don't let up.",
     "On track and looking good. Keep it up!",
-    "You are doing the work. That is all that matters."
+    "You're doing the work. That's all that matters."
   ],
   behind: [
-    "A little behind. A few extra sessions and you are back.",
-    "Busy is not an excuse. You have got time.",
-    "This will not complete itself. Let us go.",
-    "You are not weak, are you? Catch up.",
-    "The month is not over yet. Close the gap."
+    "A little behind. A few extra sessions and you're back.",
+    "Busy isn't an excuse. You've got time.",
+    "This won't complete itself. Let's go.",
+    "You're not weak, are you? Catch up.",
+    "The month isn't over yet. Close the gap."
   ],
   early: [
     "A fresh month. Start strong and set the tone!",
@@ -156,8 +156,8 @@ const PAST_PACE_MESSAGES = {
   ],
   behind: [
     "This month fell short. The next one is yours.",
-    "Not your best month. That is okay. Keep going.",
-    "The data does not lie. But neither does a comeback.",
+    "Not your best month. That's okay. Keep going.",
+    "The data doesn't lie. But neither does a comeback.",
     "Missed the mark. You know what to do next."
   ]
 };
@@ -312,7 +312,7 @@ function buildHabitStat(activity, i, marks, cadences, yearMonth, lastDay, today,
     ahead:      "Ahead",
     "on-track": "On track",
     behind:     "Behind pace",
-    early:      "Early days!",
+    early:      "Early days",
     started:    getStartedBadgeLabel(variantKey),
     new:        "Just started"
   }[paceKey] || "On track";
