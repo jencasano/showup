@@ -1,0 +1,7 @@
+{
+  "name": "showup",
+  "private": true,
+  "scripts": {
+    "deploy": "node deploy.js"
+  }
+}
