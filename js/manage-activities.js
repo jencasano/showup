@@ -325,7 +325,7 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
               reason: "activity-deleted",
               timestamp: serverTimestamp(),
               clientTime
-            }).catch(err => console.error("Audit write failed:", err));
+            }).catch(() => {});
           });
         });
       }
