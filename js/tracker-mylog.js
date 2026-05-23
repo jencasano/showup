@@ -4,7 +4,7 @@ import {
   updateDoc, onSnapshot, serverTimestamp,
   collection, addDoc, deleteField
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDaysInMonth, getDayLabel, getCurrentYearMonth, getActivityColor } from "./utils.js";
+import { getDaysInMonth, getDayLabel, getCurrentYearMonth, getActivityColor, isPastYearMonth } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard, renderMobileDiaryCard } from "./mobile-tracker.js";
 import { getUserStats, computeStatsFromEntry, cadenceLabel } from "./stats.js";
@@ -468,6 +468,7 @@ function renderActivityRow(
   row.appendChild(label);
 
   const [ry, rm] = yearMonth.split("-").map(Number);
+  const isPastMonth = isPastYearMonth(yearMonth);
   for (let d = 1; d <= daysInMonth; d++) {
     const cell    = document.createElement("div");
     cell.className = "day-cell";
@@ -489,7 +490,7 @@ function renderActivityRow(
       cell.style.color        = "white";
     }
 
-    if (isOwner && !isFuture) {
+    if (isOwner && !isFuture && !isPastMonth) {
       cell.classList.add("clickable");
       cell.addEventListener("click", () =>
         toggleDay(cell, d, activity, markedDays, activityColor, marker, yearMonth, userId, entry, onMarkToggled)
@@ -504,6 +505,10 @@ async function toggleDay(
   cell, day, activity, markedDays, activityColor, marker,
   yearMonth, userId, entry, onMarkToggled
 ) {
+  if (isPastYearMonth(yearMonth)) {
+    showToast("past months are read-only.", "neutral");
+    return;
+  }
   const wasMarked = markedDays.includes(day);
   const action = wasMarked ? "unmark" : "mark";
   const clientTime = Date.now();

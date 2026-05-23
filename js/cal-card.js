@@ -4,7 +4,7 @@ import {
   doc, getDoc, setDoc, updateDoc,
   arrayUnion, arrayRemove, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDaysInMonth, getCurrentYearMonth, getActivityColor, getPrevYearMonth, getNextYearMonth } from "./utils.js";
+import { getDaysInMonth, getCurrentYearMonth, getActivityColor, getPrevYearMonth, getNextYearMonth, isPastYearMonth } from "./utils.js";
 import { openManageActivitiesModal } from "./manage-activities.js";
 import { showToast } from "./ui.js";
 import { icon, STICKER_ICONS } from "./icons.js";
@@ -240,6 +240,10 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   function onDayTap(day) {
     const isFuture = isCurrentMonth && day > todayDate;
     if (isFuture) return;
+    if (isOwner && isPastYearMonth(cardYearMonth)) {
+      showToast("past months are read-only.", "neutral");
+      return;
+    }
     showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate, marker,
       async (activity, newMarkedDays) => {
         if (!entry.marks) entry.marks = {};
@@ -281,6 +285,7 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
   const daysInMonth = getDaysInMonth(yearMonth);
   const marks = entry.marks || {};
   const activities = entry.activities || [];
+  const isPastMonth = isPastYearMonth(yearMonth);
 
   const headers = document.createElement("div");
   headers.className = "cal-grid-headers";
@@ -400,7 +405,7 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
     }
 
     if (!isFuture) {
-      cell.style.cursor = "pointer";
+      if (!(isOwner && isPastMonth)) cell.style.cursor = "pointer";
       cell.addEventListener("click", () => onDayTap(d));
     }
 

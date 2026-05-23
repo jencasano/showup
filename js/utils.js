@@ -26,6 +26,11 @@ export function getDayLabel(yearMonth, day) {
   return ["S","M","T","W","T","F","S"][date.getDay()];
 }
 
+// Is the given year-month earlier than the current one?
+export function isPastYearMonth(yearMonth) {
+  return yearMonth < getCurrentYearMonth();
+}
+
 // "2026-03" → "2026-02"
 export function getPrevYearMonth(yearMonth) {
   const [year, month] = yearMonth.split("-").map(Number);
