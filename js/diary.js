@@ -5,6 +5,7 @@ import {
 import {
   ref, uploadBytes, getDownloadURL, deleteObject
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { recordDiaryEvent } from "./event-write.js";
 
 function entryDocId(yearMonth, day) {
   return `${yearMonth}-${String(day).padStart(2, "0")}`;
@@ -29,6 +30,15 @@ export async function saveDiaryEntry(userId, yearMonth, day, { note, photoUrl })
   if (photoUrl !== undefined) data.photoUrl = photoUrl;
   data.lastUpdated = serverTimestamp();
   await setDoc(entryRef(userId, yearMonth, day), data, { merge: true });
+
+  // Persist the diary feed event. recordDiaryEvent decides between create
+  // and edit based on whether the event doc already exists.
+  const hasContent = (note !== undefined && note !== "") || photoUrl !== undefined;
+  if (hasContent) {
+    recordDiaryEvent(userId, yearMonth, day).catch(err =>
+      console.error("Diary event write failed:", err)
+    );
+  }
 
   // Cross-month comeback tracking: roll lastActiveDate forward, preserving
   // the previous value as prevActiveDate. Fire-and-forget.

@@ -8,6 +8,7 @@ import { renderPeopleView } from "./following-people.js";
 import { renderFeedView } from "./following-feed.js";
 import { createDebouncer } from "./feed-debounce.js";
 import { buildLogEvent, buildDiaryEvent } from "./feed-event.js";
+import { subscribeToUserEvents } from "./event-read.js";
 
 let currentView = "people";
 
@@ -46,16 +47,19 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     return () => {};
   }
 
-  let logUnsubMap   = {};
-  let diaryUnsubMap = {};
-  let userUnsubMap  = {};
+  let logUnsubMap    = {};
+  let diaryUnsubMap  = {};
+  let userUnsubMap   = {};
+  let eventsUnsubMap = {};
   let userCache   = {};
   let logsCache   = {};
   let diaryCache  = {};
   // Per-uid snapshot of markTimes ("act|day" -> ts), used to diff each burst
-  // against the previously known state so we can identify which marks belong
-  // to the current burst (vs. earlier history) and emit per-burst cards.
+  // when running the legacy fallback projection (no events doc yet).
   let knownMarks = {};
+  // Per-uid flag: an event doc has arrived. Once true, the events listener
+  // is authoritative for this uid and we suppress the legacy synthesis path.
+  let hasEvents = {};
   let followingIds       = [];
   let pinnedFollowingIds = [];
   let diaryReady = false; // gate: don't renderBoard until diary fetch is done
@@ -110,7 +114,53 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     return added;
   }
 
+  // Merge a built event into feedEvents or pendingEvents (latter when the
+  // viewer is scrolled down reading -- prevents jarring shifts).
+  function mergeEvent(evt) {
+    if (currentView === "feed" && isFeedScrolledDown()) {
+      const idx = pendingEvents.findIndex(e => e.key === evt.key);
+      if (idx >= 0) pendingEvents[idx] = evt;
+      else pendingEvents.push(evt);
+    } else {
+      const idx = feedEvents.findIndex(e => e.key === evt.key);
+      if (idx >= 0) feedEvents[idx] = evt;
+      else feedEvents.push(evt);
+    }
+  }
+
+  // An event doc from events/{uid}/items arrived. Once any event arrives for
+  // a uid, the events listener becomes authoritative -- purge any legacy
+  // synthesized log cards we may have rendered for them and stop synthesizing.
+  function onEventDoc(eventRec) {
+    const uid = eventRec.uid;
+    if (!hasEvents[uid]) {
+      hasEvents[uid] = true;
+      const legacyPrefix = `${uid}-log-`;
+      feedEvents    = feedEvents.filter(e => !e.key?.startsWith(legacyPrefix));
+      pendingEvents = pendingEvents.filter(e => !e.key?.startsWith(legacyPrefix));
+    }
+    const evt = {
+      ...eventRec,
+      type: eventRec.type === "burst" ? "log" : eventRec.type,
+      user: userCache[uid] || null,
+      log:  logsCache[uid] || null,
+      diaryEntry: eventRec.type === "diary"
+        ? (diaryCache[uid]?.[eventRec.dateStr] || null)
+        : null,
+    };
+    mergeEvent(evt);
+    renderBoard();
+  }
+
+  function onEventDocRemoved(eventRec) {
+    feedEvents    = feedEvents.filter(e => e.key !== eventRec.key);
+    pendingEvents = pendingEvents.filter(e => e.key !== eventRec.key);
+    renderBoard();
+  }
+
   function onFeedEvent(type, uid, dateStr) {
+    // Events listener has taken over for this uid -- skip legacy synthesis.
+    if (hasEvents[uid]) return;
     const user = userCache[uid] || null;
     let evt;
     if (type === "log") {
@@ -170,17 +220,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       evt = buildDiaryEvent(uid, user, diaryEntry, dateStr);
     }
 
-    if (currentView === "feed" && isFeedScrolledDown()) {
-      // User is reading -- queue silently
-      const idx = pendingEvents.findIndex(e => e.key === evt.key);
-      if (idx >= 0) pendingEvents[idx] = evt;
-      else pendingEvents.push(evt);
-    } else {
-      // User is at top or not on feed -- merge directly
-      const idx = feedEvents.findIndex(e => e.key === evt.key);
-      if (idx >= 0) feedEvents[idx] = evt;
-      else feedEvents.push(evt);
-    }
+    mergeEvent(evt);
     renderBoard();
   }
 
@@ -420,7 +460,8 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       if (!newSet.has(uid)) {
         logUnsubMap[uid]();
         delete logUnsubMap[uid];
-        if (userUnsubMap[uid]) { userUnsubMap[uid](); delete userUnsubMap[uid]; }
+        if (userUnsubMap[uid])   { userUnsubMap[uid]();   delete userUnsubMap[uid]; }
+        if (eventsUnsubMap[uid]) { eventsUnsubMap[uid](); delete eventsUnsubMap[uid]; }
         for (const key of Object.keys(diaryUnsubMap)) {
           if (key.startsWith(uid + "-")) { diaryUnsubMap[key](); delete diaryUnsubMap[key]; }
         }
@@ -428,6 +469,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         delete userCache[uid];
         delete diaryCache[uid];
         delete knownMarks[uid];
+        delete hasEvents[uid];
       }
     }
     // Also clean userUnsubMap entries that weren't paired with a log listener
@@ -438,6 +480,14 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         delete userUnsubMap[uid];
         delete userCache[uid];
       }
+    }
+
+    // Subscribe to the events collection per followed user. Once any event
+    // arrives for a uid, the events listener becomes authoritative and the
+    // legacy log/diary projection is suppressed for them.
+    for (const uid of followingIds) {
+      if (eventsUnsubMap[uid]) continue;
+      eventsUnsubMap[uid] = subscribeToUserEvents(uid, onEventDoc, onEventDocRemoved);
     }
 
     // Subscribe to log docs for new followingIds
@@ -482,8 +532,10 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     Object.values(logUnsubMap).forEach(u => u());
     Object.values(diaryUnsubMap).forEach(u => u());
     Object.values(userUnsubMap).forEach(u => u());
-    logUnsubMap = {};
-    diaryUnsubMap = {};
-    userUnsubMap = {};
+    Object.values(eventsUnsubMap).forEach(u => u());
+    logUnsubMap    = {};
+    diaryUnsubMap  = {};
+    userUnsubMap   = {};
+    eventsUnsubMap = {};
   };
 }

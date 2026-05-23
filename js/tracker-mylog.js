@@ -14,6 +14,7 @@ import { renderMonthlySummary } from "./tracker-summary.js";
 import { renderDiaryNotebook } from "./tracker-diary.js";
 import { getDiaryCover, getMonthCover, getActiveCover } from "./diary.js";
 import { DEFAULT_DIARY_COVER } from "./diary-covers.js";
+import { recordBurstMark, recordBurstUnmark } from "./event-write.js";
 
 const MARKER_SYMBOLS = {
   square:   "\u25a0",
@@ -563,6 +564,16 @@ async function toggleDay(
       timestamp: serverTimestamp(),
       clientTime
     }).catch(() => {});
+
+    // Persist this mark into the debounced burst event. The burst flushes
+    // BURST_QUIET_MS after the last mark and writes a single event doc to
+    // events/{uid}/items/burst-{batchId}. Unmark inside the same burst
+    // cancels the pending entry.
+    if (action === "mark") {
+      recordBurstMark(userId, yearMonth, day, activity, clientTime);
+    } else {
+      recordBurstUnmark(userId, yearMonth, day, activity);
+    }
 
     // Cross-month comeback tracking: roll lastActiveDate forward when a mark
     // is added, preserving the previous value as prevActiveDate. Fire-and-forget.
