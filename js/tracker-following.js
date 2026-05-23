@@ -81,9 +81,15 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     if (type === "log") {
       const log = logsCache[uid];
       if (!log) return;
+      // Skip log docs with no marks at all -- a fresh setup shouldn't show
+      // up in the feed until the user actually logs something.
+      const marks = log.marks || {};
+      const hasAnyMark = Object.values(marks).some(arr => Array.isArray(arr) && arr.length > 0);
+      if (!hasAnyMark) return;
       // buildLogEvent reads log.markTimes to derive dateStr/firedAt
       // and falls back to dateStr/today only when markTimes is absent.
       evt = buildLogEvent(uid, user, log, yearMonth, dateStr);
+      if (!evt) return;
     } else {
       const diaryEntry = diaryCache[uid]?.[dateStr] || null;
       if (!diaryEntry) return;

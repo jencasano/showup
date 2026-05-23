@@ -89,6 +89,12 @@ function findLatestMark(log) {
 }
 
 export function buildLogEvent(uid, user, log, yearMonth, dateStr) {
+  // No marks anywhere -- nothing to event on. A bare setup doc shouldn't
+  // produce a "showed up" item in the feed.
+  const marks = log?.marks || {};
+  const hasAnyMark = Object.values(marks).some(arr => Array.isArray(arr) && arr.length > 0);
+  if (!hasAnyMark) return null;
+
   // Prefer the most recent markTimes entry: it gives us both the day the
   // mark was for (key) and when the mark was actually made (value). This
   // correctly attributes backfills to the marked day rather than today.
