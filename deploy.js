@@ -48,7 +48,7 @@ process.on('SIGINT', () => {
 
 let exitCode = 0;
 try {
-  const result = spawnSync('firebase', ['deploy'], { stdio: 'inherit', shell: true });
+  const result = spawnSync('firebase', ['deploy', '--only', 'hosting'], { stdio: 'inherit', shell: true });
   exitCode = result.status ?? 1;
 } catch (err) {
   console.error('firebase deploy failed:', err.message);
