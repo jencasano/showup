@@ -1,5 +1,7 @@
 import { db } from "./firebase-config.js";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  doc, setDoc, serverTimestamp, collection, addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from "./ui.js";
 
 const ACTIVITY_COLORS = [
@@ -273,25 +275,60 @@ export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkT
   }
 
   async function doSave(newActivities, newCadences, originalNames) {
-    const oldMarks = entry.marks || {};
-    const newMarks = {};
+    const oldMarks     = entry.marks     || {};
+    const oldMarkTimes = entry.markTimes || {};
+    const newMarks     = {};
+    const newMarkTimes = {};
     newActivities.forEach((newName, i) => {
       const origName = originalNames[i];
-      newMarks[newName] = (origName && oldMarks[origName]) ? oldMarks[origName] : [];
+      newMarks[newName]     = (origName && oldMarks[origName])     ? oldMarks[origName]     : [];
+      newMarkTimes[newName] = (origName && oldMarkTimes[origName]) ? oldMarkTimes[origName] : {};
     });
+
+    // Activities present before this save whose original names didn't survive
+    // are deletions (a rename keeps the original name in `originalNames`).
+    const survivingOrig = new Set(originalNames.filter(Boolean));
+    const deletedActivities = (entry.activities || []).filter(name => !survivingOrig.has(name));
 
     saveBtn.disabled = true;
     saveBtn.textContent = "Saving\u2026";
     try {
       const logRef = doc(db, "logs", yearMonth, "entries", currentUser.uid);
-      await setDoc(logRef, { activities: newActivities, cadences: newCadences, marks: newMarks }, { merge: true });
+      await setDoc(logRef, {
+        activities:  newActivities,
+        cadences:    newCadences,
+        marks:       newMarks,
+        markTimes:   newMarkTimes,
+        lastUpdated: serverTimestamp()
+      }, { merge: true });
       entry.activities = newActivities;
       entry.cadences   = newCadences;
       entry.marks      = newMarks;
+      entry.markTimes  = newMarkTimes;
       if (onMarkToggled) onMarkToggled(entry);
       backdrop.remove();
       modal.remove();
       showToast("activities updated.", "info");
+
+      // Fire-and-forget: one audit doc per mark removed by activity deletion.
+      // Mustn't block the UI; failures only log.
+      if (deletedActivities.length > 0) {
+        const auditCol = collection(db, "logs", yearMonth, "entries", currentUser.uid, "audit");
+        const clientTime = Date.now();
+        deletedActivities.forEach(actName => {
+          const days = oldMarks[actName] || [];
+          days.forEach(day => {
+            addDoc(auditCol, {
+              activity: actName,
+              day,
+              action: "unmark",
+              reason: "activity-deleted",
+              timestamp: serverTimestamp(),
+              clientTime
+            }).catch(err => console.error("Audit write failed:", err));
+          });
+        });
+      }
     } catch (err) {
       console.error("Save activities error:", err);
       showToast("couldn't save. try again.", "error");
