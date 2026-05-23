@@ -52,6 +52,10 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
   let userCache   = {};
   let logsCache   = {};
   let diaryCache  = {};
+  // Per-uid snapshot of markTimes ("act|day" -> ts), used to diff each burst
+  // against the previously known state so we can identify which marks belong
+  // to the current burst (vs. earlier history) and emit per-burst cards.
+  let knownMarks = {};
   let followingIds       = [];
   let pinnedFollowingIds = [];
   let diaryReady = false; // gate: don't renderBoard until diary fetch is done
@@ -76,6 +80,36 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function snapshotMarkTimes(log) {
+    const result = new Map();
+    const mt = log?.markTimes;
+    if (!mt) return result;
+    for (const [actName, dayMap] of Object.entries(mt)) {
+      if (!dayMap) continue;
+      for (const [dayStr, ts] of Object.entries(dayMap)) {
+        if (typeof ts !== "number") continue;
+        result.set(`${actName}|${dayStr}`, ts);
+      }
+    }
+    return result;
+  }
+
+  function diffMarks(oldMap, newMap) {
+    const added = [];
+    for (const [key, ts] of newMap) {
+      const oldTs = oldMap.get(key);
+      if (oldTs == null || oldTs !== ts) {
+        const sep = key.lastIndexOf("|");
+        added.push({
+          activity: key.slice(0, sep),
+          day: parseInt(key.slice(sep + 1), 10),
+          ts,
+        });
+      }
+    }
+    return added;
+  }
+
   function onFeedEvent(type, uid, dateStr) {
     const user = userCache[uid] || null;
     let evt;
@@ -86,10 +120,40 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       // up in the feed until the user actually logs something.
       const marks = log.marks || {};
       const hasAnyMark = Object.values(marks).some(arr => Array.isArray(arr) && arr.length > 0);
-      if (!hasAnyMark) return;
-      // buildLogEvent reads log.markTimes to derive dateStr/firedAt
-      // and falls back to dateStr/today only when markTimes is absent.
-      evt = buildLogEvent(uid, user, log, yearMonth, dateStr);
+      if (!hasAnyMark) {
+        knownMarks[uid] = new Map();
+        return;
+      }
+
+      const newSnap = snapshotMarkTimes(log);
+      const oldSnap = knownMarks[uid];
+
+      let opts;
+      if (oldSnap == null) {
+        // First time we see this uid: treat all current marks as one
+        // historical batch. buildLogEvent derives batchId/firedAt/dateStr
+        // from log.markTimes (or falls back for old docs).
+        opts = undefined;
+      } else {
+        const added = diffMarks(oldSnap, newSnap);
+        if (added.length === 0) {
+          // No new marks (likely an unmark or no-op write). Update the
+          // snapshot so a future re-mark on the same (act, day) is detected
+          // as a new burst, but emit nothing for this snapshot.
+          knownMarks[uid] = newSnap;
+          return;
+        }
+        const burstActivities = [...new Set(added.map(m => m.activity))];
+        const tsValues = added.map(m => m.ts);
+        const batchId = Math.min(...tsValues);
+        const burstFiredAt = Math.max(...tsValues);
+        const latestDay = Math.max(...added.map(m => m.day));
+        const burstDateStr = `${yearMonth}-${String(latestDay).padStart(2, "0")}`;
+        opts = { batchId, burstActivities, burstFiredAt, burstDateStr };
+      }
+
+      knownMarks[uid] = newSnap;
+      evt = buildLogEvent(uid, user, log, yearMonth, dateStr, opts);
       if (!evt) return;
     } else {
       const diaryEntry = diaryCache[uid]?.[dateStr] || null;
@@ -354,6 +418,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         delete logsCache[uid];
         delete userCache[uid];
         delete diaryCache[uid];
+        delete knownMarks[uid];
       }
     }
     // Also clean userUnsubMap entries that weren't paired with a log listener

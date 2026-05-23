@@ -88,33 +88,53 @@ function findLatestMark(log) {
   return { ms: bestMs, day: bestDay };
 }
 
-export function buildLogEvent(uid, user, log, yearMonth, dateStr) {
+export function buildLogEvent(uid, user, log, yearMonth, dateStr, opts = {}) {
   // No marks anywhere -- nothing to event on. A bare setup doc shouldn't
   // produce a "showed up" item in the feed.
   const marks = log?.marks || {};
   const hasAnyMark = Object.values(marks).some(arr => Array.isArray(arr) && arr.length > 0);
   if (!hasAnyMark) return null;
 
-  // Prefer the most recent markTimes entry: it gives us both the day the
-  // mark was for (key) and when the mark was actually made (value). This
-  // correctly attributes backfills to the marked day rather than today.
-  // For old docs without markTimes, fall back to the caller's dateStr (or
-  // today) and the doc-level lastUpdated.
+  const { batchId: optBatchId, burstActivities, burstFiredAt, burstDateStr } = opts;
+  const isBurst = optBatchId != null;
+
+  // Burst mode: caller has identified a specific debounce burst and supplies
+  // its identity. Historical mode: derive identity from the most recent
+  // markTimes entry so we get one stable card per person on initial load.
   const latest = findLatestMark(log);
-  const ds = latest
-    ? `${yearMonth}-${String(latest.day).padStart(2, "0")}`
-    : (dateStr || new Date().toISOString().slice(0, 10));
-  const firedAt = latest?.ms || extractMs(log) || Date.now();
+  let ds, firedAt, batchId, keySuffix;
+
+  if (isBurst) {
+    batchId = optBatchId;
+    firedAt = burstFiredAt || latest?.ms || extractMs(log) || Date.now();
+    ds = burstDateStr
+      || (latest ? `${yearMonth}-${String(latest.day).padStart(2, "0")}` : null)
+      || dateStr
+      || new Date().toISOString().slice(0, 10);
+    keySuffix = batchId;
+  } else {
+    ds = latest
+      ? `${yearMonth}-${String(latest.day).padStart(2, "0")}`
+      : (dateStr || new Date().toISOString().slice(0, 10));
+    firedAt = latest?.ms || extractMs(log) || Date.now();
+    // Old docs without markTimes can't produce a stable batchId -- fall back
+    // to the dateStr-based key (preserves prior one-card-per-day behavior).
+    batchId = latest?.ms || null;
+    keySuffix = batchId != null ? batchId : ds;
+  }
+
   return {
     type: "log",
     uid,
     user,
     log,
+    burstActivities: burstActivities || null,
     diaryEntry: null,
     dateStr: ds,
     yearMonth,
     firedAt,
-    key: `${uid}-log-${ds}`,
+    batchId,
+    key: `${uid}-log-${keySuffix}`,
   };
 }
 
@@ -134,7 +154,7 @@ export function buildDiaryEvent(uid, user, diaryEntry, dateStr) {
 // ── Renderer ────────────────────────────────────────
 
 export function renderFeedEvent(event, currentUser) {
-  const { type, uid, user, log, diaryEntry, dateStr } = event;
+  const { type, uid, user, log, diaryEntry, dateStr, burstActivities, firedAt } = event;
   const displayName = user?.displayName || "Unknown";
   const firstName = (displayName || "").split(" ")[0] || displayName;
   const privacy = getPrivacy(user);
@@ -159,8 +179,13 @@ export function renderFeedEvent(event, currentUser) {
   const tierKey = tier === "followers" ? "sharing" : tier;
   const rawCopy = resolveFeedCopy(tierKey, type, copyContext, uid, dateStr);
 
-  const markedActivities = type === "log" ? getMarkedActivities(log) : [];
-  const activitiesHtml = collapseActivities(markedActivities);
+  let displayActivities = [];
+  if (type === "log") {
+    displayActivities = (burstActivities && burstActivities.length > 0)
+      ? burstActivities
+      : getMarkedActivities(log);
+  }
+  const activitiesHtml = collapseActivities(displayActivities);
   const dateLabel = formatBackfillDate(dateStr);
 
   const filledCopy = fillFeedCopy(rawCopy, {
@@ -202,10 +227,12 @@ export function renderFeedEvent(event, currentUser) {
 
   const timeEl = document.createElement("div");
   timeEl.className = "fw-feed-evt-time";
-  // Timestamp from the event source
+  // Timestamp from the event source. For log events, prefer firedAt (the
+  // burst's latest mark) so multiple cards from the same person on the same
+  // day show their own moment, not the doc's lastUpdated.
   const ts = type === "diary"
     ? diaryEntry?.lastUpdated
-    : log?.lastUpdated;
+    : (firedAt || log?.lastUpdated);
   let timeText = formatEventTime(ts);
 
   // Ghost tier: no separate timestamp (folds into copy)
