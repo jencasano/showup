@@ -563,6 +563,21 @@ async function toggleDay(
       timestamp: serverTimestamp(),
       clientTime
     }).catch(() => {});
+
+    // Cross-month comeback tracking: roll lastActiveDate forward when a mark
+    // is added, preserving the previous value as prevActiveDate. Fire-and-forget.
+    if (action === "mark") {
+      (async () => {
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+        const oldLastActive = userSnap.exists() ? (userSnap.data().lastActiveDate || null) : null;
+        const newLastActive = `${yearMonth}-${String(day).padStart(2, "0")}`;
+        await updateDoc(userRef, {
+          prevActiveDate: oldLastActive,
+          lastActiveDate: newLastActive
+        });
+      })().catch(() => {});
+    }
   } catch (error) {
     console.error("Error saving log:", error);
     showToast("couldn't save. try again.", "error");

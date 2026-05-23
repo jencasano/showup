@@ -142,7 +142,10 @@ export function renderFeedEvent(event, currentUser) {
   const deco = log?.decoration || user?.decoration || { color: "#C3342B", fontColor: "#FFFFFF" };
 
   // Compute signal context from log data
-  const signal = computeSignal(displayName, log);
+  const signal = computeSignal(displayName, log, {
+    lastActiveDate: user?.lastActiveDate,
+    prevActiveDate: user?.prevActiveDate,
+  });
   const contextKey = signal.contextKey || "default";
 
   // Determine diary sub-context: today vs past

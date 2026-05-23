@@ -1,6 +1,6 @@
 import { db, storage } from "./firebase-config.js";
 import {
-  collection, doc, getDoc, getDocs, setDoc, serverTimestamp
+  collection, doc, getDoc, getDocs, setDoc, updateDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   ref, uploadBytes, getDownloadURL, deleteObject
@@ -29,6 +29,19 @@ export async function saveDiaryEntry(userId, yearMonth, day, { note, photoUrl })
   if (photoUrl !== undefined) data.photoUrl = photoUrl;
   data.lastUpdated = serverTimestamp();
   await setDoc(entryRef(userId, yearMonth, day), data, { merge: true });
+
+  // Cross-month comeback tracking: roll lastActiveDate forward, preserving
+  // the previous value as prevActiveDate. Fire-and-forget.
+  (async () => {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    const oldLastActive = userSnap.exists() ? (userSnap.data().lastActiveDate || null) : null;
+    const newLastActive = `${yearMonth}-${String(day).padStart(2, "0")}`;
+    await updateDoc(userRef, {
+      prevActiveDate: oldLastActive,
+      lastActiveDate: newLastActive
+    });
+  })().catch(() => {});
 }
 
 export async function uploadDiaryPhoto(userId, yearMonth, day, file) {

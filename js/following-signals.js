@@ -34,7 +34,7 @@ function fillName(template, firstName) {
 
 // -------------------------------------------------------------------------
 
-export function computeSignal(displayName, logEntry) {
+export function computeSignal(displayName, logEntry, userMeta) {
   const firstName = (displayName || "").split(" ")[0] || displayName;
   const fallback  = {
     calendarHeadline: fillName(signalCopy.fallback_calendar, firstName),
@@ -75,6 +75,28 @@ export function computeSignal(displayName, logEntry) {
   const isComeback30  = daysSinceLastActive >= 30;
   const isComeback7   = daysSinceLastActive >= 7 && daysSinceLastActive < 30;
 
+  // Cross-month comeback: the within-month check only sees this month's marks,
+  // so a user returning after weeks/months away looks "active today" with no
+  // gap. Use prevActiveDate from the user doc to detect the real gap when this
+  // month's activity is just getting started.
+  let isComeback30Cross = false;
+  let isComeback7Cross  = false;
+  if (userMeta?.prevActiveDate && !isComeback30 && !isComeback7) {
+    const prevYM = userMeta.prevActiveDate.slice(0, 7);
+    const lastActiveDateStr = userMeta.lastActiveDate || new Date().toISOString().slice(0, 10);
+    const lastYM = lastActiveDateStr.slice(0, 7);
+    if (prevYM !== lastYM) {
+      const allRecent = sortedDays.every(d => today - d <= 2);
+      if (totalDaysActive <= 2 && allRecent) {
+        const prevDate = new Date(userMeta.prevActiveDate + "T00:00:00");
+        const lastDate = new Date(lastActiveDateStr + "T00:00:00");
+        const gap = Math.floor((lastDate - prevDate) / (1000 * 60 * 60 * 24));
+        if (gap >= 30)     isComeback30Cross = true;
+        else if (gap >= 7) isComeback7Cross  = true;
+      }
+    }
+  }
+
   // streak_full_month: every day from 1..today has a mark
   const isStreakFullMonth = (() => {
     if (today < 2) return false;
@@ -92,6 +114,8 @@ export function computeSignal(displayName, logEntry) {
   if      (isFirstEver)          { key = "first_ever";  contextKey = "first_ever"; }
   else if (isComeback30)         { key = "comeback_30";  contextKey = "comeback_big"; }
   else if (isComeback7)          { key = "comeback_7";   contextKey = "comeback_small"; }
+  else if (isComeback30Cross)    { key = "comeback_30";  contextKey = "comeback_big"; }
+  else if (isComeback7Cross)     { key = "comeback_7";   contextKey = "comeback_small"; }
   else if (isBackfill)           { key = "checked_in";   contextKey = "backfill"; }
   else if (isStreakFullMonth)    { key = "streak_25";    contextKey = "streak_full_month"; }
   else if (streak >= 25)         { key = "streak_25";    contextKey = "streak_25"; }
