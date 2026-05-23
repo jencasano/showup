@@ -67,8 +67,38 @@ function extractMs(obj) {
   return 0;
 }
 
+// Find the most recent mark across all activities by scanning log.markTimes.
+// Returns { ms, day } or null when markTimes is missing/empty (older docs).
+function findLatestMark(log) {
+  const mt = log?.markTimes;
+  if (!mt) return null;
+  let bestMs = 0;
+  let bestDay = null;
+  for (const dayMap of Object.values(mt)) {
+    if (!dayMap) continue;
+    for (const [dayStr, ts] of Object.entries(dayMap)) {
+      if (typeof ts !== "number") continue;
+      if (ts > bestMs) {
+        bestMs = ts;
+        bestDay = parseInt(dayStr, 10);
+      }
+    }
+  }
+  if (!bestMs || bestDay == null) return null;
+  return { ms: bestMs, day: bestDay };
+}
+
 export function buildLogEvent(uid, user, log, yearMonth, dateStr) {
-  const ds = dateStr || new Date().toISOString().slice(0, 10);
+  // Prefer the most recent markTimes entry: it gives us both the day the
+  // mark was for (key) and when the mark was actually made (value). This
+  // correctly attributes backfills to the marked day rather than today.
+  // For old docs without markTimes, fall back to the caller's dateStr (or
+  // today) and the doc-level lastUpdated.
+  const latest = findLatestMark(log);
+  const ds = latest
+    ? `${yearMonth}-${String(latest.day).padStart(2, "0")}`
+    : (dateStr || new Date().toISOString().slice(0, 10));
+  const firedAt = latest?.ms || extractMs(log) || Date.now();
   return {
     type: "log",
     uid,
@@ -77,7 +107,7 @@ export function buildLogEvent(uid, user, log, yearMonth, dateStr) {
     diaryEntry: null,
     dateStr: ds,
     yearMonth,
-    firedAt: extractMs(log) || Date.now(),
+    firedAt,
     key: `${uid}-log-${ds}`,
   };
 }

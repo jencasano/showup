@@ -81,8 +81,9 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     if (type === "log") {
       const log = logsCache[uid];
       if (!log) return;
-      const evtDate = dateStr || new Date().toISOString().slice(0, 10);
-      evt = buildLogEvent(uid, user, log, yearMonth, evtDate);
+      // buildLogEvent reads log.markTimes to derive dateStr/firedAt
+      // and falls back to dateStr/today only when markTimes is absent.
+      evt = buildLogEvent(uid, user, log, yearMonth, dateStr);
     } else {
       const diaryEntry = diaryCache[uid]?.[dateStr] || null;
       if (!diaryEntry) return;
