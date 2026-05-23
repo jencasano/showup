@@ -48,6 +48,7 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
 
   let logUnsubMap   = {};
   let diaryUnsubMap = {};
+  let userUnsubMap  = {};
   let userCache   = {};
   let logsCache   = {};
   let diaryCache  = {};
@@ -251,15 +252,32 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     followingIds       = data.following        || [];
     pinnedFollowingIds = (data.pinnedFollowing || []).filter(uid => followingIds.includes(uid));
 
-    // Fetch user docs for new followingIds
+    // Live listener for each followed user doc so userCache stays fresh
+    // (e.g. lastActiveDate / prevActiveDate updates flow through immediately).
+    // We resolve the await on the first snapshot so the rest of the setup can
+    // proceed; subsequent snapshots just refresh the cache and re-render.
     const deletedUids = new Set();
-    await Promise.all(followingIds.map(async (uid) => {
-      if (userCache[uid]) return;
-      try {
-        const snap = await getDoc(doc(db, "users", uid));
-        if (snap.exists()) userCache[uid] = snap.data();
-        else deletedUids.add(uid);
-      } catch { /* network error -- leave unresolved, don't assume deleted */ }
+    await Promise.all(followingIds.map((uid) => {
+      if (userUnsubMap[uid]) return Promise.resolve();
+      return new Promise((resolve) => {
+        let isFirst = true;
+        userUnsubMap[uid] = onSnapshot(doc(db, "users", uid), (snap) => {
+          if (snap.exists()) {
+            userCache[uid] = snap.data();
+          } else if (isFirst) {
+            deletedUids.add(uid);
+          }
+          if (isFirst) {
+            isFirst = false;
+            resolve();
+          } else {
+            renderBoard();
+          }
+        }, (err) => {
+          console.error("User snapshot error:", err);
+          if (isFirst) { isFirst = false; resolve(); }
+        });
+      });
     }));
 
     // Auto-clean confirmed-deleted follows
@@ -329,12 +347,22 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       if (!newSet.has(uid)) {
         logUnsubMap[uid]();
         delete logUnsubMap[uid];
+        if (userUnsubMap[uid]) { userUnsubMap[uid](); delete userUnsubMap[uid]; }
         for (const key of Object.keys(diaryUnsubMap)) {
           if (key.startsWith(uid + "-")) { diaryUnsubMap[key](); delete diaryUnsubMap[key]; }
         }
         delete logsCache[uid];
         delete userCache[uid];
         delete diaryCache[uid];
+      }
+    }
+    // Also clean userUnsubMap entries that weren't paired with a log listener
+    // (e.g. unfollow happened before the log listener was set up).
+    for (const uid of Object.keys(userUnsubMap)) {
+      if (!newSet.has(uid)) {
+        userUnsubMap[uid]();
+        delete userUnsubMap[uid];
+        delete userCache[uid];
       }
     }
 
@@ -379,7 +407,9 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
     window.removeEventListener("scroll", onScrollCheck);
     Object.values(logUnsubMap).forEach(u => u());
     Object.values(diaryUnsubMap).forEach(u => u());
+    Object.values(userUnsubMap).forEach(u => u());
     logUnsubMap = {};
     diaryUnsubMap = {};
+    userUnsubMap = {};
   };
 }
