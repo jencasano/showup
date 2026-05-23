@@ -575,7 +575,7 @@
   <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Up next</span>
-      <span class="entry-badge badge-deck">16 items</span>
+      <span class="entry-badge badge-deck">15 items</span>
     </div>
     <details class="on-deck-details">
       <summary class="on-deck-summary">
@@ -586,21 +586,20 @@
       <div class="on-deck-body">
         <ul class="deck-list">
           <li class="deck-item"><span class="deck-num">1</span>Per-tab loading states, show inline spinners on Feed and All tabs during initial data fetch, especially as user count grows</li>
-          <li class="deck-item"><span class="deck-num">2</span>Past-month lock, logging becomes read-only after the month passes</li>
-          <li class="deck-item"><span class="deck-num">3</span>Pinned cards L-to-R order, revisit when CSS Masonry has wider browser support</li>
-          <li class="deck-item"><span class="deck-num">4</span>Optimistic upload UX, close diary modal instantly, upload in background, Saving/Saved toast</li>
-          <li class="deck-item"><span class="deck-num">5</span>Safari Fit mode blur, canvas downscale/upscale tuning on iOS</li>
-          <li class="deck-item"><span class="deck-num">6</span>Storage migration to asia-southeast1 for faster uploads from the Philippines</li>
-          <li class="deck-item"><span class="deck-num">7</span>All tab card tap, no-op placeholder, activates when user profiles are built</li>
-          <li class="deck-item"><span class="deck-num">8</span>Diary Phase B, swipe between pages, per-habit photo reel</li>
-          <li class="deck-item"><span class="deck-num">9</span>Diary Phase C, diary pages visible to followers</li>
-          <li class="deck-item"><span class="deck-num">10</span>Allow 2-3 photos per diary entry</li>
-          <li class="deck-item"><span class="deck-num">11</span>Custom spinner / loader</li>
-          <li class="deck-item"><span class="deck-num">12</span>Polish + landing screen</li>
-          <li class="deck-item"><span class="deck-num">13</span>Settings panel (Phase 3), edit display name, change default diary cover, toggle theme, privacy tiers, Firestore rules enforcement</li>
-          <li class="deck-item"><span class="deck-num">14</span>Modal audit, unify dismiss affordances, scroll behavior, and overlay blur across diary, cover picker, and confirm sheets</li>
-          <li class="deck-item"><span class="deck-num">15</span>Sticker repaint, re-author the fourteen sticker SVGs in the Mixtape palette</li>
-          <li class="deck-item"><span class="deck-num">16</span>First paid cover, content and checkout scope, entitlements architecture already in place</li>
+          <li class="deck-item"><span class="deck-num">2</span>Pinned cards L-to-R order, revisit when CSS Masonry has wider browser support</li>
+          <li class="deck-item"><span class="deck-num">3</span>Optimistic upload UX, close diary modal instantly, upload in background, Saving/Saved toast</li>
+          <li class="deck-item"><span class="deck-num">4</span>Safari Fit mode blur, canvas downscale/upscale tuning on iOS</li>
+          <li class="deck-item"><span class="deck-num">5</span>Storage migration to asia-southeast1 for faster uploads from the Philippines</li>
+          <li class="deck-item"><span class="deck-num">6</span>All tab card tap, no-op placeholder, activates when user profiles are built</li>
+          <li class="deck-item"><span class="deck-num">7</span>Diary Phase B, swipe between pages, per-habit photo reel</li>
+          <li class="deck-item"><span class="deck-num">8</span>Diary Phase C, diary pages visible to followers</li>
+          <li class="deck-item"><span class="deck-num">9</span>Allow 2-3 photos per diary entry</li>
+          <li class="deck-item"><span class="deck-num">10</span>Custom spinner / loader</li>
+          <li class="deck-item"><span class="deck-num">11</span>Polish + landing screen</li>
+          <li class="deck-item"><span class="deck-num">12</span>Settings panel (Phase 3), edit display name, change default diary cover, toggle theme, privacy tiers, Firestore rules enforcement</li>
+          <li class="deck-item"><span class="deck-num">13</span>Modal audit, unify dismiss affordances, scroll behavior, and overlay blur across diary, cover picker, and confirm sheets</li>
+          <li class="deck-item"><span class="deck-num">14</span>Sticker repaint, re-author the fourteen sticker SVGs in the Mixtape palette</li>
+          <li class="deck-item"><span class="deck-num">15</span>First paid cover, content and checkout scope, entitlements architecture already in place</li>
         </ul>
       </div>
     </details>
@@ -629,8 +628,60 @@
     </details>
   </div>
 
-  <!-- ── May 23, 2026 · Feed · Events Persistence ── -->
+  <!-- ── May 23, 2026 · Polish · Past-month lock ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">May 23, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">PO10</span>
+    </div>
+    <div class="entry-title">Polish · Past-month lock</div>
+    <p class="entry-desc">Activity logging is now read-only for past months. The current month stays fully open for backfill (forgot Tuesday? fill it in on Saturday), but once the month turns, the calendar is sealed. Diary remains writable for all months -- it's a journal, not a scorecard. The lock is visual and behavioral: past-month grids render at reduced opacity with no tap/hover affordances, a quiet DM Mono line appears near the month heading with a randomly picked copy variant, and the Manage Activities gear icon hides entirely. No toast interruptions, no error states, just a settled page that makes it obvious the chapter is closed.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Day tap lock, desktop and mobile</div>
+        <div class="item-desc">Both js/tracker-mylog.js (desktop grid) and js/cal-card.js (mobile calendar) suppress day toggles when the active yearMonth is earlier than the current year-month. Click handlers are removed entirely rather than guarded with a toast -- the visual treatment communicates the lock, so tapping into silence is the right UX. Mobile day sheet also respects the lock.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Visual muting</div>
+        <div class="item-desc">Past-month calendar grids render at reduced opacity so the whole surface reads as settled rather than active. Logged markers stay visible for history browsing, but the grid loses its pointer cursor and hover highlights. The effect is subtle -- enough to feel different, not enough to feel disabled.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Persistent copy note</div>
+        <div class="item-desc">A small DM Mono line in var(--ink-faint) appears near the month heading when viewing a past month. Randomly picked from a pool of five variants on each render: 'that chapter's closed.' / 'in the books.' / 'done. locked.' / 'this month is sealed.' / 'you showed up (or didn't).' Copy pool is shared between desktop and mobile so both draw from the same list. No toast, no icon, no box -- just a quiet line that's part of the page.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Manage Activities gear hidden</div>
+        <div class="item-desc">The gear icon on the calendar card badge is suppressed when viewing a past month. Activities for closed months are not editable.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Diary stays open</div>
+        <div class="item-desc">Diary entries remain fully writable for past months. No muting, no lock, no note on the diary surface. The diary is a journal -- you might want to write about a memory from last month, and the app should never stop you.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Design decision: honor system for the current month</div>
+        <div class="item-desc">The lock only applies at the month boundary, not per-day. Users can backfill any day within the current month, same as filling in a paper journal the morning after. The app trusts you to be honest with yourself. Past months close because historical data feeds streaks, milestones, and eventually social features -- that data needs to be trustworthy.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/PO10/01.png" alt="Polish · Past-month lock" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO10/02.png" alt="Polish · Past-month lock" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO10/03.png" alt="Polish · Past-month lock" onerror="this.style.display='none'">
+        <img src="assets/build-log/PO10/04.png" alt="Polish · Past-month lock" onerror="this.style.display='none'">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── May 23, 2026 · Feed · Events Persistence ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">May 23, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
