@@ -1,7 +1,8 @@
 import { db, auth } from "./firebase-config.js";
 import {
   doc, getDoc, setDoc,
-  updateDoc, onSnapshot, serverTimestamp
+  updateDoc, onSnapshot, serverTimestamp,
+  collection, addDoc, deleteField
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getDaysInMonth, getDayLabel, getCurrentYearMonth, getActivityColor } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
@@ -502,8 +503,11 @@ async function toggleDay(
   cell, day, activity, markedDays, activityColor, marker,
   yearMonth, userId, entry, onMarkToggled
 ) {
-  const isMarked = markedDays.includes(day);
-  if (isMarked) {
+  const wasMarked = markedDays.includes(day);
+  const action = wasMarked ? "unmark" : "mark";
+  const clientTime = Date.now();
+
+  if (wasMarked) {
     markedDays.splice(markedDays.indexOf(day), 1);
     cell.classList.remove("marked");
     cell.style.background = cell.style.borderColor = cell.style.color = "";
@@ -520,17 +524,45 @@ async function toggleDay(
   if (entry) {
     if (!entry.marks) entry.marks = {};
     entry.marks[activity] = markedDays;
+    if (!entry.markTimes) entry.markTimes = {};
+    if (!entry.markTimes[activity]) entry.markTimes[activity] = {};
+    if (action === "mark") {
+      entry.markTimes[activity][day] = clientTime;
+    } else {
+      delete entry.markTimes[activity][day];
+    }
     if (onMarkToggled) onMarkToggled(entry);
   }
 
   try {
     const logRef  = doc(db, "logs", yearMonth, "entries", userId);
     const logSnap = await getDoc(logRef);
+    const markTimePath = `markTimes.${activity}.${day}`;
     if (logSnap.exists()) {
-      await updateDoc(logRef, { [`marks.${activity}`]: markedDays, lastUpdated: serverTimestamp() });
+      await updateDoc(logRef, {
+        [`marks.${activity}`]: markedDays,
+        [markTimePath]: action === "mark" ? clientTime : deleteField(),
+        lastUpdated: serverTimestamp()
+      });
     } else {
-      await setDoc(logRef, { userId, yearMonth, marks: { [activity]: markedDays }, lastUpdated: serverTimestamp() });
+      await setDoc(logRef, {
+        userId,
+        yearMonth,
+        marks: { [activity]: markedDays },
+        markTimes: action === "mark" ? { [activity]: { [day]: clientTime } } : {},
+        lastUpdated: serverTimestamp()
+      });
     }
+
+    // Fire-and-forget audit doc. Don't await -- mustn't block the UI.
+    const auditCol = collection(db, "logs", yearMonth, "entries", userId, "audit");
+    addDoc(auditCol, {
+      activity,
+      day,
+      action,
+      timestamp: serverTimestamp(),
+      clientTime
+    }).catch(err => console.error("Audit write failed:", err));
   } catch (error) {
     console.error("Error saving log:", error);
     showToast("couldn't save. try again.", "error");
