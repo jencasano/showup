@@ -575,7 +575,7 @@
   <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Up next</span>
-      <span class="entry-badge badge-deck">23 items</span>
+      <span class="entry-badge badge-deck">17 items</span>
     </div>
     <details class="on-deck-details">
       <summary class="on-deck-summary">
@@ -587,27 +587,21 @@
         <ul class="deck-list">
           <li class="deck-item"><span class="deck-num">1</span>Tab spinners, shows unnecessarily on instant tab switches</li>
           <li class="deck-item"><span class="deck-num">2</span>Past-month lock, logging becomes read-only after the month passes</li>
-          <li class="deck-item"><span class="deck-num">3</span>Manage Activities, rename/delete/add activities for current month</li>
-          <li class="deck-item"><span class="deck-num">4</span>Pinned cards L-to-R order, revisit when CSS Masonry has wider browser support</li>
-          <li class="deck-item"><span class="deck-num">5</span>Optimistic upload UX, close diary modal instantly, upload in background, Saving/Saved toast</li>
-          <li class="deck-item"><span class="deck-num">6</span>Safari Fit mode blur, canvas downscale/upscale tuning on iOS</li>
-          <li class="deck-item"><span class="deck-num">7</span>Diary polaroid, square in desktop modal read view</li>
-          <li class="deck-item"><span class="deck-num">8</span>Storage migration to asia-southeast1 for faster uploads from the Philippines</li>
-          <li class="deck-item"><span class="deck-num">9</span><s>Feed card UI polish, zone divider missing; double "diary." label</s> → shipped in FO02</li>
-          <li class="deck-item"><span class="deck-num">10</span><s>Feed, per-day diary fetch (today's entry, not latest-ever)</s> → shipped in FO02</li>
-          <li class="deck-item"><span class="deck-num">11</span><s>Feed, changed zone (log removed / diary removed states)</s> → superseded by FO04 event model</li>
-          <li class="deck-item"><span class="deck-num">12</span><s>Feed, milestone cards (streak hits, first day, comeback)</s> → superseded by FO04 event model</li>
-          <li class="deck-item"><span class="deck-num">13</span>All tab card tap, no-op placeholder, activates when user profiles are built</li>
-          <li class="deck-item"><span class="deck-num">14</span>Diary Phase B, swipe between pages, per-habit photo reel</li>
-          <li class="deck-item"><span class="deck-num">15</span>Diary Phase C, diary pages visible to followers</li>
-          <li class="deck-item"><span class="deck-num">16</span>Allow 2-3 photos per diary entry</li>
-          <li class="deck-item"><span class="deck-num">17</span>Custom spinner / loader</li>
-          <li class="deck-item"><span class="deck-num">18</span>Polish + landing screen</li>
-          <li class="deck-item"><span class="deck-num">19</span>Firestore rules, enforce privacy tiers server-side (diary private / ghost / lowkey are UI-only right now)</li>
-          <li class="deck-item"><span class="deck-num">20</span>Edit display name, back button from monthly setup Step 1 to setup.html so first-time users can fix a typo; settings entry point when that lands</li>
-          <li class="deck-item"><span class="deck-num">21</span><s>No-full-weeks preview calendar readability on Side A, the "no full weeks this month" caption and the "you joined on X" pill wash out against paper-on-paper contrast inside the closed diary card; revisit ink tokens or add a subtle backing plate so the copy stays legible on the light theme</s> → shipped in PO09 (frosted-glass overlay tuned to 0.72 alpha + 1px blur lets the calendar grid show through as a soft suggestion of structure while keeping the copy and the "you joined on X" pill legible on both themes)</li>
-          <li class="deck-item"><span class="deck-num">22</span><s>Progress + stats color audit, pace badges (ahead/on-track/behind/early/started), progress bar fills, streak pills, and "X to go" pills all use hard-coded Tailwind-ish hex values that bypass the design token system; migrate to Mixtape-derived semantic tokens that auto-swap per theme</s> → shipped in PO09</li>
-          <li class="deck-item"><span class="deck-num">23</span><s>Full-week calendar theme polish, the overlay backdrop uses a dark semi-transparent that works on Side B but muds into cream on Side A; badge colors (Target hit/Close/Missed) are hard-coded greens/oranges/reds; the entire full-week calendar section needs a theme-aware pass including the "No full weeks this month" empty state</s> → shipped in PO09 (indigo .fw-week--full week-highlight ring intentionally deferred, separate color system for week boundaries, not status tiers)</li>
+          <li class="deck-item"><span class="deck-num">3</span>Pinned cards L-to-R order, revisit when CSS Masonry has wider browser support</li>
+          <li class="deck-item"><span class="deck-num">4</span>Optimistic upload UX, close diary modal instantly, upload in background, Saving/Saved toast</li>
+          <li class="deck-item"><span class="deck-num">5</span>Safari Fit mode blur, canvas downscale/upscale tuning on iOS</li>
+          <li class="deck-item"><span class="deck-num">6</span>Diary polaroid, square in desktop modal read view</li>
+          <li class="deck-item"><span class="deck-num">7</span>Storage migration to asia-southeast1 for faster uploads from the Philippines</li>
+          <li class="deck-item"><span class="deck-num">8</span>All tab card tap, no-op placeholder, activates when user profiles are built</li>
+          <li class="deck-item"><span class="deck-num">9</span>Diary Phase B, swipe between pages, per-habit photo reel</li>
+          <li class="deck-item"><span class="deck-num">10</span>Diary Phase C, diary pages visible to followers</li>
+          <li class="deck-item"><span class="deck-num">11</span>Allow 2-3 photos per diary entry</li>
+          <li class="deck-item"><span class="deck-num">12</span>Custom spinner / loader</li>
+          <li class="deck-item"><span class="deck-num">13</span>Polish + landing screen</li>
+          <li class="deck-item"><span class="deck-num">14</span>Settings panel (Phase 3), edit display name, change default diary cover, toggle theme, privacy tiers, Firestore rules enforcement</li>
+          <li class="deck-item"><span class="deck-num">15</span>Modal audit, unify dismiss affordances, scroll behavior, and overlay blur across diary, cover picker, and confirm sheets</li>
+          <li class="deck-item"><span class="deck-num">16</span>Sticker repaint, re-author the fourteen sticker SVGs in the Mixtape palette</li>
+          <li class="deck-item"><span class="deck-num">17</span>First paid cover, content and checkout scope, entitlements architecture already in place</li>
         </ul>
       </div>
     </details>
@@ -1314,7 +1308,7 @@
   <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 18, 2026</span>
-      <span class="entry-badge badge-ongoing">Ongoing</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
       <span class="entry-code">UI01</span>
     </div>
     <div class="entry-title">The Mixtape Redesign · Design locked</div>
