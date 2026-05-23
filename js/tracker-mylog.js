@@ -4,7 +4,7 @@ import {
   updateDoc, onSnapshot, serverTimestamp,
   collection, addDoc, deleteField
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDaysInMonth, getDayLabel, getCurrentYearMonth, getActivityColor, isPastYearMonth, pickPastMonthToast } from "./utils.js";
+import { getDaysInMonth, getDayLabel, getCurrentYearMonth, getActivityColor, isPastYearMonth, pickPastMonthNote } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard, renderMobileDiaryCard } from "./mobile-tracker.js";
 import { getUserStats, computeStatsFromEntry, cadenceLabel } from "./stats.js";
@@ -98,6 +98,16 @@ function renderMonthHeading(yearMonth, isCurrentMonth, navCallbacks) {
     const sub = document.createElement("div");
     sub.className = "mhe-sub";
     sub.textContent = `day ${todayDate} of ${daysInMonth}`;
+    heading.appendChild(sub);
+  } else if (isPastYearMonth(yearMonth)) {
+    const sub = document.createElement("div");
+    sub.className = "mhe-sub-past";
+    sub.style.fontFamily = "var(--font-mono)";
+    sub.style.fontSize = "0.78rem";
+    sub.style.color = "var(--ink-soft)";
+    sub.style.letterSpacing = "0.04em";
+    sub.style.marginTop = "4px";
+    sub.textContent = pickPastMonthNote();
     heading.appendChild(sub);
   }
 
@@ -393,6 +403,13 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
     section.appendChild(gearBtn);
   }
 
+  const gridWrap = document.createElement("div");
+  gridWrap.className = "tracker-grid-wrap";
+  if (isPastYearMonth(yearMonth)) {
+    gridWrap.style.opacity = "0.6";
+    gridWrap.style.filter = "saturate(0.45)";
+  }
+
   const headerRow = document.createElement("div");
   headerRow.className = "tracker-header-row";
   headerRow.innerHTML = `<div class="activity-label"></div>`;
@@ -417,7 +434,7 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
       <span class="day-label">${getDayLabel(yearMonth, d)}</span>`;
     headerRow.appendChild(cell);
   }
-  section.appendChild(headerRow);
+  gridWrap.appendChild(headerRow);
 
   const cadences = entry.cadences || entry.activities.map(() => 7);
   const marks    = entry.marks || {};
@@ -433,7 +450,7 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
       isCurrentMonth, todayDate, cad,
       entry, onMarkToggled
     );
-    section.appendChild(row);
+    gridWrap.appendChild(row);
   });
 
   if (joinDay != null) {
@@ -444,9 +461,10 @@ function renderUserSection(entry, yearMonth, currentUser, isCurrentMonth, todayD
       <span class="tgl-item"><span class="tgl-square"></span>${startLabel}</span>
       <span class="tgl-item"><span class="tgl-sunday"></span>Sunday</span>
       <span class="tgl-item"><span class="tgl-week"></span>Full week</span>`;
-    section.appendChild(legend);
+    gridWrap.appendChild(legend);
   }
 
+  section.appendChild(gridWrap);
   return section;
 }
 
@@ -505,10 +523,7 @@ async function toggleDay(
   cell, day, activity, markedDays, activityColor, marker,
   yearMonth, userId, entry, onMarkToggled
 ) {
-  if (isPastYearMonth(yearMonth)) {
-    showToast(pickPastMonthToast(), "neutral");
-    return;
-  }
+  if (isPastYearMonth(yearMonth)) return;
   const wasMarked = markedDays.includes(day);
   const action = wasMarked ? "unmark" : "mark";
   const clientTime = Date.now();

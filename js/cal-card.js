@@ -4,7 +4,7 @@ import {
   doc, getDoc, setDoc, updateDoc,
   arrayUnion, arrayRemove, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDaysInMonth, getCurrentYearMonth, getActivityColor, getPrevYearMonth, getNextYearMonth, isPastYearMonth, pickPastMonthToast } from "./utils.js";
+import { getDaysInMonth, getCurrentYearMonth, getActivityColor, getPrevYearMonth, getNextYearMonth, isPastYearMonth, pickPastMonthNote } from "./utils.js";
 import { openManageActivitiesModal } from "./manage-activities.js";
 import { showToast } from "./ui.js";
 import { icon, STICKER_ICONS } from "./icons.js";
@@ -240,10 +240,7 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
   function onDayTap(day) {
     const isFuture = isCurrentMonth && day > todayDate;
     if (isFuture) return;
-    if (isOwner && isPastYearMonth(cardYearMonth)) {
-      showToast(pickPastMonthToast(), "neutral");
-      return;
-    }
+    if (isOwner && isPastYearMonth(cardYearMonth)) return;
     showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate, marker,
       async (activity, newMarkedDays) => {
         if (!entry.marks) entry.marks = {};
@@ -287,6 +284,26 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
   const activities = entry.activities || [];
   const isPastMonth = isPastYearMonth(yearMonth);
 
+  if (isPastMonth) {
+    const note = document.createElement("div");
+    note.className = "cal-past-note";
+    note.style.fontFamily = "var(--font-mono)";
+    note.style.fontSize = "0.78rem";
+    note.style.color = "var(--ink-soft)";
+    note.style.letterSpacing = "0.04em";
+    note.style.textAlign = "center";
+    note.style.margin = "0 0 8px";
+    note.textContent = pickPastMonthNote();
+    container.appendChild(note);
+  }
+
+  const gridWrap = document.createElement("div");
+  gridWrap.className = "cal-grid-wrap";
+  if (isPastMonth) {
+    gridWrap.style.opacity = "0.6";
+    gridWrap.style.filter = "saturate(0.45)";
+  }
+
   const headers = document.createElement("div");
   headers.className = "cal-grid-headers";
   ["S","M","T","W","T","F","S"].forEach(d => {
@@ -295,7 +312,7 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
     h.textContent = d;
     headers.appendChild(h);
   });
-  container.appendChild(headers);
+  gridWrap.appendChild(headers);
 
   const grid = document.createElement("div");
   grid.className = "cal-grid-days";
@@ -412,7 +429,8 @@ function renderCalGrid(container, entry, yearMonth, isCurrentMonth, todayDate, a
     grid.appendChild(cell);
   }
 
-  container.appendChild(grid);
+  gridWrap.appendChild(grid);
+  container.appendChild(gridWrap);
 }
 
 // ─── RENDER FILTER BAR ──────────────────────────────

@@ -31,17 +31,17 @@ export function isPastYearMonth(yearMonth) {
   return yearMonth < getCurrentYearMonth();
 }
 
-const PAST_MONTH_TOAST_MESSAGES = [
-  "that month's in the books.",
-  "this one's done. you showed up (or didn't).",
-  "can't rewrite history.",
+const PAST_MONTH_NOTE_MESSAGES = [
+  "this month is sealed.",
+  "in the books.",
+  "done. locked.",
   "that chapter's closed.",
-  "this month is sealed."
+  "you showed up (or didn't)."
 ];
 
-export function pickPastMonthToast() {
-  return PAST_MONTH_TOAST_MESSAGES[
-    Math.floor(Math.random() * PAST_MONTH_TOAST_MESSAGES.length)
+export function pickPastMonthNote() {
+  return PAST_MONTH_NOTE_MESSAGES[
+    Math.floor(Math.random() * PAST_MONTH_NOTE_MESSAGES.length)
   ];
 }
 
