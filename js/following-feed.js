@@ -66,7 +66,19 @@ function syncNewPostsPill(model) {
 // ── Render helpers ──────────────────────────────────
 
 function makeEventEl(evt, model, isNew) {
-  const el = renderFeedEvent(evt, model.currentUser);
+  // Re-join cached user/log/diary state at render time. Events merged into
+  // feedEvents snapshot these fields at arrival, but the underlying caches
+  // can update later (e.g. log doc snapshot arrives after the event doc).
+  // Looking up the cache fresh on every render avoids stale avatars / etc.
+  const joined = {
+    ...evt,
+    user: model.userCache[evt.uid] || evt.user,
+    log:  model.logsCache[evt.uid] || evt.log,
+    diaryEntry: evt.type === "diary"
+      ? (model.diaryCache[evt.uid]?.[evt.dateStr] || evt.diaryEntry)
+      : evt.diaryEntry,
+  };
+  const el = renderFeedEvent(joined, model.currentUser);
   el.dataset.evtKey = evt.key;
 
   if (isNew) {

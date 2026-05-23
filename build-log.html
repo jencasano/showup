@@ -586,8 +586,61 @@
     </details>
   </div>
 
-  <!-- ── Apr 26, 2026 · Polish · Color audit ── -->
+  <!-- ── May 23, 2026 · Feed · Events Persistence ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">May 23, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">FO05</span>
+    </div>
+    <div class="entry-title">Feed · Per-Burst Cards + Events Persistence</div>
+    <p class="entry-desc">Two changes that together turn the feed from a presentation-only projection into a real chronological timeline. First, each debounce burst became its own permanent card instead of overwriting the day's existing one (event key switched from {uid}-log-{dateStr} to {uid}-log-{batchId}). Then, the whole event identity moved out of viewer memory into Firestore. Bursts and diary entries are now first-class documents at events/{uid}/items, written once by the author when the debounce closes, read by every follower from the same source. Refresh no longer collapses multi-burst history, and every viewer sees the same cards in the same order. Same model leaves room to add user-written posts, likes, comments, and permalinks later without another schema change.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Per-burst event key</div>
+        <div class="item-desc">Event key went from {uid}-log-{dateStr} (one card per person per day, later writes silently replaced the earlier card) to {uid}-log-{batchId}, where batchId is the epoch millis of the first mark in the debounce burst. Same burst always produces the same key; later bursts produce new keys, so two sittings the same day land as two separate cards. buildLogEvent gained a burst opts arg; tracker-following.js gained a per-uid knownMarks diff so it can identify which marks belong to the just-fired burst vs. earlier history. burstActivities (only the activities logged in this burst) flows through to the renderer for the action line, while computeSignal still sees the full month's marks for streak/comeback context.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/FEED_BURST_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Follow-up bursts lock to default copy</div>
+        <div class="item-desc">First card of the day can still earn comeback/streak copy, but subsequent bursts that day land on default copy. Without the lock, computeSignal kept returning "comeback" for every burst on the same day, since the only-active-day-is-today + prevActiveDate-months-ago conditions stay true no matter how many times you've logged. Fix locks contextKey on the card at fire/write time: if any earlier card already exists for this uid + dateStr, stamp lockedContext = "default" so the renderer skips re-evaluating. The comeback moment gets claimed exactly once.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Copy variants vary per burst</div>
+        <div class="item-desc">Two default cards from the same person on the same day were always picking the same template (e.g. both "{firstName} marked {activities}. Done.") because pickCopy seeded on uid + dateStr -- a stable seed per person per day. Threaded an optional extra seed component through resolveFeedCopy and passed event.batchId at render time, so each burst rolls its own variant from the four-template default pool.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Events promoted to first-class documents</div>
+        <div class="item-desc">Bursts and diary entries now live at events/{uid}/items/{eventId} in Firestore. Author writes once when the debounce closes (or when a diary entry is saved); every follower reads the same doc via onSnapshot. Replaces the previous viewer-side knownMarks diff, which produced cards that only existed in memory and vanished on refresh. Deterministic doc IDs (burst-{batchId}, diary-{dateStr}) make writes idempotent; events are immutable history (no delete, no edit on bursts). contextKey is computed at write time using the author's full log + user meta, including the subsequent-burst default-copy lock, so the card looks the same to every viewer.</div>
+        <div class="item-spec"><a class="spec-link" href="https://github.com/jencasano/showup/blob/main/docs/FEED_EVENTS_PERSISTENCE_SPEC.md" target="_blank">spec</a></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Two-mode migration, no data move</div>
+        <div class="item-desc">Existing users have log/diary docs but no events. The viewer subscribes to the events collection per followed user alongside the existing log/diary listeners. If events exist for a uid, the events listener becomes authoritative and any previously-synthesized log cards are purged. If the events collection is empty, the legacy projection stays active as fallback (one historical card per person, same as before). New writes always go through events, so the cutover is gradual and lossless -- no backfill required.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Modular split, two new files</div>
+        <div class="item-desc">js/event-write.js holds the author-side write path: recordBurstMark (debounced, flushes on quiet window close), recordBurstUnmark (cancels a still-pending entry), recordDiaryEvent (immediate on save, sets editedAt on subsequent saves). js/event-read.js holds the viewer-side subscribeToUserEvents listener that windows on the last 30 days and normalizes Firestore docs into the shape the renderer already expects. tracker-following.js gained one new field (eventsUnsubMap) and two handlers (onEventDoc, onEventDocRemoved); the existing onFeedEvent grew a single early-return guard so the new and legacy paths never both fire for the same uid.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Firestore note: what you see</div>
+        <div class="item-desc">New top-level collection: events. Structure is events/{uid}/items/{eventId}. The {uid} doc itself is empty (Firestore shows it greyed out with "this document does not exist") -- click in to see the items subcollection, which holds the actual event docs. Doc IDs are deterministic: burst-{epochMs} per burst, diary-{YYYY-MM-DD} per diary entry. Volume is roughly 4-6 docs per active user per day; events accumulate indefinitely (no TTL) but the viewer query only reads the last 30 days. Rules in firestore.rules: any logged-in user can read (privacy still enforced client-side), owner-only create, diary updates allowed for editedAt, nothing can delete -- events are history.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">What this unlocks</div>
+        <div class="item-desc">User-written posts (type: "post" with a text field), milestones, likes/reactions (subcollection on the event), comments, notifications, permalinks, and a Twitter-style fan-out timeline if follow counts ever scale -- all build on this collection without a schema migration. The same events doc shape is the substrate. Closes the "feed is observer-relative" problem flagged at the end of FO04.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Apr 26, 2026 · Polish · Color audit ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">Apr 26, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
