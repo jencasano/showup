@@ -149,7 +149,16 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
         const burstFiredAt = Math.max(...tsValues);
         const latestDay = Math.max(...added.map(m => m.day));
         const burstDateStr = `${yearMonth}-${String(latestDay).padStart(2, "0")}`;
+        // A burst on the same day as an earlier card is a follow-up moment.
+        // computeSignal still sees comeback (one active day, prev was months
+        // ago) but the comeback moment was already claimed by the first card,
+        // so lock subsequent cards to default copy.
+        const sameDayLog = (e) =>
+          e.uid === uid && e.type === "log" && e.dateStr === burstDateStr;
+        const isSubsequent =
+          feedEvents.some(sameDayLog) || pendingEvents.some(sameDayLog);
         opts = { batchId, burstActivities, burstFiredAt, burstDateStr };
+        if (isSubsequent) opts.lockedContext = "default";
       }
 
       knownMarks[uid] = newSnap;

@@ -95,7 +95,7 @@ export function buildLogEvent(uid, user, log, yearMonth, dateStr, opts = {}) {
   const hasAnyMark = Object.values(marks).some(arr => Array.isArray(arr) && arr.length > 0);
   if (!hasAnyMark) return null;
 
-  const { batchId: optBatchId, burstActivities, burstFiredAt, burstDateStr } = opts;
+  const { batchId: optBatchId, burstActivities, burstFiredAt, burstDateStr, lockedContext } = opts;
   const isBurst = optBatchId != null;
 
   // Burst mode: caller has identified a specific debounce burst and supplies
@@ -129,6 +129,7 @@ export function buildLogEvent(uid, user, log, yearMonth, dateStr, opts = {}) {
     user,
     log,
     burstActivities: burstActivities || null,
+    lockedContext: lockedContext || null,
     diaryEntry: null,
     dateStr: ds,
     yearMonth,
@@ -154,7 +155,7 @@ export function buildDiaryEvent(uid, user, diaryEntry, dateStr) {
 // ── Renderer ────────────────────────────────────────
 
 export function renderFeedEvent(event, currentUser) {
-  const { type, uid, user, log, diaryEntry, dateStr, burstActivities, firedAt } = event;
+  const { type, uid, user, log, diaryEntry, dateStr, burstActivities, firedAt, lockedContext } = event;
   const displayName = user?.displayName || "Unknown";
   const firstName = (displayName || "").split(" ")[0] || displayName;
   const privacy = getPrivacy(user);
@@ -166,7 +167,9 @@ export function renderFeedEvent(event, currentUser) {
     lastActiveDate: user?.lastActiveDate,
     prevActiveDate: user?.prevActiveDate,
   });
-  const contextKey = signal.contextKey || "default";
+  // Follow-up bursts on the same day are locked to "default" -- the comeback
+  // (or streak) moment was claimed by the first card of the day.
+  const contextKey = lockedContext || signal.contextKey || "default";
 
   // Determine diary sub-context: today vs past
   let copyContext = contextKey;
