@@ -3,7 +3,7 @@ import { signIn, signOutUser, onAuthReady, hasCompletedSetup } from "./auth.js";
 import { loadMyLog } from "./tracker-mylog.js";
 import { loadAllLogs } from "./tracker-all.js";
 import { loadFollowingLogs } from "./tracker-following.js";
-import { getCurrentYearMonth, formatYearMonth, getPrevYearMonth, getNextYearMonth } from "./utils.js";
+import { getCurrentYearMonth, formatYearMonth, getPrevYearMonth, getNextYearMonth, isPastYearMonth, pickPastMonthNote } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { checkMonthlySetup } from "./month-setup.js";
 import { getUserStats } from "./stats.js";
@@ -56,10 +56,13 @@ function renderMobileMonthLabel(yearMonth) {
   const [year, month] = yearMonth.split("-").map(Number);
   const monthName = new Date(year, month - 1, 1).toLocaleDateString("en-US", { month: "long" });
   const isCurrentMonth = yearMonth === getCurrentYearMonth();
-  const dayPart = isCurrentMonth
-    ? `<span class="mhe-m-day">day ${new Date().getDate()}</span>`
-    : "";
-  monthLabel.innerHTML = `${monthName} <em>${year}</em>${dayPart}`;
+  let sub = "";
+  if (isCurrentMonth) {
+    sub = `<span class="mhe-m-day">day ${new Date().getDate()}</span>`;
+  } else if (isPastYearMonth(yearMonth)) {
+    sub = `<span class="mhe-m-past" style="font-family:var(--font-mono);font-size:0.65rem;color:var(--ink-soft);letter-spacing:0.04em;">${pickPastMonthNote()}</span>`;
+  }
+  monthLabel.innerHTML = `${monthName} <em>${year}</em>${sub}`;
 }
 
 function updateMonthNav() {
