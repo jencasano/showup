@@ -1,6 +1,6 @@
 import { db } from "./firebase-config.js";
 import {
-  doc, getDoc, setDoc
+  doc, getDoc, setDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getCurrentYearMonth, getPrevYearMonth, formatYearMonth, getFontColorSuggestions } from "./utils.js";
 import { icon } from "./icons.js";
@@ -266,7 +266,10 @@ export function showMonthSetup(userId, avatarUrl, prevData = null, displayName =
           activities,
           cadences,
           marks: {},
+          markTimes: {},
           setupDay: new Date().getDate(),
+          createdAt:   serverTimestamp(),
+          lastUpdated: serverTimestamp(),
           decoration: {
             color:     state.color,
             fontColor: state.fontColor,
@@ -277,10 +280,12 @@ export function showMonthSetup(userId, avatarUrl, prevData = null, displayName =
           }
         };
 
+        // No { merge: true } -- a clean overwrite ensures any partial
+        // or stale doc at this path is fully replaced. Setup builds
+        // the complete doc shape above, so nothing is lost.
         await setDoc(
           doc(db, "logs", yearMonth, "entries", userId),
-          entryData,
-          { merge: true }
+          entryData
         );
 
         overlay.remove();
