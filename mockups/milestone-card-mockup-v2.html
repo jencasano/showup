@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="side-a">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>showup. / Milestone Card Mockup v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,700;1,400;1,500;1,600&family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root, [data-theme="side-a"] {
+    --paper: #F4ECD8;
+    --paper-deep: #ECE1C6;
+    --paper-edge: #DCCFA6;
+    --ink: #2A1F1A;
+    --ink-soft: #5A463A;
+    --ink-faint: #9C8874;
+    --red: #C3342B;
+    --red-hover: #A62822;
+    --blue: #4F6C8E;
+    --yellow: #E8B33A;
+    --green: #3E5C3A;
+    --hairline: #D4C3A1;
+    --color-primary: var(--red);
+    --accent-support: var(--blue);
+    --bg: var(--paper);
+    --bg-surface: var(--paper-deep);
+    --bg-subtle: var(--paper-edge);
+    --border: var(--hairline);
+    --border-faint: var(--paper-edge);
+    --text: var(--ink);
+    --text-muted: var(--ink-soft);
+    --text-faint: var(--ink-faint);
+    --shadow-sm: 0 1px 2px rgba(42,31,26,0.06), 0 2px 6px rgba(42,31,26,0.04);
+    --shadow-md: 0 2px 4px rgba(42,31,26,0.08), 0 8px 24px rgba(42,31,26,0.06);
+    --radius-lg: 16px;
+    --radius-full: 99px;
+    --milestone-badge-bg: rgba(184, 134, 11, 0.12);
+    --milestone-badge-color: #9A7B1A;
+    --milestone-badge-border: rgba(184, 134, 11, 0.30);
+    --milestone-badge-glow: 0 0 8px rgba(232, 179, 58, 0.25), 0 0 3px rgba(232, 179, 58, 0.15);
+    --milestone-wash: color-mix(in srgb, #E8B33A 5%, #ECE1C6);
+  }
+  [data-theme="side-b"] {
+    --paper: #2A1518;
+    --paper-deep: #1D0E10;
+    --paper-edge: #3A1D20;
+    --ink: #F0DCCF;
+    --ink-soft: #B18A84;
+    --ink-faint: #6E504B;
+    --red: #F07A5E;
+    --red-hover: #D85A3E;
+    --blue: #5EAAA8;
+    --yellow: #E8B33A;
+    --green: #5EAAA8;
+    --hairline: #4A2025;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.18);
+    --shadow-md: 0 2px 4px rgba(0,0,0,0.32), 0 8px 24px rgba(0,0,0,0.22);
+    --milestone-badge-bg: rgba(232, 179, 58, 0.14);
+    --milestone-badge-color: #E8B33A;
+    --milestone-badge-border: rgba(232, 179, 58, 0.35);
+    --milestone-badge-glow: 0 0 10px rgba(232, 179, 58, 0.30), 0 0 4px rgba(232, 179, 58, 0.20);
+    --milestone-wash: color-mix(in srgb, #E8B33A 4%, #1D0E10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 32px; }
+  .page-header { max-width: 680px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: 'Sora', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .logo span { color: var(--red); }
+  .theme-toggle { display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-full); overflow: hidden; }
+  .theme-toggle button { background: none; border: none; padding: 6px 14px; font-family: 'DM Mono', monospace; font-size: 0.65rem; font-weight: 500; color: var(--text-faint); cursor: pointer; transition: all 0.2s; }
+  .theme-toggle button.active { background: var(--ink); color: var(--paper); }
+  .page-title { max-width: 680px; margin: 0 auto 6px; font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--text); }
+  .page-title em { color: var(--red); font-style: italic; }
+  .page-sub { max-width: 680px; margin: 0 auto 40px; font-size: 0.72rem; color: var(--text-faint); line-height: 1.6; }
+  .section-label { max-width: 680px; margin: 0 auto 14px; font-family: 'DM Mono', monospace; font-size: 0.58rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); padding-bottom: 8px; border-bottom: 1px solid var(--border-faint); display: flex; align-items: center; gap: 8px; }
+  .section-label .tier-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .cards-row { max-width: 680px; margin: 0 auto 44px; display: flex; flex-direction: column; gap: 12px; }
+  .variant-label { font-family: 'DM Mono', monospace; font-size: 0.54rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 4px; padding: 3px 10px; background: color-mix(in srgb, var(--ink-faint) 8%, transparent); border-radius: var(--radius-full); display: inline-block; }
+  .evt { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; border-left: 3px solid transparent; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s; position: relative; overflow: hidden; }
+  .evt:hover { box-shadow: var(--shadow-md); }
+  .evt--sharing { border-left-color: var(--red); }
+  .evt--lowkey  { border-left-color: var(--accent-support); }
+  .evt--ghost   { border-left-color: var(--border); opacity: 0.78; }
+  .evt-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .evt-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.88rem; flex-shrink: 0; color: #fff; }
+  .evt-name-col { flex: 1; min-width: 0; }
+  .evt-name { font-weight: 600; font-size: 0.86rem; color: var(--text); }
+  .evt-time { font-size: 0.63rem; color: var(--text-faint); margin-top: 1px; }
+  .evt-badge { font-size: 0.52rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: var(--radius-full); flex-shrink: 0; }
+  .badge-sharing { background: color-mix(in srgb, var(--red) 12%, transparent); color: var(--red); border: 1px solid color-mix(in srgb, var(--red) 25%, transparent); }
+  .badge-lowkey { background: color-mix(in srgb, var(--blue) 12%, transparent); color: var(--blue); border: 1px solid color-mix(in srgb, var(--blue) 25%, transparent); }
+  .badge-ghost { background: color-mix(in srgb, var(--ink-faint) 10%, transparent); color: var(--text-faint); border: 1px solid color-mix(in srgb, var(--ink-faint) 20%, transparent); }
+  .evt-action { font-size: 0.84rem; line-height: 1.55; color: var(--text); }
+  .evt-action em { font-family: 'Fraunces', serif; font-weight: 600; font-style: italic; }
+  .evt-ghost-copy { font-family: 'Fraunces', serif; font-weight: 400; font-style: italic; font-size: 0.84rem; line-height: 1.55; color: var(--text-muted); }
+  .evt-streak { color: var(--text-muted); }
+  .evt-nudge { font-style: italic; color: var(--red); }
+  .evt--lowkey .evt-nudge { color: var(--accent-support); }
+  .evt-links { display: flex; gap: 16px; margin-top: 8px; }
+  .evt-link { font-size: 0.72rem; font-weight: 500; text-decoration: none; color: var(--accent-support); }
+  .evt--milestone { background: var(--milestone-wash); }
+  .evt--milestone::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2.5px; background: linear-gradient(90deg, var(--yellow) 0%, color-mix(in srgb, var(--yellow) 40%, transparent) 70%, transparent 100%); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+  .badge-milestone { background: var(--milestone-badge-bg); color: var(--milestone-badge-color); border: 1px solid var(--milestone-badge-border); box-shadow: var(--milestone-badge-glow); position: relative; }
+  .badge-milestone::after { content: ''; position: absolute; inset: -1px; border-radius: inherit; background: linear-gradient(105deg, transparent 40%, rgba(232, 179, 58, 0.12) 50%, transparent 60%); background-size: 200% 100%; animation: badge-shimmer 3s ease-in-out infinite; pointer-events: none; }
+  @keyframes badge-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .evt--ghost.evt--milestone { background: color-mix(in srgb, var(--yellow) 3%, var(--bg-surface)); }
+  .evt--ghost.evt--milestone::before { opacity: 0.5; }
+  .evt--ghost.evt--milestone .badge-milestone { box-shadow: 0 0 6px rgba(232, 179, 58, 0.12); }
+  @media (max-width: 600px) { body { padding: 20px; } .page-title { font-size: 1.3rem; } }
+  @media (prefers-reduced-motion: reduce) { .badge-milestone::after { animation: none; } }
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="logo">show<span>up</span>.</div>
+  <div class="theme-toggle">
+    <button class="active" onclick="setTheme('side-a', this)">Side A</button>
+    <button onclick="setTheme('side-b', this)">Side B</button>
+  </div>
+</div>
+<div class="page-title">Milestone Cards <em>v2</em></div>
+<p class="page-sub">A + B hybrid: warm wash + top accent stripe + glowing milestone badge with shimmer. Shown across all three visible privacy tiers and multiple milestone types.</p>
+
+<div class="section-label"><span class="tier-dot" style="background:var(--red);"></span> Sharing tier</div>
+<div class="cards-row">
+  <div class="variant-label">normal card (no milestone)</div>
+  <div class="evt evt--sharing"><div class="evt-head"><div class="evt-avatar" style="background:#C3342B;">N</div><div class="evt-name-col"><div class="evt-name">Neithan</div><div class="evt-time">today at 8:42am</div></div><span class="evt-badge badge-sharing">sharing</span></div><div class="evt-action">Neithan logged <em>Wim Hof Pushups</em> and <em>Cold Shower</em>. Done.</div><div class="evt-links"><a class="evt-link" href="#">View Calendar</a></div></div>
+  <div class="variant-label">7-day streak</div>
+  <div class="evt evt--sharing evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#C3342B;">N</div><div class="evt-name-col"><div class="evt-name">Neithan</div><div class="evt-time">today at 8:42am</div></div><span class="evt-badge badge-milestone">7-day streak</span></div><div class="evt-action">Neithan logged <em>Wim Hof Pushups</em> and <em>Cold Shower</em>. <span class="evt-streak">Something every single day this week.</span></div><div class="evt-links"><a class="evt-link" href="#">View Calendar</a></div></div>
+  <div class="variant-label">15-day streak</div>
+  <div class="evt evt--sharing evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#4F6C8E;">L</div><div class="evt-name-col"><div class="evt-name">Lulu</div><div class="evt-time">today at 6:00am</div></div><span class="evt-badge badge-milestone">15-day streak</span></div><div class="evt-action">Lulu logged <em>Yoga</em> and <em>Meditation</em>. <span class="evt-streak">Something logged every day for 15 days straight.</span></div><div class="evt-links"><a class="evt-link" href="#">View Calendar</a></div></div>
+  <div class="variant-label">25-day streak</div>
+  <div class="evt evt--sharing evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#5EAAA8;">J</div><div class="evt-name-col"><div class="evt-name">Jeni</div><div class="evt-time">today at 7:15am</div></div><span class="evt-badge badge-milestone">25-day streak</span></div><div class="evt-action">Jeni logged <em>Workout</em>, <em>8hr Sleep</em>, and <em>No Rice</em>. <span class="evt-streak">Twenty-five days of something every single day.</span> <span class="evt-nudge">Join them in showing up.</span></div><div class="evt-links"><a class="evt-link" href="#">View Calendar</a></div></div>
+  <div class="variant-label">perfect month</div>
+  <div class="evt evt--sharing evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#5EAAA8;">J</div><div class="evt-name-col"><div class="evt-name">Jeni</div><div class="evt-time">today at 7:15am</div></div><span class="evt-badge badge-milestone">perfect month</span></div><div class="evt-action">Jeni logged <em>Workout</em> and <em>No Rice</em>. <span class="evt-streak">Something logged every day this month. Every one.</span> <span class="evt-nudge">Have you shown up today?</span></div><div class="evt-links"><a class="evt-link" href="#">View Calendar</a></div></div>
+  <div class="variant-label">first ever</div>
+  <div class="evt evt--sharing evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#E8B33A;color:#2A1F1A;">A</div><div class="evt-name-col"><div class="evt-name">Alyssa</div><div class="evt-time">today at 11:30am</div></div><span class="evt-badge badge-milestone">day one</span></div><div class="evt-action">Alyssa just logged <em>Running</em> for the first time. <span class="evt-streak">Day one.</span> <span class="evt-nudge">Everyone starts somewhere.</span></div><div class="evt-links"><a class="evt-link" href="#">View Calendar</a></div></div>
+  <div class="variant-label">comeback after 30+ days</div>
+  <div class="evt evt--sharing evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#3E5C3A;">M</div><div class="evt-name-col"><div class="evt-name">Marco</div><div class="evt-time">today at 2:10pm</div></div><span class="evt-badge badge-milestone">comeback</span></div><div class="evt-action">After a long silence, Marco logged <em>Running</em>. <span class="evt-streak">Welcome back.</span></div><div class="evt-links"><a class="evt-link" href="#">View Calendar</a></div></div>
+  <div class="variant-label">comeback after 7-29 days</div>
+  <div class="evt evt--sharing evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#3E5C3A;">M</div><div class="evt-name-col"><div class="evt-name">Marco</div><div class="evt-time">today at 2:10pm</div></div><span class="evt-badge badge-milestone">comeback</span></div><div class="evt-action">Marco is back. Picked up <em>Running</em> right where he left off. <span class="evt-nudge">Coming back is the hardest part.</span></div><div class="evt-links"><a class="evt-link" href="#">View Calendar</a></div></div>
+</div>
+
+<div class="section-label"><span class="tier-dot" style="background:var(--blue);"></span> Low key tier</div>
+<div class="cards-row">
+  <div class="variant-label">normal card (no milestone)</div>
+  <div class="evt evt--lowkey"><div class="evt-head"><div class="evt-avatar" style="background:#4F6C8E;">D</div><div class="evt-name-col"><div class="evt-name">Diego</div><div class="evt-time">today at 9:20am</div></div><span class="evt-badge badge-lowkey">low key</span></div><div class="evt-action">Diego showed up today.</div></div>
+  <div class="variant-label">7-day streak</div>
+  <div class="evt evt--lowkey evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#4F6C8E;">D</div><div class="evt-name-col"><div class="evt-name">Diego</div><div class="evt-time">today at 9:20am</div></div><span class="evt-badge badge-milestone">7-day streak</span></div><div class="evt-action">Diego hasn't missed a day this week. <span class="evt-nudge">Join them in showing up.</span></div></div>
+  <div class="variant-label">25-day streak</div>
+  <div class="evt evt--lowkey evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#4F6C8E;">D</div><div class="evt-name-col"><div class="evt-name">Diego</div><div class="evt-time">today at 9:20am</div></div><span class="evt-badge badge-milestone">25-day streak</span></div><div class="evt-action">Diego keeps showing up. 25 days now. Quietly. <span class="evt-nudge">Are you keeping up?</span></div></div>
+  <div class="variant-label">first ever</div>
+  <div class="evt evt--lowkey evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#E8B33A;color:#2A1F1A;">A</div><div class="evt-name-col"><div class="evt-name">Alyssa</div><div class="evt-time">today at 11:30am</div></div><span class="evt-badge badge-milestone">day one</span></div><div class="evt-action">Alyssa just started. <span class="evt-nudge">Something's beginning.</span></div></div>
+  <div class="variant-label">comeback after 30+ days</div>
+  <div class="evt evt--lowkey evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#3E5C3A;">M</div><div class="evt-name-col"><div class="evt-name">Marco</div><div class="evt-time">today at 2:10pm</div></div><span class="evt-badge badge-milestone">comeback</span></div><div class="evt-action">Marco came back today. It's been a while. <span class="evt-nudge">Is there something you've been putting off?</span></div></div>
+</div>
+
+<div class="section-label"><span class="tier-dot" style="background:var(--ink-faint);"></span> Ghost tier</div>
+<div class="cards-row">
+  <div class="variant-label">normal card (no milestone)</div>
+  <div class="evt evt--ghost"><div class="evt-head"><div class="evt-avatar" style="background:var(--bg-subtle);color:var(--text-muted);font-family:'Fraunces',serif;font-style:italic;">R</div><div class="evt-name-col"><div class="evt-name" style="color:var(--text-faint);font-style:italic;">Reina</div><div class="evt-time"></div></div><span class="evt-badge badge-ghost">ghost</span></div><div class="evt-ghost-copy">Someone showed up today. The details are theirs.</div></div>
+  <div class="variant-label">7-day streak</div>
+  <div class="evt evt--ghost evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:var(--bg-subtle);color:var(--text-muted);font-family:'Fraunces',serif;font-style:italic;">R</div><div class="evt-name-col"><div class="evt-name" style="color:var(--text-faint);font-style:italic;">Reina</div><div class="evt-time"></div></div><span class="evt-badge badge-milestone">7 days</span></div><div class="evt-ghost-copy">Someone hasn't missed a day this week. Quietly.</div></div>
+  <div class="variant-label">perfect month</div>
+  <div class="evt evt--ghost evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:var(--bg-subtle);color:var(--text-muted);font-family:'Fraunces',serif;font-style:italic;">R</div><div class="evt-name-col"><div class="evt-name" style="color:var(--text-faint);font-style:italic;">Reina</div><div class="evt-time"></div></div><span class="evt-badge badge-milestone">perfect month</span></div><div class="evt-ghost-copy">A perfect month. Quietly. Not one missed day. We don't know who. But they know.</div></div>
+  <div class="variant-label">first ever</div>
+  <div class="evt evt--ghost evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:var(--bg-subtle);color:var(--text-muted);font-family:'Fraunces',serif;font-style:italic;">?</div><div class="evt-name-col"><div class="evt-name" style="color:var(--text-faint);font-style:italic;">Someone</div><div class="evt-time"></div></div><span class="evt-badge badge-milestone">day one</span></div><div class="evt-ghost-copy">Someone just started. Day one. A first day happened. Quietly.</div></div>
+  <div class="variant-label">comeback after 30+ days</div>
+  <div class="evt evt--ghost evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:var(--bg-subtle);color:var(--text-muted);font-family:'Fraunces',serif;font-style:italic;">R</div><div class="evt-name-col"><div class="evt-name" style="color:var(--text-faint);font-style:italic;">Reina</div><div class="evt-time"></div></div><span class="evt-badge badge-milestone">comeback</span></div><div class="evt-ghost-copy">A long silence broke today. Quietly. No announcement. Just showed up.</div></div>
+</div>
+
+<div class="section-label">Side by side comparison</div>
+<div class="cards-row">
+  <div class="variant-label">normal sharing card</div>
+  <div class="evt evt--sharing"><div class="evt-head"><div class="evt-avatar" style="background:#C3342B;">N</div><div class="evt-name-col"><div class="evt-name">Neithan</div><div class="evt-time">today at 8:42am</div></div><span class="evt-badge badge-sharing">sharing</span></div><div class="evt-action">Neithan logged <em>Wim Hof Pushups</em> and <em>Cold Shower</em>. Done.</div><div class="evt-links"><a class="evt-link" href="#">View Calendar</a></div></div>
+  <div class="variant-label">milestone sharing card (same person, streak)</div>
+  <div class="evt evt--sharing evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#C3342B;">N</div><div class="evt-name-col"><div class="evt-name">Neithan</div><div class="evt-time">today at 8:42am</div></div><span class="evt-badge badge-milestone">15-day streak</span></div><div class="evt-action">Neithan logged <em>Wim Hof Pushups</em> and <em>Cold Shower</em>. <span class="evt-streak">Something logged every day for 15 days straight.</span> <span class="evt-nudge">Have you done anything today?</span></div><div class="evt-links"><a class="evt-link" href="#">View Calendar</a></div></div>
+  <div class="variant-label">normal low key card</div>
+  <div class="evt evt--lowkey"><div class="evt-head"><div class="evt-avatar" style="background:#4F6C8E;">D</div><div class="evt-name-col"><div class="evt-name">Diego</div><div class="evt-time">today at 9:20am</div></div><span class="evt-badge badge-lowkey">low key</span></div><div class="evt-action">Diego showed up today.</div></div>
+  <div class="variant-label">milestone low key card (same person, comeback)</div>
+  <div class="evt evt--lowkey evt--milestone"><div class="evt-head"><div class="evt-avatar" style="background:#4F6C8E;">D</div><div class="evt-name-col"><div class="evt-name">Diego</div><div class="evt-time">today at 9:20am</div></div><span class="evt-badge badge-milestone">comeback</span></div><div class="evt-action">Diego came back today. <span class="evt-streak">That's the whole story.</span> <span class="evt-nudge">Coming back is the hardest part.</span></div></div>
+</div>
+
+<script>
+function setTheme(theme, btn) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.querySelectorAll('.theme-toggle button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
