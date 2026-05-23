@@ -562,7 +562,7 @@ async function toggleDay(
       action,
       timestamp: serverTimestamp(),
       clientTime
-    }).catch(err => console.error("Audit write failed:", err));
+    }).catch(() => {});
   } catch (error) {
     console.error("Error saving log:", error);
     showToast("couldn't save. try again.", "error");
