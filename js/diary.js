@@ -37,6 +37,8 @@ export async function saveDiaryEntry(userId, yearMonth, day, { note, photoUrl })
     const userSnap = await getDoc(userRef);
     const oldLastActive = userSnap.exists() ? (userSnap.data().lastActiveDate || null) : null;
     const newLastActive = `${yearMonth}-${String(day).padStart(2, "0")}`;
+    // Same-day re-save would clobber prevActiveDate with today.
+    if (oldLastActive === newLastActive) return;
     await updateDoc(userRef, {
       prevActiveDate: oldLastActive,
       lastActiveDate: newLastActive
