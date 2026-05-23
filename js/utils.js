@@ -31,6 +31,20 @@ export function isPastYearMonth(yearMonth) {
   return yearMonth < getCurrentYearMonth();
 }
 
+const PAST_MONTH_TOAST_MESSAGES = [
+  "that month's in the books.",
+  "this one's done. you showed up (or didn't).",
+  "can't rewrite history.",
+  "that chapter's closed.",
+  "this month is sealed."
+];
+
+export function pickPastMonthToast() {
+  return PAST_MONTH_TOAST_MESSAGES[
+    Math.floor(Math.random() * PAST_MONTH_TOAST_MESSAGES.length)
+  ];
+}
+
 // "2026-03" → "2026-02"
 export function getPrevYearMonth(yearMonth) {
   const [year, month] = yearMonth.split("-").map(Number);

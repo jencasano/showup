@@ -4,7 +4,7 @@ import {
   doc, getDoc, setDoc, updateDoc,
   arrayUnion, arrayRemove, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDaysInMonth, getCurrentYearMonth, getActivityColor, getPrevYearMonth, getNextYearMonth, isPastYearMonth } from "./utils.js";
+import { getDaysInMonth, getCurrentYearMonth, getActivityColor, getPrevYearMonth, getNextYearMonth, isPastYearMonth, pickPastMonthToast } from "./utils.js";
 import { openManageActivitiesModal } from "./manage-activities.js";
 import { showToast } from "./ui.js";
 import { icon, STICKER_ICONS } from "./icons.js";
@@ -241,7 +241,7 @@ export function renderMobileCard(entry, yearMonth, currentUser, opts = {}) {
     const isFuture = isCurrentMonth && day > todayDate;
     if (isFuture) return;
     if (isOwner && isPastYearMonth(cardYearMonth)) {
-      showToast("past months are read-only.", "neutral");
+      showToast(pickPastMonthToast(), "neutral");
       return;
     }
     showDaySheet(day, entry, yearMonth, isOwner, isCurrentMonth, todayDate, marker,

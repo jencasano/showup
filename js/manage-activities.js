@@ -3,7 +3,7 @@ import {
   doc, setDoc, serverTimestamp, collection, addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { showToast } from "./ui.js";
-import { isPastYearMonth } from "./utils.js";
+import { isPastYearMonth, pickPastMonthToast } from "./utils.js";
 
 const ACTIVITY_COLORS = [
   "#C3342B", "#4F6C8E", "#E8B33A", "#3E5C3A", "#5EAAA8",
@@ -17,7 +17,7 @@ function cadLabel(n) { return CADENCE_LABELS[n] || `${n}\u00d7`; }
 
 export function openManageActivitiesModal(entry, yearMonth, currentUser, onMarkToggled) {
   if (isPastYearMonth(yearMonth)) {
-    showToast("past months are read-only.", "neutral");
+    showToast(pickPastMonthToast(), "neutral");
     return;
   }
   const [year, month] = yearMonth.split("-").map(Number);

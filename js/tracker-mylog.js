@@ -4,7 +4,7 @@ import {
   updateDoc, onSnapshot, serverTimestamp,
   collection, addDoc, deleteField
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDaysInMonth, getDayLabel, getCurrentYearMonth, getActivityColor, isPastYearMonth } from "./utils.js";
+import { getDaysInMonth, getDayLabel, getCurrentYearMonth, getActivityColor, isPastYearMonth, pickPastMonthToast } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderMobileCard, renderMobileDiaryCard } from "./mobile-tracker.js";
 import { getUserStats, computeStatsFromEntry, cadenceLabel } from "./stats.js";
@@ -506,7 +506,7 @@ async function toggleDay(
   yearMonth, userId, entry, onMarkToggled
 ) {
   if (isPastYearMonth(yearMonth)) {
-    showToast("past months are read-only.", "neutral");
+    showToast(pickPastMonthToast(), "neutral");
     return;
   }
   const wasMarked = markedDays.includes(day);
