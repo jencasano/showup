@@ -155,7 +155,7 @@ export function buildDiaryEvent(uid, user, diaryEntry, dateStr) {
 // ── Renderer ────────────────────────────────────────
 
 export function renderFeedEvent(event, currentUser) {
-  const { type, uid, user, log, diaryEntry, dateStr, burstActivities, firedAt, lockedContext } = event;
+  const { type, uid, user, log, diaryEntry, dateStr, burstActivities, firedAt, lockedContext, batchId } = event;
   const displayName = user?.displayName || "Unknown";
   const firstName = (displayName || "").split(" ")[0] || displayName;
   const privacy = getPrivacy(user);
@@ -180,7 +180,10 @@ export function renderFeedEvent(event, currentUser) {
 
   // Resolve and fill copy
   const tierKey = tier === "followers" ? "sharing" : tier;
-  const rawCopy = resolveFeedCopy(tierKey, type, copyContext, uid, dateStr);
+  // Seed copy selection with batchId so each burst rolls a fresh variant
+  // (otherwise every default card from the same person on the same day picks
+  // the same template).
+  const rawCopy = resolveFeedCopy(tierKey, type, copyContext, uid, dateStr, batchId);
 
   let displayActivities = [];
   if (type === "log") {

@@ -20,7 +20,7 @@ const mapReady = copyReady.then(() => {
   }
 });
 
-export function resolveFeedCopy(tier, eventType, context, uid, dateStr) {
+export function resolveFeedCopy(tier, eventType, context, uid, dateStr, seedExtra) {
   // Normalize: "low key" -> "lowkey", spaces/hyphens stripped
   const t = tier.replace(/[\s-]/g, "").toLowerCase();
   const group = `${t}_${eventType}_${context}`;
@@ -34,7 +34,7 @@ export function resolveFeedCopy(tier, eventType, context, uid, dateStr) {
 
   if (!variants || variants.length === 0) return "";
 
-  return pickCopy(variants, uid, dateStr);
+  return pickCopy(variants, uid, dateStr, seedExtra);
 }
 
 export function fillFeedCopy(template, { firstName, activities, date }) {

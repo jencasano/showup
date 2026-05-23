@@ -133,8 +133,9 @@ export function computeSignal(displayName, logEntry, userMeta) {
   };
 }
 
-export function pickCopy(keys, uid, date) {
-  const seed = (uid + date).split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+export function pickCopy(keys, uid, date, extra) {
+  const src = (uid || "") + (date || "") + (extra != null ? String(extra) : "");
+  const seed = src.split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
   const key = keys[seed % keys.length];
   return signalCopy[key] || key;
 }
