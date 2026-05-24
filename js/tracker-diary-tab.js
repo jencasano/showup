@@ -20,6 +20,30 @@ function isMobileWidth() {
   return window.matchMedia("(max-width: 767px)").matches;
 }
 
+// Watch for the diary overlay (and any successor in a crossfade) to be
+// removed from the DOM, then fire onClose. Returns silently if no overlay
+// is present after one frame (meaning the open path didn't actually open
+// anything). Includes .diary-page-overlay so the write/edit flow chained
+// through openDiaryPage is covered too.
+function watchOverlayClose(onClose) {
+  const sels = ".diary-modal-overlay, .diary-pages-overlay, .mob-diary-overlay, .diary-page-overlay";
+  requestAnimationFrame(() => {
+    if (!document.querySelector(sels)) return;
+    const observer = new MutationObserver(() => {
+      if (!document.querySelector(sels)) {
+        observer.disconnect();
+        onClose();
+      }
+    });
+    observer.observe(document.body, { childList: true });
+  });
+}
+
+function triggerRefresh(yearMonth, container, user) {
+  _entryCache.clear();
+  loadDiaryTab(yearMonth, container, user);
+}
+
 export async function loadDiaryTab(yearMonth, container, user) {
   if (!container || !user) return;
   container.innerHTML = "";
@@ -47,6 +71,12 @@ export async function loadDiaryTab(yearMonth, container, user) {
   notebookWrap.className = "diary-tab-notebook-wrap";
   const nb = await renderDiaryNotebook(user.uid, yearMonth, cover);
   notebookWrap.appendChild(nb);
+  // The notebook wrap's own click handler (set inside renderDiaryNotebook)
+  // opens the diary modal. We add a second listener that bubbles after it
+  // to watch for the overlay closing and re-render the tab.
+  notebookWrap.addEventListener("click", () => {
+    watchOverlayClose(() => triggerRefresh(yearMonth, container, user));
+  });
   hero.appendChild(notebookWrap);
 
   const heroText = document.createElement("div");
@@ -61,7 +91,7 @@ export async function loadDiaryTab(yearMonth, container, user) {
   heroSub.className = "diary-tab-hero-sub";
   heroSub.textContent = filledCount === 0
     ? "no pages yet. start writing."
-    : `${monthName} ${year} — ${filledCount} pages filled so far. keep going.`;
+    : `${monthName} ${year}: ${filledCount} pages filled so far. keep going.`;
   heroText.appendChild(heroSub);
 
   const heroBtn = document.createElement("button");
@@ -75,6 +105,7 @@ export async function loadDiaryTab(yearMonth, container, user) {
     } else {
       openDiaryModal(user.uid, yearMonth, diaryDays, cover, day);
     }
+    watchOverlayClose(() => triggerRefresh(yearMonth, container, user));
   });
   heroText.appendChild(heroBtn);
 
@@ -157,6 +188,7 @@ export async function loadDiaryTab(yearMonth, container, user) {
         } else {
           openDiaryModal(user.uid, yearMonth, diaryDays, cover, dayToOpen);
         }
+        watchOverlayClose(() => triggerRefresh(yearMonth, container, user));
       });
 
       mini.style.opacity = "0";
