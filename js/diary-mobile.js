@@ -1037,7 +1037,6 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
         const dot = document.createElement("div");
         dot.className = "mob-diary-mini-dot";
         page.appendChild(dot);
-        page.addEventListener("click", () => selectDay(d));
         filledPageEls.push({ day: d, el: page });
       } else {
         const lines = document.createElement("div");
@@ -1049,6 +1048,7 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
         }
         page.appendChild(lines);
       }
+      page.addEventListener("click", () => selectDay(d));
 
       pagesGrid.appendChild(page);
     }

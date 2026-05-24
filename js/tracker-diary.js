@@ -652,12 +652,10 @@ export function openDiaryPagesModal(userId, yearMonth, diaryDays, cover = DEFAUL
         mini.appendChild(polaroidDiv);
       }
 
-      if (isFilled) {
-        const dayToOpen = d;
-        mini.addEventListener("click", () => {
-          crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays, cover, dayToOpen));
-        });
-      }
+      const dayToOpen = d;
+      mini.addEventListener("click", () => {
+        crossfadeDiaryOverlay(overlay, () => openDiaryModal(userId, yearMonth, diaryDays, cover, dayToOpen));
+      });
 
       if (!isFilled) {
         grid.appendChild(mini);
