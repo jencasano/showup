@@ -193,11 +193,14 @@ export function renderFeedEvent(event, currentUser) {
   // (or streak) moment was claimed by the first card of the day.
   const contextKey = lockedContext || signal.contextKey || "default";
 
-  // Determine diary sub-context: today vs past
+  // Determine diary sub-context: today vs past. Anchored to the event's
+  // firedAt date (frozen at write time), not "now", so the bucket doesn't
+  // flip after midnight. "today" means the entry was written same-day as
+  // the date it's for; "past" means it was backfilled.
   let copyContext = contextKey;
   if (type === "diary") {
-    const today = new Date().toISOString().slice(0, 10);
-    copyContext = dateStr === today ? "today" : "past";
+    const firedAtDay = new Date(firedAt).toISOString().slice(0, 10);
+    copyContext = dateStr === firedAtDay ? "today" : "past";
   }
 
   // Resolve and fill copy
@@ -222,7 +225,7 @@ export function renderFeedEvent(event, currentUser) {
     date: dateLabel,
   });
 
-  const isMilestone = MILESTONE_CONTEXTS.has(contextKey);
+  const isMilestone = type === "log" && MILESTONE_CONTEXTS.has(contextKey);
 
   // ── Build DOM ──
   const el = document.createElement("div");
