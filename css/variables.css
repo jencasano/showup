@@ -122,6 +122,16 @@
      overlay show through as a soft suggestion of structure, so the user
      still gets a sense of what section is being covered. */
   --fw-overlay: rgba(244, 236, 216, 0.72);
+
+  /* ── Milestone treatment (feed event cards) ── */
+  --milestone-wash:         color-mix(in srgb, #E8B33A 5%, #ECE1C6);
+  --milestone-badge-bg:     rgba(184, 134, 11, 0.18);
+  --milestone-badge-color:  #8A6A14;
+  --milestone-badge-border: rgba(184, 134, 11, 0.45);
+  --milestone-badge-glow:   0 0 14px rgba(232, 179, 58, 0.65), 0 0 5px rgba(232, 179, 58, 0.45);
+  /* Cream-white shimmer reads against the gold badge on Side A's
+     warm paper background; pure yellow disappears into the surface. */
+  --milestone-shimmer:      rgba(255, 240, 200, 0.75);
 }
 
 /* ═══════════════════════════════════════════════
@@ -186,4 +196,12 @@
 
   /* ── Full-week empty overlay ── */
   --fw-overlay: rgba(42, 21, 24, 0.72);
+
+  /* ── Milestone treatment (feed event cards) ── */
+  --milestone-wash:         color-mix(in srgb, #E8B33A 4%, #1D0E10);
+  --milestone-badge-bg:     rgba(232, 179, 58, 0.14);
+  --milestone-badge-color:  #E8B33A;
+  --milestone-badge-border: rgba(232, 179, 58, 0.35);
+  --milestone-badge-glow:   0 0 12px rgba(232, 179, 58, 0.45), 0 0 5px rgba(232, 179, 58, 0.30);
+  --milestone-shimmer:      rgba(255, 220, 130, 0.35);
 }

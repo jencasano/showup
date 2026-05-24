@@ -312,6 +312,77 @@
 
 .fw-feed-evt--lowkey .fw-feed-evt-nudge { color: var(--accent-support); }
 
+/* ── Milestone treatment (streak / comeback / first-ever cards) ── */
+
+.fw-feed-evt--milestone {
+  background: var(--milestone-wash);
+  position: relative;
+  overflow: hidden;
+}
+
+.fw-feed-evt--milestone::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: linear-gradient(
+    90deg,
+    var(--yellow) 0%,
+    color-mix(in srgb, var(--yellow) 40%, transparent) 70%,
+    transparent 100%
+  );
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  pointer-events: none;
+}
+
+.fw-tier-milestone {
+  background: var(--milestone-badge-bg);
+  color: var(--milestone-badge-color);
+  border: 1px solid var(--milestone-badge-border);
+  box-shadow: var(--milestone-badge-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.fw-tier-milestone::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    var(--milestone-shimmer) 50%,
+    transparent 65%
+  );
+  background-size: 200% 100%;
+  animation: badge-shimmer 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes badge-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Ghost cards: muted milestone treatment so the gold doesn't fight
+   the ghost card's reduced opacity. */
+.fw-feed-evt--ghost.fw-feed-evt--milestone {
+  background: color-mix(in srgb, var(--yellow) 3%, var(--bg-surface));
+}
+
+.fw-feed-evt--ghost.fw-feed-evt--milestone::before { opacity: 0.5; }
+
+.fw-feed-evt--ghost.fw-feed-evt--milestone .fw-tier-milestone {
+  box-shadow: 0 0 6px rgba(232, 179, 58, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fw-tier-milestone::after { animation: none; }
+}
+
 .fw-feed-evt-links { display: flex; gap: 16px; margin-top: 6px; }
 
 .fw-feed-evt-link {
