@@ -54,20 +54,20 @@
   "feed_sharing_log_default_3":           "{firstName} got {activities} done today.",
   "feed_sharing_log_default_4":           "{firstName} marked {activities}. Done.",
 
-  "feed_sharing_log_streak3_1":           "{firstName} logged {activities}. {streak}They've logged something 3 days in a row.{/streak}",
-  "feed_sharing_log_streak3_2":           "{firstName} logged {activities}. {streak}Something every day for 3 days straight.{/streak}",
+  "feed_sharing_log_streak_3_1":           "{firstName} logged {activities}. {streak}They've logged something 3 days in a row.{/streak}",
+  "feed_sharing_log_streak_3_2":           "{firstName} logged {activities}. {streak}Something every day for 3 days straight.{/streak}",
 
-  "feed_sharing_log_streak7_1":           "{firstName} logged {activities}. {streak}They've logged something every day this week.{/streak}",
-  "feed_sharing_log_streak7_2":           "{firstName} logged {activities}. {streak}Something every single day this week.{/streak}",
-  "feed_sharing_log_streak7_3":           "{firstName} logged {activities}. {streak}Seven days of showing up. Every day.{/streak} {nudge}Have you shown up today?{/nudge}",
+  "feed_sharing_log_streak_7_1":           "{firstName} logged {activities}. {streak}They've logged something every day this week.{/streak}",
+  "feed_sharing_log_streak_7_2":           "{firstName} logged {activities}. {streak}Something every single day this week.{/streak}",
+  "feed_sharing_log_streak_7_3":           "{firstName} logged {activities}. {streak}Seven days of showing up. Every day.{/streak} {nudge}Have you shown up today?{/nudge}",
 
-  "feed_sharing_log_streak15_1":          "{firstName} logged {activities}. {streak}Something logged every day for 15 days straight.{/streak}",
-  "feed_sharing_log_streak15_2":          "{firstName} logged {activities}. {streak}They've logged something every day for half a month.{/streak}",
-  "feed_sharing_log_streak15_3":          "{firstName} logged {activities}. {streak}Fifteen days of showing up every day.{/streak} {nudge}Have you done anything today?{/nudge}",
+  "feed_sharing_log_streak_15_1":          "{firstName} logged {activities}. {streak}Something logged every day for 15 days straight.{/streak}",
+  "feed_sharing_log_streak_15_2":          "{firstName} logged {activities}. {streak}They've logged something every day for half a month.{/streak}",
+  "feed_sharing_log_streak_15_3":          "{firstName} logged {activities}. {streak}Fifteen days of showing up every day.{/streak} {nudge}Have you done anything today?{/nudge}",
 
-  "feed_sharing_log_streak25_1":          "{firstName} logged {activities}. {streak}They've logged something every day for 25 days.{/streak}",
-  "feed_sharing_log_streak25_2":          "{firstName} logged {activities}. {streak}Something every day for 25 days. They're not stopping.{/streak} {nudge}Are you?{/nudge}",
-  "feed_sharing_log_streak25_3":          "{firstName} logged {activities}. {streak}Twenty-five days of something every single day.{/streak} {nudge}Join them in showing up.{/nudge}",
+  "feed_sharing_log_streak_25_1":          "{firstName} logged {activities}. {streak}They've logged something every day for 25 days.{/streak}",
+  "feed_sharing_log_streak_25_2":          "{firstName} logged {activities}. {streak}Something every day for 25 days. They're not stopping.{/streak} {nudge}Are you?{/nudge}",
+  "feed_sharing_log_streak_25_3":          "{firstName} logged {activities}. {streak}Twenty-five days of something every single day.{/streak} {nudge}Join them in showing up.{/nudge}",
 
   "feed_sharing_log_streak_full_month_1": "{firstName} logged {activities}. {streak}They've logged something every single day this month.{/streak}",
   "feed_sharing_log_streak_full_month_2": "{firstName} logged {activities}. {streak}Something logged every day this month. Every one.{/streak} {nudge}Have you shown up today?{/nudge}",
@@ -109,20 +109,20 @@
   "feed_lowkey_log_default_3":            "{firstName} was here today.",
   "feed_lowkey_log_default_4":            "Something got done in {firstName}'s world.",
 
-  "feed_lowkey_log_streak3_1":            "{firstName} has been here 3 days in a row.",
-  "feed_lowkey_log_streak3_2":            "3 days straight for {firstName}.",
+  "feed_lowkey_log_streak_3_1":            "{firstName} has been here 3 days in a row.",
+  "feed_lowkey_log_streak_3_2":            "3 days straight for {firstName}.",
 
-  "feed_lowkey_log_streak7_1":            "{firstName} hasn't missed a day this week. {nudge}Join them in showing up.{/nudge}",
-  "feed_lowkey_log_streak7_2":            "7 days in a row for {firstName}.",
-  "feed_lowkey_log_streak7_3":            "{firstName} keeps showing up. Every day this week.",
+  "feed_lowkey_log_streak_7_1":            "{firstName} hasn't missed a day this week. {nudge}Join them in showing up.{/nudge}",
+  "feed_lowkey_log_streak_7_2":            "7 days in a row for {firstName}.",
+  "feed_lowkey_log_streak_7_3":            "{firstName} keeps showing up. Every day this week.",
 
-  "feed_lowkey_log_streak15_1":           "{firstName} has been showing up every day for 15 days.",
-  "feed_lowkey_log_streak15_2":           "15 days and {firstName} hasn't stopped.",
-  "feed_lowkey_log_streak15_3":           "Half a month of showing up for {firstName}. {nudge}Have you done anything today?{/nudge}",
+  "feed_lowkey_log_streak_15_1":           "{firstName} has been showing up every day for 15 days.",
+  "feed_lowkey_log_streak_15_2":           "15 days and {firstName} hasn't stopped.",
+  "feed_lowkey_log_streak_15_3":           "Half a month of showing up for {firstName}. {nudge}Have you done anything today?{/nudge}",
 
-  "feed_lowkey_log_streak25_1":           "{firstName} hasn't missed a day in 25 days.",
-  "feed_lowkey_log_streak25_2":           "25 days in a row for {firstName}. Still going.",
-  "feed_lowkey_log_streak25_3":           "{firstName} keeps showing up. 25 days now. Quietly. {nudge}Are you keeping up?{/nudge}",
+  "feed_lowkey_log_streak_25_1":           "{firstName} hasn't missed a day in 25 days.",
+  "feed_lowkey_log_streak_25_2":           "25 days in a row for {firstName}. Still going.",
+  "feed_lowkey_log_streak_25_3":           "{firstName} keeps showing up. 25 days now. Quietly. {nudge}Are you keeping up?{/nudge}",
 
   "feed_lowkey_log_streak_full_month_1":  "{firstName} hasn't missed a single day this month.",
   "feed_lowkey_log_streak_full_month_2":  "A perfect month so far for {firstName}.",

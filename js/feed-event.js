@@ -4,6 +4,28 @@ import { getPrivacy, renderTierBadge } from "./following-utils.js";
 import { computeSignal } from "./following-signals.js";
 import { resolveFeedCopy, fillFeedCopy } from "./feed-copy.js";
 
+// Context keys that earn the milestone visual treatment. See
+// docs/MILESTONE_CARD_SPEC.md.
+const MILESTONE_CONTEXTS = new Set([
+  "first_ever",
+  "comeback_big",
+  "comeback_small",
+  "streak_7",
+  "streak_15",
+  "streak_25",
+  "streak_full_month",
+]);
+
+const MILESTONE_LABELS = {
+  first_ever:        "day one",
+  comeback_big:      "comeback",
+  comeback_small:    "comeback",
+  streak_7:          "7-day streak",
+  streak_15:         "15-day streak",
+  streak_25:         "25-day streak",
+  streak_full_month: "perfect month",
+};
+
 // ── Helpers ─────────────────────────────────────────
 
 function actName(act) { return typeof act === "string" ? act : act.name; }
@@ -200,12 +222,15 @@ export function renderFeedEvent(event, currentUser) {
     date: dateLabel,
   });
 
+  const isMilestone = MILESTONE_CONTEXTS.has(contextKey);
+
   // ── Build DOM ──
   const el = document.createElement("div");
   el.className = "fw-feed-evt";
   if (tier === "ghost")       el.classList.add("fw-feed-evt--ghost");
   else if (tier === "lowkey") el.classList.add("fw-feed-evt--lowkey");
   else                        el.classList.add("fw-feed-evt--sharing");
+  if (isMilestone)            el.classList.add("fw-feed-evt--milestone");
 
   // Header row: avatar + name/time column + tier badge
   const head = document.createElement("div");
@@ -252,7 +277,14 @@ export function renderFeedEvent(event, currentUser) {
 
   nameCol.append(nameEl, timeEl);
 
-  const badge = renderTierBadge(tier);
+  let badge;
+  if (isMilestone) {
+    badge = document.createElement("span");
+    badge.className = "fw-tier-badge fw-tier-milestone";
+    badge.textContent = MILESTONE_LABELS[contextKey];
+  } else {
+    badge = renderTierBadge(tier);
+  }
 
   head.append(avatar, nameCol, badge);
   el.appendChild(head);
