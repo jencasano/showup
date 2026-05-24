@@ -31,6 +31,12 @@ export async function saveDiaryEntry(userId, yearMonth, day, { note, photoUrl })
   data.lastUpdated = serverTimestamp();
   await setDoc(entryRef(userId, yearMonth, day), data, { merge: true });
 
+  // Broadcast a save signal so screens that want to refresh on write
+  // (e.g. the diary tab) can react without polling.
+  window.dispatchEvent(new CustomEvent("diary:saved", {
+    detail: { userId, yearMonth, day }
+  }));
+
   // Persist the diary feed event. recordDiaryEvent decides between create
   // and edit based on whether the event doc already exists.
   const hasContent = (note !== undefined && note !== "") || photoUrl !== undefined;

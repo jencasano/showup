@@ -20,22 +20,57 @@ function isMobileWidth() {
   return window.matchMedia("(max-width: 767px)").matches;
 }
 
-// Watch for the diary overlay (and any successor in a crossfade) to be
-// removed from the DOM, then fire onClose. Returns silently if no overlay
-// is present after one frame (meaning the open path didn't actually open
-// anything). Includes .diary-page-overlay so the write/edit flow chained
-// through openDiaryPage is covered too.
+// Fires onClose when the user is done with their diary interaction. Two
+// triggers:
+//   1. All diary overlays leave the DOM (the user closed everything).
+//   2. A "diary:saved" event fires (the user just saved an entry). In this
+//      case we also force-remove any open overlays and squash the modal
+//      reopen that tracker-diary's onSaved chain would otherwise perform,
+//      so save from the diary tab takes the user straight back to the tab.
+const _DIARY_OVERLAY_SELS = ".diary-modal-overlay, .diary-pages-overlay, .mob-diary-overlay, .diary-page-overlay, .diary-page-backdrop";
+
 function watchOverlayClose(onClose) {
-  const sels = ".diary-modal-overlay, .diary-pages-overlay, .mob-diary-overlay, .diary-page-overlay";
+  let done = false;
+  let closeObs = null;
+  let suppressObs = null;
+
+  function cleanup() {
+    if (closeObs) closeObs.disconnect();
+    if (suppressObs) suppressObs.disconnect();
+    window.removeEventListener("diary:saved", onSave);
+  }
+
+  function finish() {
+    if (done) return;
+    done = true;
+    cleanup();
+    onClose();
+  }
+
+  function removeAllOverlays() {
+    document.querySelectorAll(_DIARY_OVERLAY_SELS).forEach(n => n.remove());
+  }
+
+  function onSave() {
+    // Bypass the reopen-modal-after-save chain by pulling overlays out of
+    // the DOM right now, then suppressing any new ones for ~800ms to cover
+    // the 350ms closeAll setTimeout in openDiaryPage that would otherwise
+    // re-create the diary modal.
+    removeAllOverlays();
+    suppressObs = new MutationObserver(removeAllOverlays);
+    suppressObs.observe(document.body, { childList: true });
+    setTimeout(finish, 800);
+  }
+
+  window.addEventListener("diary:saved", onSave, { once: true });
+
   requestAnimationFrame(() => {
-    if (!document.querySelector(sels)) return;
-    const observer = new MutationObserver(() => {
-      if (!document.querySelector(sels)) {
-        observer.disconnect();
-        onClose();
-      }
+    if (done) return;
+    if (!document.querySelector(_DIARY_OVERLAY_SELS)) return;
+    closeObs = new MutationObserver(() => {
+      if (!document.querySelector(_DIARY_OVERLAY_SELS)) finish();
     });
-    observer.observe(document.body, { childList: true });
+    closeObs.observe(document.body, { childList: true });
   });
 }
 
