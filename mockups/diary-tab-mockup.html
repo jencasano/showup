@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>showup. diary tab mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: #1a1a1a;
+    color: #ccc;
+    padding: 40px 20px 80px;
+  }
+
+  .variant-nav {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+  .variant-btn {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 8px 20px;
+    border: 2px solid #444;
+    border-radius: 99px;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .variant-btn:hover { border-color: #888; color: #fff; }
+  .variant-btn.active { background: #C3342B; border-color: #C3342B; color: white; }
+
+  .variant-label {
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: #666;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .mockup-frame { display: none; }
+  .mockup-frame.active { display: block; }
+
+  .frame {
+    margin: 0 auto;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  /* ── SIDE A tokens ── */
+  .side-a {
+    --paper: #F4ECD8;
+    --paper-deep: #ECE1C6;
+    --paper-edge: #DCCFA6;
+    --ink: #2A1F1A;
+    --ink-soft: #5A463A;
+    --ink-faint: #9C8874;
+    --red: #C3342B;
+    --yellow: #E8B33A;
+    --blue: #4F6C8E;
+    --hairline: #D4C3A1;
+    --shelf-bg: #C9B890;
+    --shelf-top: #B8A67A;
+    --shelf-shadow: rgba(42,31,26,0.18);
+    --shelf-wall: rgba(220,207,166,0.4);
+  }
+
+  /* ── SIDE B tokens ── */
+  .side-b {
+    --paper: #2A1518;
+    --paper-deep: #1D0E10;
+    --paper-edge: #3A1D20;
+    --ink: #F0DCCF;
+    --ink-soft: #B18A84;
+    --ink-faint: #6E504B;
+    --red: #F07A5E;
+    --yellow: #E8B33A;
+    --blue: #5EAAA8;
+    --hairline: #4A2025;
+    --shelf-bg: #3A1D20;
+    --shelf-top: #4A2528;
+    --shelf-shadow: rgba(0,0,0,0.4);
+    --shelf-wall: rgba(58,29,32,0.5);
+  }
+
+  /* ── Desktop frame ── */
+  .frame-desktop {
+    width: 1100px;
+    max-width: 100%;
+    height: 820px;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    background: var(--paper);
+  }
+
+  /* ── Mobile frame ── */
+  .frame-mobile {
+    width: 390px;
+    max-width: 100%;
+    height: 880px;
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Sidebar ── */
+  .mock-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 22px 12px 16px;
+    border-right: 1px solid var(--hairline);
+  }
+  .side-a .mock-sidebar { background: rgba(236,225,198,0.4); }
+  .side-b .mock-sidebar { background: rgba(46,27,26,0.78); }
+
+  .sb-motif-mock {
+    display: flex; gap: 6px; align-items: center; padding: 0 6px;
+  }
+  .sb-motif-squiggle { color: var(--red); font-size: 0.7rem; }
+  .sb-motif-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--yellow); }
+
+  .sb-logo-mock {
+    font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.15rem;
+    color: var(--ink); padding: 0 6px; letter-spacing: -0.03em;
+  }
+  .sb-logo-mock span { color: var(--red); }
+
+  .sb-nav-mock { display: flex; flex-direction: column; gap: 3px; }
+  .sb-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 12px; border-radius: 99px;
+    font-size: 0.82rem; font-weight: 500; color: var(--ink-soft);
+    background: none; border: none; cursor: default;
+  }
+  .sb-item.active { background: var(--ink); color: var(--paper); font-weight: 600; }
+  .sb-item .num {
+    font-family: 'DM Mono', monospace; font-size: 0.58rem;
+    color: var(--ink-faint); min-width: 18px; letter-spacing: 0.08em;
+  }
+  .sb-item.active .num { color: var(--red); }
+
+  .sb-foot-mock {
+    margin-top: auto; padding: 12px 6px 4px;
+    border-top: 1px solid var(--hairline);
+  }
+  .sb-user-mock { display: flex; align-items: center; gap: 8px; padding: 0 4px; }
+  .sb-avatar-mock {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--red); color: var(--paper);
+    font-size: 0.7rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sb-username-mock { font-size: 0.78rem; font-weight: 500; color: var(--ink); }
+
+  /* ── Mobile header ── */
+  .mock-mobile-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 14px; height: 52px;
+    background: var(--paper-deep); border-bottom: 1px solid var(--paper-edge);
+    flex-shrink: 0;
+  }
+  .mob-logo {
+    font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.15rem;
+    color: var(--ink); letter-spacing: -0.03em;
+  }
+  .mob-logo span { color: var(--red); }
+  .mob-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--red); color: var(--paper);
+    font-size: 0.72rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── Mobile bottom nav ── */
+  .mock-bottom-nav {
+    display: flex; position: relative; background: var(--paper);
+    padding: 6px 6px 8px; gap: 4px; flex-shrink: 0;
+    border-top: 1px solid var(--paper-edge);
+  }
+  .mock-bottom-nav::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(to right, var(--red) 0 25%, var(--yellow) 25% 50%, var(--blue) 50% 75%, var(--ink-faint) 75% 100%);
+  }
+  .mock-bnav-tab {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 6px 4px; font-size: 0.6rem;
+    font-weight: 500; color: var(--ink-faint); border-radius: 10px; gap: 2px;
+  }
+  .mock-bnav-tab.active { background: var(--ink); color: var(--paper); }
+  .bnav-icon {
+    width: 18px; height: 18px; border-radius: 3px;
+    border: 1.5px solid currentColor; opacity: 0.5;
+  }
+  .mock-bnav-tab.active .bnav-icon { opacity: 0.8; }
+
+  /* ══════════════════════════════════════════════
+     DIARY TAB CONTENT
+     ══════════════════════════════════════════════ */
+  .diary-tab-content {
+    flex: 1; overflow-y: auto; padding: 28px 32px;
+  }
+  .frame-mobile .diary-tab-content { padding: 20px 16px; }
+
+  /* ── Hero ── */
+  .diary-hero {
+    display: flex; align-items: flex-start; gap: 28px; margin-bottom: 36px;
+  }
+  .frame-mobile .diary-hero {
+    flex-direction: column; align-items: center; gap: 16px; margin-bottom: 28px;
+  }
+
+  .diary-notebook-mini {
+    width: 180px; height: 240px; border-radius: 4px;
+    position: relative; flex-shrink: 0; cursor: pointer;
+    transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+  }
+  .diary-notebook-mini:hover { transform: translateY(-8px) rotate(-1.5deg); }
+  .frame-mobile .diary-notebook-mini { width: 140px; height: 190px; }
+
+  .nb-book {
+    width: 100%; height: 100%; display: flex;
+    border: 3px solid #8B2218; border-radius: 5px;
+    box-shadow: 4px 6px 20px rgba(0,0,0,0.4); overflow: hidden;
+  }
+  .nb-spine {
+    width: 22px;
+    background: linear-gradient(90deg, #6B1810, #8B2218 60%, #A83428);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: space-evenly; padding: 16px 0;
+  }
+  .nb-hole {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #6B1810, #4A0C08);
+    border: 1.5px solid rgba(0,0,0,0.35);
+  }
+  .nb-cover {
+    flex: 1; padding: 20px 16px;
+    background: linear-gradient(160deg, #C3342B 0%, #B22D25 45%, #9A241C 100%);
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative;
+  }
+  .nb-cover::before {
+    content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0,0,0,0.03) 4px, rgba(0,0,0,0.03) 8px);
+  }
+  .nb-title {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 700;
+    font-size: 1.8rem; color: white; text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+    position: relative; line-height: 1;
+  }
+  .nb-month-label {
+    font-family: 'Sora', sans-serif; font-size: 0.5rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: rgba(255,255,255,0.5); margin-top: 6px; position: relative;
+  }
+  .nb-stat { position: relative; }
+  .nb-stat strong {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 2rem; color: white; display: block; line-height: 1;
+  }
+  .nb-stat small {
+    font-family: 'Sora', sans-serif; font-size: 0.48rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.45);
+  }
+  .nb-pages-edge {
+    position: absolute; right: -4px; top: 5px; bottom: 5px; width: 5px;
+    background: repeating-linear-gradient(to bottom, #E8DFC4 0px, #E8DFC4 2px, #F2EDD8 2px, #F2EDD8 4px);
+    border-radius: 0 3px 3px 0;
+  }
+
+  .diary-hero-text { flex: 1; padding-top: 8px; }
+  .frame-mobile .diary-hero-text { text-align: center; padding-top: 0; }
+  .diary-hero-title {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 700;
+    font-size: 1.6rem; color: var(--ink); line-height: 1.1; margin-bottom: 4px;
+  }
+  .frame-mobile .diary-hero-title { font-size: 1.3rem; }
+  .diary-hero-sub { font-size: 0.72rem; color: var(--ink-faint); margin-bottom: 16px; }
+  .diary-hero-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 20px; background: var(--red); color: white;
+    border: none; border-radius: 10px;
+    font-family: 'Sora', sans-serif; font-size: 0.72rem; font-weight: 700; cursor: pointer;
+  }
+
+  /* ── Section heads ── */
+  .diary-section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed var(--hairline);
+  }
+  .diary-section-title {
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 1rem; color: var(--ink);
+  }
+  .diary-section-meta {
+    font-family: 'DM Mono', monospace; font-size: 0.58rem;
+    color: var(--ink-faint); letter-spacing: 0.04em;
+  }
+
+  /* ── Fill bar ── */
+  .diary-fill-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .diary-fill-label {
+    font-family: 'DM Mono', monospace; font-size: 0.52rem;
+    color: var(--ink-faint); white-space: nowrap;
+  }
+  .diary-fill-track {
+    flex: 1; height: 3px; background: var(--hairline);
+    border-radius: 2px; overflow: hidden;
+  }
+  .diary-fill-bar { height: 100%; width: 33%; background: var(--yellow); border-radius: 2px; }
+  .diary-fill-pct {
+    font-family: 'DM Mono', monospace; font-size: 0.52rem;
+    font-weight: 600; color: var(--yellow);
+  }
+
+  /* ── Pages grid ── */
+  .diary-pages-grid-mock {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 8px; margin-bottom: 40px;
+  }
+  .frame-mobile .diary-pages-grid-mock {
+    grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 32px;
+  }
+
+  .diary-mini-pg {
+    aspect-ratio: 3/4; border-radius: 5px; padding: 6px 5px 5px 10px;
+    display: flex; flex-direction: column; position: relative; overflow: hidden;
+    transition: transform 0.18s cubic-bezier(0.22,1,0.36,1); cursor: pointer;
+  }
+  .diary-mini-pg:hover { transform: translateY(-2px) rotate(0.3deg); }
+  .diary-mini-pg::before {
+    content: ""; position: absolute; top: 0; left: 8px; bottom: 0; width: 1px;
+    background: color-mix(in srgb, var(--red) 18%, transparent);
+  }
+  .diary-mini-pg.filled {
+    background-color: rgba(250,247,237,0.9);
+    background-image: radial-gradient(circle, rgba(200,189,156,0.4) 0.5px, transparent 0.6px);
+    background-size: 8px 8px;
+    border: 1px solid color-mix(in srgb, var(--yellow) 35%, var(--hairline));
+    box-shadow: 1px 2px 5px rgba(0,0,0,0.08);
+  }
+  .side-b .diary-mini-pg.filled {
+    background-color: rgba(58,29,32,0.6);
+    background-image: radial-gradient(circle, rgba(110,80,75,0.3) 0.5px, transparent 0.6px);
+    border-color: color-mix(in srgb, var(--yellow) 25%, var(--hairline));
+  }
+  .diary-mini-pg.empty {
+    background: var(--paper-deep); border: 1px solid var(--hairline);
+    opacity: 0.3; cursor: default;
+  }
+  .diary-mini-pg.empty:hover { transform: none; }
+  .diary-mini-pg.today { border: 1.5px solid var(--red); box-shadow: 0 0 0 1px var(--red); }
+
+  .mini-pg-day {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 700;
+    font-size: 0.72rem; color: var(--ink); line-height: 1; margin-bottom: 3px;
+  }
+  .diary-mini-pg.today .mini-pg-day { color: var(--red); }
+  .mini-pg-note {
+    font-family: 'Caveat', cursive; font-size: 0.5rem; color: var(--ink-soft);
+    line-height: 1.2; overflow: hidden; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical; flex: 1;
+  }
+  .mini-pg-dot {
+    position: absolute; top: 5px; right: 5px;
+    width: 4px; height: 4px; border-radius: 50%; background: var(--yellow);
+  }
+  .mini-pg-photo {
+    margin-top: auto; width: 100%; aspect-ratio: 1; border-radius: 2px;
+    overflow: hidden; border: 1.5px solid rgba(255,255,255,0.6);
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.08);
+    background: linear-gradient(135deg, #e0d5c0, #cdb99e);
+  }
+  .mini-pg-lines { margin-top: 4px; display: flex; flex-direction: column; gap: 2px; }
+  .mini-pg-line { height: 1px; background: var(--hairline); opacity: 0.4; }
+  .mini-pg-line:nth-child(2) { width: 75%; }
+  .mini-pg-line:nth-child(3) { width: 50%; }
+
+  /* ══════════════════════════════════════════════
+     BOOKSHELF
+     ══════════════════════════════════════════════ */
+  .bookshelf {
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  /* Scroll wrapper -- clips and scrolls the books row */
+  .shelf-scroll {
+    overflow-x: auto;
+    overflow-y: visible;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 4px;
+  }
+  .shelf-scroll::-webkit-scrollbar { display: none; }
+
+  /* The shelf plank */
+  .shelf-plank {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 16px 14px 0;
+    min-height: 140px;
+    min-width: min-content;
+    background: var(--shelf-wall);
+    border-radius: 6px 6px 0 0;
+  }
+  .frame-mobile .shelf-plank {
+    min-height: 120px;
+    gap: 6px;
+    padding: 12px 10px 0;
+  }
+
+  /* Wooden shelf surface -- stays full-width, never scrolls */
+  .shelf-surface {
+    position: relative;
+    height: 12px;
+    border-radius: 2px 2px 4px 4px;
+    background: var(--shelf-bg);
+    box-shadow:
+      0 2px 4px var(--shelf-shadow),
+      0 4px 12px var(--shelf-shadow),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+    margin: 0 6px;
+  }
+  .shelf-surface::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--shelf-top);
+    border-radius: 2px 2px 0 0;
+  }
+  /* Wood grain texture */
+  .shelf-surface::after {
+    content: "";
+    position: absolute;
+    inset: 3px 0 0 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 18px,
+      rgba(0,0,0,0.03) 18px,
+      rgba(0,0,0,0.03) 20px
+    );
+    border-radius: 0 0 4px 4px;
+  }
+
+  /* ── Individual book spine ── */
+  .book-spine {
+    position: relative;
+    z-index: 1;
+    width: 38px;
+    height: 110px;
+    border-radius: 3px 5px 4px 2px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 3px 8px;
+    transition: transform 0.25s cubic-bezier(0.22,1,0.36,1);
+    box-shadow:
+      2px 2px 6px rgba(0,0,0,0.25),
+      inset -2px 0 4px rgba(0,0,0,0.1),
+      inset 2px 0 3px rgba(255,255,255,0.08);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .frame-mobile .book-spine {
+    width: 34px;
+    height: 95px;
+    padding: 8px 2px 6px;
+  }
+
+  .book-spine:hover {
+    transform: translateY(-12px) rotate(-2deg);
+    box-shadow:
+      4px 6px 16px rgba(0,0,0,0.35),
+      inset -2px 0 4px rgba(0,0,0,0.1),
+      inset 2px 0 3px rgba(255,255,255,0.08);
+  }
+
+  /* Leather texture on spines */
+  .book-spine::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.04) 3px,
+      rgba(0,0,0,0.04) 6px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Top/bottom bands */
+  .book-spine::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px 5px 0 0;
+    z-index: 2;
+  }
+
+  .spine-band-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: rgba(0,0,0,0.12);
+    border-radius: 0 0 4px 2px;
+    z-index: 2;
+  }
+
+  /* Spine text (rotated vertically) */
+  .spine-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 0.52rem;
+    color: rgba(255,255,255,0.85);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    position: relative;
+    z-index: 3;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    white-space: nowrap;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .frame-mobile .spine-title { font-size: 0.46rem; }
+
+  /* Light-colored cover text override */
+  .book-spine.light-cover .spine-title {
+    color: rgba(42,31,26,0.7);
+    text-shadow: none;
+  }
+  .book-spine.light-cover .spine-dots .spine-dot {
+    background: rgba(42,31,26,0.3);
+  }
+
+  /* Spine decorative dots */
+  .spine-dots {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+    position: relative;
+    z-index: 3;
+  }
+  .spine-dot {
+    width: 3px; height: 3px; border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+  }
+
+  /* Spine entry count */
+  .spine-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.38rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    writing-mode: vertical-rl;
+    letter-spacing: 0.08em;
+    position: relative;
+    z-index: 3;
+  }
+  .book-spine.light-cover .spine-count { color: rgba(42,31,26,0.4); }
+
+  /* Height variations for visual interest */
+  .book-spine.h-tall   { height: 118px; }
+  .book-spine.h-medium { height: 105px; }
+  .book-spine.h-short  { height: 96px; }
+  .frame-mobile .book-spine.h-tall   { height: 100px; }
+  .frame-mobile .book-spine.h-medium { height: 90px; }
+  .frame-mobile .book-spine.h-short  { height: 82px; }
+
+  /* Width variations */
+  .book-spine.w-thick { width: 42px; }
+  .book-spine.w-thin  { width: 32px; }
+  .frame-mobile .book-spine.w-thick { width: 38px; }
+  .frame-mobile .book-spine.w-thin  { width: 28px; }
+
+  /* Slight lean for character */
+  .book-spine:nth-child(3n+1) { transform: rotate(-0.8deg); }
+  .book-spine:nth-child(3n+2) { transform: rotate(0.5deg); }
+  .book-spine:nth-child(3n)   { transform: rotate(-0.3deg); }
+  .book-spine:nth-child(3n+1):hover { transform: translateY(-12px) rotate(-2.5deg); }
+  .book-spine:nth-child(3n+2):hover { transform: translateY(-12px) rotate(-1.5deg); }
+  .book-spine:nth-child(3n):hover   { transform: translateY(-12px) rotate(-2.2deg); }
+
+  /* Shelf label */
+  .shelf-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.08em;
+    text-align: right;
+    padding: 6px 6px 0;
+  }
+
+  /* Tooltip on hover */
+  .book-spine .spine-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  }
+  .book-spine .spine-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--ink);
+  }
+  .book-spine:hover .spine-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+</style>
+</head>
+<body>
+
+<div class="variant-nav">
+  <button class="variant-btn active" onclick="show('a-desktop')">Side A -- Desktop</button>
+  <button class="variant-btn" onclick="show('a-mobile')">Side A -- Mobile</button>
+  <button class="variant-btn" onclick="show('b-desktop')">Side B -- Desktop</button>
+  <button class="variant-btn" onclick="show('b-mobile')">Side B -- Mobile</button>
+</div>
+
+<script>
+function show(variant) {
+  document.querySelectorAll('.mockup-frame').forEach(f => f.classList.remove('active'));
+  document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('frame-' + variant).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── Page grid builder ──
+const filledDays = new Set([1, 3, 5, 7, 8, 12, 15, 19]);
+const today = 24;
+const notes = {
+  1: "first day of the month. grateful for fresh starts.",
+  3: "gym was brutal today. legs still shaking.",
+  5: "paldo for breakfast. neithan cooked.",
+  7: "productive day. shipped the feed view.",
+  8: "quiet sunday. read and napped.",
+  12: "long walk around the city. beautiful sunset.",
+  15: "halfway through the month already.",
+  19: "figured out the diary pages grid. feels good."
+};
+const photoDays = new Set([3, 12, 19]);
+
+function buildGrid(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  for (let d = 1; d <= today; d++) {
+    const pg = document.createElement('div');
+    const isFilled = filledDays.has(d);
+    pg.className = 'diary-mini-pg ' + (isFilled ? 'filled' : 'empty');
+    if (d === today) pg.classList.add('today');
+    let html = '<div class="mini-pg-day">' + d + '</div>';
+    if (isFilled) {
+      html += '<div class="mini-pg-dot"></div>';
+      if (notes[d]) html += '<div class="mini-pg-note">' + notes[d] + '</div>';
+      if (photoDays.has(d)) html += '<div class="mini-pg-photo"></div>';
+    } else {
+      html += '<div class="mini-pg-lines"><div class="mini-pg-line" style="width:100%"></div><div class="mini-pg-line"></div><div class="mini-pg-line"></div></div>';
+    }
+    pg.innerHTML = html;
+    container.appendChild(pg);
+  }
+}
+
+// ── Bookshelf builder ──
+const pastMonths = [
+  { month: "Apr 2026", full: "April 2026", entries: 22, total: 30, cover: "moody",
+    bg: "linear-gradient(160deg, #2D3354 0%, #1F2442 45%, #161A34 100%)", light: false, h: "h-tall", w: "w-thick" },
+  { month: "Mar 2026", full: "March 2026", entries: 15, total: 31, cover: "quiet",
+    bg: "linear-gradient(160deg, #F4ECD8 0%, #ECE1C6 45%, #DCCFA6 100%)", light: true, h: "h-medium", w: "" },
+  { month: "Feb 2026", full: "February 2026", entries: 28, total: 28, cover: "bold",
+    bg: "linear-gradient(160deg, #C3342B 0%, #B22D25 45%, #9A241C 100%)", light: false, h: "h-tall", w: "" },
+  { month: "Jan 2026", full: "January 2026", entries: 18, total: 31, cover: "moody",
+    bg: "linear-gradient(160deg, #2D3354 0%, #1F2442 45%, #161A34 100%)", light: false, h: "h-short", w: "w-thin" },
+  { month: "Dec 2025", full: "December 2025", entries: 25, total: 31, cover: "bold",
+    bg: "linear-gradient(160deg, #C3342B 0%, #B22D25 45%, #9A241C 100%)", light: false, h: "h-medium", w: "w-thick" },
+  { month: "Nov 2025", full: "November 2025", entries: 10, total: 30, cover: "quiet",
+    bg: "linear-gradient(160deg, #F4ECD8 0%, #ECE1C6 45%, #DCCFA6 100%)", light: true, h: "h-short", w: "" },
+  { month: "Oct 2025", full: "October 2025", entries: 20, total: 31, cover: "bold",
+    bg: "linear-gradient(160deg, #C3342B 0%, #B22D25 45%, #9A241C 100%)", light: false, h: "h-medium", w: "w-thin" },
+  { month: "Sep 2025", full: "September 2025", entries: 14, total: 30, cover: "moody",
+    bg: "linear-gradient(160deg, #2D3354 0%, #1F2442 45%, #161A34 100%)", light: false, h: "h-tall", w: "" },
+];
+
+function buildShelf(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const plank = container.querySelector('.shelf-plank');
+
+  pastMonths.forEach(m => {
+    const spine = document.createElement('div');
+    spine.className = 'book-spine ' + m.h + ' ' + m.w;
+    if (m.light) spine.classList.add('light-cover');
+    spine.style.background = m.bg;
+
+    spine.innerHTML =
+      '<div class="spine-dots"><div class="spine-dot"></div><div class="spine-dot"></div></div>' +
+      '<div class="spine-title">' + m.month + '</div>' +
+      '<div class="spine-count">' + m.entries + '</div>' +
+      '<div class="spine-band-bottom"></div>' +
+      '<div class="spine-tooltip">' + m.full + ' -- ' + m.entries + ' of ' + m.total + ' pages</div>';
+
+    plank.appendChild(spine);
+  });
+}
+
+// Build everything on load
+document.addEventListener('DOMContentLoaded', () => {
+  ['a-desktop','a-mobile','b-desktop','b-mobile'].forEach(v => {
+    buildGrid('pages-grid-' + v);
+    buildShelf('shelf-' + v);
+  });
+});
+</script>
+
+<!-- SIDE A DESKTOP -->
+<div class="mockup-frame active" id="frame-a-desktop">
+  <div class="variant-label">Side A -- Desktop (1100px)</div>
+  <div class="frame frame-desktop side-a">
+    <aside class="mock-sidebar">
+      <div class="sb-motif-mock"><span class="sb-motif-squiggle">~</span><span class="sb-motif-dot"></span></div>
+      <div class="sb-logo-mock">show<span>up</span>.</div>
+      <nav class="sb-nav-mock">
+        <div class="sb-item"><span class="num">01</span>mine</div>
+        <div class="sb-item active"><span class="num">02</span>diary</div>
+        <div class="sb-item"><span class="num">03</span>following</div>
+        <div class="sb-item"><span class="num">04</span>all</div>
+        <div class="sb-item"><span class="num">05</span>shop</div>
+        <div class="sb-item"><span class="num">06</span>settings</div>
+      </nav>
+      <div class="sb-foot-mock"><div class="sb-user-mock"><div class="sb-avatar-mock">J</div><span class="sb-username-mock">Jeni Casano</span></div></div>
+    </aside>
+    <div class="diary-tab-content">
+      <div class="diary-hero">
+        <div class="diary-notebook-mini">
+          <div class="nb-book"><div class="nb-spine"><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div></div><div class="nb-cover"><div><div class="nb-title">diary.</div><div class="nb-month-label">MAY 2026</div></div><div class="nb-stat"><strong>8</strong><small>ENTRIES</small></div><div class="nb-pages-edge"></div></div></div>
+        </div>
+        <div class="diary-hero-text">
+          <div class="diary-hero-title">your diary.</div>
+          <div class="diary-hero-sub">May 2026 -- 8 pages filled so far. keep going.</div>
+          <button class="diary-hero-btn">&#9998; write today's page</button>
+        </div>
+      </div>
+      <div class="diary-section-head"><div class="diary-section-title">this month's pages</div><div class="diary-section-meta">May 2026</div></div>
+      <div class="diary-fill-row"><span class="diary-fill-label">8 of 24</span><div class="diary-fill-track"><div class="diary-fill-bar"></div></div><span class="diary-fill-pct">33%</span></div>
+      <div class="diary-pages-grid-mock" id="pages-grid-a-desktop"></div>
+      <div class="diary-section-head"><div class="diary-section-title">past months</div><div class="diary-section-meta">your bookshelf</div></div>
+      <div class="bookshelf" id="shelf-a-desktop">
+        <div class="shelf-scroll"><div class="shelf-plank"></div></div>
+        <div class="shelf-surface"></div>
+        <div class="shelf-label">newest &larr; &rarr; oldest</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDE A MOBILE -->
+<div class="mockup-frame" id="frame-a-mobile">
+  <div class="variant-label">Side A -- Mobile (390px)</div>
+  <div class="frame frame-mobile side-a">
+    <div class="mock-mobile-header"><div class="mob-logo">show<span>up</span>.</div><div class="mob-avatar">J</div></div>
+    <div class="diary-tab-content">
+      <div class="diary-hero">
+        <div class="diary-notebook-mini">
+          <div class="nb-book"><div class="nb-spine"><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div></div><div class="nb-cover"><div><div class="nb-title" style="font-size:1.5rem;">diary.</div><div class="nb-month-label">MAY 2026</div></div><div class="nb-stat"><strong style="font-size:1.6rem;">8</strong><small>ENTRIES</small></div><div class="nb-pages-edge"></div></div></div>
+        </div>
+        <div class="diary-hero-text">
+          <div class="diary-hero-title">your diary.</div>
+          <div class="diary-hero-sub">May 2026 -- 8 pages filled. keep going.</div>
+          <button class="diary-hero-btn">&#9998; write today's page</button>
+        </div>
+      </div>
+      <div class="diary-section-head"><div class="diary-section-title">this month's pages</div><div class="diary-section-meta">May 2026</div></div>
+      <div class="diary-fill-row"><span class="diary-fill-label">8 of 24</span><div class="diary-fill-track"><div class="diary-fill-bar"></div></div><span class="diary-fill-pct">33%</span></div>
+      <div class="diary-pages-grid-mock" id="pages-grid-a-mobile"></div>
+      <div class="diary-section-head"><div class="diary-section-title">past months</div><div class="diary-section-meta">your bookshelf</div></div>
+      <div class="bookshelf" id="shelf-a-mobile">
+        <div class="shelf-scroll"><div class="shelf-plank"></div></div>
+        <div class="shelf-surface"></div>
+        <div class="shelf-label">newest &larr; &rarr; oldest</div>
+      </div>
+    </div>
+    <div class="mock-bottom-nav">
+      <div class="mock-bnav-tab"><div class="bnav-icon"></div>mine</div>
+      <div class="mock-bnav-tab active"><div class="bnav-icon"></div>diary</div>
+      <div class="mock-bnav-tab"><div class="bnav-icon"></div>following</div>
+      <div class="mock-bnav-tab"><div class="bnav-icon"></div>all</div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDE B DESKTOP -->
+<div class="mockup-frame" id="frame-b-desktop">
+  <div class="variant-label">Side B -- Desktop (1100px)</div>
+  <div class="frame frame-desktop side-b">
+    <aside class="mock-sidebar">
+      <div class="sb-motif-mock"><span class="sb-motif-squiggle">~</span><span class="sb-motif-dot"></span></div>
+      <div class="sb-logo-mock">show<span>up</span>.</div>
+      <nav class="sb-nav-mock">
+        <div class="sb-item"><span class="num">01</span>mine</div>
+        <div class="sb-item active"><span class="num">02</span>diary</div>
+        <div class="sb-item"><span class="num">03</span>following</div>
+        <div class="sb-item"><span class="num">04</span>all</div>
+        <div class="sb-item"><span class="num">05</span>shop</div>
+        <div class="sb-item"><span class="num">06</span>settings</div>
+      </nav>
+      <div class="sb-foot-mock"><div class="sb-user-mock"><div class="sb-avatar-mock">J</div><span class="sb-username-mock">Jeni Casano</span></div></div>
+    </aside>
+    <div class="diary-tab-content">
+      <div class="diary-hero">
+        <div class="diary-notebook-mini">
+          <div class="nb-book"><div class="nb-spine"><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div></div><div class="nb-cover"><div><div class="nb-title">diary.</div><div class="nb-month-label">MAY 2026</div></div><div class="nb-stat"><strong>8</strong><small>ENTRIES</small></div><div class="nb-pages-edge"></div></div></div>
+        </div>
+        <div class="diary-hero-text">
+          <div class="diary-hero-title">your diary.</div>
+          <div class="diary-hero-sub">May 2026 -- 8 pages filled so far. keep going.</div>
+          <button class="diary-hero-btn">&#9998; write today's page</button>
+        </div>
+      </div>
+      <div class="diary-section-head"><div class="diary-section-title">this month's pages</div><div class="diary-section-meta">May 2026</div></div>
+      <div class="diary-fill-row"><span class="diary-fill-label">8 of 24</span><div class="diary-fill-track"><div class="diary-fill-bar"></div></div><span class="diary-fill-pct">33%</span></div>
+      <div class="diary-pages-grid-mock" id="pages-grid-b-desktop"></div>
+      <div class="diary-section-head"><div class="diary-section-title">past months</div><div class="diary-section-meta">your bookshelf</div></div>
+      <div class="bookshelf" id="shelf-b-desktop">
+        <div class="shelf-scroll"><div class="shelf-plank"></div></div>
+        <div class="shelf-surface"></div>
+        <div class="shelf-label">newest &larr; &rarr; oldest</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDE B MOBILE -->
+<div class="mockup-frame" id="frame-b-mobile">
+  <div class="variant-label">Side B -- Mobile (390px)</div>
+  <div class="frame frame-mobile side-b">
+    <div class="mock-mobile-header"><div class="mob-logo">show<span>up</span>.</div><div class="mob-avatar">J</div></div>
+    <div class="diary-tab-content">
+      <div class="diary-hero">
+        <div class="diary-notebook-mini">
+          <div class="nb-book"><div class="nb-spine"><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div><div class="nb-hole"></div></div><div class="nb-cover"><div><div class="nb-title" style="font-size:1.5rem;">diary.</div><div class="nb-month-label">MAY 2026</div></div><div class="nb-stat"><strong style="font-size:1.6rem;">8</strong><small>ENTRIES</small></div><div class="nb-pages-edge"></div></div></div>
+        </div>
+        <div class="diary-hero-text">
+          <div class="diary-hero-title">your diary.</div>
+          <div class="diary-hero-sub">May 2026 -- 8 pages filled. keep going.</div>
+          <button class="diary-hero-btn">&#9998; write today's page</button>
+        </div>
+      </div>
+      <div class="diary-section-head"><div class="diary-section-title">this month's pages</div><div class="diary-section-meta">May 2026</div></div>
+      <div class="diary-fill-row"><span class="diary-fill-label">8 of 24</span><div class="diary-fill-track"><div class="diary-fill-bar"></div></div><span class="diary-fill-pct">33%</span></div>
+      <div class="diary-pages-grid-mock" id="pages-grid-b-mobile"></div>
+      <div class="diary-section-head"><div class="diary-section-title">past months</div><div class="diary-section-meta">your bookshelf</div></div>
+      <div class="bookshelf" id="shelf-b-mobile">
+        <div class="shelf-scroll"><div class="shelf-plank"></div></div>
+        <div class="shelf-surface"></div>
+        <div class="shelf-label">newest &larr; &rarr; oldest</div>
+      </div>
+    </div>
+    <div class="mock-bottom-nav">
+      <div class="mock-bnav-tab"><div class="bnav-icon"></div>mine</div>
+      <div class="mock-bnav-tab active"><div class="bnav-icon"></div>diary</div>
+      <div class="mock-bnav-tab"><div class="bnav-icon"></div>following</div>
+      <div class="mock-bnav-tab"><div class="bnav-icon"></div>all</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
