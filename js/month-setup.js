@@ -4,6 +4,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getCurrentYearMonth, getPrevYearMonth, formatYearMonth, getFontColorSuggestions } from "./utils.js";
 import { icon } from "./icons.js";
+import { recordSetupEvent } from "./event-write.js";
 
 const FONTS = [
   { value: "Inter", label: "Aa — Clean" },
@@ -287,6 +288,8 @@ export function showMonthSetup(userId, avatarUrl, prevData = null, displayName =
           doc(db, "logs", yearMonth, "entries", userId),
           entryData
         );
+
+        await recordSetupEvent(userId, yearMonth, activities.length);
 
         overlay.remove();
         resolve(entryData);

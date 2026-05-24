@@ -7,7 +7,7 @@ import { showToast, showLoader, hideLoader } from "./ui.js";
 import { renderPeopleView } from "./following-people.js";
 import { renderFeedView } from "./following-feed.js";
 import { createDebouncer } from "./feed-debounce.js";
-import { buildLogEvent, buildDiaryEvent } from "./feed-event.js";
+import { buildLogEvent, buildDiaryEvent, buildSetupEvent } from "./feed-event.js";
 import { subscribeToUserEvents } from "./event-read.js";
 
 let currentView = "people";
@@ -139,15 +139,20 @@ export function loadFollowingLogs(yearMonth, container, currentUser, onSwitchToA
       feedEvents    = feedEvents.filter(e => !e.key?.startsWith(legacyPrefix));
       pendingEvents = pendingEvents.filter(e => !e.key?.startsWith(legacyPrefix));
     }
-    const evt = {
-      ...eventRec,
-      type: eventRec.type === "burst" ? "log" : eventRec.type,
-      user: userCache[uid] || null,
-      log:  logsCache[uid] || null,
-      diaryEntry: eventRec.type === "diary"
-        ? (diaryCache[uid]?.[eventRec.dateStr] || null)
-        : null,
-    };
+    let evt;
+    if (eventRec.type === "setup") {
+      evt = buildSetupEvent(uid, userCache[uid] || null, eventRec.yearMonth, eventRec.firedAt);
+    } else {
+      evt = {
+        ...eventRec,
+        type: eventRec.type === "burst" ? "log" : eventRec.type,
+        user: userCache[uid] || null,
+        log:  logsCache[uid] || null,
+        diaryEntry: eventRec.type === "diary"
+          ? (diaryCache[uid]?.[eventRec.dateStr] || null)
+          : null,
+      };
+    }
     mergeEvent(evt);
     renderBoard();
   }

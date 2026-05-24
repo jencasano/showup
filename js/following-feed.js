@@ -24,6 +24,7 @@ function computeEventList(model) {
     const p = getPrivacy(user);
     if (evt.type === "log" && p.calendar === "private") return false;
     if (evt.type === "diary" && p.diary === "private") return false;
+    if (evt.type === "setup" && p.calendar === "private") return false;
     return true;
   });
 

@@ -104,6 +104,23 @@ async function computeContextKey(uid, yearMonth, dateStr) {
   }
 }
 
+export async function recordSetupEvent(uid, yearMonth, activityCount) {
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const eventId = `setup-${yearMonth}`;
+  try {
+    await setDoc(doc(db, "events", uid, "items", eventId), {
+      type: "setup",
+      uid,
+      firedAt: Date.now(),
+      yearMonth,
+      dateStr,
+      activityCount,
+    });
+  } catch (err) {
+    console.error("Failed to write setup event:", err);
+  }
+}
+
 export async function recordDiaryEvent(uid, yearMonth, day) {
   const dateStr = `${yearMonth}-${String(day).padStart(2, "0")}`;
   const eventId = `diary-${dateStr}`;

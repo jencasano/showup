@@ -37,12 +37,13 @@ export function resolveFeedCopy(tier, eventType, context, uid, dateStr, seedExtr
   return pickCopy(variants, uid, dateStr, seedExtra);
 }
 
-export function fillFeedCopy(template, { firstName, activities, date }) {
+export function fillFeedCopy(template, { firstName, activities, date, month }) {
   if (!template) return "";
   let out = template;
   if (firstName)  out = out.replace(/\{firstName\}/g, firstName);
   if (activities) out = out.replace(/\{activities\}/g, activities);
   if (date)       out = out.replace(/\{date\}/g, date);
+  if (month)      out = out.replace(/\{month\}/g, month);
   // Convert {streak}...{/streak} and {nudge}...{/nudge} to styled spans
   out = out.replace(/\{streak\}(.*?)\{\/streak\}/g, '<span class="fw-feed-evt-streak">$1</span>');
   out = out.replace(/\{nudge\}(.*?)\{\/nudge\}/g, '<span class="fw-feed-evt-nudge">$1</span>');

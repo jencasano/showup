@@ -3,6 +3,7 @@
 import { getPrivacy, renderTierBadge } from "./following-utils.js";
 import { computeSignal } from "./following-signals.js";
 import { resolveFeedCopy, fillFeedCopy } from "./feed-copy.js";
+import { formatYearMonth } from "./utils.js";
 
 // Context keys that earn the milestone visual treatment. See
 // docs/MILESTONE_CARD_SPEC.md.
@@ -174,9 +175,26 @@ export function buildDiaryEvent(uid, user, diaryEntry, dateStr) {
   };
 }
 
+export function buildSetupEvent(uid, user, yearMonth, firedAt) {
+  const ts = firedAt || Date.now();
+  return {
+    type: "setup",
+    uid,
+    user,
+    log: null,
+    diaryEntry: null,
+    dateStr: new Date(ts).toISOString().slice(0, 10),
+    yearMonth,
+    firedAt: ts,
+    key: `${uid}-setup-${yearMonth}`,
+  };
+}
+
 // ── Renderer ────────────────────────────────────────
 
 export function renderFeedEvent(event, currentUser) {
+  if (event.type === "setup") return renderSetupCard(event);
+
   const { type, uid, user, log, diaryEntry, dateStr, burstActivities, firedAt, lockedContext, batchId } = event;
   const displayName = user?.displayName || "Unknown";
   const firstName = (displayName || "").split(" ")[0] || displayName;
@@ -339,6 +357,77 @@ export function renderFeedEvent(event, currentUser) {
 
     el.appendChild(links);
   }
+
+  return el;
+}
+
+function renderSetupCard(event) {
+  const { uid, user, yearMonth, firedAt, dateStr } = event;
+  const displayName = user?.displayName || "Unknown";
+  const firstName = (displayName || "").split(" ")[0] || displayName;
+  const privacy = getPrivacy(user);
+  const tier = privacy.calendar;
+  const deco = user?.decoration || { color: "#C3342B", fontColor: "#FFFFFF" };
+
+  const tierKey = tier === "followers" ? "sharing" : tier;
+  const rawCopy = resolveFeedCopy(tierKey, "setup", "default", uid, dateStr);
+  const filledCopy = fillFeedCopy(rawCopy, {
+    firstName,
+    month: formatYearMonth(yearMonth),
+  });
+
+  const el = document.createElement("div");
+  el.className = "fw-feed-evt";
+  if (tier === "ghost")       el.classList.add("fw-feed-evt--ghost");
+  else if (tier === "lowkey") el.classList.add("fw-feed-evt--lowkey");
+  else                        el.classList.add("fw-feed-evt--sharing");
+
+  const head = document.createElement("div");
+  head.className = "fw-feed-evt-head";
+
+  const avatar = document.createElement("div");
+  avatar.className = "fw-feed-evt-avatar";
+  avatar.style.background = deco.color;
+  avatar.style.color = deco.fontColor || "#FFFFFF";
+  if (deco.avatarUrl) {
+    const img = document.createElement("img");
+    img.src = deco.avatarUrl;
+    img.alt = displayName;
+    avatar.appendChild(img);
+  } else {
+    avatar.textContent = displayName.charAt(0).toUpperCase();
+  }
+
+  const nameCol = document.createElement("div");
+  nameCol.className = "fw-feed-evt-name-col";
+
+  const nameEl = document.createElement("div");
+  nameEl.className = "fw-feed-evt-name";
+  nameEl.textContent = displayName;
+
+  const timeEl = document.createElement("div");
+  timeEl.className = "fw-feed-evt-time";
+  timeEl.textContent = tier === "ghost" ? "" : formatEventTime(firedAt);
+
+  nameCol.append(nameEl, timeEl);
+  head.append(avatar, nameCol, renderTierBadge(tier));
+  el.appendChild(head);
+
+  const body = document.createElement("div");
+  body.className = "fw-feed-evt-body";
+
+  if (tier === "ghost") {
+    const ghostCopy = document.createElement("div");
+    ghostCopy.className = "fw-feed-evt-ghost-copy";
+    ghostCopy.textContent = filledCopy;
+    body.appendChild(ghostCopy);
+  } else {
+    const action = document.createElement("div");
+    action.className = "fw-feed-evt-action";
+    action.innerHTML = filledCopy;
+    body.appendChild(action);
+  }
+  el.appendChild(body);
 
   return el;
 }

@@ -102,6 +102,11 @@
   "feed_sharing_diary_past_3":            "{firstName} put {date} into words.",
   "feed_sharing_diary_past_4":            "{firstName} didn't let {date} pass without words.",
 
+  "feed_sharing_setup_default_1":         "{firstName} is set up for {month}. Let's see what happens.",
+  "feed_sharing_setup_default_2":         "{firstName} locked in for {month}. New month, new page.",
+  "feed_sharing_setup_default_3":         "{firstName} is ready for {month}.",
+  "feed_sharing_setup_default_4":         "New month for {firstName}. The board is set.",
+
   "_divider_lowkey": "--- LOW KEY ---",
 
   "feed_lowkey_log_default_1":            "{firstName} showed up today.",
@@ -156,6 +161,10 @@
   "feed_lowkey_diary_past_2":             "{date} still had something to say to {firstName}.",
   "feed_lowkey_diary_past_3":             "{firstName} went back to {date}. Something was left unfinished.",
 
+  "feed_lowkey_setup_default_1":          "{firstName} is getting ready for something.",
+  "feed_lowkey_setup_default_2":          "A new month is starting for {firstName}.",
+  "feed_lowkey_setup_default_3":          "{firstName} set the table. Now it's time to show up.",
+
   "_divider_ghost": "--- GHOST (named presence, closed door) ---",
 
   "feed_ghost_log_default_1":             "{firstName} showed up. That's all this feed knows.",
@@ -194,5 +203,9 @@
 
   "feed_ghost_diary_past_1":              "{firstName} went back to {date} and wrote something.",
   "feed_ghost_diary_past_2":              "{date} got words from {firstName}. Private ones.",
-  "feed_ghost_diary_past_3":              "{firstName} had something to say about {date}. It stays there."
+  "feed_ghost_diary_past_3":              "{firstName} had something to say about {date}. It stays there.",
+
+  "feed_ghost_setup_default_1":           "{firstName} turned a new page. Quietly.",
+  "feed_ghost_setup_default_2":           "A new month began for {firstName}. The details are theirs.",
+  "feed_ghost_setup_default_3":           "{firstName} set something up. We won't know what."
 }
