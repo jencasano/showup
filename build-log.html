@@ -591,7 +591,7 @@
           <li class="deck-item"><span class="deck-num">4</span>Safari Fit mode blur, canvas downscale/upscale tuning on iOS</li>
           <li class="deck-item"><span class="deck-num">5</span>Storage migration to asia-southeast1 for faster uploads from the Philippines</li>
           <li class="deck-item"><span class="deck-num">6</span>All tab card tap, no-op placeholder, activates when user profiles are built</li>
-          <li class="deck-item"><span class="deck-num">7</span>Diary Phase B, swipe between diary pages on mobile, notebook fill stat becomes meaningful</li>
+          <li class="deck-item"><span class="deck-num">7</span>Diary Phase B (remaining), swipe between diary pages on mobile</li>
           <li class="deck-item"><span class="deck-num">8</span>Diary Phase C, diary pages visible to followers</li>
           <li class="deck-item"><span class="deck-num">9</span>Allow 2-3 photos per diary entry</li>
           <li class="deck-item"><span class="deck-num">10</span>Custom spinner / loader</li>
@@ -632,8 +632,58 @@
     </details>
   </div>
 
-  <!-- ── May 25, 2026 · Feed · Perfect Week Milestone ── -->
+  <!-- ── May 25, 2026 · Diary Phase B · Mobile Pages Grid ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">May 25, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">DI02</span>
+    </div>
+    <div class="entry-title">Diary Phase B: Mobile Pages Grid</div>
+    <p class="entry-desc">The mobile diary sheet gains a Pages view alongside the existing Calendar view, accessible via a new icon button in the date strip. Tapping the pages icon replaces the entry area (flip card) with a scrollable 3-column grid of mini notebook pages plus a fill progress bar. Filled pages show note previews in Caveat and photo thumbnails. Empty pages render as muted cards with faint ruled lines. Tapping a filled page switches back to the Calendar view and navigates to that day.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Pages icon in the date strip</div>
+        <div class="item-desc">A new icon button sits next to the existing calendar icon at the right end of the date strip row. Both icons are peers: calendar opens the mini calendar bottom sheet (existing), pages toggles the pages grid view (new). The pages icon gets a yellow active highlight when the grid is showing.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Inline view swap</div>
+        <div class="item-desc">Tapping the pages icon hides the entry area (flip card, date heading, chips, write/edit button) and shows the pages container (fill bar + scrollable grid). Tapping it again reverses the swap. The transition is a ~180ms opacity crossfade. No bottom sheet, no new modal -- just a view toggle within the existing diary sheet.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">3-column mini page grid</div>
+        <div class="item-desc">Each day from 1 through today renders as a mini page card with 3:4 aspect ratio. Filled pages have a brighter background, yellow-tinted border, Fraunces day number, Caveat note preview (2-line clamp), polaroid photo thumbnail if available, and an amber dot in the top-right corner. Empty pages are muted at 0.35 opacity with faint ruled lines. Today's page gets a coral border ring regardless of fill state.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Fill progress bar</div>
+        <div class="item-desc">Sits between the date strip and the grid. Shows 'X of Y' (entries / today's date) with a yellow progress track and percentage. The denominator is today's date, not the total days in the month, so the percentage reflects what you could have written so far.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Lazy build + stagger animation</div>
+        <div class="item-desc">The grid is only built on first toggle (not on sheet open) to avoid unnecessary Firestore reads. Diary entries are fetched for all filled days and note/photo data is injected as it arrives. Filled pages fade in with a 25ms staggered delay per card, capped at 200ms.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Navigate from page</div>
+        <div class="item-desc">Tapping a filled mini page hides the grid, shows the entry area, and calls selectDay(d) to navigate to that day with the existing flip card animation. The pages icon active state resets.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/DI02/01.png" alt="Diary Phase B · Mobile Pages Grid" onerror="this.style.display='none'">
+        <img src="assets/build-log/DI02/02.png" alt="Diary Phase B · Mobile Pages Grid" onerror="this.style.display='none'">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── May 25, 2026 · Feed · Perfect Week Milestone ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">May 25, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
