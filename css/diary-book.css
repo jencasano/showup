@@ -855,20 +855,6 @@
   margin-bottom: 14px;
 }
 
-/* Empty-state wrapper used inside the diary modal's right page. Keeps
-   the centered-column layout from .quiet-room but skips its sparkle +
-   warm-gradient pseudo-elements, which were designed for the standalone
-   My Log empty state and don't belong on diary paper. */
-.diary-modal-empty-room {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 40px 24px 32px;
-}
-
 .diary-modal-empty-date {
   font-family: 'Fraunces', serif;
   font-style: italic;

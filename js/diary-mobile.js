@@ -1207,6 +1207,20 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
       });
       flipFace.appendChild(editBtn);
     } else {
+      const emptyText = document.createElement("div");
+      emptyText.className = "diary-modal-empty-text";
+      emptyText.textContent = "this page is blank...";
+      flipFace.appendChild(emptyText);
+
+      const lines = document.createElement("div");
+      lines.className = "diary-empty-lines";
+      for (let i = 0; i < 3; i++) {
+        const line = document.createElement("div");
+        line.className = "diary-empty-line";
+        lines.appendChild(line);
+      }
+      flipFace.appendChild(lines);
+
       const writeBtn = document.createElement("button");
       writeBtn.className = "diary-modal-write-btn";
       writeBtn.textContent = "\u270f\ufe0f Write something";

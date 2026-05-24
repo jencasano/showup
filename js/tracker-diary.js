@@ -489,16 +489,35 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
         });
         rightContent.appendChild(editBtn);
       } else {
-        const quiet = document.createElement("div");
-        quiet.className = "diary-modal-empty-room";
+        // Mirror the filled-state layout (left-aligned date + activity
+        // chips) so empty and filled pages read as the same page in two
+        // states. The only differences are the "this page is blank\u2026" copy
+        // + ruled lines (in place of the note/photo) and the write CTA.
+        const dateEl = document.createElement("div");
+        dateEl.className = "diary-modal-entry-date";
+        dateEl.innerHTML = `${dayOfWeek}, <strong>${d}</strong>`;
+        rightContent.appendChild(dateEl);
 
-        const emptyDate = document.createElement("div");
-        emptyDate.className = "diary-modal-empty-date";
-        emptyDate.innerHTML = `${dayOfWeek}, <strong style="color:var(--color-primary)">${d}</strong>`;
+        const activities = window._currentEntry?.activities || [];
+        if (activities.length > 0) {
+          const chipsRow = document.createElement("div");
+          chipsRow.className = "diary-modal-entry-chips";
+          const marks = window._currentEntry?.marks || {};
+          activities.forEach((act, i) => {
+            const marked = (marks[act] || []).includes(d);
+            const chip = document.createElement("span");
+            chip.className = marked ? "diary-modal-entry-chip" : "diary-modal-entry-chip diary-modal-entry-chip--undone";
+            if (marked) chip.style.background = getActivityColor(i);
+            chip.textContent = marked ? `\u2713 ${act}` : act;
+            chipsRow.appendChild(chip);
+          });
+          rightContent.appendChild(chipsRow);
+        }
 
         const emptyText = document.createElement("div");
         emptyText.className = "diary-modal-empty-text";
         emptyText.textContent = "this page is blank...";
+        rightContent.appendChild(emptyText);
 
         const lines = document.createElement("div");
         lines.className = "diary-empty-lines";
@@ -507,9 +526,10 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
           line.className = "diary-empty-line";
           lines.appendChild(line);
         }
+        rightContent.appendChild(lines);
 
         const writeBtn = document.createElement("button");
-        writeBtn.className = "diary-write-btn";
+        writeBtn.className = "diary-modal-write-btn";
         writeBtn.textContent = "\u270f\ufe0f write something";
         writeBtn.addEventListener("click", () => {
           crossfadeDiaryOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, null, () => {
@@ -517,9 +537,7 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
             openDiaryModal(userId, yearMonth, diaryDays, cover);
           }));
         });
-
-        quiet.append(emptyDate, emptyText, lines, writeBtn);
-        rightContent.appendChild(quiet);
+        rightContent.appendChild(writeBtn);
       }
 
       rightContent.style.opacity = "1";
