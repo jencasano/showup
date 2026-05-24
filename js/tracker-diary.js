@@ -34,7 +34,7 @@ function crossfadeDiaryOverlay(oldOverlay, buildNewOverlay) {
 }
 
 // ─── PART B: CLOSED NOTEBOOK ─────────────────────────────
-export async function renderDiaryNotebook(userId, yearMonth, cover = DEFAULT_DIARY_COVER) {
+export async function renderDiaryNotebook(userId, yearMonth, cover = DEFAULT_DIARY_COVER, onOpen = null) {
   const t = DIARY_COVERS[cover] || DIARY_COVERS[DEFAULT_DIARY_COVER];
 
   const diaryDays = await getDiaryDays(userId, yearMonth);
@@ -178,7 +178,10 @@ export async function renderDiaryNotebook(userId, yearMonth, cover = DEFAULT_DIA
     setTimeout(() => document.addEventListener("click", onOutsideClick), 0);
   });
 
-  wrap.addEventListener("click", () => openDiaryModal(userId, yearMonth, diaryDays, cover));
+  wrap.addEventListener("click", () => {
+    if (onOpen) onOpen(diaryDays);
+    else openDiaryModal(userId, yearMonth, diaryDays, cover);
+  });
   return wrap;
 }
 

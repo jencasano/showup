@@ -150,7 +150,16 @@ export async function loadDiaryTab(yearMonth, container, user) {
 
   const notebookWrap = document.createElement("div");
   notebookWrap.className = "diary-tab-notebook-wrap";
-  const nb = await renderDiaryNotebook(user.uid, yearMonth, cover);
+  const nb = await renderDiaryNotebook(user.uid, yearMonth, cover, () => {
+    // Notebook should open the variant matching the viewport: mobile
+    // sheet on phones, desktop modal otherwise. state.diaryDays is the
+    // live set, mutated after a save.
+    if (isMobileWidth()) {
+      openMobileDiarySheet(user.uid, yearMonth, state.diaryDays, state.cover);
+    } else {
+      openDiaryModal(user.uid, yearMonth, state.diaryDays, state.cover);
+    }
+  });
   notebookWrap.appendChild(nb);
   hero.appendChild(notebookWrap);
   state.notebookStat = notebookWrap.querySelector(".diary-nb-stat strong");
