@@ -484,7 +484,10 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
         editBtn.addEventListener("click", () => {
           crossfadeDiaryOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, diaryEntry, () => {
             _diaryEntryCache.delete(_cacheKey(userId, yearMonth, d));
-            openDiaryModal(userId, yearMonth, diaryDays, cover);
+            // diaryDays already has d in the edit path, but adding is a
+            // no-op on a Set so this stays correct.
+            diaryDays.add(d);
+            openDiaryModal(userId, yearMonth, diaryDays, cover, d);
           }));
         });
         rightContent.appendChild(editBtn);
@@ -534,7 +537,10 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
         writeBtn.addEventListener("click", () => {
           crossfadeDiaryOverlay(overlay, () => openDiaryPage(d, window._currentEntry, yearMonth, userId, null, () => {
             _diaryEntryCache.delete(_cacheKey(userId, yearMonth, d));
-            openDiaryModal(userId, yearMonth, diaryDays, cover);
+            // Pull the just-written day into diaryDays so the reopened
+            // calendar shows its dot without re-fetching from Firestore.
+            diaryDays.add(d);
+            openDiaryModal(userId, yearMonth, diaryDays, cover, d);
           }));
         });
         rightContent.appendChild(writeBtn);
