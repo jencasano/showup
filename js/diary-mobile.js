@@ -772,13 +772,26 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
     strip.appendChild(pip);
   }
 
+  const stripIcons = document.createElement("div");
+  stripIcons.className = "mob-diary-strip-icons";
+
   const calBtn = document.createElement("button");
   calBtn.className = "mob-diary-cal-btn";
+  calBtn.title = "Calendar";
   calBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><line x1="1" y1="5" x2="12" y2="5" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="1" x2="4" y2="3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="9" y1="1" x2="9" y2="3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
   calBtn.addEventListener("click", () => openCalSheet());
 
+  const pagesBtn = document.createElement("button");
+  pagesBtn.className = "mob-diary-pages-btn";
+  pagesBtn.title = "Pages";
+  pagesBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 1.5h5.5L10.5 3.5V11.5H3V1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8.5 1.5V3.5H10.5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><line x1="4.5" y1="6" x2="9" y2="6" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><line x1="4.5" y1="8" x2="9" y2="8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><line x1="4.5" y1="10" x2="7" y2="10" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>`;
+  pagesBtn.addEventListener("click", () => togglePagesView());
+
+  stripIcons.appendChild(calBtn);
+  stripIcons.appendChild(pagesBtn);
+
   stripRow.appendChild(strip);
-  stripRow.appendChild(calBtn);
+  stripRow.appendChild(stripIcons);
   nbBody.appendChild(stripRow);
 
   // Entry area (flip card) — no perspective/transform-style needed for scaleX flip
@@ -867,9 +880,42 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
   calGridWrap.appendChild(calGrid);
   calSheet.appendChild(calGridWrap);
   calOverlay.appendChild(calSheet);
-  entryArea.appendChild(calOverlay);
 
   nbBody.appendChild(entryArea);
+
+  // Pages container (hidden by default) — fill bar + scrollable grid
+  const pagesContainer = document.createElement("div");
+  pagesContainer.className = "mob-diary-pages-container";
+  pagesContainer.style.display = "none";
+
+  const fillBarWrap = document.createElement("div");
+  fillBarWrap.className = "mob-diary-fill-bar-wrap";
+  const fillLabel = document.createElement("span");
+  fillLabel.className = "mob-diary-fill-label";
+  const fillTrack = document.createElement("div");
+  fillTrack.className = "mob-diary-fill-track";
+  const fillBar = document.createElement("div");
+  fillBar.className = "mob-diary-fill-bar";
+  fillTrack.appendChild(fillBar);
+  const fillPct = document.createElement("span");
+  fillPct.className = "mob-diary-fill-pct";
+  fillBarWrap.appendChild(fillLabel);
+  fillBarWrap.appendChild(fillTrack);
+  fillBarWrap.appendChild(fillPct);
+
+  const pagesScroll = document.createElement("div");
+  pagesScroll.className = "mob-diary-pages-scroll";
+  const pagesGrid = document.createElement("div");
+  pagesGrid.className = "mob-diary-pages-grid";
+  pagesScroll.appendChild(pagesGrid);
+
+  pagesContainer.appendChild(fillBarWrap);
+  pagesContainer.appendChild(pagesScroll);
+  nbBody.appendChild(pagesContainer);
+
+  // Cal overlay sits on top of the notebook body so it works from either view
+  nbBody.appendChild(calOverlay);
+
   sheet.appendChild(nbBody);
   overlay.appendChild(sheet);
   document.body.appendChild(overlay);
@@ -887,6 +933,127 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
   }
   function closeCalSheet() {
     calOverlay.classList.remove("open");
+  }
+
+  // ── Pages view ──────────────────────────────────────────
+  let pagesViewOpen = false;
+  let pagesBuilt = false;
+
+  async function buildPagesGrid() {
+    const lastDay = isCurrentMonth ? todayDate : daysInMonth;
+    const denominator = isCurrentMonth ? todayDate : daysInMonth;
+    const filledCount = diaryDays.size;
+    const pct = denominator > 0 ? Math.round((filledCount / denominator) * 100) : 0;
+
+    fillLabel.textContent = `${filledCount} of ${denominator}`;
+    fillPct.textContent = `${pct}%`;
+    requestAnimationFrame(() => {
+      fillBar.style.width = `${pct}%`;
+    });
+
+    // Build empty/filled card shells first so the grid is immediately visible
+    pagesGrid.innerHTML = "";
+    const filledPageEls = [];
+    for (let d = 1; d <= lastDay; d++) {
+      const page = document.createElement("div");
+      page.className = "mob-diary-mini-page";
+      const filled = diaryDays.has(d);
+      const isTodayCell = isCurrentMonth && d === todayDate;
+      if (filled) page.classList.add("filled");
+      else page.classList.add("empty");
+      if (isTodayCell) page.classList.add("today");
+
+      const dayEl = document.createElement("div");
+      dayEl.className = "mob-diary-mini-day";
+      dayEl.textContent = d;
+      page.appendChild(dayEl);
+
+      if (filled) {
+        const dot = document.createElement("div");
+        dot.className = "mob-diary-mini-dot";
+        page.appendChild(dot);
+        page.addEventListener("click", () => navigateFromPage(d));
+        filledPageEls.push({ day: d, el: page });
+      } else {
+        const lines = document.createElement("div");
+        lines.className = "mob-diary-mini-lines";
+        for (let i = 0; i < 3; i++) {
+          const line = document.createElement("div");
+          line.className = "mob-diary-mini-line";
+          lines.appendChild(line);
+        }
+        page.appendChild(lines);
+      }
+
+      pagesGrid.appendChild(page);
+    }
+
+    // Stagger fade-in for filled cards (25ms apart, capped at 200ms total)
+    filledPageEls.forEach(({ el }, i) => {
+      const delay = Math.min(i * 25, 200);
+      el.style.opacity = "0";
+      el.style.transition = `opacity 0.25s ease ${delay}ms`;
+    });
+    requestAnimationFrame(() => {
+      filledPageEls.forEach(({ el }) => { el.style.opacity = "1"; });
+    });
+
+    // Fetch entries for filled days and inject note/photo as they arrive
+    await Promise.all(filledPageEls.map(async ({ day, el }) => {
+      const entry = await getDiaryEntry(userId, yearMonth, day);
+      if (entry?.note) {
+        const noteEl = document.createElement("div");
+        noteEl.className = "mob-diary-mini-note";
+        noteEl.textContent = entry.note;
+        el.appendChild(noteEl);
+      }
+      if (entry?.photoUrl) {
+        const polaroid = document.createElement("div");
+        polaroid.className = "mob-diary-mini-polaroid";
+        const img = document.createElement("img");
+        img.src = entry.photoUrl;
+        img.alt = "";
+        polaroid.appendChild(img);
+        el.appendChild(polaroid);
+      }
+    }));
+  }
+
+  function togglePagesView() {
+    pagesViewOpen = !pagesViewOpen;
+    pagesBtn.classList.toggle("active", pagesViewOpen);
+
+    if (pagesViewOpen && !pagesBuilt) {
+      buildPagesGrid();
+      pagesBuilt = true;
+    }
+
+    const hideEl = pagesViewOpen ? entryArea : pagesContainer;
+    const showEl = pagesViewOpen ? pagesContainer : entryArea;
+    const showDisplay = pagesViewOpen ? "flex" : "";
+
+    hideEl.style.transition = "opacity 0.18s ease";
+    hideEl.style.opacity = "0";
+    setTimeout(() => {
+      hideEl.style.display = "none";
+      showEl.style.display = showDisplay;
+      showEl.style.opacity = "0";
+      requestAnimationFrame(() => {
+        showEl.style.transition = "opacity 0.2s ease";
+        showEl.style.opacity = "1";
+      });
+    }, 180);
+  }
+
+  function navigateFromPage(d) {
+    // Instant swap so the flip-card animation is the focal motion
+    pagesContainer.style.display = "none";
+    pagesContainer.style.opacity = "";
+    entryArea.style.display = "";
+    entryArea.style.opacity = "";
+    pagesViewOpen = false;
+    pagesBtn.classList.remove("active");
+    selectDay(d);
   }
 
   function updateActivePip(d) {
