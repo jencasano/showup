@@ -659,7 +659,7 @@ export async function renderMobileDiaryCard(userId, yearMonth, cover = DEFAULT_D
 }
 
 // ─── MOBILE DIARY SHEET (open notebook) ──────────────────────
-export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAULT_DIARY_COVER, initialDay = null, fadeIn = false) {
+export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAULT_DIARY_COVER, initialDay = null, fadeIn = false, initialView = "calendar") {
   const t = DIARY_COVERS[cover] || DIARY_COVERS[DEFAULT_DIARY_COVER];
   const [year, month] = yearMonth.split("-").map(Number);
   const daysInMonth = getDaysInMonth(yearMonth);
@@ -1298,4 +1298,17 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
     ? initialDay
     : (isCurrentMonth ? todayDate : (diaryDays.size > 0 ? Math.max(...diaryDays) : daysInMonth));
   selectDay(startDay);
+
+  // ── Initial view (pages vs calendar) ─────────────────────
+  // For callers that want to land on the Pages grid (e.g. tapping a past
+  // month's book on the diary tab), swap the view synchronously before
+  // the open animation so the user never sees the entry area first.
+  if (initialView === "pages") {
+    buildPagesGrid();
+    pagesBuilt = true;
+    pagesViewOpen = true;
+    pagesBtn.classList.add("active");
+    entryArea.style.display = "none";
+    pagesContainer.style.display = "flex";
+  }
 }

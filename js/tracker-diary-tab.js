@@ -119,7 +119,11 @@ function buildSpine(item, userId) {
   spine.appendChild(tooltip);
 
   spine.addEventListener("click", () => {
-    openDiaryPagesModal(userId, item.yearMonth, item.diaryDays, item.cover);
+    if (isMobileWidth()) {
+      openMobileDiarySheet(userId, item.yearMonth, item.diaryDays, item.cover, null, false, "pages");
+    } else {
+      openDiaryPagesModal(userId, item.yearMonth, item.diaryDays, item.cover);
+    }
   });
 
   return spine;
