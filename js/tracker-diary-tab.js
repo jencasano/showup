@@ -1,8 +1,8 @@
 import { getDiaryDays, getDiaryEntry, getDiaryCover, getMonthCover, getActiveCover } from "./diary.js";
-import { renderDiaryNotebook, openDiaryModal } from "./tracker-diary.js";
+import { renderDiaryNotebook, openDiaryModal, openDiaryPagesModal } from "./tracker-diary.js";
 import { openMobileDiarySheet } from "./diary-mobile.js";
-import { DEFAULT_DIARY_COVER } from "./diary-covers.js";
-import { getCurrentYearMonth, getDaysInMonth } from "./utils.js";
+import { DIARY_COVERS, DEFAULT_DIARY_COVER } from "./diary-covers.js";
+import { getCurrentYearMonth, getDaysInMonth, getPrevYearMonth } from "./utils.js";
 
 const _entryCache = new Map();
 const _cacheKey = (uid, ym, d) => `${uid}/${ym}/${d}`;
@@ -14,8 +14,157 @@ async function _getEntry(uid, ym, d) {
   return e;
 }
 
+// Past-month bookshelf cache. Keyed by pivot yearMonth; reset when the
+// active user changes. The shelf only shows months older than the pivot,
+// none of which mutate during a normal session, so this stays valid until
+// the user signs out / a different account loads.
+let _shelfCacheUser = null;
+const _shelfCache = new Map();
+
 function isMobileWidth() {
   return window.matchMedia("(max-width: 767px)").matches;
+}
+
+function isLightCover(coverKey) {
+  const swatch = DIARY_COVERS[coverKey]?.swatch || "#000000";
+  const r = parseInt(swatch.slice(1, 3), 16);
+  const g = parseInt(swatch.slice(3, 5), 16);
+  const b = parseInt(swatch.slice(5, 7), 16);
+  return (r + g + b) / 3 > 160;
+}
+
+async function scanPastMonths(userId, pivotYearMonth, userDefaultCover) {
+  const found = [];
+  let ym = getPrevYearMonth(pivotYearMonth);
+  let monthsTried = 0;
+  let consecutiveEmpty = 0;
+
+  while (monthsTried < 12 && consecutiveEmpty < 3) {
+    const [diaryDays, monthCover] = await Promise.all([
+      getDiaryDays(userId, ym),
+      getMonthCover(userId, ym),
+    ]);
+    if (diaryDays.size > 0) {
+      const [yr, mo] = ym.split("-").map(Number);
+      const date = new Date(yr, mo - 1, 1);
+      found.push({
+        yearMonth: ym,
+        diaryDays,
+        cover: monthCover || userDefaultCover || DEFAULT_DIARY_COVER,
+        monthLabel: `${date.toLocaleString("default", { month: "short" })} ${yr}`,
+        fullLabel: `${date.toLocaleString("default", { month: "long" })} ${yr}`,
+        entryCount: diaryDays.size,
+        totalDays: getDaysInMonth(ym),
+      });
+      consecutiveEmpty = 0;
+    } else {
+      consecutiveEmpty++;
+    }
+    monthsTried++;
+    ym = getPrevYearMonth(ym);
+  }
+  return found;
+}
+
+async function getPastMonths(userId, pivotYearMonth, userDefaultCover) {
+  if (_shelfCacheUser !== userId) {
+    _shelfCacheUser = userId;
+    _shelfCache.clear();
+  }
+  if (_shelfCache.has(pivotYearMonth)) return _shelfCache.get(pivotYearMonth);
+  const items = await scanPastMonths(userId, pivotYearMonth, userDefaultCover);
+  _shelfCache.set(pivotYearMonth, items);
+  return items;
+}
+
+function buildSpine(item, userId) {
+  const spine = document.createElement("div");
+  spine.className = "diary-tab-book-spine";
+
+  if (item.entryCount >= 20)      spine.classList.add("h-tall", "w-thick");
+  else if (item.entryCount >= 10) spine.classList.add("h-medium");
+  else                            spine.classList.add("h-short", "w-thin");
+
+  if (isLightCover(item.cover)) spine.classList.add("light-cover");
+
+  const theme = DIARY_COVERS[item.cover] || DIARY_COVERS[DEFAULT_DIARY_COVER];
+  spine.style.background = theme.coverGradient;
+
+  const dots = document.createElement("div");
+  dots.className = "diary-tab-spine-dots";
+  for (let i = 0; i < 2; i++) {
+    const dot = document.createElement("div");
+    dot.className = "diary-tab-spine-dot";
+    dots.appendChild(dot);
+  }
+  spine.appendChild(dots);
+
+  const title = document.createElement("div");
+  title.className = "diary-tab-spine-title";
+  title.textContent = item.monthLabel;
+  spine.appendChild(title);
+
+  const count = document.createElement("div");
+  count.className = "diary-tab-spine-count";
+  count.textContent = String(item.entryCount);
+  spine.appendChild(count);
+
+  const bandBottom = document.createElement("div");
+  bandBottom.className = "diary-tab-spine-band-bottom";
+  spine.appendChild(bandBottom);
+
+  const tooltip = document.createElement("div");
+  tooltip.className = "diary-tab-spine-tooltip";
+  tooltip.textContent = `${item.fullLabel} · ${item.entryCount} of ${item.totalDays} pages`;
+  spine.appendChild(tooltip);
+
+  spine.addEventListener("click", () => {
+    openDiaryPagesModal(userId, item.yearMonth, item.diaryDays, item.cover);
+  });
+
+  return spine;
+}
+
+function renderBookshelfInto(section, items, userId) {
+  section.innerHTML = "";
+
+  const head = document.createElement("div");
+  head.className = "diary-tab-section-head";
+  head.innerHTML = `
+    <div class="diary-tab-section-title">my bookshelf</div>
+    <div class="diary-tab-section-meta">past diaries</div>
+  `;
+  section.appendChild(head);
+
+  if (items.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "diary-tab-bookshelf-empty";
+    empty.textContent = "your bookshelf is empty. keep writing and it will fill up.";
+    section.appendChild(empty);
+    return;
+  }
+
+  const shelf = document.createElement("div");
+  shelf.className = "diary-tab-bookshelf";
+
+  const scroll = document.createElement("div");
+  scroll.className = "diary-tab-shelf-scroll";
+  const plank = document.createElement("div");
+  plank.className = "diary-tab-shelf-plank";
+  items.forEach(item => plank.appendChild(buildSpine(item, userId)));
+  scroll.appendChild(plank);
+  shelf.appendChild(scroll);
+
+  const surface = document.createElement("div");
+  surface.className = "diary-tab-shelf-surface";
+  shelf.appendChild(surface);
+
+  const label = document.createElement("div");
+  label.className = "diary-tab-shelf-label";
+  label.textContent = "newest ← → oldest";
+  shelf.appendChild(label);
+
+  section.appendChild(shelf);
 }
 
 const _DIARY_OVERLAY_SELS = ".diary-modal-overlay, .diary-pages-overlay, .mob-diary-overlay, .diary-page-overlay, .diary-page-backdrop";
@@ -256,10 +405,18 @@ export async function loadDiaryTab(yearMonth, container, user) {
     }
   }
 
-  // ── SECTION 3: BOOKSHELF PLACEHOLDER ────────────────────
+  // ── SECTION 3: BOOKSHELF ────────────────────────────────
+  // Render asynchronously: the scan does Firestore reads, and the cache
+  // keeps subsequent renders instant. isConnected guards against a stale
+  // promise resolving after a re-render has replaced this section.
   const bookshelfSection = document.createElement("div");
   bookshelfSection.id = "diary-bookshelf-section";
   container.appendChild(bookshelfSection);
+  getPastMonths(user.uid, yearMonth, savedCover).then(items => {
+    if (bookshelfSection.isConnected) {
+      renderBookshelfInto(bookshelfSection, items, user.uid);
+    }
+  });
 
   // ── SAVE LISTENER ───────────────────────────────────────
   // Surgically refresh the affected card (and the count widgets) when a
