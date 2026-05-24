@@ -632,8 +632,63 @@
     </details>
   </div>
 
-  <!-- ── May 25, 2026 · Diary Phase B · Mobile Pages Grid ── -->
+  <!-- ── May 24, 2026 · Diary Phase B · Diary Tab ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">May 24, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">DI03</span>
+    </div>
+    <div class="entry-title">Diary Phase B: Diary Tab</div>
+    <p class="entry-desc">A dedicated diary tab joins the main navigation -- sidebar on desktop, bottom nav on mobile -- replacing the old 'diary' action button that only popped a modal. The tab is a personal reading room with three stacked sections: a notebook hero with a 'write today's page' CTA, a 'this month's pages' grid showing every day from 1 through today, and a bookshelf at the bottom with notebook spines for each past month that has diary entries. Saving an entry updates the affected page card, fill bar, hero subtitle, and notebook stat in place via a new 'diary:saved' event -- no full re-render.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Tab routing</div>
+        <div class="item-desc">The sidebar and bottom-nav diary buttons switch from data-action='diary' (which used to fire a one-off openDiaryFromNav helper that just opened the mobile sheet) to data-tab='diary'. A new #tab-diary panel joins #tab-mylog / #tab-following / #tab-all inside #app-content. switchTab() now treats diary as a real tab: hides the month bar (same as following / all), toggles the panel display, and routes loadActiveTab to a new loadDiaryTab(yearMonth, container, user) in js/tracker-diary-tab.js.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Notebook hero + CTA</div>
+        <div class="item-desc">Section 1 reuses renderDiaryNotebook for the closed-book widget and adds a viewport-aware onOpen callback so the notebook opens the desktop modal on wide screens and the mobile sheet on phones (the existing hard-coded openDiaryModal call now falls back when no callback is passed, so mylog is unchanged). The hero text block reads 'your diary.' in Fraunces italic with a 'May 2026: N pages filled so far. keep going.' subtitle and a solid-red 'write today's page' button. Mobile centers the notebook above the text and scales the cover's internals down (title 2.5rem -> 1.4rem, stat strong 3rem -> 1.6rem, spine 26px -> 18px, etc.) so the small 140x190 book doesn't overflow.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">This month's pages grid</div>
+        <div class="item-desc">Section 2 has a section header ('this month's pages' / month label), a fill bar ('X of Y' + yellow track + percentage), and a 5-column desktop / 4-column mobile grid of mini page cards. Reuses the .diary-mini-page class family from the existing pages modal. Filled cards get a dotted-paper background, yellow-tinted border, note preview in Caveat, polaroid photo thumbnail, and an amber dot in the corner. Today's card gets the coral border ring. Empty cards render with faint ruled lines and are clickable too -- tapping any past or current day opens the diary modal/sheet at that day so the user can write or read.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Past months bookshelf</div>
+        <div class="item-desc">Section 3 scans back from the current month, parallel-fetching getDiaryDays + getMonthCover per month, stopping after 12 months or 3 consecutive empties. Each month with entries becomes a vertical book spine on a wooden plank: spine background is the month's coverGradient, with leather cross-hatch texture, top highlight + bottom shadow bands, a slight asymmetric border-radius, two decorative dots, the abbreviated month label rotated vertically via writing-mode, and the entry count at the bottom. Size variants by entry count: 20+ entries get h-tall + w-thick, 10-19 get h-medium, under 10 get h-short + w-thin. Light covers (Quiet cream) switch text to dark. Books lean -0.8/0.5/-0.3deg per nth-child. Hover lifts and rotates with a tooltip showing the full month name and fill count. Tapping opens the mobile sheet in pages view on phones, the desktop pages modal otherwise.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Surgical save updates</div>
+        <div class="item-desc">saveDiaryEntry now dispatches a window 'diary:saved' CustomEvent with the userId, yearMonth, and day. The diary tab attaches a per-render listener (with an AbortController so re-renders cleanly replace it) that, when the tab is visible and the event matches, does two things. First it suppresses the reopen-the-diary-modal chain that tracker-diary's onSaved callbacks fire by yanking all diary overlays out of the DOM and watching for new ones for ~800ms (MutationObserver runs before paint so there's no flicker). Second it re-fetches the affected entry and surgically updates that single page card plus the fill bar / hero subtitle / notebook stat. No container.innerHTML wipe, no Firestore re-scan of the rest of the month.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Empty-page parity + saved-day landing</div>
+        <div class="item-desc">Tangential cleanup that shipped alongside the tab. Empty diary pages in both the desktop modal and the mobile sheet now mirror the filled-state layout: same left-aligned date treatment, same activity chips row, with 'this page is blank...' text + three ruled lines replacing the note/photo and a solid-red 'write something' button matching the 'Edit entry' style. (Previously the desktop empty state used .quiet-room from My Log, which dragged in unrelated sparkle motifs + a centered layout.) After save from the mylog notebook, the reopened diary modal lands on the day you just wrote and the calendar's dot for that day appears immediately -- onSaved now passes the saved day as initialDay and mutates the diaryDays Set in place so the rebuilt calendar reflects it without a re-fetch.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Shelf design tokens</div>
+        <div class="item-desc">Four new tokens in both Side A and Side B blocks in css/variables.css: --shelf-bg, --shelf-top, --shelf-shadow, --shelf-wall. Side A is warm tan with a soft amber wash; Side B is dark mahogany with deeper shadow. The bookshelf surface, plank back-wall, and shadow all read from these, so the whole shelf adapts to theme without component-level overrides.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/DI03/01.png" alt="Diary Phase B · Diary Tab" onerror="this.style.display='none'">
+        <img src="assets/build-log/DI03/02.png" alt="Diary Phase B · Diary Tab" onerror="this.style.display='none'">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── May 25, 2026 · Diary Phase B · Mobile Pages Grid ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">May 25, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
