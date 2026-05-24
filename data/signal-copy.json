@@ -73,6 +73,11 @@
   "feed_sharing_log_streak_full_month_2": "{firstName} logged {activities}. {streak}Something logged every day this month. Every one.{/streak} {nudge}Have you shown up today?{/nudge}",
   "feed_sharing_log_streak_full_month_3": "{firstName} logged {activities}. {streak}A perfect month so far. Every single day.{/streak} {nudge}Can you say the same?{/nudge}",
 
+  "feed_sharing_log_perfect_week_1":      "{firstName} hit every target this week. Every single one. {nudge}Have you?{/nudge}",
+  "feed_sharing_log_perfect_week_2":      "{firstName} just closed a perfect week. Every activity, every target, met. {nudge}That's rare.{/nudge}",
+  "feed_sharing_log_perfect_week_3":      "{firstName} didn't miss a single target this week. {streak}All activities. All cadences. Done.{/streak}",
+  "feed_sharing_log_perfect_week_4":      "{firstName} ran the table this week. {streak}Every target hit.{/streak} {nudge}When's the last time you could say that?{/nudge}",
+
   "feed_sharing_log_first_ever_1":        "{firstName} just logged {activities} for the first time. {streak}Day one.{/streak}",
   "feed_sharing_log_first_ever_2":        "{firstName} started. First log: {activities}. {streak}Everyone starts somewhere.{/streak}",
   "feed_sharing_log_first_ever_3":        "First day for {firstName}. They logged {activities}. {nudge}Have you started yours?{/nudge}",
@@ -134,6 +139,10 @@
   "feed_lowkey_log_streak_full_month_3":  "Not one missed day for {firstName} this month. Not one. {nudge}Have you shown up today?{/nudge}",
   "feed_lowkey_log_streak_full_month_4":  "{firstName} has shown up every single day this month.",
 
+  "feed_lowkey_log_perfect_week_1":       "{firstName} had a perfect week. Quietly.",
+  "feed_lowkey_log_perfect_week_2":       "Everything {firstName} set out to do this week? Done.",
+  "feed_lowkey_log_perfect_week_3":       "{firstName} didn't miss anything this week. Not one thing. {nudge}Can you say the same?{/nudge}",
+
   "feed_lowkey_log_first_ever_1":         "{firstName} just started.",
   "feed_lowkey_log_first_ever_2":         "Day one for {firstName}.",
   "feed_lowkey_log_first_ever_3":         "Something's beginning for {firstName}.",
@@ -188,6 +197,10 @@
   "feed_ghost_log_comeback_big_3":        "A long silence ended for {firstName} today. Quietly.",
   "feed_ghost_log_comeback_big_4":        "{firstName} broke a long quiet today. The details stay theirs.",
   "feed_ghost_log_comeback_big_5":        "{firstName} is back. That's all this feed is saying.",
+
+  "feed_ghost_log_perfect_week_1":        "{firstName} closed a perfect week. The details stay theirs.",
+  "feed_ghost_log_perfect_week_2":        "Every target met. Quietly. {firstName} knows what they did.",
+  "feed_ghost_log_perfect_week_3":        "A perfect week happened for {firstName}. We don't know the targets. But they were all hit.",
 
   "feed_ghost_log_backfill_1":            "{firstName} went back and filled something in.",
   "feed_ghost_log_backfill_2":            "{firstName} circled back. No further details.",

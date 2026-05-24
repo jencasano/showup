@@ -15,6 +15,7 @@ const MILESTONE_CONTEXTS = new Set([
   "streak_15",
   "streak_25",
   "streak_full_month",
+  "perfect_week",
 ]);
 
 const MILESTONE_LABELS = {
@@ -25,6 +26,7 @@ const MILESTONE_LABELS = {
   streak_15:         "15-day streak",
   streak_25:         "25-day streak",
   streak_full_month: "perfect month",
+  perfect_week:      "perfect week",
 };
 
 // ── Helpers ─────────────────────────────────────────

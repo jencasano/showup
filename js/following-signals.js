@@ -1,3 +1,5 @@
+import { checkPerfectWeek } from "./signal-week.js";
+
 // --- Load signal copy from JSON (once, at module load) -------------------
 
 const HARDCODED_COPY = {
@@ -109,6 +111,9 @@ export function computeSignal(displayName, logEntry, userMeta) {
   // backfill: logged for a past day but NOT today
   const isBackfill = !activeDaysSet.has(today) && lastActiveDay < today;
 
+  const yearMonth = logEntry.yearMonth || new Date().toISOString().slice(0, 7);
+  const isPerfectWeek = checkPerfectWeek(logEntry, yearMonth);
+
   // contextKey uses the new naming; key uses old naming for People-view compat
   let key, contextKey;
   if      (isFirstEver)          { key = "first_ever";  contextKey = "first_ever"; }
@@ -120,6 +125,7 @@ export function computeSignal(displayName, logEntry, userMeta) {
   else if (isStreakFullMonth)    { key = "streak_25";    contextKey = "streak_full_month"; }
   else if (streak >= 25)         { key = "streak_25";    contextKey = "streak_25"; }
   else if (streak >= 15)         { key = "streak_15";    contextKey = "streak_15"; }
+  else if (isPerfectWeek)        { key = "streak_7";     contextKey = "perfect_week"; }
   else if (streak >= 7)          { key = "streak_7";     contextKey = "streak_7"; }
   else if (streak >= 3)          { key = "streak_3";     contextKey = "streak_3"; }
   else if (totalDaysActive >= 1) { key = "checked_in";   contextKey = "default"; }
