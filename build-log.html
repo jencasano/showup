@@ -591,7 +591,7 @@
           <li class="deck-item"><span class="deck-num">4</span>Safari Fit mode blur, canvas downscale/upscale tuning on iOS</li>
           <li class="deck-item"><span class="deck-num">5</span>Storage migration to asia-southeast1 for faster uploads from the Philippines</li>
           <li class="deck-item"><span class="deck-num">6</span>All tab card tap, no-op placeholder, activates when user profiles are built</li>
-          <li class="deck-item"><span class="deck-num">7</span>Diary Phase B, swipe between pages, per-habit photo reel</li>
+          <li class="deck-item"><span class="deck-num">7</span>Diary Phase B, swipe between diary pages on mobile, notebook fill stat becomes meaningful</li>
           <li class="deck-item"><span class="deck-num">8</span>Diary Phase C, diary pages visible to followers</li>
           <li class="deck-item"><span class="deck-num">9</span>Allow 2-3 photos per diary entry</li>
           <li class="deck-item"><span class="deck-num">10</span>Custom spinner / loader</li>
@@ -609,7 +609,7 @@
   <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">For future you</span>
-      <span class="entry-badge badge-deck">1 note</span>
+      <span class="entry-badge badge-deck">2 notes</span>
     </div>
     <details class="on-deck-details">
       <summary class="on-deck-summary">
@@ -622,6 +622,10 @@
           <li class="field-note">
             <div class="field-note-title">Events accumulate indefinitely</div>
             <div class="field-note-body">events/{uid}/items has no TTL and no auto-prune. Roughly 4-6 docs per active user per day (one per burst, one per diary entry). Viewer reads stay flat because WINDOW_DAYS in event-read.js caps the query to the last 30 days, but Firestore storage grows linearly forever. If this becomes a concern: shorten the read window, add a Firestore TTL policy on the events collection, or compact older events into monthly summary docs. Nothing needed at current scale.</div>
+          </li>
+          <li class="field-note">
+            <div class="field-note-title">Activity photos (proof-of-habit)</div>
+            <div class="field-note-body">User feedback (Neithan): ability to attach a photo when logging an activity, like Forfeit or BeReal-style proof. Different from diary photos -- diary is reflective ("how was today"), activity photos are documentation ("I did the thing"). Key design tension: the single-tap logging mechanic is sacred, photos must be optional and zero-friction. Best candidate surface is the mobile Day Sheet (camera icon per habit row), with desktop capture deferred since there's no day detail popover yet. Needs: new Firestore path (photos per activity per day), upload flow, viewing UI (per-activity photo reel), and a clear answer on how it coexists with diary photos. Bigger than it looks -- parking for now.</div>
           </li>
         </ul>
       </div>
