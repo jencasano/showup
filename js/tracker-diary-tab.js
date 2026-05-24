@@ -4,8 +4,6 @@ import { openMobileDiarySheet } from "./diary-mobile.js";
 import { DEFAULT_DIARY_COVER } from "./diary-covers.js";
 import { getCurrentYearMonth, getDaysInMonth } from "./utils.js";
 
-// Mirror of the diary entry cache in tracker-diary.js so the pages grid
-// can read entry previews without re-fetching when re-rendering the tab.
 const _entryCache = new Map();
 const _cacheKey = (uid, ym, d) => `${uid}/${ym}/${d}`;
 async function _getEntry(uid, ym, d) {
@@ -20,71 +18,91 @@ function isMobileWidth() {
   return window.matchMedia("(max-width: 767px)").matches;
 }
 
-// Fires onClose when the user is done with their diary interaction. Two
-// triggers:
-//   1. All diary overlays leave the DOM (the user closed everything).
-//   2. A "diary:saved" event fires (the user just saved an entry). In this
-//      case we also force-remove any open overlays and squash the modal
-//      reopen that tracker-diary's onSaved chain would otherwise perform,
-//      so save from the diary tab takes the user straight back to the tab.
 const _DIARY_OVERLAY_SELS = ".diary-modal-overlay, .diary-pages-overlay, .mob-diary-overlay, .diary-page-overlay, .diary-page-backdrop";
 
-function watchOverlayClose(onClose) {
-  let done = false;
-  let closeObs = null;
-  let suppressObs = null;
+// One save listener per loaded tab. A new loadDiaryTab call aborts the old.
+let _saveListenerCtrl = null;
 
-  function cleanup() {
-    if (closeObs) closeObs.disconnect();
-    if (suppressObs) suppressObs.disconnect();
-    window.removeEventListener("diary:saved", onSave);
-  }
-
-  function finish() {
-    if (done) return;
-    done = true;
-    cleanup();
-    onClose();
-  }
-
-  function removeAllOverlays() {
+// After save, tracker-diary's onSaved chain reopens the diary modal. We
+// intercept that here: yank any open diary overlays out of the DOM, and
+// keep yanking new ones for ~800ms (covers the 350ms setTimeout in
+// openDiaryPage's closeAll). MutationObserver callbacks run before paint,
+// so the reopened modal never becomes visible.
+function suppressOverlayReopens() {
+  document.querySelectorAll(_DIARY_OVERLAY_SELS).forEach(n => n.remove());
+  const obs = new MutationObserver(() => {
     document.querySelectorAll(_DIARY_OVERLAY_SELS).forEach(n => n.remove());
-  }
-
-  function onSave() {
-    // Bypass the reopen-modal-after-save chain by pulling overlays out of
-    // the DOM right now, then suppressing any new ones for ~800ms to cover
-    // the 350ms closeAll setTimeout in openDiaryPage that would otherwise
-    // re-create the diary modal. Disconnect closeObs first so the manual
-    // overlay removal below doesn't trip its "all overlays gone" check
-    // and call finish before suppressObs has a chance to catch the reopen.
-    if (closeObs) { closeObs.disconnect(); closeObs = null; }
-    removeAllOverlays();
-    suppressObs = new MutationObserver(removeAllOverlays);
-    suppressObs.observe(document.body, { childList: true });
-    setTimeout(finish, 800);
-  }
-
-  window.addEventListener("diary:saved", onSave, { once: true });
-
-  requestAnimationFrame(() => {
-    if (done) return;
-    if (!document.querySelector(_DIARY_OVERLAY_SELS)) return;
-    closeObs = new MutationObserver(() => {
-      if (!document.querySelector(_DIARY_OVERLAY_SELS)) finish();
-    });
-    closeObs.observe(document.body, { childList: true });
   });
+  obs.observe(document.body, { childList: true });
+  setTimeout(() => obs.disconnect(), 800);
 }
 
-function triggerRefresh(yearMonth, container, user) {
-  _entryCache.clear();
-  loadDiaryTab(yearMonth, container, user);
+function buildPhotoEl(photoUrl) {
+  const polaroidDiv = document.createElement("div");
+  polaroidDiv.className = "diary-mini-polaroid";
+  const polaroidInner = document.createElement("div");
+  polaroidInner.className = "diary-mini-polaroid-inner";
+  const thumb = document.createElement("img");
+  thumb.src = photoUrl;
+  thumb.alt = "";
+  thumb.style.width = "100%";
+  thumb.style.height = "100%";
+  thumb.style.objectFit = "cover";
+  thumb.style.display = "block";
+  polaroidInner.appendChild(thumb);
+  polaroidDiv.appendChild(polaroidInner);
+  return polaroidDiv;
+}
+
+function buildEmptyLines() {
+  const lines = document.createElement("div");
+  lines.className = "diary-mini-lines";
+  for (let i = 0; i < 3; i++) {
+    const line = document.createElement("div");
+    line.className = "diary-mini-line";
+    lines.appendChild(line);
+  }
+  return lines;
+}
+
+// Populates a page card for a given day. Used by both the initial render
+// and the post-save surgical update so the two paths stay in sync.
+function paintCard(card, day, entry, isToday) {
+  card.innerHTML = "";
+  card.classList.remove("empty");
+  if (isToday) card.classList.add("today");
+
+  const dayEl = document.createElement("div");
+  dayEl.className = "diary-mini-day";
+  dayEl.textContent = String(day);
+  card.appendChild(dayEl);
+
+  const isFilled = !!entry;
+  if (isFilled) {
+    const dot = document.createElement("div");
+    dot.className = "diary-mini-page-dot";
+    card.appendChild(dot);
+
+    if (entry.note) {
+      const noteEl = document.createElement("div");
+      noteEl.className = "diary-mini-note";
+      noteEl.textContent = entry.note;
+      card.appendChild(noteEl);
+    }
+    if (entry.photoUrl) card.appendChild(buildPhotoEl(entry.photoUrl));
+  } else {
+    card.classList.add("empty");
+    card.appendChild(buildEmptyLines());
+  }
 }
 
 export async function loadDiaryTab(yearMonth, container, user) {
   if (!container || !user) return;
   container.innerHTML = "";
+
+  // Abort any previous tab's save listener before wiring up the new one.
+  if (_saveListenerCtrl) _saveListenerCtrl.abort();
+  _saveListenerCtrl = new AbortController();
 
   const [year, month] = yearMonth.split("-").map(Number);
   const monthName = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
@@ -99,7 +117,32 @@ export async function loadDiaryTab(yearMonth, container, user) {
     getDiaryDays(user.uid, yearMonth)
   ]);
   const cover = getActiveCover(monthCover, savedCover) || DEFAULT_DIARY_COVER;
-  const filledCount = diaryDays.size;
+
+  // Live state. Mutated as entries are saved so click handlers (which
+  // close over diaryDays) and the surgical updater stay in sync.
+  const state = {
+    cover,
+    diaryDays,
+    monthName,
+    year,
+    maxDays,
+    pageCards: new Map(),
+    heroSub: null,
+    fillLabel: null,
+    fillBar: null,
+    fillPct: null,
+    notebookStat: null,
+  };
+
+  function attachCardClick(card, day) {
+    card.addEventListener("click", () => {
+      if (isMobileWidth()) {
+        openMobileDiarySheet(user.uid, yearMonth, state.diaryDays, state.cover, day);
+      } else {
+        openDiaryModal(user.uid, yearMonth, state.diaryDays, state.cover, day);
+      }
+    });
+  }
 
   // ── SECTION 1: HERO ─────────────────────────────────────
   const hero = document.createElement("div");
@@ -109,13 +152,8 @@ export async function loadDiaryTab(yearMonth, container, user) {
   notebookWrap.className = "diary-tab-notebook-wrap";
   const nb = await renderDiaryNotebook(user.uid, yearMonth, cover);
   notebookWrap.appendChild(nb);
-  // The notebook wrap's own click handler (set inside renderDiaryNotebook)
-  // opens the diary modal. We add a second listener that bubbles after it
-  // to watch for the overlay closing and re-render the tab.
-  notebookWrap.addEventListener("click", () => {
-    watchOverlayClose(() => triggerRefresh(yearMonth, container, user));
-  });
   hero.appendChild(notebookWrap);
+  state.notebookStat = notebookWrap.querySelector(".diary-nb-stat strong");
 
   const heroText = document.createElement("div");
   heroText.className = "diary-tab-hero-text";
@@ -125,12 +163,9 @@ export async function loadDiaryTab(yearMonth, container, user) {
   heroTitle.textContent = "your diary.";
   heroText.appendChild(heroTitle);
 
-  const heroSub = document.createElement("div");
-  heroSub.className = "diary-tab-hero-sub";
-  heroSub.textContent = filledCount === 0
-    ? "no pages yet. start writing."
-    : `${monthName} ${year}: ${filledCount} pages filled so far. keep going.`;
-  heroText.appendChild(heroSub);
+  state.heroSub = document.createElement("div");
+  state.heroSub.className = "diary-tab-hero-sub";
+  heroText.appendChild(state.heroSub);
 
   const heroBtn = document.createElement("button");
   heroBtn.type = "button";
@@ -139,11 +174,10 @@ export async function loadDiaryTab(yearMonth, container, user) {
   heroBtn.addEventListener("click", () => {
     const day = isCurrentMonth ? todayDate : maxDays;
     if (isMobileWidth()) {
-      openMobileDiarySheet(user.uid, yearMonth, diaryDays, cover, day);
+      openMobileDiarySheet(user.uid, yearMonth, state.diaryDays, state.cover, day);
     } else {
-      openDiaryModal(user.uid, yearMonth, diaryDays, cover, day);
+      openDiaryModal(user.uid, yearMonth, state.diaryDays, state.cover, day);
     }
-    watchOverlayClose(() => triggerRefresh(yearMonth, container, user));
   });
   heroText.appendChild(heroBtn);
 
@@ -161,89 +195,55 @@ export async function loadDiaryTab(yearMonth, container, user) {
 
   const fillRow = document.createElement("div");
   fillRow.className = "diary-tab-fill-row";
-  const pct = maxDays > 0 ? Math.round((filledCount / maxDays) * 100) : 0;
   fillRow.innerHTML = `
-    <span class="diary-tab-fill-label">${filledCount} of ${maxDays}</span>
-    <div class="diary-tab-fill-track"><div class="diary-tab-fill-bar" style="width:${maxDays > 0 ? (filledCount / maxDays) * 100 : 0}%"></div></div>
-    <span class="diary-tab-fill-pct">${pct}%</span>
+    <span class="diary-tab-fill-label"></span>
+    <div class="diary-tab-fill-track"><div class="diary-tab-fill-bar"></div></div>
+    <span class="diary-tab-fill-pct"></span>
   `;
+  state.fillLabel = fillRow.querySelector(".diary-tab-fill-label");
+  state.fillBar = fillRow.querySelector(".diary-tab-fill-bar");
+  state.fillPct = fillRow.querySelector(".diary-tab-fill-pct");
   container.appendChild(fillRow);
+
+  function updateCounts() {
+    const filledCount = state.diaryDays.size;
+    state.fillLabel.textContent = `${filledCount} of ${maxDays}`;
+    const pctVal = maxDays > 0 ? (filledCount / maxDays) * 100 : 0;
+    state.fillBar.style.width = `${pctVal}%`;
+    state.fillPct.textContent = `${Math.round(pctVal)}%`;
+    state.heroSub.textContent = filledCount === 0
+      ? "no pages yet. start writing."
+      : `${monthName} ${year}: ${filledCount} pages filled so far. keep going.`;
+    if (state.notebookStat) state.notebookStat.textContent = String(filledCount);
+  }
+  updateCounts();
 
   const grid = document.createElement("div");
   grid.className = "diary-tab-pages-grid";
   container.appendChild(grid);
 
-  // Render pages: 1 through today (no future). Use existing diary-mini-page class family.
   const filledList = Array.from(diaryDays).sort((a, b) => a - b);
   await Promise.all(filledList.map(d => _getEntry(user.uid, yearMonth, d)));
 
   let staggerIdx = 0;
   for (let d = 1; d <= maxDays; d++) {
-    const mini = document.createElement("div");
-    mini.className = "diary-mini-page";
-    const isFilled = diaryDays.has(d);
-    if (!isFilled) mini.classList.add("empty");
-    if (isCurrentMonth && d === todayDate) mini.classList.add("today");
+    const card = document.createElement("div");
+    card.className = "diary-mini-page";
+    const isToday = isCurrentMonth && d === todayDate;
+    const entry = diaryDays.has(d) ? _entryCache.get(_cacheKey(user.uid, yearMonth, d)) : null;
 
-    const dayEl = document.createElement("div");
-    dayEl.className = "diary-mini-day";
-    dayEl.textContent = String(d);
-    mini.appendChild(dayEl);
+    paintCard(card, d, entry, isToday);
+    attachCardClick(card, d);
+    state.pageCards.set(d, card);
 
-    if (isFilled) {
-      const dot = document.createElement("div");
-      dot.className = "diary-mini-page-dot";
-      mini.appendChild(dot);
-
-      const entry = _entryCache.get(_cacheKey(user.uid, yearMonth, d));
-      if (entry?.note) {
-        const noteEl = document.createElement("div");
-        noteEl.className = "diary-mini-note";
-        noteEl.textContent = entry.note;
-        mini.appendChild(noteEl);
-      }
-      if (entry?.photoUrl) {
-        const polaroidDiv = document.createElement("div");
-        polaroidDiv.className = "diary-mini-polaroid";
-        const polaroidInner = document.createElement("div");
-        polaroidInner.className = "diary-mini-polaroid-inner";
-        const thumb = document.createElement("img");
-        thumb.src = entry.photoUrl;
-        thumb.alt = "";
-        thumb.style.width = "100%";
-        thumb.style.height = "100%";
-        thumb.style.objectFit = "cover";
-        thumb.style.display = "block";
-        polaroidInner.appendChild(thumb);
-        polaroidDiv.appendChild(polaroidInner);
-        mini.appendChild(polaroidDiv);
-      }
-
-      const dayToOpen = d;
-      mini.addEventListener("click", () => {
-        if (isMobileWidth()) {
-          openMobileDiarySheet(user.uid, yearMonth, diaryDays, cover, dayToOpen);
-        } else {
-          openDiaryModal(user.uid, yearMonth, diaryDays, cover, dayToOpen);
-        }
-        watchOverlayClose(() => triggerRefresh(yearMonth, container, user));
-      });
-
-      mini.style.opacity = "0";
-      grid.appendChild(mini);
+    if (entry) {
+      card.style.opacity = "0";
+      grid.appendChild(card);
       const delay = Math.min(staggerIdx * 25, 200);
-      setTimeout(() => { mini.style.opacity = "1"; }, delay);
+      setTimeout(() => { card.style.opacity = "1"; }, delay);
       staggerIdx++;
     } else {
-      const lines = document.createElement("div");
-      lines.className = "diary-mini-lines";
-      for (let i = 0; i < 3; i++) {
-        const line = document.createElement("div");
-        line.className = "diary-mini-line";
-        lines.appendChild(line);
-      }
-      mini.appendChild(lines);
-      grid.appendChild(mini);
+      grid.appendChild(card);
     }
   }
 
@@ -251,4 +251,37 @@ export async function loadDiaryTab(yearMonth, container, user) {
   const bookshelfSection = document.createElement("div");
   bookshelfSection.id = "diary-bookshelf-section";
   container.appendChild(bookshelfSection);
+
+  // ── SAVE LISTENER ───────────────────────────────────────
+  // Surgically refresh the affected card (and the count widgets) when a
+  // diary entry is saved for this user + month. Gated on the tab being
+  // visible so mylog's save flow — which intentionally reopens the diary
+  // modal — isn't disrupted when the user saves from there.
+  window.addEventListener("diary:saved", async (e) => {
+    const d = e.detail || {};
+    if (d.userId !== user.uid || d.yearMonth !== yearMonth) return;
+    if (container.style.display === "none") return;
+    if (d.day < 1 || d.day > maxDays) return;
+
+    suppressOverlayReopens();
+
+    _entryCache.delete(_cacheKey(user.uid, yearMonth, d.day));
+    const entry = await _getEntry(user.uid, yearMonth, d.day);
+    const wasFilled = state.diaryDays.has(d.day);
+    if (entry) state.diaryDays.add(d.day);
+
+    const card = state.pageCards.get(d.day);
+    if (card) {
+      const isToday = isCurrentMonth && d.day === todayDate;
+      paintCard(card, d.day, entry, isToday);
+      card.style.opacity = "1";
+      if (!wasFilled) {
+        // Gentle pulse so the user sees the new card register.
+        card.style.transition = "transform 0.25s cubic-bezier(0.22,1,0.36,1)";
+        card.style.transform = "scale(1.06)";
+        setTimeout(() => { card.style.transform = ""; }, 250);
+      }
+    }
+    updateCounts();
+  }, { signal: _saveListenerCtrl.signal });
 }

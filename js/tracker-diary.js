@@ -153,8 +153,12 @@ export async function renderDiaryNotebook(userId, yearMonth, cover = DEFAULT_DIA
     const popover = renderCoverPopover(cover, async (key) => {
       await saveMonthCover(userId, yearMonth, key);
       popover.remove();
-      const col = wrap.closest(".mylog-diary-col");
+      // mylog wraps the notebook in .mylog-diary-col; the diary tab wraps
+      // it in .diary-tab-notebook-wrap. Fall back to the direct parent so
+      // both contexts work.
+      const col = wrap.closest(".mylog-diary-col") || wrap.parentElement;
       const newNb = await renderDiaryNotebook(userId, yearMonth, key);
+      if (!col) return;
       col.style.transition = "opacity 0.3s ease";
       col.style.opacity = "0";
       setTimeout(() => {
