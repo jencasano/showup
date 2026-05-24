@@ -55,7 +55,10 @@ function watchOverlayClose(onClose) {
     // Bypass the reopen-modal-after-save chain by pulling overlays out of
     // the DOM right now, then suppressing any new ones for ~800ms to cover
     // the 350ms closeAll setTimeout in openDiaryPage that would otherwise
-    // re-create the diary modal.
+    // re-create the diary modal. Disconnect closeObs first so the manual
+    // overlay removal below doesn't trip its "all overlays gone" check
+    // and call finish before suppressObs has a chance to catch the reopen.
+    if (closeObs) { closeObs.disconnect(); closeObs = null; }
     removeAllOverlays();
     suppressObs = new MutationObserver(removeAllOverlays);
     suppressObs.observe(document.body, { childList: true });
