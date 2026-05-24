@@ -1037,7 +1037,7 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
         const dot = document.createElement("div");
         dot.className = "mob-diary-mini-dot";
         page.appendChild(dot);
-        page.addEventListener("click", () => navigateFromPage(d));
+        page.addEventListener("click", () => selectDay(d));
         filledPageEls.push({ day: d, el: page });
       } else {
         const lines = document.createElement("div");
@@ -1110,15 +1110,13 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
     }, 180);
   }
 
-  function navigateFromPage(d) {
-    // Instant swap so the flip-card animation is the focal motion
+  function closePagesViewInstant() {
     pagesContainer.style.display = "none";
     pagesContainer.style.opacity = "";
     entryArea.style.display = "";
     entryArea.style.opacity = "";
     pagesViewOpen = false;
     pagesBtn.classList.remove("active");
-    selectDay(d);
   }
 
   function updateActivePip(d) {
@@ -1223,6 +1221,9 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
 
   function selectDay(d) {
     if (isFlipping) return;
+    // Any "go to a day" gesture should snap back to the entry view if the
+    // pages grid is currently shown (pip tap, cal cell tap, mini-page tap).
+    if (pagesViewOpen) closePagesViewInstant();
     const prev = activeDay;
     activeDay = d;
     updateActivePip(d);
