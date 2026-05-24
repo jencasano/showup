@@ -940,41 +940,45 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
     if (e.target === calOverlay) closeCalSheet();
   });
 
-  // Stop touch events inside the cal overlay from bubbling up to the main
-  // sheet's swipe-to-dismiss handlers
-  calOverlay.addEventListener("touchstart", (e) => e.stopPropagation(), { passive: true });
-  calOverlay.addEventListener("touchmove",  (e) => e.stopPropagation(), { passive: true });
-  calOverlay.addEventListener("touchend",   (e) => e.stopPropagation(), { passive: true });
-
-  // Swipe down on the cal sheet to dismiss
+  // Swipe down anywhere in the overlay to dismiss. Listeners live on the
+  // overlay (not the sheet) so the gesture keeps tracking even if the finger
+  // drifts off the sheet, and so touches on the dim area can also dismiss.
+  // stopPropagation prevents these touches from also triggering the parent
+  // sheet's swipe-to-dismiss.
   let calTouchStartY = 0;
   let calTouchCurY = 0;
   let calDragging = false;
 
-  calSheet.addEventListener("touchstart", (e) => {
+  calOverlay.addEventListener("touchstart", (e) => {
+    e.stopPropagation();
     calTouchStartY = e.touches[0].clientY;
     calTouchCurY = calTouchStartY;
     calDragging = true;
     calSheet.style.transition = "none";
   }, { passive: true });
 
-  calSheet.addEventListener("touchmove", (e) => {
+  calOverlay.addEventListener("touchmove", (e) => {
+    e.stopPropagation();
     if (!calDragging) return;
     calTouchCurY = e.touches[0].clientY;
     const dy = calTouchCurY - calTouchStartY;
     if (dy > 0) calSheet.style.transform = `translateY(${dy}px)`;
   }, { passive: true });
 
-  calSheet.addEventListener("touchend", () => {
+  const finishCalDrag = (e) => {
+    if (e) e.stopPropagation();
     if (!calDragging) return;
     calDragging = false;
     const dy = calTouchCurY - calTouchStartY;
     calSheet.style.transition = "";
     calSheet.style.transform = "";
-    if (dy > 80) closeCalSheet();
+    if (dy > 50) closeCalSheet();
     calTouchStartY = 0;
     calTouchCurY = 0;
-  });
+  };
+
+  calOverlay.addEventListener("touchend",    finishCalDrag, { passive: true });
+  calOverlay.addEventListener("touchcancel", finishCalDrag, { passive: true });
 
   // ── Pages view ──────────────────────────────────────────
   let pagesViewOpen = false;
