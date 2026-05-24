@@ -2486,6 +2486,57 @@
     height: 190px;
   }
 
+  /* Scale the closed notebook's internals down to fit the 140x190 wrap.
+     The default sizes are tuned for the ~300px-tall mylog notebook. */
+  .diary-tab-notebook-wrap .diary-nb-spine {
+    width: 18px;
+    padding: 12px 0;
+  }
+  .diary-tab-notebook-wrap .diary-nb-hole {
+    width: 6px;
+    height: 6px;
+    border-width: 1.5px;
+  }
+  .diary-tab-notebook-wrap .diary-nb-cover {
+    padding: 14px 14px 12px 14px;
+  }
+  .diary-tab-notebook-wrap .diary-nb-gutter {
+    width: 10px;
+  }
+  .diary-tab-notebook-wrap .diary-nb-title {
+    font-size: 1.4rem;
+  }
+  .diary-tab-notebook-wrap .diary-nb-month {
+    font-size: 0.5rem;
+    margin-top: 4px;
+  }
+  .diary-tab-notebook-wrap .diary-nb-tagline {
+    font-size: 0.44rem;
+    margin-top: 6px;
+  }
+  .diary-tab-notebook-wrap .diary-nb-rule {
+    margin: 8px 0;
+  }
+  .diary-tab-notebook-wrap .diary-nb-stat strong {
+    font-size: 1.6rem;
+  }
+  .diary-tab-notebook-wrap .diary-nb-stat span {
+    font-size: 0.46rem;
+  }
+  .diary-tab-notebook-wrap .diary-nb-hint {
+    font-size: 0.46rem;
+  }
+  .diary-tab-notebook-wrap .diary-nb-ribbon {
+    right: 12px;
+    width: 10px;
+    height: 24px;
+  }
+  /* The palette button is meant for the larger mylog notebook; hide on
+     the diary-tab hero to keep the small cover uncluttered. */
+  .diary-tab-notebook-wrap .diary-nb-palette-btn {
+    display: none;
+  }
+
   .diary-tab-hero-text {
     text-align: center;
     padding-top: 0;
