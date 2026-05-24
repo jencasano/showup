@@ -74,7 +74,7 @@
       </div>
       <nav class="sb-nav">
         <button class="sb-nav-item active" data-tab="mylog"><span class="sb-nav-num">01</span>mine</button>
-        <button class="sb-nav-item" data-action="diary"><span class="sb-nav-num">02</span>diary</button>
+        <button class="sb-nav-item" data-tab="diary"><span class="sb-nav-num">02</span>diary</button>
         <button class="sb-nav-item" data-tab="following"><span class="sb-nav-num">03</span>following</button>
         <button class="sb-nav-item" data-tab="all"><span class="sb-nav-num">04</span>all</button>
         <button class="sb-nav-item" data-action="shop"><span class="sb-nav-num">05</span>shop</button>
@@ -169,6 +169,7 @@
       <!-- MAIN CONTENT -->
       <main id="app-content">
         <div id="tab-mylog" class="tab-panel"></div>
+        <div id="tab-diary" class="tab-panel" style="display:none;"></div>
         <div id="tab-following" class="tab-panel" style="display:none;"></div>
         <div id="tab-all" class="tab-panel" style="display:none;"></div>
       </main>
@@ -179,7 +180,7 @@
           <img src="assets/icons/my-log.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="" draggable="false" />
           <span>mine</span>
         </button>
-        <button class="bottom-tab" data-action="diary">
+        <button class="bottom-tab" data-tab="diary">
           <img src="assets/icons/diary.svg" class="bottom-tab-icon showup-icon" width="24" height="24" alt="" draggable="false" />
           <span>diary</span>
         </button>

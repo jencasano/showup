@@ -3,14 +3,13 @@ import { signIn, signOutUser, onAuthReady, hasCompletedSetup } from "./auth.js";
 import { loadMyLog } from "./tracker-mylog.js";
 import { loadAllLogs } from "./tracker-all.js";
 import { loadFollowingLogs } from "./tracker-following.js";
+import { loadDiaryTab } from "./tracker-diary-tab.js";
 import { getCurrentYearMonth, formatYearMonth, getPrevYearMonth, getNextYearMonth, isPastYearMonth, pickPastMonthNote } from "./utils.js";
 import { showToast, showLoader, hideLoader } from "./ui.js";
 import { checkMonthlySetup } from "./month-setup.js";
 import { getUserStats } from "./stats.js";
 import { toggleMonthPicker, closeMonthPicker } from "./month-picker.js";
 import { openPrivacySettingsModal } from "./privacy-settings.js";
-import { getDiaryDays, getDiaryCover, getMonthCover, getActiveCover } from "./diary.js";
-import { openMobileDiarySheet } from "./diary-mobile.js";
 import { getUserTheme, setUserTheme } from "./theme.js";
 
 // ── Elements ──────────────────────────────────
@@ -23,6 +22,7 @@ const nextBtn      = document.getElementById("next-month-btn");
 const calPickerBtn = document.getElementById("cal-picker-btn");
 const todayBtn     = document.getElementById("today-btn");
 const tabMyLog     = document.getElementById("tab-mylog");
+const tabDiary     = document.getElementById("tab-diary");
 const tabFollowing = document.getElementById("tab-following");
 const tabAll       = document.getElementById("tab-all");
 
@@ -136,13 +136,15 @@ export function switchTab(tab) {
   closeAvatarMenu();
 
   const monthBar = document.getElementById("month-bar");
-  if (monthBar) monthBar.style.display = (tab === "following" || tab === "all") ? "none" : "";
+  if (monthBar) monthBar.style.display = (tab === "following" || tab === "all" || tab === "diary") ? "none" : "";
 
   tabMyLog.style.display     = tab === "mylog"     ? "block" : "none";
+  tabDiary.style.display     = tab === "diary"     ? "block" : "none";
   tabFollowing.style.display = tab === "following" ? "grid"  : "none";
   tabAll.style.display       = tab === "all"       ? "block" : "none";
 
   const activePanel = tab === "mylog" ? tabMyLog
+    : tab === "diary" ? tabDiary
     : tab === "following" ? tabFollowing : tabAll;
   activePanel.style.animation = "none";
   activePanel.offsetHeight;
@@ -168,6 +170,9 @@ async function loadActiveTab(silent = false) {
   if (activeTab === "mylog") {
     await loadMyLog(activeYearMonth, tabMyLog, currentUser, getMyLogStatsPromise(), silent, monthNavCallbacks);
 
+  } else if (activeTab === "diary") {
+    await loadDiaryTab(activeYearMonth, tabDiary, currentUser);
+
   } else if (activeTab === "following") {
     if (followingUnsub) { followingUnsub(); followingUnsub = null; }
     followingUnsub = loadFollowingLogs(
@@ -189,32 +194,12 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => switchTab(btn.dataset.tab));
 });
 
-// Tab click handlers — mobile (Diary uses data-action; others use data-tab)
+// Tab click handlers — mobile
 document.querySelectorAll(".bottom-tab").forEach(btn => {
   btn.addEventListener("click", () => {
-    if (btn.dataset.tab) {
-      switchTab(btn.dataset.tab);
-    } else if (btn.dataset.action === "diary") {
-      openDiaryFromNav();
-    }
+    if (btn.dataset.tab) switchTab(btn.dataset.tab);
   });
 });
-
-// Open the mobile diary sheet from the bottom-nav Diary tab.
-async function openDiaryFromNav() {
-  if (!currentUser) return;
-  try {
-    const [savedCover, monthCover, diaryDays] = await Promise.all([
-      getDiaryCover(currentUser.uid),
-      getMonthCover(currentUser.uid, activeYearMonth),
-      getDiaryDays(currentUser.uid, activeYearMonth)
-    ]);
-    const cover = getActiveCover(monthCover, savedCover);
-    openMobileDiarySheet(currentUser.uid, activeYearMonth, diaryDays, cover);
-  } catch {
-    showToast("couldn't open diary. try again.", "error");
-  }
-}
 
 // Tab click handlers — desktop sidebar
 document.querySelectorAll(".sb-nav-item").forEach(btn => {

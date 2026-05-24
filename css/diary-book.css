@@ -2292,3 +2292,213 @@
 
 .mob-diary-mini-line:nth-child(2) { width: 80%; }
 .mob-diary-mini-line:nth-child(3) { width: 55%; }
+
+/* ═══════════════════════════════════════════════
+   DIARY TAB
+   ═══════════════════════════════════════════════ */
+
+#tab-diary {
+  padding: 28px 32px;
+}
+
+/* ── Hero ────────────────────────────────────── */
+.diary-tab-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  margin-bottom: 36px;
+}
+
+.diary-tab-notebook-wrap {
+  width: 180px;
+  height: 240px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.diary-tab-hero-text {
+  flex: 1;
+  padding-top: 8px;
+  min-width: 0;
+}
+
+.diary-tab-hero-title {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.diary-tab-hero-sub {
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  margin-bottom: 16px;
+}
+
+.diary-tab-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.diary-tab-hero-btn:hover {
+  background: var(--red-hover);
+  transform: translateY(-1px);
+}
+
+/* ── Section heads ──────────────────────────── */
+.diary-tab-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--hairline);
+}
+
+.diary-tab-section-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.diary-tab-section-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+
+/* ── Fill bar ───────────────────────────────── */
+.diary-tab-fill-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.diary-tab-fill-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.52rem;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.diary-tab-fill-track {
+  flex: 1;
+  height: 3px;
+  background: var(--hairline);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.diary-tab-fill-bar {
+  height: 100%;
+  background: var(--yellow);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.diary-tab-fill-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.52rem;
+  font-weight: 600;
+  color: var(--yellow);
+}
+
+/* ── Pages grid (override existing diary-mini-page class family) ── */
+.diary-tab-pages-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+/* Amber dot on filled pages in the tab grid */
+.diary-tab-pages-grid .diary-mini-page-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--yellow);
+}
+
+/* Today: coral border ring */
+.diary-tab-pages-grid .diary-mini-page.today {
+  outline: none;
+  border: 1.5px solid var(--red);
+  box-shadow: 0 0 0 1px var(--red), 1px 2px 6px rgba(0,0,0,.12);
+}
+
+.diary-tab-pages-grid .diary-mini-page.today .diary-mini-day {
+  color: var(--red);
+}
+
+/* Faint ruled lines on empty pages in tab context */
+.diary-tab-pages-grid .diary-mini-lines {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.diary-tab-pages-grid .diary-mini-line {
+  height: 1px;
+  background: var(--hairline);
+  opacity: 0.5;
+}
+
+.diary-tab-pages-grid .diary-mini-line:nth-child(2) { width: 75%; }
+.diary-tab-pages-grid .diary-mini-line:nth-child(3) { width: 50%; }
+
+/* ── Mobile ─────────────────────────────────── */
+@media (max-width: 767px) {
+  #tab-diary {
+    padding: 20px 16px;
+  }
+
+  .diary-tab-hero {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .diary-tab-notebook-wrap {
+    width: 140px;
+    height: 190px;
+  }
+
+  .diary-tab-hero-text {
+    text-align: center;
+    padding-top: 0;
+    width: 100%;
+  }
+
+  .diary-tab-hero-title {
+    font-size: 1.3rem;
+  }
+
+  .diary-tab-pages-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 32px;
+  }
+}
