@@ -928,7 +928,24 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
   const FLIP_DURATION = 420;
   const FLIP_SWAP_AT  = Math.round(FLIP_DURATION * 0.45);
 
+  // Swipe-to-dismiss state — declared above the open/close helpers so they
+  // can reset it on every open.
+  let calTouchStartY = 0;
+  let calTouchCurY = 0;
+  let calDragging = false;
+
+  function resetCalDragState() {
+    calDragging = false;
+    calTouchStartY = 0;
+    calTouchCurY = 0;
+    calSheet.style.removeProperty("transition");
+    calSheet.style.removeProperty("transform");
+  }
+
   function openCalSheet() {
+    // Clear any leftover inline styles/state from a previous interaction so
+    // the open animation and next swipe start from a known baseline.
+    resetCalDragState();
     calOverlay.classList.add("open");
   }
   function closeCalSheet() {
@@ -945,10 +962,6 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
   // drifts off the sheet, and so touches on the dim area can also dismiss.
   // stopPropagation prevents these touches from also triggering the parent
   // sheet's swipe-to-dismiss.
-  let calTouchStartY = 0;
-  let calTouchCurY = 0;
-  let calDragging = false;
-
   calOverlay.addEventListener("touchstart", (e) => {
     e.stopPropagation();
     calTouchStartY = e.touches[0].clientY;
@@ -968,13 +981,20 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
   const finishCalDrag = (e) => {
     if (e) e.stopPropagation();
     if (!calDragging) return;
-    calDragging = false;
     const dy = calTouchCurY - calTouchStartY;
-    calSheet.style.transition = "";
-    calSheet.style.transform = "";
-    if (dy > 50) closeCalSheet();
-    calTouchStartY = 0;
-    calTouchCurY = 0;
+    if (dy > 50) {
+      // Closing: drop inline overrides so the CSS class animates the sheet
+      // back to translateY(100%) once "open" is removed.
+      resetCalDragState();
+      closeCalSheet();
+    } else {
+      // Snap back to fully open with a brief transition, then clear state.
+      calSheet.style.transition = "transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)";
+      calSheet.style.transform = "translateY(0)";
+      calDragging = false;
+      calTouchStartY = 0;
+      calTouchCurY = 0;
+    }
   };
 
   calOverlay.addEventListener("touchend",    finishCalDrag, { passive: true });

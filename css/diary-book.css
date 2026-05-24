@@ -1952,6 +1952,7 @@
   transform: translateY(100%);
   transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
   padding: 0 0 16px;
+  will-change: transform;
 }
 
 .mob-diary-cal-overlay.open .mob-diary-cal-sheet {
