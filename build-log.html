@@ -628,8 +628,53 @@
     </details>
   </div>
 
-  <!-- ── May 25, 2026 · Feed · Month Setup Event + Milestone Card Treatment ── -->
+  <!-- ── May 25, 2026 · Feed · Perfect Week Milestone ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">May 25, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">FO07</span>
+    </div>
+    <div class="entry-title">Feed: Perfect Week Milestone</div>
+    <p class="entry-desc">A new signal context that recognizes when every activity hit its cadence target for a complete Monday-to-Sunday week. Harder than a streak (which just means "something logged each day") because it requires every individual target to be met. Earns the milestone card treatment (warm wash, gold stripe, glowing badge). The computation lives in a new module (js/signal-week.js) to keep following-signals.js focused on cascade logic.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">New module: js/signal-week.js</div>
+        <div class="item-desc">Exports checkPerfectWeek(logEntry, yearMonth, referenceDate). Determines the most recently completed Mon-Sun week, checks that it falls entirely within the current yearMonth, then verifies every activity's mark count meets or exceeds its cadence target for that week. Returns a boolean. 40 lines, single responsibility, no side effects.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Signal cascade integration</div>
+        <div class="item-desc">perfect_week slots between streak_15 and streak_7 in the priority order inside computeSignal() in following-signals.js. A 15-day streak is a bigger deal than a single perfect week, but a perfect week is harder than a 7-day streak because it requires every target met, not just presence. If both perfect_week and streak_15 apply, streak_15 wins.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Milestone treatment</div>
+        <div class="item-desc">perfect_week added to MILESTONE_CONTEXTS and MILESTONE_LABELS in feed-event.js. Badge label: 'perfect week'. Gets the full milestone visual treatment: warm wash, gold top stripe, glowing badge with shimmer animation. Ghost cards get the reduced treatment.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Copy variants</div>
+        <div class="item-desc">Ten new copy templates added to signal-copy.json. Sharing (4 variants) celebrates completeness: 'hit every target this week.' Low key (3 variants) keeps it abstract: 'had a perfect week. Quietly.' Ghost (3 variants) stays closed-door: 'every target met. Quietly.' The tone distinction: streak copy celebrates consistency, perfect week copy celebrates completeness.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Design decisions</div>
+        <div class="item-desc">Perfect week fires on the log that completes the week, not retroactively. Cross-month weeks are not evaluated (Monday must fall within the current month). Only the most recently completed Mon-Sun week is checked, not historical weeks. The check runs at burst write time via computeSignal(), so the contextKey is locked into the event doc for all viewers.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/FO07/01.png" alt="Feed · Perfect Week Milestone" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO07/02.png" alt="Feed · Perfect Week Milestone" onerror="this.style.display='none'">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── May 25, 2026 · Feed · Month Setup Event + Milestone Card Treatment ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">May 25, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
