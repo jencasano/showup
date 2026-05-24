@@ -628,8 +628,58 @@
     </details>
   </div>
 
-  <!-- ── May 23, 2026 · Polish · Past-month lock ── -->
+  <!-- ── May 25, 2026 · Feed · Month Setup Event + Milestone Card Treatment ── -->
   <div class="tl-section active">
+    <div class="entry-meta">
+      <span class="entry-date">May 25, 2026</span>
+      <span class="entry-badge badge-shipped">Shipped</span>
+      <span class="entry-code">FO06</span>
+    </div>
+    <div class="entry-title">Feed: Month Setup Event + Milestone Card Treatment</div>
+    <p class="entry-desc">Two feed enhancements shipped together. First, a new event type fires when a user completes their monthly setup, adding a rhythm marker to the feed that signals "someone committed to a new month." Second, milestone moments (streaks, comebacks, first-ever days) now get a visual treatment that distinguishes them from regular log cards before you read a word.</p>
+    <div class="entry-items">
+      <div class="entry-item">
+        <div class="item-name">Month setup event (type: setup)</div>
+        <div class="item-desc">A new event type written to events/{uid}/items/setup-{yearMonth} when a user completes the monthly setup modal. Fires once per user per month, immediately after the log doc is saved. The event is abstract by design: the feed says someone committed, not what they committed to. Re-setup via Manage Activities does not fire a new event. The eventId is deterministic so duplicate saves harmlessly overwrite.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Setup copy across three tiers</div>
+        <div class="item-desc">Ten copy variants added to signal-copy.json: four Sharing (names the person and month), three Low key (warm and abstract), and three Ghost (poetic, closed-door). New {month} template variable added to fillFeedCopy() for the formatted month name. Copy follows the established voice for each tier.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Setup card renderer</div>
+        <div class="item-desc">buildSetupEvent() and renderSetupCard() added to feed-event.js. The card renders with the same structure as log/diary cards (avatar, name, timestamp, tier badge, copy line) but without activity chips, streak spans, or action links. No milestone treatment since setup is a starting gun, not an achievement. Ghost cards get the standard ghost treatment (reduced opacity, italic Fraunces copy, no timestamp).</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Milestone card visual treatment</div>
+        <div class="item-desc">Feed cards for milestone contexts (first_ever, comeback_big, comeback_small, streak_7, streak_15, streak_25, streak_full_month) now render with a three-layer visual treatment: a warm yellow background wash, a thin gold gradient stripe across the top edge, and a glowing milestone badge that replaces the tier badge. The badge has a soft box-shadow glow and a shimmer animation (a slow light sweep). Badge labels are contextual: '7-day streak', 'perfect month', 'day one', 'comeback'. streak_3 and backfill do not earn the treatment.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Milestone tokens and theming</div>
+        <div class="item-desc">Six new design tokens added to variables.css for both Side A and Side B: --milestone-wash, --milestone-badge-bg, --milestone-badge-color, --milestone-badge-border, --milestone-badge-glow, and --milestone-shimmer. Side A uses darkened gold (#8A6A14) for badge text against cream; Side B uses bright yellow against maroon. Ghost milestone cards get a reduced treatment (lighter wash, dimmer stripe, softer glow) so the gold does not fight the ghost card's reduced opacity. Shimmer respects prefers-reduced-motion.</div>
+        <div class="item-spec"></div>
+      </div>
+      <div class="entry-item">
+        <div class="item-name">Design decisions</div>
+        <div class="item-desc">Setup events are not milestones. Mid-month re-setup is silent. Setup copy is abstract (no activity names revealed). Milestone treatment only applies to log events, not diary or setup. streak_3 is too early to celebrate. The milestone badge replaces the tier badge rather than augmenting it, keeping the card header clean.</div>
+        <div class="item-spec"></div>
+      </div>
+    </div>
+    <div class="looks-like">
+      <div class="looks-like-label">Looks like</div>
+      <div class="looks-like-strip">
+        <img src="assets/build-log/FO06/01.png" alt="Feed · Month Setup Event + Milestone Card Treatment" onerror="this.style.display='none'">
+        <img src="assets/build-log/FO06/02.png" alt="Feed · Month Setup Event + Milestone Card Treatment" onerror="this.style.display='none'">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── May 23, 2026 · Polish · Past-month lock ── -->
+  <div class="tl-section">
     <div class="entry-meta">
       <span class="entry-date">May 23, 2026</span>
       <span class="entry-badge badge-shipped">Shipped</span>
