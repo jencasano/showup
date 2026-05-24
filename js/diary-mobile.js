@@ -935,6 +935,47 @@ export function openMobileDiarySheet(userId, yearMonth, diaryDays, cover = DEFAU
     calOverlay.classList.remove("open");
   }
 
+  // Tap outside the sheet (on the dim) closes it
+  calOverlay.addEventListener("click", (e) => {
+    if (e.target === calOverlay) closeCalSheet();
+  });
+
+  // Stop touch events inside the cal overlay from bubbling up to the main
+  // sheet's swipe-to-dismiss handlers
+  calOverlay.addEventListener("touchstart", (e) => e.stopPropagation(), { passive: true });
+  calOverlay.addEventListener("touchmove",  (e) => e.stopPropagation(), { passive: true });
+  calOverlay.addEventListener("touchend",   (e) => e.stopPropagation(), { passive: true });
+
+  // Swipe down on the cal sheet to dismiss
+  let calTouchStartY = 0;
+  let calTouchCurY = 0;
+  let calDragging = false;
+
+  calSheet.addEventListener("touchstart", (e) => {
+    calTouchStartY = e.touches[0].clientY;
+    calTouchCurY = calTouchStartY;
+    calDragging = true;
+    calSheet.style.transition = "none";
+  }, { passive: true });
+
+  calSheet.addEventListener("touchmove", (e) => {
+    if (!calDragging) return;
+    calTouchCurY = e.touches[0].clientY;
+    const dy = calTouchCurY - calTouchStartY;
+    if (dy > 0) calSheet.style.transform = `translateY(${dy}px)`;
+  }, { passive: true });
+
+  calSheet.addEventListener("touchend", () => {
+    if (!calDragging) return;
+    calDragging = false;
+    const dy = calTouchCurY - calTouchStartY;
+    calSheet.style.transition = "";
+    calSheet.style.transform = "";
+    if (dy > 80) closeCalSheet();
+    calTouchStartY = 0;
+    calTouchCurY = 0;
+  });
+
   // ── Pages view ──────────────────────────────────────────
   let pagesViewOpen = false;
   let pagesBuilt = false;
