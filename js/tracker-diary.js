@@ -490,8 +490,7 @@ export function openDiaryModal(userId, yearMonth, diaryDays, cover = DEFAULT_DIA
         rightContent.appendChild(editBtn);
       } else {
         const quiet = document.createElement("div");
-        quiet.className = "quiet-room";
-        quiet.style.borderRadius = "0";
+        quiet.className = "diary-modal-empty-room";
 
         const emptyDate = document.createElement("div");
         emptyDate.className = "diary-modal-empty-date";
